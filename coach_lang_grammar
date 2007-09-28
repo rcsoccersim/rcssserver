@@ -1,0 +1,149 @@
+ The new grammer is a follows:
+
+New item are maked with a ^
+Depricated items are marked with a !
+
+<MESSAGE> : <ADVICE_MESS>
+          | <INFO_MESS>
+          | <RULE_MESS>^
+          | <META_MESS>
+          | <DEFINE_MESS>
+          | <FREEFORM_MESS>
+
+<ADVICE_MESS> : (advice <RULE_LIST>)^
+              | (advice <TOKEN_LIST>)!
+<INFO_MESS> : (info <RULE_LIST>)^
+            | (info <TOKEN_LIST>)!
+
+<TOKEN_LIST> : <TOKEN_LIST>! <TOKEN>! | <TOKEN>!
+
+<TOKEN> : (<INT> <CONDITION> <DIRECTIVE_LIST>)!
+	      | (clear)!
+
+<RULE_MESS> : (delete_rule <ID_LIST>)^
+            | (ruleset_on <NAME_LIST>)^
+            | (ruleset_off <NAME_LIST>)^
+# definition of a ruleset is in the define message
+
+<RULE> : (norm <ID> <CONDITION> <DIRECTIVE_LIST>)^
+       | (shared <ID> <CONDITION> <RULE_LIST>)^
+       | (ruleset <NAME>) ^ # name of a ruleset
+       | <NAME> ^ # name of a rule
+
+<CONDITION> : (true) | (false)
+            | (ppos <TEAM> <UNUM_SET> <INT> <INT> <REGION>)
+            | (bpos <REGION>)
+            | (bowner <TEAM> <UNUM_SET>)
+            | (playm <PLAY_MODE>)
+            | (and <CONDITION_LIST>)
+            | (or <CONDITION_LIST>)
+            | (not <CONDITION>)
+            | (time <COMP> <INT>) ^
+            | (opp_goals <COMP> <INT>) ^
+            | (own_goals <COMP> <INT>) ^
+            | (goal_diff <COMP> <INT>) ^
+            | (<INT> <COMP> time) ^
+            | (<INT> <COMP> opp_goals) ^
+            | (<INT> <COMP> our_goals) ^
+            | (<INT> <COMP> goal_diff) ^
+            | (unum <UNUM> <UNUM_SET>) ^
+            | <NAME>
+
+<COMP> : < ^ | <= ^ | == ^ | != ^ | >= ^ | > ^ 
+
+<ACTION> : (home <REGION>)
+         | (pos <REGION>)
+         | (pass <REGION>)^
+         | (pass <UNUM_SET>)^
+         | (dribble <REGION>)^
+         | (clear <REGION>)^
+         | (shoot)^
+         | (hold)^
+         | (intercept)^
+         | (tackle <UNUM_SET>)^
+         | (mark <UNUM>)
+         | (markl <UNUM>)
+         | (markl <REGION>)
+         | (approach_ball)^
+         | (htype <HET_TYPE>)
+         | <NAME>
+         | (bto <REGION> <BMOVE_SET>)! 
+         | (bto <UNUM_SET>)!
+
+
+<BMOVE_SET> : { <BMOVE_LIST> }!
+<BMOVE_LIST> : <BMOVE_LIST> <BMOVE_TOKEN>! 
+             | <BMOVE_TOKEN>!
+<BMOVE_TOKEN> : p! | d! | c! | s! #pass dribble clear score; note 
+                               # these do not need spaces between them
+
+
+<DIRECTIVE> : (<MODE> <TEAM> <UNUM_SET> <ACTION_LIST>)^ # prevoiusly it was
+                                                        # just one action
+            | "STRING"
+
+<MODE> : do | dont
+
+#Meta messages
+<META_MESS> : (meta <META_TOKEN_LIST>)!
+<META_TOKEN_LIST> : <META_TOKEN_LIST>! <META_TOKEN>! | <META_TOKEN>!
+<META_TOKEN> : (ver [int])!
+
+
+#Define messages
+<DEFINE_MESS> : (define <DEFINE_TOKEN_LIST>)
+
+<DEFINE_TOKEN> : (definec <NAME> <CONDITION>)
+| (defined <NAME> <DIRECTIVE>)
+| (definer <NAME> <REGION>)
+| (definea <NAME> <ACTION>)
+| (definerset <NAME> <ID_LIST>)
+| (definerule <NAME> <RULE>)
+
+#Freeform messages
+<FREEFORM_MESS> : (freeform "STRING")
+
+#Regions
+<REGION> : <POINT>
+         | (null)
+         | (tri <POINT> <POINT> <POINT>)^
+         | (rec <POINT> <POINT>)^
+         | (arc <POINT> [real] [real] [real] [real])
+         | (reg <REGION_LIST>)
+         | "STRING"
+         | (quad <POINT> <POINT> <POINT> <POINT>)!
+
+<POINT> : (pt [real] [real])
+        | (pt ball)
+        | (pt <TEAM> <UNUM>)
+        | (<POINT_LIST>) ^
+        | (pt [real] [real] <POINT>)!
+
+<POINT_LIST> : <POINT_LIST> <ARITH> <POINT_LIST> ^
+             | <POINT> ^
+
+<ARITH> : + ^ | - ^ | * ^ | / ^
+
+<PLAY_MODE> : bko | time_over | play_on
+            | ko_our | ko_opp | ki_our | ki_opp 
+            | fk_our | fk_opp
+            | ck_our | ck_opp | gk_our | gk_opp 
+            | gc_our | gc_opp
+            | ag_our | ag_opp
+
+<TEAM> : our | opp
+
+<UNUM> : <INT> | <VAR>^ 
+
+<UNUM_SET> : { <UNUM_LIST> }
+
+<UNUM_LIST> : <UNUM_LIST> <UNUM> | <UNUM>
+
+<VAR> : [abe-oqrt-z]+[a-zA-Z0-9_]* ^
+      | <STR> ^
+
+<NAME> : <STR>
+
+<STR> : \"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\" 
+
+<ID> : [int] 

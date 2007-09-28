@@ -1,0 +1,171 @@
+# -*-python-*-
+import os
+Import('env plg_env shlib_env prog_env')
+
+shlib_env.Append(LIBPATH = '#src')
+plg_env.Append(LIBPATH = '#src')
+prog_env.Append(LIBPATH = '#src')
+
+if env['PLATFORM'] == 'win32':
+	UTIL_LIBS=['shell32']
+else:
+	UTIL_LIBS=['']
+
+rcssutil = shlib_env.SharedLibrary( 'rcssutil',
+				    'utility.cpp',
+				    LIBS=UTIL_LIBS)
+Default(rcssutil)	
+Alias('rcssutil', rcssutil)
+
+install = env.Install( env[ 'libdir' ], rcssutil )
+Alias('install', install)
+
+
+rcsstimer = shlib_env.SharedLibrary( 'rcsstimer',
+				     'timer.cpp')
+Default(rcsstimer)	
+Alias('rcsstimer', rcsstimer)
+	
+install = env.Install( env[ 'libdir' ], rcsstimer )
+Alias('install', install)
+
+rcssresultsaver = shlib_env.SharedLibrary( 'rcssresultsaver',
+					   'resultsaver.cpp')
+Default(rcssresultsaver)	
+Alias('rcssresultsaver', rcssresultsaver)
+ 	
+install = env.Install( env[ 'libdir' ], rcssresultsaver )
+Alias('install', install)
+
+
+if env['PLATFORM'] == 'win32':
+	PP_LIBS=['Ws2_32',
+		 'rcssconfparser',
+		 'rcsslib',
+		 'rcssutil',
+		 'rcsserror']
+else:
+	PP_LIBS=['rcssconfparser',
+		 'rcsslib',
+		 'rcssutil',
+		 'rcsserror']
+	
+
+rcssplayerparam = shlib_env.SharedLibrary( 'rcssplayerparam',
+					   'playerparam.cpp',
+					   LIBS=PP_LIBS)
+Default(rcssplayerparam)	
+Alias('rcssplayerparam', rcssplayerparam)
+
+install = env.Install( env[ 'libdir' ], rcssplayerparam )
+Alias('install', install)
+
+if env['PLATFORM'] == 'win32':
+	SP_LIBS=['Ws2_32',
+		 'rcssconfparser',
+		 'rcsslib',
+		 'rcssplayerparam',
+		 'rcssutil',
+		 'rcsserror']
+else:
+	SP_LIBS=['rcssconfparser',
+		 'rcsslib',
+		 'rcssplayerparam',
+		 'rcssutil',
+		 'rcsserror']
+
+rcssserverparam = shlib_env.SharedLibrary( 'rcssserverparam',
+					   'serverparam.cpp',
+					   LIBS=SP_LIBS)
+Default(rcssserverparam)	
+Alias('rcssserverparam', rcssserverparam)
+
+install = env.Install( env[ 'libdir' ], rcssserverparam )
+Alias('install', install)
+
+
+
+
+rcssstdtimer = plg_env.SharedLibrary( 'librcssstdtimer',
+				      'stdtimer.cc',	
+				      LIBS=['rcsstimer', 
+					    'rcssserverparam',
+					    'rcsslib',
+					    'rcsserror',
+					    'rcssconfparser'])
+Default(rcssstdtimer)	
+Alias('rcssstdtimer', rcssstdtimer)
+
+install = env.Install( env[ 'libdir' ], rcssstdtimer )
+Alias('install', install)
+
+
+rcsssynctimer = plg_env.SharedLibrary( 'librcsssynctimer',
+				       'synctimer.cc',	
+				       LIBS=['rcsstimer', 
+					     'rcssserverparam',
+					     'rcsslib',
+					     'rcsserror',
+					     'rcssconfparser'])
+Default(rcsssynctimer)	
+Alias('rcsssynctimer', rcsssynctimer)
+
+install = env.Install( env[ 'libdir' ], rcsssynctimer )
+Alias('install', install)
+
+
+stdoutsaver = plg_env.SharedLibrary( 'libstdoutsaver',
+				     'stdoutsaver.cpp',	
+				     LIBS=['rcssresultsaver',
+					   'rcsslib'])
+Default(stdoutsaver)	
+Alias('stdoutsaver', stdoutsaver)
+
+install = env.Install( env[ 'libdir' ], stdoutsaver )
+Alias('install', install)
+
+csvsaver = plg_env.SharedLibrary( 'libcsvsaver',
+				  'csvsaver.cpp',	
+				  LIBS=['rcssresultsaver', 
+					'rcssconfparser',
+					'rcsslib',
+					'rcssutil'])
+Default(csvsaver)	
+Alias('csvsaver', csvsaver)
+
+install = env.Install( env[ 'libdir' ], csvsaver )
+Alias('install', install)
+
+
+rcssclangparser = shlib_env.SharedLibrary( 'rcssclangparser',
+					   ['clangmsgbuilder.cc',
+					    'clangparser.cpp',
+					    'clangmsg.cc',
+					    'clangmetamsg.cc',
+					    'clangfreeformmsg.cc',
+					    'clangunsuppmsg.cc',
+					    'clangrulemsg.cc',
+					    'clangdelmsg.cc',
+					    'clanginfomsg.cc',
+					    'clangadvicemsg.cc',
+					    'clangdefmsg.cc',
+					    'clangaction.cc',
+					    'coach_lang_comp.C',
+					    'coach_lang_tok.cc',
+					    'region.C',
+					    'visitor.cc',
+					    'clangutil.cc',
+					    'cond.cc',
+					    'compop.cc',
+					    'arithop.cc',
+					    'rule.cc'],
+					   LIBS=['rcssconfparser',
+						 'rcsslib',
+						 'rcssresultsaver',
+						 'rcssserverparam'])
+Default(rcssclangparser)	
+Alias('rcssclangparser', rcssclangparser)
+
+install = env.Install( env[ 'libdir' ], rcssclangparser )
+Alias('install', install)
+

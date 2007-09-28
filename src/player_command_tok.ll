@@ -1,0 +1,130 @@
+/* -*-FLEX-*- */
+/*
+ *Copyright:
+
+    Copyright (C) 2001 RoboCup Soccer Server Maintainance Group.
+    	Patrick Riley, Tom Howard, Itsuki Noda,	Mikhail Prokopenko, Jan Wendler 
+
+    This file is part of SoccerServer.
+
+    SoccerServer is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ *EndCopyright:
+ */
+%{
+
+#include "player_command_tok.h"
+#include "player_command_parser.h"
+
+%}
+
+/* Definitions */
+
+%option nomain
+%option noyywrap
+%option c++
+%option prefix="RCSSPCom"
+%option yyclass="RCSSPComLexer"
+
+UINT [0-9]+
+INT  [\+\-]?{UINT}+
+REAL [\+\-]?{UINT}?\.{UINT}
+EXP  ({REAL}|{INT})[eE]{INT}
+
+%%
+
+\( { return RCSS_PCOM_LP;}
+\) { return RCSS_PCOM_RP;}
+
+dash { return RCSS_PCOM_DASH; }
+turn { return RCSS_PCOM_TURN; }
+turn_neck { return RCSS_PCOM_TURN_NECK; }
+kick { return RCSS_PCOM_KICK; }
+catch { return RCSS_PCOM_CATCH; }
+say { return RCSS_PCOM_SAY; }
+sense_body { return RCSS_PCOM_SENSE_BODY; }
+score { return RCSS_PCOM_SCORE; }
+move { return RCSS_PCOM_MOVE; }
+change_view { return RCSS_PCOM_CHANGE_VIEW; }
+compression { return RCSS_PCOM_COMPRESSION; }
+bye { return RCSS_PCOM_BYE; }
+done { return RCSS_PCOM_DONE; }
+pointto { return RCSS_PCOM_POINTTO; }
+attentionto { return RCSS_PCOM_ATTENTIONTO; }
+tackle { return RCSS_PCOM_TACKLE; }
+clang { return RCSS_PCOM_CLANG; }
+ear { return RCSS_PCOM_EAR; }
+
+narrow { return RCSS_PCOM_VIEW_WIDTH_NARROW; }
+normal { return RCSS_PCOM_VIEW_WIDTH_NORMAL; }
+wide { return RCSS_PCOM_VIEW_WIDTH_WIDE; }
+low { return RCSS_PCOM_VIEW_QUALITY_LOW; }
+high { return RCSS_PCOM_VIEW_QUALITY_HIGH; }
+on { return RCSS_PCOM_ON; }
+off { return RCSS_PCOM_OFF; }
+our { return RCSS_PCOM_OUR; }
+opp { return RCSS_PCOM_OPP; }
+left { return RCSS_PCOM_LEFT; }
+right { return RCSS_PCOM_RIGHT; }
+l { return RCSS_PCOM_LEFT; }
+r { return RCSS_PCOM_RIGHT; }
+partial { return RCSS_PCOM_EAR_PARTIAL; }
+complete { return RCSS_PCOM_EAR_COMPLETE; }
+p { return RCSS_PCOM_EAR_PARTIAL; }
+c { return RCSS_PCOM_EAR_COMPLETE; }
+ver { return RCSS_PCOM_CLANG_VERSION; }
+
+[ \t\n]+ ;
+
+{UINT} { M_lexed_val->m_int = atoi(yytext); return RCSS_PCOM_INT; }
+{INT}  { M_lexed_val->m_int = atoi(yytext); return RCSS_PCOM_INT; }
+{REAL} { M_lexed_val->m_double = atof(yytext); return RCSS_PCOM_REAL; }
+{EXP}  { M_lexed_val->m_double = atof(yytext); return RCSS_PCOM_REAL; }
+
+[\-\_a-zA-Z0-9]+ { if( YYLeng() > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR; 
+		   strncpy( M_lexed_val->m_str, yytext, YYLeng() );
+		   for( unsigned int i = YYLeng(); 
+		   	i != RCSSPComLexer::Holder::STR_MAX;
+			++i )
+		   {
+			M_lexed_val->m_str[ i ] = 0;
+		   }
+                   return RCSS_PCOM_STR; }
+
+\"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\" { if( YYLeng() > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR; 
+					  strncpy( M_lexed_val->m_str, yytext, YYLeng() );
+		   for( unsigned int i = YYLeng(); 
+		   	i != RCSSPComLexer::Holder::STR_MAX;
+			++i )
+		   {
+			M_lexed_val->m_str[ i ] = 0;
+		   }
+					  return RCSS_PCOM_STR; }
+
+"\(say "[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+"\)" { if( YYLeng()-5 > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR; 
+						  strncpy( M_lexed_val->m_str,
+						           yytext + 5, 
+							   YYLeng()-5 );
+		   for( unsigned int i = YYLeng()-6; 
+		   	i != RCSSPComLexer::Holder::STR_MAX;
+			++i )
+		   {
+			M_lexed_val->m_str[ i ] = 0;
+		   }
+                                                  return RCSS_PCOM_UNQ_SAY; }
+
+. { return RCSS_PCOM_ERROR; }
+
+%%

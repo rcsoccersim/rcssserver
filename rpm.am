@@ -1,0 +1,188 @@
+CLEANFILES += \
+install_files \
+@PACKAGE@-@VERSION@.spec \
+*.rpm \
+rpmmacros \
+RPMChangeLog
+
+
+
+if BUILD_RPM
+
+EXTRA_DIST += \
+spec.tmpl \
+RPMChangeLog
+
+dist-rpm: rpm
+dist-srpm: srpm
+
+EXTRA_BIN_DISTS += rpm
+EXTRA_SRC_DISTS += srpm
+
+UPLOAD_BIN += upload-rpm
+UPLOAD_SRC += upload-srpm
+
+UPLOAD_TARGETS += \
+{rpm=>@PACKAGE@-@VERSION@-0.i*.$(PLATFORM_SUFFIX).rpm} \
+{srpm=>@PACKAGE@-@VERSION@-0.src.rpm}
+
+rpm: @PACKAGE@-@VERSION@-0.i*.$(PLATFORM_SUFFIX).rpm
+srpm: @PACKAGE@-@VERSION@-0.src.rpm
+
+@PACKAGE@-@VERSION@-0.i*.$(PLATFORM_SUFFIX).rpm:	rpmmacros install_files @PACKAGE@-@VERSION@.spec
+	@if ! test -d @PACKAGE@-@VERSION@; then \
+		$(MAKE) $(AM_MAKEFLAGS) dist-gzip; \
+		tar zxvf @PACKAGE@-@VERSION@.tar.gz; \
+	fi
+	@cp @PACKAGE@-@VERSION@.spec @PACKAGE@-@VERSION@/.
+	@tar zcvf @PACKAGE@-@VERSION@.tar.gz @PACKAGE@-@VERSION@
+	@if test -z "$(PLATFORM_SUFFIX)"; then \
+		echo ""; \
+		echo "Error: PLATFORM_SUFFIX is not set."; \
+		echo "You may only build RPMs if you set the PLATFORM_SUFFIX."; \
+		echo "You should set it to something like su82 for SuSE 8.2 or"; \
+		echo "rh71 for RedHat 7.1 or mdk9 for Mandrake 9, etc. e.g."; \
+		echo ""; \
+		echo "./configure PLATFORM_SUFFIX=su82"; \
+		echo ""; \
+		exit 1; \
+	fi
+	@$(RPM) -tb @PACKAGE@-@VERSION@.tar.gz
+	@RPMDIR=`cat rpmmacros | $(AWK) '/%_rpmdir/ { print $$2; }'`; \
+	echo "$$RPMDIR" | grep "%{.*}" >& /dev/null; \
+	EXIT=$$?; \
+	while test $$EXIT == "0"; do \
+		RPMDIR=`echo "$$RPMDIR" | $(AWK) '/%{.*}/ \
+		{ match( $$0, /%{.*}/, macro ); \
+		  suffix = substr( $$0, RSTART + RLENGTH ); \
+		  gsub( /{|}/, "", macro[ 0 ] ); \
+		  while( ( getline < "rpmmacros" ) > 0 ) \
+		  { if( $$1 == macro[ 0 ] ) { print $$2 suffix; exit; } } \
+		  exit 1; \
+		}'`; \
+		if test $$? == "0"; then \
+			echo "$$RPMDIR" | grep "%{.*}" >& /dev/null; \
+			EXIT=$$?; \
+		else \
+			EXIT="1"; \
+		fi; \
+	done; \
+	if test -d "$$RPMDIR"; then \
+		for dir in `ls "$$RPMDIR"`; do \
+			ls "$${RPMDIR}$${dir}/@PACKAGE@-@VERSION@-0.$${dir}.rpm" >& /dev/null; \
+			if test $$? == "0"; then \
+				cp "$${RPMDIR}$${dir}/@PACKAGE@-@VERSION@-0.$${dir}.rpm" @PACKAGE@-@VERSION@-0.$${dir}.$(PLATFORM_SUFFIX).rpm; \
+				echo ""; \
+				echo "@PACKAGE@-@VERSION@-0.$${dir}.$(PLATFORM_SUFFIX).rpm has been created."; \
+				echo "If you are not a maintainer, please consider emailing the"; \
+				echo "RPM to sserver-admin@lists.sf.net, so they can make it" ; \
+				echo "available for others"; \
+				echo ""; \
+				found=true; \
+			fi; \
+		done; \
+		if ! $$found; then \
+			echo "RPM built but not found."; \
+			echo "Please copy it to this directory manually."; \
+			exit 1; \
+		fi; \
+	else \
+		echo "RPM built but I cannot find RPM directory."; \
+		echo "Please copy it to this directory manually."; \
+		exit 1; \
+	fi;
+	@rm -f @PACKAGE@-@VERSION@.tar.gz
+	@rm -f @PACKAGE@-@VERSION@/@PACKAGE@-@VERSION@.spec
+
+
+@PACKAGE@-@VERSION@-0.src.rpm:	rpmmacros install_files @PACKAGE@-@VERSION@.spec
+	@if ! test -d @PACKAGE@-@VERSION@; then \
+		$(MAKE) $(AM_MAKEFLAGS) dist-gzip; \
+		tar zxvf @PACKAGE@-@VERSION@.tar.gz; \
+	fi
+	@cp @PACKAGE@-@VERSION@.spec @PACKAGE@-@VERSION@/.
+	@tar zcvf @PACKAGE@-@VERSION@.tar.gz @PACKAGE@-@VERSION@
+	@$(RPM) -ts @PACKAGE@-@VERSION@.tar.gz
+	@SRPMDIR=`cat rpmmacros | $(AWK) '/%_srcrpmdir/ { print $$2; }'`; \
+	echo "$$SRPMDIR" | grep "%{.*}" >& /dev/null; \
+	EXIT=$$?; \
+	while test $$EXIT == "0"; do \
+		SRPMDIR=`echo "$$SRPMDIR" | $(AWK) '/%{.*}/ \
+		{ match( $$0, /%{.*}/, macro ); \
+		  suffix = substr( $$0, RSTART + RLENGTH ); \
+		  gsub( /{|}/, "", macro[ 0 ] ); \
+		  while( ( getline < "rpmmacros" ) > 0 ) \
+		  { if( $$1 == macro[ 0 ] ) { print $$2 suffix; exit; } } \
+		  exit 1; \
+		}'`; \
+		if test $$? == "0"; then \
+			echo "$$SRPMDIR" | grep "%{.*}" >& /dev/null; \
+			EXIT=$$?; \
+		else \
+			EXIT="1"; \
+		fi; \
+	done; \
+	if test -d "$$SRPMDIR"; then \
+		ls "$${SRPMDIR}/@PACKAGE@-@VERSION@-0.src.rpm" >& /dev/null; \
+		if test $$? == "0"; then \
+			cp "$${SRPMDIR}/@PACKAGE@-@VERSION@-0.src.rpm" .; \
+			found=true; \
+		fi; \
+		if ! $$found; then \
+			echo "SRPM built but not found."; \
+			echo "Please copy it to this directory manually."; \
+			exit 1; \
+		fi; \
+	else \
+		echo "SRPM built but I cannot find SRPM directory."; \
+		echo "Please copy it to this directory manually."; \
+		exit 1; \
+	fi; 
+	@rm -f rpm-@PACKAGE@-@VERSION@.tar.gz
+	@rm -f @PACKAGE@-@VERSION@/@PACKAGE@-@VERSION@.spec
+
+~/.rpmmacros:
+	@echo "~/.rpmmacros not found.  Creating one like the following."; \
+	echo ""; \
+	echo "%packager       <YOUR NAME>"; \
+	echo ""; \
+	echo "%distribution   <YOUR_DISTRIBUTION>"; \
+	echo "%vendor         RCSS"; \
+	echo ""; \
+	echo "%_topdir        $$HOME/"; \
+	echo "%_tmppath       /tmp/"; \
+	echo ""; \
+	echo "%_rpmtopdir     %{_topdir}rpm/"; \
+	echo "%_builddir      %{_tmppath}"; \
+	echo "%_rpmdir        %{_rpmtopdir}RPMS/"; \
+	echo "%_sourcedir     %{_rpmtopdir}SOURCES/"; \
+	echo "%_specdir       %{_rpmtopdir}SPECS/"; \
+	echo "%_srcrpmdir     %{_rpmtopdir}SRPMS/"; \
+	echo ""; \
+	echo "Where <YOUR_NAME> is your name and <YOUR_DISTRIBUTION> is the"; \
+	echo "distribution you are building on (e.g. SuSE Linux 8.2 or"; \
+	echo "RedHat Linux 7.1)."; \
+	exit -1;
+
+rpmmacros: ~/.rpmmacros
+	@cp ~/.rpmmacros rpmmacros;
+
+RPMChangeLog: ChangeLog
+	$(AWK) '/^[^0-9]/ { if( $$1 == "*" ) $$1 = "-"; print; } /^$$/ { print; } /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/ { if( stop ) exit; cmd = "date -d " $$1 " +\"%a %b %d %Y\""; cmd | getline test; $$1 = test; print "* " $$0; } /Released @PACKAGE@-/ { gsub( /@PACKAGE@-/, "", $$2 ); split( $$2, ver, "." ); split( "@VERSION@", curr_ver, "." ); if( ver[ 1 ] != curr_ver[ 1 ] || ver[ 2 ] != curr_ver[ 2 ] ) stop = 1; } END { print "[Please see the ChangeLog file for older changes] - Ed."; }' @srcdir@/ChangeLog  > @srcdir@/RPMChangeLog
+
+spec: @PACKAGE@-@VERSION@.spec
+
+@PACKAGE@-@VERSION@.spec:	spec.tmpl install_files RPMChangeLog
+	@sed  -e 's/@NAME@/@PACKAGE@/' -e 's/@VER@/@VERSION@/' \
+	"@srcdir@/spec.tmpl" \
+    | $(AWK) -v files="$$files" \
+	'{ print; } \
+	/%defattr/ { while((getline < "install_files" ) > 0 ) { print; } }' \
+	> @PACKAGE@-@VERSION@.spec
+	cat @srcdir@/RPMChangeLog >> @PACKAGE@-@VERSION@.spec
+
+
+endif
+
+
+

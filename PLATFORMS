@@ -1,0 +1,29 @@
+This software has been tested on the platforms listed below.  Please
+see the notes for your platform if you have problems building
+rcssserver.
+
+If you find solutions to any of the issues listed below, please sumbit
+a patch on the http://sf.net/projects/sserver site or email
+sserver-admin@users.sf.net
+
+i686 SuSE 9.1 (Linux kernel 2.6.5-7.111-default): 
+     * No issues
+
+i686 RedHat 9 (Linux kernel 2.4.20-19.9bigmem): 
+     * No issues
+
+PowerPC Mac OS X: 
+     * No issues
+
+i686 Cygwin 1.3.22 on Win2K SP4
+     * Well, cygwin is basically screwed for us at the moment.  Please
+       see the thread started at
+
+         http://www.mail-archive.com/cygwin@cygwin.com/msg25851.html
+
+       for more details.
+
+Sparc Solaris 9 with gcc 3.1
+     * use `--without-ncurses` during configure.  This prevents the sample
+     client from being built with the ncurses GUI, because of problems found
+     building against it on this platform.

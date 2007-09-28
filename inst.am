@@ -1,0 +1,48 @@
+BUILT_SOURCES += 
+installdirs.hpp \
+installdirs.cpp
+
+
+installdirs.cpp: installdirs.cpp.in rebuildinstalldirs
+	@if test "$$DESTDIR"; then \
+		DEST=`echo $$DESTDIR | $(SED) 's|/$$||'`; \
+	fi; \
+	$(AWK) \
+		-v destdir=$$DEST \
+		' \
+	    /@NAMESPACE@/{ gsub( /@NAMESPACE@/, "@PACKAGE@" ); } \
+	    /@PREFIX@/{ gsub( /@PREFIX@/, destdir "$(prefix)" ); } \
+	    /@EXEC_PREFIX@/{ gsub( /@EXEC_PREFIX@/, destdir "$(exec_prefix)" ); } \
+	    /@INCLUDEDIR@/{ gsub( /@INCLUDEDIR@/, destdir "$(includedir)" ); } \
+	    /@INFODIR@/{ gsub( /@INFODIR@/, destdir "$(infodir)" ); } \
+	    /@LIBDIR@/{ gsub( /@LIBDIR@/, destdir "$(libdir)" ); } \
+	    /@LIBEXECDIR@/{ gsub( /@LIBEXECDIR@/, destdir "$(libexecdir)" ); } \
+	    /@LOCALSTATEDIR@/{ gsub( /@LOCALSTATEDIR@/, destdir "$(localstatedir)" ); } \
+	    /@SHAREDSTATEDIR@/{ gsub( /@SHAREDSTATEDIR@/, destdir "$(sharedstatedir)" ); } \
+	    /@MANDIR@/{ gsub( /@MANDIR@/, destdir "$(mandir)" ); } \
+	    /@BINDIR@/{ gsub( /@BINDIR@/, destdir "$(bindir)" ); } \
+	    /@SBINDIR@/{ gsub( /@SBINDIR@/, destdir "$(sbindir)" ); } \
+	    /@SYSCONFDIR@/{ gsub( /@SYSCONFDIR@/, destdir "$(sysconfdir)" ); } \
+	    /@DATADIR@/{ gsub( /@DATADIR@/, destdir "$(datadir)" ); } \
+	    /@PKGDATADIR@/{ gsub( /@PKGDATADIR@/, destdir "$(pkgdatadir)" ); } \
+	    /@PKGLIBDIR@/{ gsub( /@PKGLIBDIR@/, destdir "$(pkglibdir)" ); } \
+	    /@PKGINCLUDEDIR@/{ gsub( /@PKGINCLUDEDIR@/, destdir "$(pkgincludedir)" ); } \
+		{ print; } \
+		' \
+	   installdirs.cpp.in > $@.tmp
+	@diff $@.tmp $@ &> /dev/null; \
+	if test $$? -ne 0; then \
+		mv $@.tmp $@; \
+	else \
+		rm -f $@.tmp; \
+	fi
+
+rebuildinstalldirs:
+
+installdirs.hpp: installdirs.hpp.in
+	$(AWK) \
+		' \
+	    /@NAMESPACE@/{ gsub( /@NAMESPACE@/, "@PACKAGE@" ); } \
+		{ print; } \
+		' \
+	    installdirs.hpp.in > $@

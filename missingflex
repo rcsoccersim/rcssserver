@@ -1,0 +1,86 @@
+#! /bin/sh
+
+
+
+if test "$#" -lt "1"; then
+  echo ""
+  echo "Error: $0 can only be called with at least one command line argument"
+  echo ""
+  echo "Usage: $0 [OPTIONS] FILE"
+  echo ""
+  echo "Where FILE is a flex source file"
+  echo ""
+  echo "all options except -o are ignored. Use -oOUTFILE to specify the output"
+  echo "file"
+  echo ""
+  exit 1
+fi
+
+OUTPUT=""
+
+for PARM in $*; do
+  CHECK_FOR_OUTPUT_PARM=`echo "$PARM" | sed s/[^-o].*$//`;
+  if test "$CHECK_FOR_OUTPUT_PARM" = "-o"; then
+    OUTPUT=`echo "$PARM" | sed s/^-o//`
+  fi
+  LAST=$PARM
+done
+
+if ! test -e $LAST; then
+  echo ""
+  echo "ERROR: Could not find $1"
+  echo ""
+  exit 1
+fi
+
+
+EXT=`echo "$LAST" | sed s/^[^.]*//`
+BASE=`echo "$LAST" | sed s/$EXT//`
+
+if test "$EXT" != ".l" -a "$EXT" != ".ll"; then
+  echo ""
+  echo "ERROR: $LAST should end in \`.l' or \`.ll'"
+  echo ""
+  exit 1
+fi
+
+if test "$EXT" = ".l"; then
+  NEW_EXT=".c"
+else  
+  NEW_EXT=".cc"
+fi
+
+if test "$OUTPUT" = ""; then
+  OUTPUT="$BASE$NEW_EXT"
+fi
+
+POSSIBLE="$BASE$NEW_EXT"
+
+
+
+if test -e "$OUTPUT"; then
+  touch "$OUTPUT"
+  echo ""
+  echo "WARNING: \`flex' is missing on your system.  You should only need it if"
+  echo "         you modified a \`.l' or \`.ll' file.  You may need the \`Flex'"
+  echo "         package in order for those modifications to take effect.  You "
+  echo "         can get \`Flex' from any GNU archive site."
+  echo ""
+elif test -e "$POSSIBLE"; then
+  cp "$POSSIBLE" "$OUTPUT"
+  echo ""
+  echo "WARNING: \`flex' is missing on your system.  You should only need it if"
+  echo "         you modified a \`.l' or \`.ll' file.  You may need the \`Flex'"
+  echo "         package in order for those modifications to take effect.  You "
+  echo "         can get \`Flex' from any GNU archive site."
+  echo ""
+else
+  echo ""
+  echo "ERROR:   \`flex' is missing on your system and the flex generated"
+  echo "         source could not be found. You can get \`Flex' from any "
+  echo "         GNU archive site."
+  echo ""
+fi
+
+
+

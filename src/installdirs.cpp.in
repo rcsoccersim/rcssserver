@@ -1,0 +1,45 @@
+// -*-c++-*-
+
+/***************************************************************************
+                              installdirs.cpp
+                             -------------------
+    begin                : 16-SEP-2003
+    copyright            : (C) 2003 by The RoboCup Soccer Server 
+                           Maintenance Group.
+    email                : sserver-admin@lists.sourceforge.net
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU LGPL as published by the Free Software  *
+ *   Foundation; either version 2 of the License, or (at your option) any  *
+ *   later version.                                                        *
+ *                                                                         *
+ ***************************************************************************/
+
+#line 22 "installdirs.cpp.in"
+
+#include "installdirs.hpp"
+
+namespace @PACKAGE@
+{
+    const char Inst::prefix[] = "@prefix@";
+    const char Inst::exec_prefix[] = "@exec_prefix@";
+    const char Inst::includedir[] = "@includedir@";
+    const char Inst::infodir[] = "@infodir@";
+    const char Inst::libdir[] = "@libdir@";
+    const char Inst::libexecdir[] = "@libexecdir@";
+    const char Inst::localstatedir[] = "@localstatedir@";
+    const char Inst::mandir[] = "@mandir@";
+    const char Inst::bindir[] = "@bindir@";
+    const char Inst::sbindir[] = "@sbindir@";
+    const char Inst::sharedstatedir[] = "@sharedstatedir@";
+    const char Inst::sysconfdir[] = "@sysconfdir@";
+    const char Inst::datadir[] = "@datadir@";
+    const char Inst::pkgdatadir[] = "@pkgdatadir@";
+    const char Inst::pkglibdir[] = "@pkglibdir@";
+    const char Inst::pkgincludedir[] = "@pkgincludedir@";
+    const char Inst::pkgmoduledir[] = "@pkglibdir@/modules";
+}
+

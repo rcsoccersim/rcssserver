@@ -1,0 +1,23 @@
+
+
+$(UPLOAD_BIN) $(UPLOAD_SRC):
+	TYPE=`echo "$@" | $(SED) -e 's/upload-//'`; \
+	DIST="dist-$${TYPE}"; \
+	$(MAKE) $(AM_MAKEFLAGS) $${DIST}; \
+	list='$(UPLOAD_TARGETS)'; \
+	pattern=`echo "^{$${TYPE}=>"`; \
+	for dist in $$list; do \
+		echo $$dist | grep "^{$${TYPE}=>" >& /dev/null; \
+		if test "$$?" -eq "0"; then \
+			TARGET=`echo "$$dist" | $(AWK) -v pattern=$$pattern '{ sub( pattern, ""); sub( /}$$/, "" ); print; }'`; \
+			ncftpput -v upload.sourceforge.net /incoming $$TARGET; \
+		fi \
+	done;
+
+upload-src: $(UPLOAD_SRC)
+
+upload-bin: $(UPLOAD_BIN)
+
+upload upload-all: upload-src upload-bin
+
+

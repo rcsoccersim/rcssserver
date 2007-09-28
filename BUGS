@@ -1,0 +1,13 @@
+DEFECT    DESCRIPTION                           STATUS         RESOVLED VERSION
+===============================================================================
+#1235911  clang CondAnd problem			Fixed	       10.0.6
+#1235909  player say parse error		Fixed	       10.0.6
+#1222129  config parser not handling embeded -	Fixed	       rcssbase 10.0.10
+#1182281  linking problem                       Fixed	       10.0.5
+#1222143  keepaway kickable area too small	Fixed	       10.0.4
+#1186996  compile problem with gcc 3.4          Fixed	       10.0.4
+#1189976  offline coach move command		User Error     n/a
+#1183388  .conf files duplicated                Fixed          10.0.3
+#1183390  clang crash                           Fixed          10.0.3
+#754241   memory leak                           Fixed          10.0.3
+#773792   free kick fault bugs                  Fixed          10.0.3

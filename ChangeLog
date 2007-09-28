@@ -1,0 +1,6707 @@
+2007-08-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	Added setter method for coach_msg_file.
+	Enabled tilde expansion for team_[lr]_start and coach_msg_file.
+
+	* src/field.C:
+	* src/field.h:
+	* src/monitor.h:
+	* src/netif.C:
+	Added the strict check of the monitor protocol version.
+
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/field.h:
+	* src/initsender.cc:
+	* src/initsender.h:
+	* src/object.h:
+	* src/player.cc:
+	* src/serializer.cc:
+	* src/serializer.h:
+	* src/serializercoachstdv1.cc:
+	* src/serializercoachstdv1.h:
+	* src/serializercoachstdv7.cc:
+	* src/serializercoachstdv7.h:
+	* src/serializercoachstdv8.cc:
+	* src/serializercoachstdv8.h:
+	* src/serializeronlinecoachstdv1.cc:
+	* src/serializeronlinecoachstdv1.h:
+	* src/serializeronlinecoachstdv6.cc:
+	* src/serializeronlinecoachstdv6.h:
+	* src/serializeronlinecoachstdv7.cc:
+	* src/serializeronlinecoachstdv7.h:
+	* src/serializeronlinecoachstdv8.cc:
+	* src/serializeronlinecoachstdv8.h:
+	* src/visual.cc:
+	* src/visual.h:
+	Implemented Senders and Serializers for Coach and OnlineCoach.
+	Cleanded up.
+
+2007-08-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/serializer.h:
+	* src/serializerplayerstdv1.cc:
+	* src/serializerplayerstdv1.h:
+	* src/visual.cc:
+	Added PVector::distance2()
+	Added Player::vis_distance2
+	Optimized visual senders.
+
+2007-08-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/bodysender.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/initsender.h:
+	* src/netif.C:
+	* src/observer.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/serializer.h:
+	* src/serializercoachstdv1.cc:
+	* src/serializercommonstdv1.cc:
+	* src/serializercommonstdv1.h:
+	* src/serializercommonstdv7.cc:
+	* src/serializercommonstdv7.h:
+	* src/serializercommonstdv8.cc:
+	* src/serializercommonstdv8.h:
+	* src/serializeronlinecoachstdv1.cc:
+	* src/serializeronlinecoachstdv1.h:
+	* src/serializeronlinecoachstdv6.cc:
+	* src/serializeronlinecoachstdv6.h:
+	* src/serializeronlinecoachstdv7.cc:
+	* src/serializeronlinecoachstdv7.h:
+	* src/serializerplayerstdv1.cc:
+	* src/serializerplayerstdv1.h:
+	* src/serializerplayerstdv7.cc:
+	* src/serializerplayerstdv7.h:
+	* src/serializerplayerstdv8.cc:
+	* src/serializerplayerstdv8.h:
+	* src/visual.cc:
+	* src/visual.h:
+	Removed multiple inheritance.
+	Inlined Some methods in visual.h
+
+	* src/Makefile.am:
+	* src/body_sensor.cc:
+	* src/body_sensor.h:
+	Removed bodysensor.{h,cc} from repository.
+
+	* src/firld.C:
+	* src/monitor.cc
+	* src/monitor.h
+	* src/netif.C:
+	Fixed the check of the monitor protocol version.
+
+	* src/hetroplayer.C:
+	* src/hetroplayer.h:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	Cleaned up.
+
+2007-08-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/serverparam.h:
+	Fixed an illegal returned value.
+
+2007-08-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/referee.cc (clearPlayersFromBall):
+	Fixed a defect in the collision check when players are cleared
+	from ball.
+
+	* src/field.C:
+	* src/field.h:
+	* src/object.C:
+	* src/object.h:
+	Removed MPObjectTable.
+	Cleaned up the collision check procedure.
+
+	* src/audio.cc:
+	* src/coach.cpp:
+	* src/coach_lang_par.yy:
+	* src/field.C:
+	* src/hetroplayer.C:
+	* src/initsender.cc:
+	* src/main.C:
+	* src/object.C:
+	* src/player.cc:
+	* src/player.h:
+	* src/referee.cc:
+	* src/stdtimer.cc:
+	* src/serverparam.cpp:
+	* src/serverparam.cpp:
+	Removed an unused class ServerParam::Printer.
+	Cleaned up ServerParam.
+
+	* src/utility.h:
+	Changed some macro parameterss to global variables.
+
+	* src/param.h:
+	* src/player.cc:
+	Replaced Normalize macros with local inline functions.
+
+2007-07-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/coach.cpp:
+	Fixed init message parsers.
+	Fixed a defect in the trainer init message parser.
+
+	* src/referee.cc (moveOutOfPenalty):
+	Fixed a ball replace position.
+
+2007-07-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/player.h:
+	Now, player's velocity is set to 0 when playmode is
+	before_kick_off.
+
+	* src/field.C:
+	* src/field.h:
+	Added the check and the creation of log directories using
+	boost::filesystem.
+
+2007-07-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Fixed several bugs. Official Release 11.1.1.
+
+	* src/utility.h:
+	Fixed an angle normalization procedure.
+
+	* src/referee.cc:
+	Fixed a bug in the offside referee.
+	Fixed a defect in the player clearance when playmode is timeover.
+
+	* src/player.cc:
+	* src/visual.cc:
+	Fixed bugs related to the boost::random.
+
+2007-06-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/serverparam.cpp:
+	Fixed a problem of double '/' in the module path.
+
+2007-05-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Fixed a error message in the check of rcssgz library.
+	Updated a minor version. Official Relaase 11.1.0.
+
+2007-05-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Updated a micro version.
+
+	* src/serializeronlinecoachstdv1.cc:
+	Fixed a bug in the serializer creation.
+
+2007-05-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp:
+	* src/compress.h:
+	* src/field.C:
+	* src/player.cc:
+	* src/remoteclient.h:
+	Fixed bugs in the compression stream reset operation.
+
+2007-05-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/audio.cc:
+	* src/bodysender.cc:
+	* src/bodysender.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/field.h:
+	* src/fullstatesender.cc:
+	* src/fullstatesender.h:
+	* src/initsender.cc:
+	* src/initsender.h:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/netif.C:
+	* src/object.C:
+	* src/observer.h:
+	* src/player.cc:
+	* src/referee.cc:
+	* src/referee.h:
+	* src/resultsaver.cpp:
+	* src/sender.h:
+	* src/serializer.cc:
+	* src/serializercoachstdv1.cc:
+	* src/serializercoachstdv1.h:
+	* src/serializercoachstdv7.h:
+	* src/serializercoachstdv8.cc:
+	* src/serializercoachstdv8.h:
+	* src/serializercommonstdv1.cc:
+	* src/serializercommonstdv1.h:
+	* src/serializercommonstdv7.cc:
+	* src/serializercommonstdv7.h:
+	* src/serializercommonstdv8.cc:
+	* src/serializercommonstdv8.h:
+	* src/serializeronlinecoachstdv1.cc:
+	* src/serializeronlinecoachstdv1.h:
+	* src/serializeronlinecoachstdv6.cc:
+	* src/serializeronlinecoachstdv6.h:
+	* src/serializeronlinecoachstdv7.cc:
+	* src/serializeronlinecoachstdv7.h:
+	* src/serializeronlinecoachstdv8.cc:
+	* src/serializeronlinecoachstdv8.h:
+	* src/serializerplayerstdv1.cc:
+	* src/serializerplayerstdv7.cc:
+	* src/serializerplayerstdv7.h:
+	* src/serializerplayerstdv8.cc:
+	* src/serializerplayerstdv8.h:
+	* src/types.h:
+	* src/visual.cc:
+	Supported client version 10 and 11.
+	Added more detailed error message for the client initialization.
+	Fixed a bug that a substitution message is sent to the
+	disconnected coaches.
+	Cleaned up.
+
+2007-05-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/bodysender.cc:
+	* src/bodysensor.cc:
+	* src/coach.cpp:
+	* src/field.C:
+	* src/field.h:
+	* src/fullstatesender.cc:
+	* src/initsender.cc:
+	* src/netif.C:
+	* src/object.C:
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/referee.cc:
+	* src/serializeronlinecoachstdv7.cc:
+	* src/visual.cc:
+	Added Ball class.
+	Removed redundant variables and methods.
+	The array of Player* in Stadium class is replaced by
+	Stadium::PlayerCont.
+	Cleaned up.
+
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/field.h:
+	* src/fullstatesender.cc:
+	* src/monitor.h:
+	* src/netif.C:
+	* src/player.cc:
+	* src/referee.cc:
+	* src/referee.h:
+	Changed external message format to "(include <BYTES> <DATA>)"
+	Changed some utility methods in Referee to the static method.
+	Cleaned up.
+
+	* src/referee.cc:
+	* src/referee.h:
+	* src/object.C:
+	* src/object.h:
+	* src/player.cc:
+	Fixed a player placement rule in PenaltyKickRef.
+	Changed the member variables of CArea to private.
+	Set explicit specifier to the PVector constructor.
+	Cleaned up TimeRef.
+
+	* src/coach.cpp:
+	* src/field.C:
+	* src/field.h:
+	* src/referee.cc:
+	* src/referee.h:
+	Clened up.
+	Implemented TimeRef and Stadium::referee_step() is replaced by it.
+
+2007-05-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/field.h:
+	* src/referee.cc:
+	* src/referee.h:
+	Moved indirect free kick rules into the TouchRef.
+
+	* src/field.C:
+	* src/field.h:
+	* src/main.C:
+	* src/object.C:
+	* src/referee.cc:
+	* src/referee.h:
+	Fixed a catch fault bug.
+	Fixed penalty kick bugs(#1720067) using the patch from Ralf
+	Berger.
+	Fixed a penalty kick bug that the goalie can catch the ball
+	anywhere.
+
+	* src/field.C:
+	* src/field.h:
+	* src/monitor.cc:
+	* src/player.cc:
+	* src/player.h:
+	* src/referee.cc:
+	Cleaned up.
+	Fixed a goalie catch fault rule If the goalie catches the ball
+	outside the penalty area, a direct free	kick should be given to
+	the opposite team. But, this rule is not enabled yet.
+
+	* src/referee.h:
+	Reimplemented several soccer rules as the Referee module:
+
+2007-05-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	Fixed a library link problem when we invoke several jobs.
+
+	* src/field.C:
+	* src/field.h:
+	* src/negif.C:
+	Reimplemented a pointer array for HetroPlayer by std::vector<>
+
+	* src/field.C:
+	* src/field.h:
+	* src/object.C:
+	* src/object.h:
+	* src/referee.cc:
+	* src/referee.h:
+	Added 'const' to the RArea member methods.
+	Moved Stadium::check_players_mode() into OffsideRef.
+
+	* src/random.h (drand):
+	Merged rcssserver-11.0.4
+	Fixed an illegal template argument for boost::variate_generator.
+
+	* src/field.C:
+	* src/field.h:
+	* src/player.cc:
+	* src/referee.cc:
+	* src/referee.h:
+	* src/types.h
+	Moved the implementation of a back pass rule into the CatchRef.
+	Fixed an incorrect ball placement in Referee::callFreeKickFault().
+
+2007-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C (writeGameLog):
+	Fixed a bug about the recording of game log version 1.
+	(sendPlayerAudio):
+	Now, without a record_messages option, player audio messages are
+	never recorded in v1 game log.
+	Replaced some std::stringstream or std::strstream operations with
+	boost::lexical_cast or simply std::string operator.
+
+2007-05-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp (parse_init):
+	Fixed M_assignedp initialization.
+
+2007-05-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/field.h:
+	* src/referee.cc:
+	* src/referee.h:
+	Moved goal check procedure into referee modules.
+
+	* src/field.C;
+	* src/field.h:
+	* src/player.cc:
+	* src/referee.cc:
+	* src/referee.h:
+	* src/referee.h:
+	Implmented OffsideRef.
+
+2007-05-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	* src/field.C:
+	* src/referee.cc:
+	Fixed a goal kick rule.
+	Increment a micro version.
+
+2007-05-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/netif.C:
+	Fixed a defect of game logging.
+
+2007-05-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/hetroplayer.C:
+	* src/random.h:
+	Fixed a problem of boost::uniform_real on some platform.
+
+2007-04-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/audio.cc:
+	* src/bodysender.cc:
+	* src/bodysensor.cc:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/field.h:
+	* src/fullstatesender.cc:
+	* src/initsender.cc:
+	* src/main.C:
+	* src/monitor.cc:
+	* src/netif.C:
+	* src/object.C:
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/referee.cc:
+	* src/referee.h:
+	* src/remoteclient.h:
+	* src/visual.cc:
+	Cleaned up. Encapsulated many member variables and methods.
+
+	* src/field.C:
+	Enabled discard procedure.
+	Added player size to free kick areas as a margin.
+
+	* src/referee.cc:
+	Fixed a goal kick bug.
+
+2007-04-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Disabled '--withmysql' option.
+
+	* src/field.C:
+	* src/field.h:
+	* src/object.C:
+	* src/object.h:
+	* src/visual.cc:
+	Removed PObjectTable.
+	Removed Goals form Field class.
+
+	* src/audio.cc:
+	Did some tricks for acceleration.
+
+	* src/player.cc (kick):
+	Fixed a bug which players can kick in the catch_fault_[lr] mode.
+
+2007-04-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/audio.cc
+	* src/field.C:
+	* src/hetroplayer.C:
+	* src/netif.C:
+	* src/object.C:
+	* src/random.h:
+	* src/utility.cpp:
+	* src/utility.h:
+	* src/visual.cc:
+	* src/visual.h:
+	Reimplemented some macros as inline method.
+	Replaced UniformRNG with irand.
+
+2007-04-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp:
+	Fixed compilation problem on OSX.
+
+	* src/player.cc (tackle):
+	Added 'TACKE | TACKLE_FAULT' for the probablistic tackle fault.
+
+	* src/referee.cc:
+	Fixed goal kick bug, but not enabled yet.
+
+	* src/coach.cpp:
+	* src/serializercoachstdv7.cc:
+	Fixed trainer's hear message format.
+	Fixed trainer's say message limitation.
+
+	* src/audio.cc:
+	* src/bodysender.cc:
+	* src/bodysensor.cc:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/field.h:
+	* src/main.C:
+	* src/netif.C:
+	* src/object.C:
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/referee.cc:
+	* src/remoteclient.h:
+	* src/tuple.h:
+	Cleaned up.
+
+2007-04-26  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/initsender.cc:
+	* src/netif.C:
+	* src/player.cc:
+	Cleaned up.
+
+	* src/field.C:
+	* src/netif.C:
+	Reimplemented a parser for the player's init command.
+
+2007-04-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/field.h:
+	* src/main.C:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/stdoutsaver.cpp:
+	* src/stdtimer.cc:
+	* src/synctimer.cc:
+	* src/synctimer.h:
+	* src/timeable.h:
+	* src/timer.h:
+	Changed main loop policy. Now, Timer::run() is not a simple
+	infinite loop.
+	Fixed libloader's memory leak.
+
+	* src/csvsaver.cpp:
+	* src/field.C:
+	* src/field.h:
+	* src/main.C:
+	* src/serverparam.cpp:
+	* src/stdtimer.cc:
+	* src/stdtimer.h:
+	* src/synctimer.cc:
+	* src/timeable.h:
+	* src/timer.h:
+	Enabled StdoutSaver.
+
+	* src/bodysender.cc:
+	* src/bodysensor.cc:
+	* src/coach.cpp:
+	* src/field.C:
+	* src/field.h:
+	* src/landmarkreader.C:
+	* src/object.C:
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/visual.cc
+	Cleaned up.
+	Fixed memory leak.
+
+2007-04-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/audio.cc:
+	* src/audio.h:
+	* src/coach.cpp:
+	* src/field.C:
+	* src/field.h:
+	* src/landmarkreader.C:
+	* src/object.C:
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/serializer.h:
+	* src/serializerplayerstdv1.cc:
+	* src/serializerplayerstdv1.h:
+	* src/types.h:
+	* src/visual.cc:
+	* src/visual.h:
+	Removed 'typedef char* Name'.
+	Replaced all object name variables with std::string.
+
+	* src/coach.cpp:
+	* src/field.C:
+	* src/field.h:
+	* src/landmarkreader.C:
+	* src/netif.C:
+	* src/object.C:
+	* src/object.h:
+	* src/param.h
+	* src/player.cc:
+	* src/referee.cc:
+	* src/serverparam.h:
+	* src/types.h:
+	* src/utility.cpp:
+	* src/utility.h:
+	* src/visual.cc:
+	* src/visual.h
+	Cleaned up
+
+	* src/visualsensor.cc:
+	* src/visualsensor.h:
+	Removed from repository.
+
+2007-04-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp:
+	* src/object.C:
+	* src/object.h:
+	* src/coach.cpp:
+	Cleaned up.
+
+	* configure.ac:
+	* src/Makefile.am:
+	Fixed build problem on x86_64 OS.
+
+2007-04-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am (pkginclude_HEADERS):
+	Added missing entry.
+
+	* src/object.h:
+	The type of ptype_count is replaced with std::map<int,int>.
+
+2007-04-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/object.h:
+	Cleaned up class Team.
+
+	* src/types.h:
+	Declared enum Side.
+
+	* src/random.h
+	Reimplemented drand() and irand() as an inline function.
+
+	* src/object.C:
+	Replaced random shuffle procedure with std::random_shuffle.
+
+	* src/hetroplayer.C:
+	* src/hetroplayer.h:
+	Reimplemented random number generator.
+
+	* src/Makefile.am:
+	* src/audio.cc:
+	* src/client.cc:
+	* src/client.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.C:
+	* src/field.h:
+	* src/initsender.cc:
+	* src/landmarkreader.C::
+	* src/main.C:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/netif.C:
+	* src/object.C:
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/player_command_parser.yy:
+	* src/referee.cc:
+	* src/serverparam.cpp:
+	* src/types.h:
+	* src/utility.cpp:
+	* src/utility.h:
+	* src/visual.cc:
+	* src/xmlreader.C:
+	Separated coach implimentation.
+	Cleaned up dependency.
+	Removed "using namespace std".
+
+2007-04-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/field.h:
+	* src/main.C:
+	* src/netif.C:
+	* src/object.C:
+	* src/player.cc:
+	Removed dest[] and replaced its purpose with std::random_shuffle.
+	Added missing delete operators.
+	Cleaned up.
+
+2007-04-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	Changed library checking macro to AC_CHECK_LIB.
+
+2007-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/field.h:
+	* src/landmarkreader.C:
+	* src/landmarkreader.h:
+	* src/main.C:
+	* src/netif.C:
+	* src/object.C:
+	* src/object.h:
+	* src/referee.h:
+	Cleaned up the include dependency.
+
+2007-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/object.C:
+	Fixed some memory leaks. Fixed 'delete' to 'delete []'.
+
+	* src/field.C (removeDisconnectedClients):
+	Added removeLister().
+
+2007-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	* src/field.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	Added a new option, coach_msg_file, which contains the messages
+	sent to coaches as one of the initialization message.
+	Implemented sendExternalMsg() to send the messages contained in
+	the coach_msg_file.
+
+	* src/field.cc:
+	* src/field.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/hetroplayer.C:
+	* src/hetroplayer.h:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	Commented out old sender code.
+
+	* src/types.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	Added a new option, ball_stuck_area, which the default value is
+	3.0.
+	Added setTeamLeftStart and setTeamRightStart as setter methods.
+
+	* src/referee.cc:
+	* src/referee.h:
+	Added BallStuckRef to detect the ball stuck situation and enable
+	server to do the automatic drop ball while play_on.
+
+2007-04-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	Registered SIGTERM and SIGHUP as signals handled by sigHandle.
+	Added killTeams(). This method is called in doNewSimulatorStep()
+	and sigHandle().
+
+2007-03-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/types.h:
+	* src/field.C:
+	* src/hetroplayer.C:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/types.h:
+	* src/utility.h:
+	Added typedef of Int16 and Int32 and replaced all integer
+	variables related for the game log and monitor protocol by them	in
+	order to support 64bits OS.
+
+2007-03-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.C:
+	Fixed defects related to automode.
+
+	* src/rcsoccersim:
+	Fixed signal name.
+
+	* src/playerparam.cpp (init):
+	* src/serverparam.cpp (init):
+	The variable of boost::filesystem::path must be declared
+	explicitly because we need to specify
+	boost::filesystem::portable_posix_name.
+
+	* src/field.h:
+	* src/field.C:
+	* src/object.h:
+	* src/object.C:
+	Reimplemented PVector.
+
+	* src/bodysensor.h:
+	* src/player.cc:
+	* src/referee.cc:
+	* src/visualsensor.h:
+	Added virtual destructors to remove warning messages.
+
+	* src/Makefile.am:
+	* src/audio.cc:
+	* src/bodysensor.h:
+	* src/coach_lang_tok.h:
+	* src/hetroplayer.h:
+	* src/hetroplayer.C:
+	* src/object.h:
+	* src/object.C:
+	* src/player_command_tok.h:
+	* src/playerparam.h:
+	* src/serverparam.h:
+	* src/timeable.h:
+	* src/timer.h:
+	* src/utility.cpp:
+	* src/visual.cc:
+	* src/visualsensor.cc:
+	Fixed build problems.
+
+2005-08-01	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./SConstruct
+	* ./src/SConscript
+	* ./src/playerparam.cpp
+	* ./src/stdtimer.cc
+	* ./src/utility.cpp
+	gcc 4.0 fixes
+
+2005-07-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/SConscript
+	* ./src/clangmetamsg.cc
+	* ./src/clangmsgbuilder.h
+	* ./src/clangunsuppmsg.cc
+	* ./src/vector.h
+	Preparing to port the clang parser
+
+2005-07-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/SConscript
+	* ./src/csvsaver.cpp
+	* ./src/stdoutsaver.cpp
+	Ported savers
+
+2005-07-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/SConscript
+	Ported synctimer
+
+2005-07-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./SConstruct
+	* ./src/SConscript
+	* ./src/serverparam.cpp
+	* ./src/stdtimer.cc
+	* ./src/stdtimer.h
+	* ./src/xmlreader.h
+	Stdtimer is now ported, not sure if it works though.
+
+2005-07-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./SConstruct
+	* ./src/SConscript
+	* ./src/playerparam.h
+	* ./src/serverparam.C (removed)
+	* ./src/serverparam.cpp (added)
+	* ./src/serverparam.h
+	* ./src/timer.h
+	More windows porting stuff
+
+2005-07-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Created minor branch: rcssserver-10_0
+	Use:
+	`cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	`cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0 rcssserver`
+	to access the branch
+
+2005-07-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./SConstruct
+	Updated
+	* ./src/rcssserverconfig.hpp (added)
+	Added missing file
+
+2005-07-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Removed some tests so I have access to 'make commit'
+	* ./src/Makefile.am
+	* ./src/SConscript
+	* ./src/playerparam.C (removed)
+	* ./src/playerparam.cpp (added)
+	* ./src/playerparam.h
+	* ./src/resultsaver.hpp
+	* ./src/serverparam.C
+	* ./src/utility.cpp
+	* ./src/utility.h
+	More porting work
+
+2005-07-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-07-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.7
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0_7 -d rcssserver-10.0.7 rcssserver`
+	The release will then be available in the rcssserver-10.0.7 directory
+
+2005-07-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./m4/ax_cvs.m4
+	Fix for make release
+
+	* ./src/player_command_tok.ll
+	fix for player say defect
+
+2005-07-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-07-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.6
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0_6 -d rcssserver-10.0.6 rcssserver`
+	The release will then be available in the rcssserver-10.0.6 directory
+
+2005-07-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./m4/ax_cvs.m4
+	Updated release directory
+
+	* ./src/clangmsgbuilder.h
+	Fixed traces when DEBUG is defined
+
+	* ./src/cond.h
+	Fixed bug in parsing 'and' condition in CLang
+
+	* ./src/player_command_tok.ll
+	Fixed bug in parsing unquoted player say command
+
+2005-07-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-07-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.5
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0_5 -d rcssserver-10.0.5 rcssserver`
+	The release will then be available in the rcssserver-10.0.5 directory
+
+2005-07-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./m4/ax_upload.m4
+	* ./src/Makefile.am
+	Fixed build problems on some platforms
+
+2005-07-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	* ./m4/ax_dist_pkg.m4
+	changed to ax_dist_dmg
+
+	* ./m4/ax_dist_rpm.m4
+	* ./m4/ax_rpm_expand_macro.m4
+	Fixed rpm macro expanstion hang
+
+	* ./src/Makefile.am
+	Fixed dependancies problem, which was breaking libs
+
+2005-06-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-06-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.4
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0_4 -d rcssserver-10.0.4 rcssserver`
+	The release will then be available in the rcssserver-10.0.4 directory
+
+2005-06-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Added @INCLUDE_MK_FILE@ to DISTCLEANFILES
+
+2005-06-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Updated for new m4 macros
+
+	* ./src/csvsaver.cpp
+	Fixed crash on exit
+
+	* ./src/bodysender.h
+	* ./src/field.C
+	* ./src/initsender.h
+	* ./src/playerparam.C
+	* ./src/visual.h
+	Fixed gcc 4.0 build problems
+
+2005-05-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/client.h
+	Applied patch from Alexander Ferrein for gcc 3.4 build problem
+
+2005-05-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/clangparser.cpp (added)
+	Added missing file
+
+2005-05-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-05-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.3
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0_3 -d rcssserver-10.0.3 rcssserver`
+	The release will then be available in the rcssserver-10.0.3 directory
+
+2005-05-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Added missing cleanfile directive
+
+2005-05-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fix for linking problem
+
+2005-04-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	* ./src/Makefile.am
+	* ./src/playerparam.C
+	* ./src/playerparamtest.cpp (added)
+	* ./src/serverparamtest.cpp (added)
+	Fixed linking problems and added tests to check for these errors
+
+2005-04-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/clangmsgbuilder.cc
+	* ./src/clangparser.h
+	* ./src/coach_lang_tok.h
+	* ./src/coach_lang_tok.ll
+	* ./src/player.cc
+	* ./src/referee.cc
+	Fixed conf file duplication defect
+	Fixed server crash on clang parse
+	Fixed memory leak in clang parser
+	Fixed FreeKickFault bugs
+
+2005-04-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/csvsaver.cpp
+	* ./src/playerparam.C
+	Fixed defect in generated conf files
+
+2005-04-14	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Corrected version number
+
+2005-04-14	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./bootstrap
+	* ./configure.ac
+	* ./m4/ax_dist_msi.m4
+	* ./m4/ax_dist_rpm.m4
+	* ./m4/ax_extra_dist.m4
+	* ./m4/ax_mk_macros.m4
+	* ./m4/ax_upload.m4
+	Updated build/release macros and autoconf file
+
+2005-02-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-02-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.2
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0_2 -d rcssserver-10.0.2 rcssserver`
+	The release will then be available in the rcssserver-10.0.2 directory
+
+2005-02-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Upodated to use new common m4 dir
+
+	* ./m4/ac_lib_rcssconfparser.m4
+	Fixed missing escape of brackets
+
+	* ./src/field.C
+	Fixed bug which prevent online coaches from connecting
+
+	* ./src/player.cc
+	Removed debug output
+
+	* ./src/serverparam.C
+	Fixed default half_time
+
+2005-02-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./NEWS
+	* ./acinclude.m4
+	* ./bootstrap
+	* ./configure.ac
+	* ./acdir/ax_dist_rpm.m4
+	* ./acdir/ax_extra_dist.m4
+	* ./acdir/ax_mk_macros.m4
+	* ./acdir/ax_upload.m4
+	* ./src/Makefile.am
+	More release system updates
+
+2005-02-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Update version number
+
+2005-02-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.1
+	You can access this release by running:
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver login`
+	    `cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver co -r rcssserver-10_0_1 -d rcssserver-10.0.1 rcssserver`
+	The release will then be available in the rcssserver-10.0.1 directory
+
+2005-02-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	* ./acdir/ax_add_recursive_mk_macro.m4
+	* ./acdir/ax_append_to_file.m4
+	* ./acdir/ax_dist_rpm.m4
+	* ./acdir/ax_file_escapes.m4
+	* ./acdir/ax_mk_macros.m4
+	* ./acdir/ax_print_to_file.m4
+	* ./acdir/ax_split_version.m4
+	More release system fixes
+
+2005-02-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Updated extra dist files
+
+2005-02-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./bootstrap
+	* ./acdir/ax_add_recursive_mk_macro.m4
+	* ./acdir/ax_install_files.m4
+	Fixed bugs in dev rules
+
+2005-02-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./PLATFORMS
+	* ./bootstrap
+	* ./configure.ac
+	* ./acdir/ax_add_mk_macro.m4 (added)
+	* ./acdir/ax_add_recursive_mk_macro.m4 (added)
+	* ./acdir/ax_append_to_file.m4 (added)
+	* ./acdir/ax_cvs.m4 (added)
+	* ./acdir/ax_dist_msi.m4 (added)
+	* ./acdir/ax_dist_rpm.m4 (added)
+	* ./acdir/ax_extra_dist.m4 (added)
+	* ./acdir/ax_file_escapes.m4 (added)
+	* ./acdir/ax_install_files.m4 (added)
+	* ./acdir/ax_mk_macros.m4 (added)
+	* ./acdir/ax_print_to_file.m4 (added)
+	* ./acdir/ax_split_version.m4 (added)
+	* ./acdir/ax_upload.m4 (added)
+	* ./src/Makefile.am
+	Added new developer helper macros
+
+	* ./src/coach_lang_par.cc (removed)
+	* ./src/coach_lang_par.h (removed)
+	* ./src/coach_lang_tok.cc (removed)
+	* ./src/player_command_parser.cc (removed)
+	* ./src/player_command_parser.h (removed)
+	These files are generated by bison and flex and do not belong in cvs
+
+2005-02-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./spec.tmpl (removed)
+	* ./spec.tmpl.in (added)
+	File renamed for new macros
+
+2004-12-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed makefile error for bison headers
+
+	* ./src/csvsaver.cpp
+	Tidyed up creation and access to cvssaver params
+
+	* ./src.serverparam.cpp
+	* ./src/playerparam.cpp
+	Fixed shell error on solaris when the param classes tried find
+	old confiuration files to convert
+
+2004-12-09	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./PLATFORMS
+	Updated platform notes
+
+2004-06-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac (added)
+	* ./configure.in (removed)
+	* ./cvs.am
+	Changed cvs.am back and moved configure.in to configure.ac
+
+2004-06-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./cvs.am
+	fixed bug in inc_rel
+
+2004-06-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Updated version number
+
+2004-06-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.ac
+	Released rcssserver-10.0.0
+	You can access this release by running:
+		cvs co -r  -d rcssserver-10.0.0 rcssserver
+	The release will then be available in the rcssserver-10.0.0 directory
+
+2004-06-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Added removal of generated file
+
+2004-06-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./sf.am
+	* ./spec.tmpl
+	* ./src/Makefile.am
+	Fixed releause issue and updated required rcssbase version
+
+2004-06-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./rpm.am
+	Fixed bug in .rpmmacros instructions
+
+2004-06-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	* ./PLATFORMS
+	* ./src/initsender.cc
+	* ./src/playerparam.h
+	* ./src/serverparam.h
+	Updated from changes to rcssbase
+
+2004-06-15	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./acinclude.m4
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/arithop.h
+	* ./src/audio.cc
+	* ./src/bodysender.cc
+	* ./src/clangaction.cc
+	* ./src/clangaction.h
+	* ./src/clangadvicemsg.cc
+	* ./src/clangadvicemsg.h
+	* ./src/clangdefmsg.cc
+	* ./src/clangdefmsg.h
+	* ./src/clangdelmsg.cc
+	* ./src/clangdelmsg.h
+	* ./src/clangfreeformmsg.cc
+	* ./src/clangfreeformmsg.h
+	* ./src/clanginfomsg.cc
+	* ./src/clanginfomsg.h
+	* ./src/clangmetamsg.cc
+	* ./src/clangmetamsg.h
+	* ./src/clangmsg.cc
+	* ./src/clangmsg.h
+	* ./src/clangmsgbuilder.cc
+	* ./src/clangmsgbuilder.h
+	* ./src/clangrulemsg.cc
+	* ./src/clangrulemsg.h
+	* ./src/clangunsuppmsg.cc
+	* ./src/clangunsuppmsg.h
+	* ./src/clangutil.h
+	* ./src/coach_lang_comp.C
+	* ./src/coach_lang_comp.h
+	* ./src/coach_lang_tok.h
+	* ./src/compop.cc
+	* ./src/compop.h
+	* ./src/cond.cc
+	* ./src/cond.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/fullstatesender.cc
+	* ./src/hasa.h
+	* ./src/initsender.cc
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/player_command_parser.cc
+	* ./src/player_command_parser.h
+	* ./src/player_command_parser.yy
+	* ./src/player_command_tok.h
+	* ./src/player_command_tok.ll
+	Fixed build problems on OS X
+
+2004-06-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	Updated
+
+2004-06-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./acinclude.m4
+	* ./configure.in
+	Added check for the rcssgz library
+
+	* ./rpm.am
+	Fixed bug
+
+	* ./src/Makefile.am
+	* ./src/client.cc
+	* ./src/client.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/installdirs.cpp.in
+	* ./src/installdirs.hpp.in
+	* ./src/main.C
+	* ./src/mysqlsaver.cpp
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/remoteclient.h
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializeronlinecoachstdv8.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	Updated for changes to rcssbase
+
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	Fixed bugs re int math.
+	Added bool return value for init so failures can be detected.
+
+	* ./src/version.h
+	Added 2004 to copyright notice
+
+2003-09-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./acinclude.m4
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/csvsaver.cpp
+	* ./src/mysqlsaver.cpp
+	* ./src/resultsaver.hpp
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/stdoutsaver.cpp
+	* ./src/stdtimer.cc
+	* ./src/synctimer.cc
+	* ./src/timer.h
+	Updated for latest changes to rcssbase
+
+2003-09-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./README
+	Updated
+
+	* ./Makefile.am
+	* ./acinclude.m4
+	* ./configure.in
+	* ./cvs.am
+	* ./dist.am
+	* ./inst.am
+	* ./msi.am
+	* ./rel.awk
+	* ./rpm.am
+	* ./sf.am
+	* ./src/Makefile.am
+	Moved custom targets in modules.
+
+	* ./src/audio.cc
+	* ./src/audio.h
+	* ./src/bodysender.cc
+	* ./src/bodysender.h
+	* ./src/csvsaver.cpp
+	* ./src/field.C
+	* ./src/fullstatesender.cc
+	* ./src/fullstatesender.h
+	* ./src/initsender.cc
+	* ./src/initsender.h
+	* ./src/installdirs.cpp.in
+	* ./src/installdirs.hpp.in
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv6.cc
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/stdoutsaver.cpp
+	* ./src/stdtimer.cc
+	* ./src/stdtimer.h
+	* ./src/synctimer.cc
+	* ./src/synctimer.h
+	Updated to new rcssbase
+
+2003-08-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.4.5
+
+2003-08-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/referee.cc
+	Fixed bugs in penalty shootout
+
+2003-08-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/csvsaver.cpp
+	* ./src/field.C
+	* ./src/main.C
+	* ./src/mysqlsaver.cpp
+	* ./src/playerparam.C
+	* ./src/serverparam.C
+	* ./src/utility.C
+	Fixed problems on Windows
+
+2003-07-03	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.4.4
+
+2003-07-01	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	Fixed typo in half_time as reported by the ref
+
+	* ./src/player.cc
+	* ./src/referee.cc
+	Fixed bug that se the ball to not caught straight after it was
+	caught.
+
+2003-06-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/clangparser.h
+	Added missing header
+
+2003-06-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed bug in building rpms
+
+2003-06-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.4.3
+
+2003-06-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed a bug in the fix for llimporter detection
+
+2003-06-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/arithop.cc
+	* ./src/compop.cc
+	Removed consts to prevent linking problems on some platforms
+
+2003-06-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Added linking of rcssconfparser to the clang parser
+
+2003-06-26	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C (Stadium::goalie_catch)
+	Moved some logic from to referee.cc
+
+	* ./src/field.h
+	Added Stadium::ballCaught which calls CaughtBall for each ref
+
+	* ./src/player.cc
+	Stadium::ballCaught is now called when a goalie catches the ball/
+
+	* ./src/referee.cc
+	* ./src/referee.h
+	m_indirect is no longer reset in the playmode is changed to drop
+	ball. Instead it is kept if the kicker is on the side that was
+	awarded the indirect free kick.
+	Created inPenaltyArea function  and used it for detection of catch
+	faults.
+	Added catch fault detection in new ballCaught functions
+	Fixed defect that would cause the server to go straight into
+	penalty mode if half_time was negative.
+	Added patch from Jelle to include goalie as a kicker.
+
+2003-06-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/player.cc
+	* ./src/referee.cc
+	* ./src/referee.h
+	Fixed bug that would allow goalies to jump the ball into enemy
+	teritory and even into the goal.
+
+2003-06-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Fixed bug in config file writing
+
+2003-06-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/mysqlsaver.cpp
+	Added table insertion
+
+2003-06-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/csvsaver.cpp
+	Added a saver that writes the results as comma sperated values to
+	a file.
+
+	* ./src/mysqlsaver.cpp
+	Fixed bug which prevented mysqlsaver from being enabled.
+	Fixed time format
+
+	* ./src/stdoutsaver.cpp
+	Fixed bug which always disabled to stdoutsaver.
+	Added time output
+
+2003-06-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/main.C
+	Savers are now created before the game starts to make any parse
+	errors visible straight away.
+
+	* ./src/mysqlsaver.cpp
+	Added more parameters
+
+2003-06-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed config problem
+
+	* ./src/clangutil.h
+	Fixed very strange compliation problem
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/resultsaver.hpp
+	Savers are now loaded before the game
+
+2003-06-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.4.2
+
+2003-06-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/coach_lang_tok.cc
+	* ./src/playerparam.h
+	* ./src/serverparam.h
+	Fixed buid problems with gcc2.95
+
+2003-06-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed bug in Makefile
+
+2003-06-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.4.1
+
+2003-06-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/arithop.cc
+	* ./src/coach_lang_tok.cc
+	* ./src/coach_lang_tok.ll
+	* ./src/region.h
+	Fixed CLang bugs
+
+2003-06-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.4.0
+
+2003-06-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./acinclude.m4
+	* ./configure.in
+	Fixed bugs in llimporter locating and rcssconfparser testing
+
+2003-06-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Added check for rpmbuild
+
+	* ./src/mysqlsaver.cpp
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/serverparam.C
+	* ./src/utility.C
+	Tried to add support for tildeExpand in Windows
+
+2003-06-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	Reworded NEWS for penalty shootouts.
+
+	* ./src/serverparam.C
+	Intergrated new penalty shootout param into the new config parser
+
+2003-06-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./NEWS
+	* ./acinclude.m4
+	* ./configure.in
+	* ./spec.tmpl
+	* ./src/Makefile.am
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.h
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.h
+	Intergrated 9.3 branch
+
+	* ./src/field.C
+	* ./src/initsender.cc
+	* ./src/initsender.h
+	* ./src/main.C
+	* ./src/mysqlsaver.cpp
+	* ./src/netif.C
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/referee.cc
+	* ./src/resultsaver.hpp
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/stdoutsaver.cpp
+	* ./src/stdtimer.cc
+	* ./src/synctimer.cc
+	* ./src/xpmholder.h
+	Intergrated new config parser
+
+2003-06-02	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/visual.cc
+	Fixed a bug in serializePlayer. Pointing players were sent twice
+	in a seemessage.
+
+2003-06-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bug in upload_rpm target
+
+2003-05-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bug in upload_bz2 target
+
+2003-05-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.3.7
+
+2003-05-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/xpmholder.h
+	Fixed bug in sendig team graphics.  Thanks go to Matus Horvath for
+	the patch
+
+2003-05-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	* ./spec.tmpl
+	Updated release procedure.  make release now just does a distcheck
+	and tags the release.  You then need to check out the release and
+	run make upload_gz, upload_bz2, upload_rpm and/or upload_sprm to
+	create the distributions and upload them to SF.  You then need to
+	go to the SF page and add them to the appropriate release.
+
+2003-05-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.h
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.h
+	Fixed gcc 3.3 compilation problem
+
+2003-05-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed compilation problems if libmysqlclient was available, but
+	the header was not.
+
+	* ./src/Makefile.am
+	Fixed problems loading savers when compiled statically
+
+2003-05-23	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/player.cc
+	Fixed a bug in tackle were acceleration > 2.7 was possible.
+
+2003-05-23	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/player.cc
+	Fixed a bug in pointto. The body_angle from cycle t+1 and
+	the neck_angle from cycle t were used to caculate the pointto target.
+
+2003-05-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.3.6
+
+2003-05-13	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/main.C
+	* ./src/object.C
+	* ./src/object.h
+	* ./src/referee.cc
+	* ./src/resultsaver.hpp
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Added module loading support and stdout and mysql results reporting
+
+2003-05-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Added mysql client library detection
+
+2003-05-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	Added support for coach names in the log files names
+
+2003-05-06	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/initsender.cc
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/observer.h
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/remoteclient.h
+	Fixed seg fault on player reconnect
+
+2003-04-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/ac_lib_rcssclangparser.m4
+	Added autoconf macro
+
+2003-04-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.3.5
+
+2003-04-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/player.cc
+	Removed debugging output
+
+2003-04-24	Patrick Riley	<patstg@users.sf.net>
+
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_par.cc
+	Added a missing ; to the bison file
+
+2003-04-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/player.cc
+	Fixed bug in ear on/off command
+
+2003-04-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./src/Makefile.am
+	* ./src/main.C
+	Added output for the rssbase version being used
+
+2003-04-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/types.h
+	Fixed typo in playmde string
+
+2003-04-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/remoteclient.h
+	Fixed coach seg fault
+
+2003-04-21	Patrick Riley	<patstg@users.sf.net>
+
+	* ./src/clangbuilder.h
+	* ./src/clangmsgbuilder.cc
+	* ./src/clangmsgbuilder.h
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.yy
+	Fixes a bug in the message building causing nested conditions to
+	be restructred incorrectly.
+
+2003-04-03	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/field.C
+	Fixed a bug in doSendSenseBody (hear-messages were sent before
+	sense_body).
+
+2003-03-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.3.4
+
+2003-03-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Libs are now installed in libdir not pkglibdir
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/serverparam.C
+	Changed tackle parameters
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.3.3
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Added quick releases
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/rcsoccersim
+	Added rcsoccersim script which was previously in the rcsoccersim
+	directory
+
+2003-03-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/audio.h
+	Added error checking when string are copied and cached.
+
+2003-03-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/serverparam.C
+	Recover_init is now only sent to v7 players and v9+ players
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Fixed soem OS X problems
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.3.2
+
+2003-02-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/bodysender.cc
+	* ./src/referee.cc
+	Fixed some warnings
+
+2003-02-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed bug in SED fix
+
+2003-02-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Use of ncurses can now be disabled
+
+2003-02-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	The SED variable is now set automatically
+
+2003-02-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Fixed crash on Solaris
+
+2003-02-14	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	* ./acinclude.m4
+	* ./configure.in
+	* ./src/clangbuilder.h
+	* ./src/clangparser.h
+	* ./src/client.h
+	* ./src/coach_lang_comp.h
+	* ./src/field.C
+	* ./src/monitor.cc
+	* ./src/netif.C
+	* ./src/paramreader.C
+	* ./src/paramreader.h
+	* ./src/pcombuilder.h
+	* ./src/pcomparser.h
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/rcssexceptions.h
+	* ./src/serverparam.h
+	* ./src/tuple.h
+	* ./src/xmlreader.h
+	* ./src/xpmholder.h
+	Now compiles with either sstream or strstream
+
+2003-02-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.3.1
+
+2003-02-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./spec.tmpl
+	Updated to require rcssbase 9.3.1
+
+2003-01-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.2.4
+
+2003-01-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	Fixed bug in catch faults
+
+2003-01-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/initsender.cc
+	Fixed gcc3.2 compilation problems
+
+2003-01-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.2.3
+
+2003-01-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/initsender.cc
+	* ./src/initsender.h
+	* ./src/netif.C
+	* ./src/serializer.cc
+	* ./src/serializer.h
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv1.h
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializercoachstdv7.h
+	* ./src/serializercoachstdv8.cc
+	* ./src/serializercoachstdv8.h
+	* ./src/serializercommonstdv1.cc
+	* ./src/serializercommonstdv1.h
+	* ./src/serializercommonstdv7.cc
+	* ./src/serializercommonstdv7.h
+	* ./src/serializercommonstdv8.cc
+	* ./src/serializercommonstdv8.h
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv1.h
+	* ./src/serializeronlinecoachstdv6.cc
+	* ./src/serializeronlinecoachstdv6.h
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv7.h
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializeronlinecoachstdv8.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	* ./src/version.h
+	Moved init and params for coaches the sender/serializer code
+
+2003-01-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	Fixed bug where think commands would be sent to disconnected clients
+
+2003-01-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed bug in flex .ll target
+
+2003-01-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	Fixed seg fault in sync mode when clients disconnect
+
+2003-01-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/player.cc
+	Prevented kicks and tackles in TimeOver playmode
+
+2003-01-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./acinclude.m4
+	* ./configure.in
+	* ./spec.tmpl
+	* ./src/Makefile.am
+	* ./src/audio.cc
+	* ./src/bodysender.cc
+	* ./src/client.h
+	* ./src/coach_lang_comp.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/fullstatesender.cc
+	* ./src/initsender.cc
+	* ./src/monitor.cc
+	* ./src/monitor.h
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/remoteclient.h
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serverparam.h
+	* ./src/visual.cc
+	Merged from 9_2 branch
+
+2003-01-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.2.2
+
+2003-01-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bug in clean files
+
+2003-01-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/Makefile.am
+	rcssserver no longer links to the ncurses lib.  Now it is only
+	linked to rcssclient (if it exists)
+
+2003-01-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/netif.C
+	Fixed bug in move commands from the offline coach
+
+2003-01-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	* ./spec.tmpl
+	* ./src/Makefile.am
+	Added rpm building
+
+2003-01-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/bodysender.cc
+	* ./src/field.C
+	* ./src/fullstatesender.cc
+	* ./src/initsender.cc
+	* ./src/object.C
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializerplayerstdv8.cc
+	* ./src/visual.cc
+	Added version 9 protocol support
+
+2003-01-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./acinclude.m4
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/client.h
+	* ./src/coach_lang_comp.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/monitor.cc
+	* ./src/monitor.h
+	* ./src/netif.C
+	* ./src/remoteclient.h
+	* ./src/serverparam.h
+	Merged udplib
+
+2003-01-10      Jelle Kok 	<jellekok@users.sf.net>
+
+	* ./src/field.C
+        Added penalty shootouts.
+
+2003-01-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/hetroplayer.C
+	* ./src/serverparam.C
+	Fixed bug in effort_init parameter
+
+2003-01-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/player.cc
+	* ./src/serverparam.C
+	Added missing initialisation of recover_init and used in
+	initialising player recovery.
+
+2003-01-09	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./NEWS
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/hetroplayer.C
+	Merged from branch
+
+2003-01-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.2.1
+
+2003-01-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/Makefile.am
+	Fixed bugs
+
+2003-01-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed bug
+
+2003-01-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./acinclude.m4
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/client.h
+	* ./src/coach_lang_comp.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/monitor.cc
+	* ./src/monitor.h
+	* ./src/netif.C
+	* ./src/remoteclient.h
+	* ./src/serverparam.h
+	Integrated into the server the new rcssnet library in rcssbase
+
+2003-01-03	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	It is no longer possible to be offide from a kick-in, goal-kick or
+	corner-kick.
+
+2003-01-03	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/hetroplayer.C
+	Implemented limitation on hetero players
+
+2003-01-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.2.0
+
+2003-01-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/main.C
+	* ./src/paramreader.C
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/utility.C
+	* ./src/xmlreader.C
+	Merged 9_1 branch
+
+2002-12-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./src/Makefile.am
+	* ./src/main.C
+	* ./src/paramreader.C
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/utility.C
+	* ./src/xmlreader.C
+	Merged 9_1 branch
+
+2002-12-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.1.5
+
+2002-12-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Added config error is SED is not set
+
+2002-12-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/paramreader.C
+	* ./src/serverparam.C
+	* ./src/utility.C
+	* ./src/xmlreader.C
+	tildeExpand now looks for USERNAME if USER is not found
+
+2002-12-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/main.C
+	* ./src/paramreader.C
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/utility.C
+	* ./src/xmlreader.C
+	Fixed crash on win32
+
+2002-12-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bug in branching target
+
+2002-12-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./configure.in
+	* ./rel.awk
+	Merged 9_1 branch
+
+2002-12-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Added branching targets
+
+2002-12-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./configure.in
+	Merged 9.1 branches
+
+2002-12-06	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Removeded attempted libtool/sed fix
+
+2002-12-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed bug in static compilation
+
+2002-12-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Configuration now fails is SED is not set
+
+2002-12-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./NEWS
+	* ./configure.in
+	* ./src/netif.C
+	Merged 9.1.4 branch
+
+2002-12-03	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.1.4
+
+2002-12-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	Fixed libtool problems with sed
+
+2002-11-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	Fixed bug in new goal detection
+
+	* ./src/object.C
+	* ./src/object.h
+	Added goal posts
+
+2002-11-26	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/netif.C
+	Fixed invalid preproccessor directive
+
+2002-11-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/param.h
+	* ./src/player.cc
+	* ./src/referee.cc
+	* ./src/referee.h
+	* ./src/serverparam.h
+	* ./src/types.h
+	Added new catch dynamics and FIFA zone checks
+
+2002-11-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.1.3
+
+2002-11-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	Fixed bug in retrival of cached audio messages
+
+2002-11-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	Fixed bug in retrival of cached audio messages
+
+2002-11-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Fixed bug in addlog
+
+2002-11-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./.cvsignore
+	added addlog.tmp
+
+	* ./Makefile.am
+	fixed bug in make addlog
+
+	* ./src/Makefile.am
+	Removed warings as error flag
+
+	* ./src/tuple.h
+	Removed warnings
+
+2002-11-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./Makefile.am
+	* ./configure.in
+	merged sstream branch
+
+2002-11-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Updated version number
+
+2002-11-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.1.3
+
+2002-11-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	Fixed bug in retrival of cached audio messages
+
+2002-11-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.1.2
+
+2002-11-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Minor fix
+
+2002-11-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/Makefile.am
+	Fixed bug in configure which would prevent detection of libs
+
+2002-11-15	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	addlog no longer makes empty logs
+
+	* ./ChangeLog
+	Moved changes from rcsoccersim/ChangeLog.base
+
+2002-11-15	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./rcssserver/src/clangbuilder.h
+	* ./rcssserver/src/clangparser.h
+	* ./rcssserver/src/client.h
+	* ./rcssserver/src/coach_lang_comp.h
+	* ./rcssserver/src/field.C
+	* ./rcssserver/src/hetroplayer.h
+	* ./rcssserver/src/main.C
+	* ./rcssserver/src/monitor.cc
+	* ./rcssserver/src/netif.C
+	* ./rcssserver/src/paramreader.C
+	* ./rcssserver/src/paramreader.h
+	* ./rcssserver/src/pcombuilder.h
+	* ./rcssserver/src/pcomparser.h
+	* ./rcssserver/src/player.cc
+	* ./rcssserver/src/player.h
+	* ./rcssserver/src/rcssexceptions.h
+	* ./rcssserver/src/serverparam.h
+	* ./rcssserver/src/stdtimer.cc
+	* ./rcssserver/src/tuple.h
+	* ./rcssserver/src/utility.C
+	* ./rcssserver/src/xmlreader.h
+	* ./rcssserver/src/xpmholder.h
+	removed warnings concerning deprecated header files (gcc 3.2)
+
+2002-11-15	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/gzfstream.h
+	removed rcssserver/src/gzfstream.h
+
+2002-11-15	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.1.1
+
+2002-11-15	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	tag target now creates branch
+
+2002-11-14	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Removed checks for intypes.h and stdint.h.  boost/cstdint.h is now
+	used instead
+
+2002-11-13	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed bug in static compilation when rcssbase is not isntalled
+
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/field.C
+	* ./src/netif.C
+	* ./src/netif.h
+	* ./src/stdtimer.cc
+	* ./src/types.h
+	Removed old checks against uname
+
+2002-11-13	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/audio.cc
+	* ./src/field.C
+	* ./src/netif.C
+	* ./src/player.cc
+	* ./src/random.h
+	* ./src/visual.cc
+	* ./src/visualsensor.cc
+	Moved most of random.h to boost section of rcssbase
+
+2002-11-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed bug for static compilation
+
+2002-11-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.1.0
+
+2002-11-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/audio.cc
+	* ./src/bodysender.cc
+	* ./src/field.C
+	* ./src/fullstatesender.cc
+	* ./src/initsender.cc
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv8.cc
+	* ./src/stdtimer.cc
+	* ./src/stdtimer.h
+	* ./src/synctimer.cc
+	* ./src/visual.cc
+	Intergrated changes to LibLoader and ObjFact
+
+2002-10-30	Greg Kuhlmann	<kuhlmanngj@users.sf.net>
+
+	* ./src/serverparam.C
+	* ./src/types.h
+	Fixed problems in server_params_t struct.
+
+2002-10-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed problems with Makefile.am
+
+2002-10-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Added missing file to Makefile.am
+
+2002-10-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/bodysender.cc
+	* ./src/field.C
+	* ./src/fullstatesender.cc
+	* ./src/initsender.cc
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv8.cc
+	* ./src/stdtimer.cc
+	* ./src/synctimer.cc
+	* ./src/visual.cc
+	Integrated changes to factory.h and libloader.h
+
+2002-10-29	Greg Kuhlmann	<kuhlmanngj@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/param.h
+	* ./src/referee.cc
+	* ./src/referee.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/types.h
+	Added keepaway features.
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed error in Makefile if the package installation path did not
+	exist. When specifying a prefix, don't use relative directories
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Fixed problems in rcsslibloader detection
+
+	* ./src/bodysender.cc
+	* ./src/initsender.cc
+	Removed ref to creator.h which is now part of factory
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/visual.cc
+	Removed ref to creator.h which is now part of factory
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	Moved some log entries from rcsoccersim/ChangeLog.base
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./.cvsignore
+	Added more files to ignore
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Updated addlog target
+
+	* ./acinclude.m4
+	* ./bootstrap
+	Removed -I LIBTOOL_ACLOCALDIR from boostrap and added acinclude.m4
+
+2002-10-25	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/sender.h
+	* ./src/observer.h
+	Added missing files
+
+2002-10-24	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/audio.cc
+	* ./src/bodysender.cc
+	* ./src/field.C
+	* ./src/fullstatesender.cc
+	* ./src/hasa.h
+	* ./src/initsender.cc
+	* ./src/landmarkreader.C
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv8.cc
+	* ./src/stdtimer.cc
+	* ./src/stdtimer.h
+	* ./src/synctimer.cc
+	* ./src/visual.cc
+	Intergated changes to factory.h and fixed some ISO C++ deviations
+
+2002-10-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure.in
+	* ./src/Makefile.am
+	* ./src/audio.cc
+	* ./src/audio.h
+	* ./src/bodysender.cc
+	* ./src/bodysender.h
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_tok.cc
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/fullstatesender.cc
+	* ./src/fullstatesender.h
+	* ./src/initsender.cc
+	* ./src/initsender.h
+	* ./src/landmarkreader.h
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/pcombuilder.h
+	* ./src/pcomparser.h
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/player_command_parser.cc
+	* ./src/player_command_tok.ll
+	* ./src/random.cc
+	* ./src/random.h
+	* ./src/serializer.cc
+	* ./src/serializer.h
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv8.cc
+	* ./src/timeable.h
+	* ./src/timer.h
+	* ./src/visual.cc
+	* ./src/visual.h
+	Lots of stuff with senders and serializers
+	Intergrated rcssbase/factory
+	Added dlopen support for timers
+	Fixed gcc3 problems
+
+2002-10-07	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	Minor change to make release
+
+2002-10-07	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/player.cc
+	Fixed bug in back pass detection when tackling or two teams touch
+	the ball
+
+2002-10-07	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/initsender.cc
+	* ./src/netif.C
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	Fix bug in initialisation of kick_off_wait and connect_wait params
+
+2002-10-07	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/initsender.cc
+	* ./src/netif.C
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	Finished Serialization of init messages for players
+
+2002-10-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/initsender.cc
+	* ./src/netif.C
+	* ./src/playerparam.h
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	Player param messages now use serializers
+
+2002-10-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/paramreader.h
+	* ./src/player.h
+	* ./src/playerparam.h
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	* ./src/serverparam.h
+	* ./src/initsender.h
+	Started moving init and param messages into the serializer.
+
+2002-09-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/fullstatesender.cc
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	* ./src/visualsensor.cc
+	Added some missing bits to full-state serializers
+
+2002-09-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/bodysender.cc
+	* ./src/object.C
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	* ./src/fullstatesender.cc
+	* ./src/fullstatesender.h
+	Created sender for full-state messages and extended serializers
+	accordingly
+
+2002-09-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/.cvsignore
+	Added cvsignore for compilation generated files
+
+2002-08-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/visual.cc
+	* ./src/visual.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	Added missing version 8 visuals, including pointto and tackle
+	information
+
+	* ./src/Makefile.am
+	* ./src/object.C
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/bodysender.h
+	* ./src/bodysender.cc
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	Converted sense body messages to sender/serializer
+
+	* auto(conf|make) files
+	* ./bootstrap
+	Removed auto(conf|make) generated files and added bootstrap
+	script. Running bootstrap generates all the files needed to run
+	configure, but you need to point to the libtool m4 files by
+	setting the LIBTOOL_ACLOCALDIR env variable.
+
+2002-08-28	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./configure
+	* ./src/Makefile.am
+	* ./src/player.cc
+	* ./src/player.h
+        Created new parser for the player commands.
+
+2002-08-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/serializerplayerstdv1.cc
+	Added missing space after time in visuals
+
+2002-08-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/object.C
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/serializer.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/visualsensor.cc
+	* ./src/visual.h
+	* ./src/visual.cc
+	Created visual sender classes and extended serializers to be used
+	by the visual senders.
+
+2002-08-22	jellekok	<jellekok@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/main.C
+	* ./src/timeable.h
+	* ./src/timer.cc
+	* ./src/timer.h
+	* ./src/tuple.h
+        Implemented synchronization timer and created exception header file
+        Added NullErr from tuple.h to exception header file (rcssexceptions.h).
+        StandardTimer returns NullErr when singleton instance is called before
+        the timer is created.
+
+2002-08-22	jellekok	<jellekok@users.sf.net>
+
+	* ./src/main.C
+	* ./src/timer.cc
+	* ./src/timer.h
+        Made StandardTimer a singleton class.
+
+2002-08-21	jellekok	<jellekok@users.sf.net>
+
+	* ./src/main.C
+	* ./src/timer.cc
+	* ./src/timer.h
+        Improved timer class.
+
+2002-08-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/Makefile.in
+	* ./src/audio.h
+	* ./src/clangparser.h
+	* ./src/client.cc
+	* ./src/client.h
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.cc
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/landmarkreader.C
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/serverparam.h
+	* ./src/utility.h
+	* ./src/xmlreader.h
+	* ./src/xpmholder.h
+	Fixed some gcc 3 problems.
+
+2002-08-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	Fixed error in flex part of Makefile.am
+
+2002-08-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/bodysensor.cc
+	* ./src/clangadvicemsg.cc
+	* ./src/clangadvicemsg.h
+	* ./src/clangdefmsg.cc
+	* ./src/clangdefmsg.h
+	* ./src/clanginfomsg.cc
+	* ./src/clanginfomsg.h
+	* ./src/clangmsgbuilder.cc
+	* ./src/client.h
+	* ./src/coach_lang_comp.C
+	* ./src/cond.cc
+	* ./src/cond.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/gzfstream.h
+	* ./src/landmarkreader.C
+	* ./src/landmarkreader.h
+	* ./src/monitor.cc
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/param.h
+	* ./src/player.cc
+	* ./src/remoteclient.h
+	* ./src/rule.cc
+	* ./src/utility.C
+	* ./src/visualsensor.cc
+	Removed "using namespace std;" and added std:: where needed
+
+2002-08-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/compop.cc
+	Got rid of compiler warning
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/main.C
+	Server now waits for left to to connect before starting the right team
+
+2002-08-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/coach_lang_tok.h
+	Changed include for FlexLexer.h.  This is to fix a problem on machines
+	where flex was not installed.
+
+	* ./src/audio.cc
+	* ./src/audio.h
+	* ./src/client.h
+	* ./src/field.C
+	* ./src/monitor.cc
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/player.cc
+	* ./src/remoteclient.h
+	gzstream and UDPSocketStreambuf is now used for sending in audio.cc
+	Compression -1 is now used to indicate no compression.  Compression 0
+	doesn't actuallly compress, but the data still goes via zlib.
+
+2002-08-01	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.0.4
+
+2002-08-01	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/utility.C
+	* ./src/utility.h
+	Added support for ~USER in tildeExpand.  Thanks go to Marc Butler for
+	providing the patch.
+
+2002-08-01	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/client.cc
+	* ./src/client.h
+	Rewrote client using threads, streaming sockets and added optional
+	ncurses interface.
+
+	* ./src/arithop.h
+	* ./src/audio.h
+	* ./src/bodysensor.h
+	* ./src/clangaction.cc
+	* ./src/clangaction.h
+	* ./src/clangbuilder.h
+	* ./src/clangdelmsg.cc
+	* ./src/clangdelmsg.h
+	* ./src/clangfreeformmsg.cc
+	* ./src/clangfreeformmsg.h
+	* ./src/clangmetamsg.cc
+	* ./src/clangmetamsg.h
+	* ./src/clangmsgbuilder.h
+	* ./src/clangparser.h
+	* ./src/clangrulemsg.cc
+	* ./src/clangrulemsg.h
+	* ./src/clangunsuppmsg.cc
+	* ./src/clangunsuppmsg.h
+	* ./src/clangutil.cc
+	* ./src/clangutil.h
+	* ./src/coach_lang_comp.h
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.cc
+	* ./src/coach_lang_tok.ll
+	* ./src/compop.cc
+	* ./src/compop.h
+	* ./src/compress.h
+	* ./src/field.h
+	* ./src/hetroplayer.C
+	* ./src/hetroplayer.h
+	* ./src/object.h
+	* ./src/paramreader.C
+	* ./src/paramreader.h
+	* ./src/player.h
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/random.h
+	* ./src/region.C
+	* ./src/region.h
+	* ./src/serializer.h
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv1.h
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializercoachstdv7.h
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv1.h
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv7.h
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializeronlinecoachstdv8.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	* ./src/tuple.h
+	* ./src/utility.C
+	* ./src/utility.h
+	* ./src/visitor.h
+	* ./src/visualsensor.h
+	* ./src/xmlreader.h
+	* ./src/xpmholder.h
+	Removed "using namespace std" and added "std::" where appropriate
+
+	* ./src/gzfstream.h
+	* ./src/gzfstream.C
+	The header has been moved to rcssbase and the .C file deleted
+
+2002-07-26	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/field.C
+	Fixed bug that caused the server to send no say messages to clients
+	in synchmode.
+
+2002-07-26	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/player.cc
+	Fixed minor bug in tackle.
+
+2002-07-26	Michael Gollin	<michaelgollin@users.sourceforge.net>
+
+	* ./src/field.C
+	Fixed bug that caused the server to send the online coach of the
+	right side no think message.
+
+2002-07-26	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.0.3
+
+2002-07-26	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/serverparam.C
+	Fixed default .conf generation.  Thanks go to Michael Gollin.
+
+2002-07-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.0.2
+
+2002-07-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/main.C
+	Fixed problems with automated teams and atiomated running of games
+
+2002-07-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Added support for automatic running of games
+
+2002-07-11	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/main.C
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Added ability to automaticaly start teams
+
+	* ./src/paramreader.C
+	Added support for quoted parameters
+
+2002-07-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.0.1
+
+2002-07-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./src/clangadvicemsg.cc
+	* ./src/clangdefmsg.cc
+	* ./src/clangdelmsg.cc
+	* ./src/clangfreeformmsg.cc
+	* ./src/clanginfomsg.cc
+	* ./src/clangmetamsg.cc
+	* ./src/clangrulemsg.cc
+	* ./src/clangunsuppmsg.cc
+	Automatic CLang msg output as hear has been removed
+
+2002-07-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-9.0.0
+
+2002-07-02	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./src/Makefile.am
+	* ./configure.in
+	* ./src/clangparser.h
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.ll
+	The CLang Parser is now reentrant.  Previously the parser component was
+	but the tokenizer was not.
+	The CLang parser now subclasses an abstract parser defined in rccbase.
+
+	* ./src/clangadvicemsg.cc
+	* ./src/clangbuilder.h
+	* ./src/clangdefmsg.cc
+	* ./src/clangdelmsg.cc
+	* ./src/clangfreeformmsg.cc
+	* ./src/clanginfomsg.cc
+	* ./src/clangmetamsg.cc
+	* ./src/clangmsg.cc
+	* ./src/clangmsgbuilder.cc
+	* ./src/clangmsgbuilder.h
+	* ./src/clangrulemsg.cc
+	* ./src/clangunsuppmsg.cc
+	Now if the side and time recvied is set in a clang message it will be
+	output as a hear message, rahter than just the message.
+
+2002-06-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/clangmetamsg.cc
+	Fixed gcc 3.1 compilation problem
+
+2002-06-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Flex is now needed (lex won't do anymore) to build coach_lang_tok.ll,
+	so configure now handles cases where lex is installed instead of flex.
+	FlexLexer.h is searched for, as either an installed component or in
+	rcssbase.
+
+	* ./src/clangparser.h
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.ll
+	* ./src/clanglexer.h
+	rcss::clang::Parser now inherits from rcss::Parser.
+	The CLang lexer is now a reentrant C++ based class
+
+2002-06-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Changed the search order for rcssbase files
+
+2002-06-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-8.05.10
+
+2002-06-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/player.cc
+	Fixed bug in back passes
+
+2002-06-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-8.05.9
+
+2002-06-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Default compile flags are now "-O2"
+
+2002-06-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Disabled default building of shared libs.
+
+2002-06-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/clangaction.cc
+	* ./src/cond.cc
+	* ./src/cond.h
+	* ./src/region.C
+	* ./src/rule.cc
+	Got rid of a few gcc 2.96 compiler warnings
+
+2002-06-10	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/visitor.h
+	Fixed egcs 2.91.66 compilation problems
+
+2002-06-09	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/serverparam.C
+	Fixed defaults for clang_del_win and clang_rule_win
+
+2002-06-08	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	Fixed some small details
+
+2002-06-07	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	Added and commented out debugging couts for ear command
+
+	* ./src/player.cc
+	Commented out debug cout for ear command
+
+2002-06-07	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	Added missing info about focus in sense body messages
+
+2002-06-07	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	Fixed description of ear command in NEWS file
+
+	* ./src/clangmsg.cc
+	Fixed bug in isSupported
+
+	* ./src/clangmsgbuilder.cc
+	Points in Quads, Triangles and Rects now have the same order in which
+	they were recieved.
+
+	* ./src/coach_lang_comp.h
+	Added missing quotes to Def messages
+
+	* ./src/field.h
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Added counters for Rule and Del Messages
+
+	* ./tools/clangparser/main.C
+	* ./tools/clangparser/test.input
+	Added more examples and modified for ne file names
+
+2002-06-06	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/player.cc
+	Fixed bug in ear command
+
+2002-06-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.cc
+	* ./src/audio.h
+	* ./src/player.cc
+	* ./src/player.h
+	Added ear on/off
+
+2002-06-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/landmarkreader.C
+	* ./src/landmarkreader.h
+	Fixed compilation problem with gcc 2.96
+
+2002-06-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/netif.C
+	Added support for queueing of CLang RuleMsgs and DelMsgs
+
+2002-06-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/referee.cc
+	Fixed bug in proper goal kicks.
+
+2002-06-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/paramreader.C
+	* ./src/random.h
+	Fixed cygwin compilation problems
+
+2002-06-05	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./Makefile.am
+	* ./configure
+	Fixed problems with old versions of awk
+
+	* ./src/field.h
+	Fixed bug that would allow a player to kick the ball after a goalie
+	moved with it
+
+2002-05-30	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/param.h
+	* ./src/serverparam.C
+	Turned of proper goal kicks.  Set offide_active_area_size to 2.5
+
+2002-05-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/client.h
+	Removed bug when compiling without libz
+
+2002-05-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/coach_lang_comp.h
+	More code moving.  Moved actions into clangaction.{h|cc}
+
+2002-05-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/clangmsgbuilder.cc
+	Finished moving clang messages into their own files
+
+2002-05-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	Fixed small bug in use of serializer factory for online coaches.
+
+2002-05-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/Makefile.in
+	* ./src/audio.cc
+	* ./src/clangmsgbuilder.cc
+	* ./src/coach_lang.C
+	* ./src/coach_lang.h
+	* ./src/coach_lang_comp.h
+	* ./src/rule.cc
+	* ./src/rule.h
+	Moved some of the clang messages into individual files
+
+2002-05-28	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/audio.h
+	* ./src/clangmsg.cc
+	* ./src/clangmsg.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/serializer.cc
+	* ./src/serializer.h
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv1.h
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializercoachstdv7.h
+	* ./src/serializeronlinecoachstdv1.cc
+	* ./src/serializeronlinecoachstdv1.h
+	* ./src/serializeronlinecoachstdv7.cc
+	* ./src/serializeronlinecoachstdv7.h
+	* ./src/serializeronlinecoachstdv8.cc
+	* ./src/serializeronlinecoachstdv8.h
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv1.h
+	* ./src/serializerplayerstdv7.cc
+	* ./src/serializerplayerstdv7.h
+	* ./src/serializerplayerstdv8.cc
+	* ./src/serializerplayerstdv8.h
+	Put serializers into rcss namespace.
+	Set up auto registration of serializers for all integer versions from
+	1 to 8.
+	Moved a bit more core from clangmsg.h to clangmsg.cc
+
+2002-05-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/coach_lang.h
+	* ./src/field.C
+	* ./src/netif.C
+	* ./src/serializer.cc
+	* ./src/serializercoachstdv1.cc
+	* ./src/serializercoachstdv7.cc
+	* ./src/serializerplayerstdv1.cc
+	* ./src/serializerplayerstdv7.cc
+	Moved CLang message base class into clangmsg.{h|cc} and knocked a few
+	more seconds off the compile time.
+
+2002-05-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/serializer.cc
+	* ./src/serializer.h
+	Moved serializers into seperate files
+
+2002-05-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/serializer.cc
+	* ./src/serializer.h
+	Access to serializers is now made via a factory.  Classes still need
+	to be moved into their own files.
+
+2002-05-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/arithop.cc
+	* ./src/arithop.h
+	* ./src/clangbuilder.h
+	* ./src/clangmsgbuilder.cc
+	* ./src/clangmsgbuilder.h
+	* ./src/clangparser.h
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.cc
+	* ./src/coach_lang_tok.ll
+	* ./src/compop.cc
+	* ./src/compop.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/object.h
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Removed obsolete files, obsolete replay parameter and move some code
+	around to increase compilation speed and reduce dependancies.
+
+2002-05-27	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/coach_lang_par.yy
+	Removed inlining of a function that shouldn't have been
+
+	* ./src/object.C
+	Fixed bug that would allowing dashing to accumulate acceleration before
+	kick off.  Thanks to Michael Gollin for reporting the bug and it's fix
+
+2002-05-23	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/client.h
+	* ./src/object.h
+	Minor fixes and commenting out of graphic sending from rcssclient
+
+2002-05-22	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/client.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/object.h
+	* ./src/xpmholder.h
+	New team graphic protocol
+
+	* ./src/arithop.h
+	* ./src/coach_lang_comp.h
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.yy
+	* ./src/compop.h
+	* ./src/serializer.h
+	* ./src/tuple.h
+	egcs 2.91.66 compatibility changes
+
+	* ./src/serverparam.C
+	Fixed default parameters in server.conf
+
+	* ./src/netif.C
+	* ./src/player.cc
+	* ./src/player.h
+	Fixed defect in changing player types.
+
+	* ./src/player.cc
+	Removed power reduction in tackles
+
+	* ./src/netif.C
+	* ./src/param.h
+	Added substitutions to logfiles.
+
+	* ./src/paramreader.C
+	* ./src/paramreader.h
+	Fixed parameter parsing problem with gcc 3.x
+
+	* ./src/hasa.h
+	* ./src/paramreader.h
+	* ./src/rule.h
+	gcc 3.x compatibility changes
+
+2002-05-21	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-8.05.5
+
+	* ./src/field.C
+	* ./src/netif.C
+	Finished team_graphics
+
+	* ./src/player.cc
+	* ./src/referee.cc
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Added parameters for back_passes, free_kick_faults and
+	proper_goal_kicks
+
+	* ./src/client.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/netif.C
+	* ./src/object.C
+	The server now parses team_graphic commands from online coaches.  Once
+	the graphic is complete it outputs that the graphic was received, but
+	it doesn't do anything after that... ...yet.
+
+	* ./src/field.h
+	* ./src/player.cc
+	Fixed defect which dereferenced Stadium::M_caught_ball when NULL
+
+	* ./src/referee.cc
+	Fixed defect in kick faults
+
+	* ./src/player.cc
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Fixed defect in server params where visible_angle was reported in
+	radians instead of degrees.
+
+	* ./src/referee.cc
+	Fixed defect in touch ref where the last kicker was not remembered
+	after a goal kick.
+
+2002-05-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-8.05.4
+
+2002-05-20	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/paramreader.C
+	* ./src/paramreader.h
+	* ./src/playerparam.C
+	* ./src/playerparam.h
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Updated param messages to clients.  String are now quoted.
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/object.C
+	* ./src/object.h
+	* ./src/player.cc
+	Moved the goalie-caught_ball-collision defect correction from the old
+	collision code to the new collision code and removed to old collision
+	code completely.
+
+2002-05-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/object.C
+	Fixed defect where the goalie would collide with the ball when it had
+	caught the ball.
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/player.cc
+	* ./src/referee.cc
+	* ./src/referee.h
+	Fixed some bugs with ref ball placement and freekick faults
+
+2002-05-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/Makefile.am
+	* ./src/arm.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/referee.cc
+	* ./src/referee.cc
+	Added handling of cases where a goal kick is not kick directly into
+	play and move all goal kick releated desistions to referee class
+
+	* ./src/player.cc
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Set tackle power rate to 0.027.
+	Effective power of the tackle is reduced by the probability of
+	success.
+
+2002-05-15	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/player.cc
+	* ./src/player.h
+	Fixed bug in allowing kicks and tackles during free kick faults and
+	back passes.  Made sure players are always cleared from the ball during
+	free kicks.  Play mode switches to playon straight after the kick.
+
+	* ./src/audio.cc
+	Removed debugging messages
+
+	* ./src/field.C
+	Fixed bug with back passes.
+
+2002-05-14	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/arm.h
+	Fixed bug in the reported pointto directions.  Previously they were
+	incorrectly adjusted by the players orientation.
+
+	* ./src/param.h
+	* ./src/player.cc
+	Fixed bug in bracket counting of quoted say messages.
+
+	* ./src/vector.h
+	Fixed bug in Vector2D::setHead, which would transpose X and Y
+
+	* ./configure.in
+	Released rcssserver-8.05.3
+
+	* ./src/clangbuilder.h
+	* ./src/clangmsgbuilder.h
+	* ./src/clangparser.h
+	* ./src/coach_lang.h
+	* ./src/coach_lang_comp.C
+	* ./src/coach_lang_comp.h
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.ll
+	* ./src/hasa.h
+	* ./src/object.C
+	* ./tools/clangparser/Makefile
+	* ./tools/clangparser/main.C
+	* ./tools/clangparser/test.input
+	Added rules to CLang
+
+2002-04-29	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./NEWS
+	Added more info on back passes and free kick faults.
+
+	* ./configure.in
+	Released rcssserver-8.05.2
+
+2002-04-26  Oliver Obst  <fruit@robolog.org>
+
+	* ./src/serverparam.C
+	set DEFAULT_PLAYER_SPEED_MAX_DELTA_MAX to 0.0
+
+	* ./src/param.h
+	increased PLAYER_SPEED_MAX to 1.2
+
+2002-04-19	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/param.h
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/types.h
+	Added penalty for kick the ball to yourself after a free kick.
+
+	* ./src/coach_lang_par.cc
+	* ./src/coach_lang_par.yy
+	* ./tools/clangparser/test.input
+	Fixed bug in parsing of teams in ball owner conditions
+
+2002-04-18	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.h
+	* ./src/object.C
+	* ./src/player.cc
+	* ./src/player.h
+	Improved back pass detection, in that it now correctly handles cases
+	where the ball bounces of another player.
+
+2002-04-18  Oliver Obst  <fruit@robolog.org>
+
+	* ./src/types.h
+	Added three new variables to player_params_t for the trade-off
+	between dash_power_rate and stamina_inc_max. Replaced three of the
+	spare longs for this.
+
+	* ./src/playerparam.h
+	* ./src/playerparam.C
+	Added new variables for the trade-off between dash_power_rate and
+	stamina_inc_max to the v8 PlayerParamSensor. One of the default
+	values for the trade-off between dash_power_rate and player_size
+	has been set to 0, so that all the players are of same size by
+	default. Two of the default values for the trade-off between
+	stamina_inc_max and player_speed_max have been set to 0, so that
+	the delta for player_speed_max is just random between its minumum
+	and maximum value (dependend on nothing).
+
+	* ./src/hetroplayer.C
+	Added additional trade-off between dash_power_rate and stamina_inc_max
+
+2002-04-17	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/object.C
+	* ./src/object.h
+	* ./src/param.h
+	* ./src/player.cc
+	* ./src/types.h
+	Added back pass detection and handling
+
+	* ./src/audio.cc
+	* ./src/audio.h
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/main.C
+	* ./src/netif.C
+	* ./src/object.C
+	* ./src/param.h
+	* ./src/player.cc
+	* ./src/player.h
+	* ./src/random.h
+	* ./src/serializer.cc
+	* ./src/serializer.h
+	Added support for quoted say messages
+	Did some more code clean-up
+	Changed format for player audio messages
+
+2002-04-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/visualsensor.cc
+	* ./src/visualsensor.h
+	Fixed line ordering problem with old clients
+
+	* ./src/field.C
+	* ./src/field.h
+	* ./src/netif.C
+	* ./src/serverparam.C
+	* ./src/serverparam.h
+	Added support for CLang freeform messages for certain periods during
+	playon.
+
+	* ./configure.in
+	Released rcssserver-8.05.1
+
+2002-04-16	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	* ./rel.awk
+	* ./src/main.C
+	Moved release number into version number
+
+	* ./coach_lang_grammar
+	* ./config.sub
+	* ./src/clangbuilder.h
+	* ./src/clangmsgbuilder.h
+	* ./src/clangparser.h
+	* ./src/clangutil.cc
+	* ./src/clangutil.h
+	* ./src/coach_lang.C
+	* ./src/coach_lang.h
+	* ./src/coach_lang_comp.C
+	* ./src/coach_lang_comp.h
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.ll
+	* ./src/netif.C
+	* ./src/region.C
+	* ./src/region.h
+	* ./src/tuple.h
+	* ./src/visitor.h
+	* ./tools/clangparser/Makefile
+	* ./tools/clangparser/main.C
+	* ./tools/clangparser/test.input
+	Merged clang_v8 branch
+
+2002-04-15      Tom Howard      <tomhoward@users.sf.net>
+
+	* ./ChangeLog
+	* ./NEWS
+	* ./coach_lang_grammar
+	* ./src/Makefile.am
+	* ./src/clangbuilder.cc
+	* ./src/clangbuilder.h
+	* ./src/clangmsgbuilder.cc
+	* ./src/clangmsgbuilder.h
+	* ./src/clangutil.h
+	* ./src/coach_lang.C
+	* ./src/coach_lang.h
+	* ./src/coach_lang_comp.C
+	* ./src/coach_lang_comp.h
+	* ./src/coach_lang_par.yy
+	* ./src/coach_lang_tok.ll
+	* ./src/cond.cc
+	* ./src/cond.h
+	* ./src/netif.C
+	* ./src/region.C
+	* ./src/region.h
+	* ./tools/clangparser/main.C
+	* ./tools/clangparser/test.input
+	Moved Points out of the Region hierarchy.
+	Added CondOp::notEqual and modified the classes for automatic
+	destruction.
+	Added RegTri and RegRec.
+	Added PointArith
+	Inverted the way CLang messages are constructed. Before they were built
+	largest part first and each smaller bit added on.  Now they are built
+	smallest part first.  This means the builder only needs to keep track
+	of the base type of the current objects on the stack, whereas before it
+	needed to keep track of the concrete type of each item.
+
+2002-04-09	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./config.guess
+	update config.guess to a newer version
+
+	* ./src/Makefile.am
+	Fixed compilation problem on some solaris machines
+
+2002-04-04	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./configure.in
+	Released rcssserver-8.04-rel_5
+
+	* ./src/field.C
+	* ./src/field.h
+	Fixed bug with writing rcg files
+
+	* ./Makefile.am
+	Made 'make addlog' a bit better
+
+2002-04-03	Tom Howard	<tomhoward@users.sf.net>
+
+	* ./src/region.C
+	Fixed compilation problems cause by egcs fixes
+
+	* ./Makefile.am
+	Added support for 'make addlog'
+
+	* src/random.h
+	Fixed redefinition of NULL that produces warning message
+
+	* src/clangmsgbuilder.cc
+	* src/coach_lang_comp.h
+	* src/netif.C
+	* src/region.C
+	* src/region.h
+	* src/tuple.h
+	* src/visitor.h
+	Fixed compilation problems when compiling with egcs-2.91.66
+
+	* src/field.C
+	* src/serializer.h
+	Fixed bug in serialization on 'clang ver' messages to clients
+
+	* src/field.C
+	Fixed seg fault when players send 'clang ver' messages before the
+	coach has connected.
+
+	* src/field.C
+	Fixed bug in minimum recovery fix.
+
+	* src/player.cc
+	Added missing ')' to end of 'ok clang' message
+
+2002-04-02      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/coach_lang_par.yy
+	* src/coach_lang_comp.[Ch]
+	* src/clangmsgbuilder.cc
+	Added multiple action support to DirComm in CLang
+
+	* src/paramreader.C
+	Fixed segfault when command line options don't have a value specified
+
+ 	* ./ChangeLog
+	Released rcssserver-8.04-rel_4
+
+	* src/netif.C
+	* src/coach_lang.h
+	Fixed bug in which CLang messages did not have their sides set
+	correctly.  Also removed erroneous cout message.
+
+	* src/field.C
+	Fixed bug that allowed minimum recovery to fall below recovery_min
+
+	* src/field.C
+	Added support for full-state messages when server is in synch mode.
+	Thank you to Michael Gollin for pointing out the problem and the code
+	for fixing it.
+
+	* src/serverparam.C
+	Added missing spaces to automatically generated server.conf
+
+2002-03-29      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/random.h
+	Hopefuly fixed compilation problems on RedHat 7.1 with gcc 3.0.1
+
+	* src/field.[Ch]
+	Added flushing of logs each cycle to prevent long delays if the logs
+	were to flush automatically.
+
+	* src/remoteclient.h
+	Fixed bug in which sockets were not set to non-blocking when a client
+	reconnected
+
+2002-03-28      Tom Howard      <tomhoward@users.sf.net>
+
+ 	* ./ChangeLog
+	Released rcssserver-8.04-rel_3
+
+	* src/clangmsgbuilder.cc
+	* src/coach_lang_comp.h
+	Fixed compilation problems experienced with gcc-3.x
+
+2002-03-27      Tom Howard      <tomhoward@users.sf.net>
+
+  	* ./ChangeLog
+	Released rcssserver-8.04-rel_2
+
+  	* ./ChangeLog
+	Released rcssserver-8.04-rel_1
+
+	* src/coach_lang_tok.ll
+	* src/coach_lang_par.yy
+	* src/clang(msg)+builder.(cc|h)
+	* src/coach_lang_comp.h
+	Added ActDribble, ActClear, ActShoot, ActHold, ActIntercept and
+	ActTackle to CLang
+
+2002-03-26      Tom Howard      <tomhoward@users.sf.net>
+
+	* Added ActPassUNum to CLang
+
+	* Added ActPassReg to CLang
+
+2002-03-25      Tom Howard      <tomhoward@users.sf.net>
+
+	* Added CondUNum to CLang and merged unums and variable unums into an
+	single class.
+
+2002-03-23      Tom Howard      <tomhoward@users.sf.net>
+
+	Increase compilation speed.  The type listed templates were causing
+	very slow compile times.
+
+	* Add player var messages to CLang
+
+2002-03-22      Tom Howard      <tomhoward@users.sf.net>
+
+	* Created a CompOp (Comparison operator) class which is now used for
+	time comparison messages
+
+	* Added comparisons for own goals, opponent goals and goals difference
+	to CLang
+
+2002-03-20      Tom Howard      <tomhoward@users.sf.net>
+
+	* Added time comparison messages to CLang
+
+2002-03-18      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/coach_lang_par.yy
+	* src/coach_lang_tok.ll
+	* src/clangbuilder.{cc|h}
+	* src/clangmsgbuilder.h
+	Fixed bug which counted the quotes as part of the length of free form
+	messages
+
+2002-03-14      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/field.h
+	Fixed problem with coach names in rcl
+
+2002-03-07      Tom Howard      <tomhoward@users.sf.net>
+
+	* Added version support for clang.
+
+	* src/serverparam.{h|C}
+	Added tackle variables to server.conf.  They still need to be added
+	to the server_param messages.
+
+	* src/compress.h
+	Fixed  bugs in compression and decompression.  Thanks go to Hiroki
+	Shimora for the patch.
+
+2002-03-04      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/coach_lang_{par.yy|tok.ll}, src/netif.C, src/clangparser.h
+	Moved freefrom message length check into clang_parse_par.yy and changed
+	the tokenizer so that any length string can be parsed.
+
+2002-03-01      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/Makefile.am, src/gzfstream.h, src/playerparam.h, src/region.C,
+	src/serverparam.h, src/visualsensor.cc
+	Added -W flag to AM_CXXFLAGS and fixed warnings.
+
+	* src/remoteclient.h
+	Added missing return values to send and recv
+
+	* src/arm.h
+	Fixed getRelDest, which was rotating minus the orientation instead of
+	plus the orientation.
+
+	* src/audio.{cc|h}, src/player.{cc|h}, src/field.{C|h}, src/netif.C
+	Used static buffers for serialising common messages to clients, thus
+	avoiding so may dynamic memory allocations
+
+	* src/remoteclient.h, src/netif.C, src/field.{C|h}, src/player.{cc|h},
+	src/monitor.{cc|h}, src/main.C
+	Removed exceptions from UDPSocket, due to their inefficiency.
+
+2002-02-26      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/player.h, src/monitor.h, src/field.h, src/field.C
+	Hopefully fixed reported high CPU usage.  I've done this by optimising
+	the parsing code for when clients send their commands without null
+	terminators.
+
+	* src/serverparam.C
+	Fixed default value for kickoffoffside (aka forbid_kick_off_offside).
+	Was false and should have been true.
+
+2002-02-25      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/types.h
+	Changed values of tackle and tackle fault which previously conflicted
+	with ball collide and player collide
+
+	* src/version.h
+	Updated copyright string
+
+	* src/netif.C
+	Added some missing sendChecked and recvChecked
+
+	* src/field.h
+	* src/netif.C
+	Fixed bug which saw all online coach commands parsed as offline coach
+	commands.
+
+2002-02-23      Tom Howard      <tomhoward@users.sf.net>
+
+	* Totally refactored the clang code.  The code now produces a library
+	called rcssclangparser that can be (hopefully) easily used in client
+        code.
+
+	* src/serializer.{cc|h}
+	Fixed bug in serialisation of player audio for pre version 7 online
+	coaches.
+
+	* src/netif.C
+	* src/remoteclient.h
+	* src/utility.h
+	Modified network code so that sends and receives are retried sometimes
+	if they fail.  The send is retried it failed because of a signal
+	interrupt or if the send would block.  The recv is retried only if it
+	failed because of a signal interrupt.
+
+	* src/visualsensor.cc
+	Fixed bug in rendering of lines
+
+	* src/landmarkreader.C
+	Fixed error in penalty area width in landmark reader
+
+2002-02-21      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/remoteclient.h
+	* src/field.{C|h}
+	* src/netif.C
+	* src/player.{cc|h}
+	* src/monitor.h
+	* src/replay.C
+	* src/client.h
+	Removed use of void* in sockets
+
+	* src/audio.{cc|h}
+	* src/serializer.h
+	Added missing name in ref audio to online coaches.
+
+2002-02-20      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/serializer.h
+	Fixed missing player name bug in player audio messages heard by online
+	coaches.
+
+2002-02-19      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/visualsensor.cc
+	Added debugging output for no-lines bug
+
+	* src/netif.C
+	Server doesn't log messages it sends anymore.  Later on this should be
+	something that can be turned on and off.
+
+	* src/utility.h
+	Fixed bug that caused server to sometimes output
+	"../rcssbase/rcssbase/udpsocket.h: 307: Error receiving from client:
+	Interrupted system call"
+
+2002-02-17      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/clangbuilder.h
+	* src/clangparser.h
+	* src/coach_lang_par.yy
+	* src/coach_lang_tok.ll
+	* src/coach_lang.h
+	* src/coach_lang_comp.h
+	* src/region.h
+	* src/netif.C
+	* src/field.{C|h}
+	Introduced clang::Parser class to wrap the bison generated parser and
+	converted the parser to use a generic clang::Builder.  The parser is
+	then used within netif.C with a builder that constructs a CM_Message.
+
+2002-02-16      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/client.C
+	Fixed bug that prevented non default parameters when using scripts
+
+	* src/field.C
+	Fixed bug when online coach connects
+
+2002-02-15      Tom Howard      <tomhoward@users.sf.net>
+
+	Merged tackle branch
+
+	* src/netif.C
+	Added tackle info to coach visuals
+
+	Merged attentionto branch into main branch.
+
+	* src/audio.cc
+	Fixed infinite loop caused by non-removal of cached audio messages
+
+	* src/serializer.h
+	Fixed lack of ends being sent to the serialised audio
+
+	* src/serializer.h
+	* src/audio.{cc|h}
+	* src/netif.C
+	Turns out the actual serializer bug seems to stem from using strings
+	in pairs in containers.  Not sure what is going wrong, but the string
+	is fine when it's inserted, but sometimes losses it's null terminator
+	when it is extracted from the container.  Good thing is the problem is
+	not there for c strings, so that is what is used now.  Currently each
+	player audio cache creates a copy of the msg and deletes it when it's
+	finised with it.  Later we should chage this so the message is stored
+	one in a global cache and the player caches simple point to this.
+
+	* src/serializer.{cc|h}
+	Fixed bug with singleton implemtation of the serializers
+
+	* src/client.{cc|h}
+	Added very basic scripting support for rcssclient
+
+	* src/arm.h
+	Added increament of point count for pointto off commands
+
+	* src/audio.cc
+	Added increment of focus count.
+
+	* src/object.C
+	Added use of v8 audio builder for v8 players
+
+2002-02-08      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/serverparam.{C|h}
+	* src/playerparam.{C|h}
+	* src/field.{C|h}
+	* src/main.C
+	Fixed bug in serverparam and playerparam and move their initialisation
+	out of filed.C and into main.C
+
+	* src/main.C
+	Cleaned up the SIGINT handler
+
+	* src/player.cc
+	Fixed tackle count
+
+2002-02-06      Tom Howard      <tomhoward@users.sf.net>
+
+	* NEWS
+	* CHangeLog
+	Updated for tackles.
+
+	* src/player.{cc|h}
+	* src/bodysensor.{C|h}
+	Players can now get information about their tackling in sense body
+	messages
+
+	* src/player.{cc|h}
+	* src/visualsensor.{cc|h}
+	Players can now observer other players tackling.
+
+	* src/player.cc
+	* src/audio.h
+	* src/bodysensor.{cc|h}
+	Added focus data to sensebody messages
+
+	* src/player.cc
+	Added calls to focusOn and focusOff in parsing of attentionto command
+
+	* src/serverparam.{h|C}
+	* src/param.h
+	* src/types.h
+	* src/player.cc
+	* src/audio.cc
+	* src/netif.C
+	* src/field.C
+	Changes SayMsgSize, hear_inc, hear_decay and hear_max to private and
+	provided access functions. Remove their default values from param.h
+	and replaced them with static members of ServerParam
+
+2002-02-05      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/serverparam.h
+	* src/player.cc
+	Parameterised tackle components
+
+	* src/paramreader.h
+	* src/serverparam.{C|h}
+	* src/playerparam.{C|h}
+	* src/field.{C|h}
+	* src/coach_lang.C
+	* src/main.C
+	* src/hetroplayer.{C|h}
+	* src/netif.C
+	* src/object.C
+	* src/replay.C
+	* src/player.cc
+	* src/param.h
+	* src/visualsensor.cc
+	Converted ServerParam and PlayerParam classes into singletons
+
+	* src/player.cc
+	* src/player.h
+	* src/types.h
+	* src/field.C
+	Introduced tackle command.  Tackling is probablistic, with the
+	probability calculated as follows:
+
+	if the ball is infront of the player then
+	   prob = (player_2_ball.x/2.5)^6 + (|player_2_ball.y|/1.25)^6
+        else
+           prob = (-player_2_ball.x/0.5)^6 + (|player_2_ball.y|/1.25^6;
+
+	* configure.in
+	* config.h.bot
+	* config.h.in
+	Removed use of deprecated bzero and bcopy functions
+
+2002-02-04  Oliver Obst  <fruit@robolog.org>
+
+	* src/visualsensor.cc:
+	fixed bug that the name of objects was not set in view quality
+	low and a protocol version 7 or above.
+
+2002-02-01      Tom Howard      <tomhoward@users.sf.net>
+
+	* configure.in
+	Fixed bug in FreeBSD support
+
+2002-01-31      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/field.h
+	Fixed bugs when SIGINT is received
+
+2002-01-30	Tom Howard      <tomhoward@users.sf.net>
+
+	* Created tackle branch
+
+	* src/param.h
+	Changed default values for HEAR_MAX and HEAR_DECAY to one. Values
+	which prevent the players from receiving at least one message per
+	cycle will result in attentionto failing to work correctly.
+
+	* src/player.cc
+	Removed redundant stamina information from full_state_messages
+
+	* src/field.C
+	Removed use of atexit() do to problems on some solaris machines.
+	This means that logs are only closed properly if the server is
+	terminated with a SIGINT.
+
+	* src/landmarkreader.{h|C}
+	changed static const strings to static const char's, due to
+	problems some compilers have initializing static const strings.
+
+	* configure.in
+	Removed check for libexpat, effectively disabling the landmark
+	reader.  This was due to problems on some solaris machines
+
+2002-01-29	Tom Howard      <tomhoward@users.sf.net>
+
+	* src/field.h
+	* src/netif.C
+	* src/player.C
+	Put the players and the Coaches into a Listener container in the
+	stadium.  The stadium takes all requests to send audio, by simply
+	shuffle the container and then using the appropriate send*Audio
+	method of the Listener.  The nice thing about the implementation
+	is that the stadium doesn't need to know anything about the
+	Listener, when to send to it or how the message needs to be
+	formatted.
+
+
+	* src/field.C
+	* src/netif.C
+	* src/audio.h
+	* src/audio.cc
+	* src/player.h
+	* src/player.cc
+	Created AudioSender_v8 and moved the new attentionto from player
+	into it.
+
+	* src/field.C
+	* src/netif.C
+	* src/object.C
+	* src/audio.h
+	* src/audio.cc
+	I renamed the AudioSerializers to AudioSenders and moved all the
+	responsibility for determining what to send, when to send it and
+	then delegating the responsibility of sending the serialized
+	data to the client via the clients transport.  The serialization
+	task is still delegated to a generic (audio, visual, etc)
+	serializer.
+
+2002-01-28	Tom Howard      <tomhoward@users.sf.net>
+
+	* src/audio.h
+	* src/field.C
+	* src/field.h
+	* src/netif.C
+	* src/serializer.h
+	Interated new audio serializers for coaches
+
+	* src/netif.C
+	* src/object.C
+	* src/player.h
+	Interated new audio serializers for players
+
+	* src/audio.h
+	* src/audio.cc
+	* src/serializer.h
+	* src/serializer.cc
+	* src/Makefile.am
+	Created audio serializers and general serializers.  The audio
+	serializer has the job of preparing the data that is then
+	serialized by the general serializer.  The general serializers
+	should not do any data manipulation, nor have conditionals and
+	they should be stateless (infact they are flyweight singletons).
+	In the long term the intention is to have the general
+	serializers used to serialize all messages to clients via
+	specific serializers (like the audio serializer) that prepare
+	the data for the general serializer.
+
+	* src/player.h
+	Created PlayerEar class used for attnetionto.  This will probably
+	be moved and intergated into audio.h
+
+2002-01-23	Tom Howard      <tomhoward@users.sf.net>
+
+	* src/player.cc
+	* src/field.h
+	Added parsing of attentionto commands for players.
+
+2002-01-22	Tom Howard      <tomhoward@users.sf.net>
+
+	* Created attentionto branch
+
+	* src/client.{h|cc}
+	Fixed bug which would prevent the rcssclient from using default
+	parameters.
+	rcssclient now prints out the port and host it is connecting to.
+
+	* src/netif.C
+	Fixed bug which would not allow coaches to connect
+
+	* src/netif.C
+	Fixed bug that would prevent clients from reconnecting
+
+	* src/field.C
+	* src/gzfstream.h
+	* src/hetroplayer.h
+	* src/landmarkreader.h
+	* src/monitor.cc
+	* src/netif.C
+	* src/paramreader.C
+	* src/player.cc
+	* src/playerparam.h
+	* src/replay.C
+	* src/xmlreader.C
+	* src/xmlreader.h
+	Fixed memory leaks associated with incorrect use of strstream
+	and changed all other instances of strstream to use internally
+	managed memory to store the string.
+
+2002-01-21      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/player.cc
+	Fixed bug in fullstate messages for pointing
+
+	* src/arm.h
+	* src/field.C
+	* src/visualsensor.cc
+	Added noise to pointing observation.  Player will see the
+	direction the arm is pointing in with random gaussian (normal)
+	noise added to the actual direction, with a mean of zero and a
+	standard deviation calculated as follows:
+
+	  sigma = pow(dist / team_too_far_length, 4) * 178.25 + 1.75
+
+	This means that sigma is a minimum of 1.75 deg and reaches 180 deg
+	when the player is observing a pointing arm from a distance of
+	team_too_far_length.  Since 95% of values in a normal distribution
+	are within two standard deviations, then 95% of the time the noise
+	will be in the range +- 2.5 deg when the player is very close and
+	in the range +- 360.0 deg when the player is team_too_far_length
+	away.
+	Sense body message will report a players arm target acurate to 10cm
+	and 0.1 degrees
+	Arm timer is now incremented every cycle.
+
+	* src/random.h
+	* src/random.cc
+	* src/Makefile.am
+	* src/field.C
+	Created random.{h|cc} by modifying boost/random.  This provided
+	classes	for random number generation using a fast gerneator and
+	allowing various distributions (including normal.)  The defalut RNG
+	is a singleton and is initialized and destroyed in field.C using
+	thes seed in player.conf or the current time is the player.conf
+	seed is	zero.
+
+	* src/field.C
+	* src/hetroplayer.C
+	* src/netif.C
+	* src/object.C
+	* src/player.cc
+	* src/utility.h
+	* src/visualsensor.cc
+	Moved old random code from utility.h to random.h and changed
+	#includes
+
+2002-01-16      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/arm.h
+	* src/field.C
+	* src/netif.C
+	* src/player.cc
+	* src/player.h
+	* src/visualsensor.cc
+	* src/visualsensor.h
+	Players can now issue pointto commands and the results are visible
+	to version 8+ clients, but noise still needs to be added.
+
+	* src/bodysensor.cc
+	* src/bodysensor.h
+	* src/player.cc
+	* src/player.h
+	* src/arm.h
+	Added arm stats to sense body message
+
+	* src/Makefile.am
+	* src/arm.h
+	* src/player.h
+	* src/player.cc
+	* src/serverparam.h
+	* src/serverparam.cc
+	* src/types.h
+	Added arm for pointing to player and parameters to serverparam
+
+2002-01-15      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/client.h
+	* src/field.C
+	* src/field.h
+	* src/main.C
+	* src/netif.C
+	* src/player.cc
+	* src/player.h
+	* src/remoteclient.h
+	* src/utility.h
+	UDPSocket and SocketErr are now in the rcss namespace so
+	rcss:: needed to be added in a few places.
+
+2002-01-15	Oliver Obst	<fruit@robolog.org>
+	* configure.in:
+	made test tests more portable
+
+2002-01-14      Tom Howard      <tomhoward@users.sf.net>
+
+	* configure.in
+	Added support for using the new rcssbase package
+	Fixed the check for socklen_t and uint*_t
+
+2002-01-12	Tom Howard	<tomhoward@users.sf.net>
+
+	* src/coach_lang.h
+	* src/coach_lang_comp.h
+	* src/coach_lang_par.yy
+	* src/coach_lang_tok.ll
+	* src/field.C
+	* src/hetroplayer.C
+	* src/field.C
+	* src/udpsocket.h
+	Mac OS X fix
+
+	* config.h.in
+	* src/client.h
+	* src/coach_lang_par.yy
+	* src/field.C
+	* src/gzfstream.h
+	* src/replay.C
+	* src/udpsocket.h
+	* src/visualsensor.h
+	Solaris/gcc3 fix
+
+	* src/udpsocket.h
+	BSD compat fix
+
+	* src/netif.C
+	Debian fix
+
+2002-01-11      Tom Howard      <tomhoward@users.sf.net>
+
+	* src/field.C
+	Fixed bug in which the server tried to send fullstate messages to a
+	disconnected client
+
+2002-01-10      Tom Howard      <thomashoward@email.com>
+
+	* src/geom.h
+	* src/geom.cc
+	* src/array.h
+	* src/vector.h
+	Moved new vector to vector.h and removed other files
+
+2002-01-09	Tom Howard	<thomashoward@email.com>
+
+	* src/player.h
+	* src/field.h
+	Fixed bug that saw the command str sent by a client deleted before it
+	was written to the log
+
+	* src/field.C
+	* src/field.h
+	* src/main.C
+	* src/netif.C
+	* src/player.cc
+	* src/udpsocket.h
+	* src/utility.h
+	Prevented multiple error messages from being generated when a
+	client disconnects
+
+2002-01-08	Tom Howard	<thomashoward@email.com>
+
+	* src/geom.h
+	* src/gemo.cc
+	* src/array.h
+	Started work on new vector (mathematical not container) class
+
+	* src/client.cc
+	* src/client.h
+	* src/field.C
+	* src/field.h
+	* src/main.C
+	* src/monitor.cc
+	* src/monitor.h
+	* src/netif.C
+	* src/player.cc
+	* src/player.h
+	* src/remoteclient.h
+	* src/udpsocket.h
+	* src/utility.h
+	Switched back to dedicated sockets for each client.  Use of the
+	dedicated socket is enforced for version 8+ clients.  Version 8+
+	clients that send commands to the init sockets get the following
+	reply
+
+	  (error only_init_allowed_on_init_port)
+
+	and have their command(s) discarded.
+
+	The server also uses connect() on each dedicated socket.  If the
+	connection on that socket is lost, the client is treated as
+	though it send bye or dispbye.
+
+2001-12-29	Tom Howard	<thomashoward@email.com>
+
+	* src/field.C
+	* src/field.h
+	* src/netif.C
+	* src/player.cc
+	* src/remoteclient.h
+	* src/replay.C
+	* src/udpsocket.h
+	* src/monitor.h
+	* src/monitor.cc
+	- Created Monitor class that inerits from remoteClient and
+	added support for compressed communication
+
+	* src/client.h
+	- Removed '\n' from commands before they are sent to the
+	server
+
+2001-12-28	Tom Howard	<thomashoward@email.com>
+
+	* src/compress.h
+	* src/netif.C
+	* src/player.cc
+	* src/remoteclient.h
+	* src/udpsocket.h
+	- Fixed bugs in compressed communication
+
+	* src/client.c
+	* src/client.cc
+	* src/client.h
+	- Replaced client.c with client.cc.
+	- Implemented compression support with the sample client
+
+2001-12-26  Oliver Obst  <fruit@robolog.org>
+
+	* src/playerparam.h:
+	- Fixed bug that player_param messages version 7 are used for
+	  version 8 clients
+
+	* src/serverparam.C (toStr):
+	- Fixed bug that server crashes when version 8 clients connect
+
+2001-12-24	Tom Howard	<thomashoward@email.com>
+
+	* src/netif.C:
+	- Fixed duplicate sending of server param messages
+	- Fixed bug that introduced trailing garbage after a command
+	- Fixed bug that send old format player type messages to
+	version 8 clients
+
+	* src/field.C:
+	- Fixed bug in logging directory parameter
+
+	* src/field.C
+	* src/field.h
+	* src/gzfstream.C
+	* src/gzfstream.h
+	* src/netif.C
+	- Fixed bug in compressed text logging
+
+	* src/field.C
+	* src/field.h
+	* src/hetroplayer.C
+	* src/hetroplayer.h
+	* src/netif.C
+	* src/playerparam.C
+	* src/playerparam.h
+	* src/serverparam.C
+	* src/serverparam.h
+	- Added lost parameters to server_param
+	- Removed direct string conversion in server and player params
+	player types.
+
+2001-12-17	Tom Howard	<thomashoward@email.com>
+
+	* Finished new udp implementation and changed coaches to use
+	the new udp classes
+
+2001-12-12  Oliver Obst  <fruit@robolog.org>
+
+	* src/client.h:
+	- using autoconf macros
+	- including param.h to avoid inconsistencies
+
+	* src/client.c (message_loop):
+	replaced MAXMESG by MaxMesg from param.h
+
+	* config.h.bot:
+	new file; will be appended to config.h by autoheader
+	- replacements for memcpy, memmove and bzero, if necessary
+
+	* configure.in:
+	- added check for time.h header files
+	- checking for bzero and memcpy
+
+2001-12-06  Oliver Obst  <fruit@robolog.org>
+
+	* src/netif.C: fixed missing ')' in fullstate messages
+
+2001-12-07      Tom Howard      <thomashoward@email.com>
+
+	* Changed visuals to use the new VisualSensor classes and removed
+	the old visuals.
+
+	* Added lines to VisualSensor classes.
+
+2001-12-06      Tom Howard      <thomashoward@email.com>
+
+	* Added players to VisualSensor classes.
+
+2001-12-04      Tom Howard      <thomashoward@email.com>
+
+	* Fixed bug in Landmark Reader which placed multiple
+	goal right flags on the field in the wrong place when
+	using defaut values
+
+2001-12-02      Tom Howard      <thomashoward@email.com>
+
+	* Added flags and goals to VisualSensor classes.
+
+2001-11-30      Tom Howard      <thomashoward@email.com>
+
+	* Removed BallVisualSensor classes and merged into VisualSensor
+	classes.
+
+2001-11-28      Tom Howard      <thomashoward@email.com>
+
+	* Created VisualSensor classes and BallVisualSensor classes. Still
+	need to create VisualSensor classes for the other objects.
+
+2001-11-27      Tom Howard      <thomashoward@email.com>
+
+	* Created ServerParamSensor classes
+	* Created PlayerParamSensor classes
+	* Created PlayerTypeSensor classes
+
+2001-11-26      Tom Howard      <thomashoward@email.com>
+
+	* Converted all versions of sense_body output to use classes inherited
+	from BodySensor.  Players inherit BodySensor_v7 (well, actually you
+	should mentally think of the BodySensor_vN classes as interfaces and
+	that the Player implements a BodySensor_vN) and have methods for
+	sending each version.
+
+	* Added player.{h|cc} and move player class and methods to these files
+
+	* Fixed some bugs in the new visuals
+
+	* Added bodysensor.{h|cc} with bodysensor classes
+
+2001-11-23      Tom Howard      <thomashoward@email.com>
+
+	* Moved compression to RemoteClient class.  Clients are expected to
+	send commands to the server at the same compression level that has been
+	specified with the `(compression <level>)' command.  At this stage only
+	Players use the RemoteClient class
+
+	* Created warning message for version 8.0 and above players that send
+	commands without null terminators.  This happens ususally because
+	players specify the length of the message with strlen, which does not
+	include the null terminator.  The warning message has the format
+	(warning message_not_null_terminated).
+
+2001-11-22      Tom Howard      <thomashoward@email.com>
+
+	* Added new UDPSocket and RemoteClient classes
+
+2001-11-21      Tom Howard      <thomashoward@email.com>
+
+	* Added support for compressed comunication to players.  Players can
+	now send
+
+	`(compression <level>)'
+
+	to the server.  If the server is compiled without ZLib, the server
+	will respond with
+
+	`(warning compression_unsupported)'
+
+	else if <level> is not a number between 0 and 9 inclusive, the server
+	will respond with
+
+	`(error illegal_command_form)'
+
+	else the server will respond with
+
+	`(ok compression <level>)'
+
+	and all subsequest messages to that player will be compressed at that
+	level, until a new compression command is received.  Specifying a level
+	of zero turns off compression completly.
+
+
+2001-11-20      Tom Howard      <thomashoward@email.com>
+
+	* Fixed bug in visuals for close objects that I introduce on the
+	2001-11-14.
+
+2001-11-19      Tom Howard      <thomashoward@email.com>
+
+	* Changed default values for send_comms and record_messages to false.
+
+2001-11-15      Tom Howard      <thomashoward@email.com>
+
+	* Fixed bug in game logs which resulted in the team_t structure only
+	ever being written for one side.
+
+	* Fixed bug in text log which resulted in no data being written when
+	compressed logging was enabled
+
+2001-11-14      Tom Howard      <thomashoward@email.com>
+
+	* Removed string comparisons from sensor rendering. On my system this
+	reduced the average time per cycle to render from 12ms to 4ms!
+
+	* First attempt a simplifying the rendering of visuals failed.  The
+	result was much cleaner in terms of code, but was about twice as slow,
+	so I've commented out the code in sensor.{Ch} and started again
+
+	* Added a profile option to the server parameters. If profile is on and
+	text logging is enabled, then the time take for different parts of the
+	simulation cycle is written to the text log.  Default is off
+
+	* Changed the default value for ball_rand from 0.2 (very old) to 0.05
+	as reported in the manual
+
+2001-11-12      Tom Howard      <thomashoward@email.com>
+
+	* Completed basic implementation of new visual classes. Still not
+	activated, needs to be tested and have bugs removed.
+
+2001-11-09	Tom Howard	<thomashoward@email.com>
+
+	* Added VisualLine and VisualFlag to sensor.{Ch}
+
+2001-11-07	Tom Howard	<thomashoward@email.com>
+
+	* Created sensor.h and sensor.C files which contain new classes for
+	generating sensory information in current protocol and XML.  These
+	are not actually used by the server, yet.
+
+	* Changed to using standard ChangeLog format for all the ChangeLogs.
+
+[8.03]
+        Fixed bug in server's command line option parsing.
+
+	Fixed possible, but rare infinte loop in collision modelling
+
+[8.02]
+	Removed bug in server which sent incorrect error messages when parsing
+	some say commands that contained brackets in the message.  There is
+	still a slight problem when sending concatenated commands to the
+	server in that the say message must always be last.
+
+        Removed bug which allowed a monitor to have multiple connections
+        to the one server
+
+	The server now compiles without error with gcc-3.0
+
+	The server now supports compressed logging.  `text_log_compression'
+	and `game_log_compression' are used to regulate the speed of
+	compression,  where 0 indicates no compression and 9 indicates the
+	best compression (slowest). The default is 0.
+
+	The server now renames the text logs and game logs to
+	`<TEAM_L>_<TEAM_L_POINTS>-vs-<TEAM_R>_<TEAM_R_POINTS>.rcl' and
+	`<TEAM_L>_<TEAM_L_POINTS>-vs-<TEAM_R>_<TEAM_R_POINTS>.rcg'
+	respectively. `rcl' stands for `RoboCup Command Log'. `rcg' stands for
+	`RoboCup Game'.
+
+	The Log files are saved in the directories specified by
+	the `text_log_dir' and `game_log_dir' parameters respectively.
+
+	Fixed logging names can be specified using the `text_log_fixed' and
+	`game_log_fixed'.  The files will be saved with the names specfied
+	by `text_log_fixed_name' and `game_log_fixed_name' each with the `.rcl'
+	or `.rcg' suffix respectively.
+
+	When fixed logging is disabled, a date stamp can be prepended to the
+	output names if `text_log_dated' or `game_log_dated' is on. The format
+	can be specified with `log_date_format'.  See `man strftime' for
+	details on the format string.
+
+	Logging can be turned on and off using `text_logging' and
+	`game_logging'.
+
+	The version of the game log is specified with `game_log_version'.
+
+	Player commands will be recorded in the game log if `record_messages'
+	is on.
+
+	Player commands will be sent to the monitors is `send_comms' is on.
+
+	Removed use of <sstream> as it is not supported in gcc-2.95.2.  The
+	use of this was only introduced in 8.01
+
+	Changed protocol for full state for clients connecting with a version
+	8.0 or above protocol to (without the line breaks):
+
+	  fullstate : (fullstate <time>
+	                (pmode {goalie_catch_ball_{l|r}|<play mode>})
+			(vmode {high|low} {narrow|normal|high})
+			(stamina <stamina> <effort> <recovery>)
+			(count <kicks> <dashes> <turns> <catches> <moves>
+		            <turn_necks> <change_views> <says>)
+			(score <team_points> <enemy_points>)
+			((b) <pos.x> <pos.y> <vel.x> <vel.y>)
+			<players>)
+
+	  players : {<player>|<player> <players>}
+
+	  player : ((p {l|r} <unum> {g|<player_type_id>}) <pos.x> <pos.y>
+	             <vel.x> <vel.y> <body_angle> <neck_angle>)
+
+[8.01]
+        Created a landmark reader which reads the positions of the landmarks
+	on the field from an xml file. Currently it will only read flags, but
+	this will be extended to include lines, pitch, goals and penalty areas.
+	The landmark reader requires the expat library.  If expat is not on the
+	system, the server will use default landmarks and will not read or
+	create the ~/.rcssserver-landmark.xml file.  Future versions will
+	comunicate to the clients at startup the postions of landmarks.
+
+	Placed checks for `nan' in client command parser.  If a `nan' is
+	detected, the server replies with `(error illegal_command_form)'.
+
+	Fixed small problem with rcssclient, which resulted in linking errors.
+
+	Changed protocol for parameters and hetro-types for clients connecting
+	with a version 8.0 or above protocol to:
+
+	  (server_param (goal_width <value>) (player_size <value>) ... )
+	  (player_param (player_types <value>) (subs_max <value>) ... )
+	  (player_type (id <value>) (player_speed_max <value>) ... )
+
+	Fixed bug which allowed players to send monitor commands
+
+	Server will remove monitors from the monitor list after they send
+	`(dispbye)'.  By using this, monitors can connect and disconnect
+	as offen as required without affecting the game.
+
+	Changed protocol for full state for clients connecting with a version
+	8.0 or above protocol to (without the line breaks):
+
+	  fullstate : (fullstate <time>
+	                (pmode {goalie_catch_ball_{l|r}|<play mode>})
+			(score <team_points> <enemy_points>)
+			((b) <pos.x> <pos.y> <vel.x> <vel.y>)
+			<players>)
+
+	  players : {<player>|<player> <players>}
+
+	  player : ((p {l|r} <unum> {g|<player_type_id>}) <pos.x> <pos.y>
+	             <vel.x> <vel.y> <body_angle> <neck_angle>
+		     (vmode {high|low} {narrow|normal|high})
+		     (stamina <stamina> <effort> <recovery>)
+		     (count <kicks> <dashes> <turns> <catches> <moves>
+		            <turn_necks> <change_views> <says>))
+[8.00]
+	Moved to using automake and autoconf.
+
+	renamed to rcssserver
+
+	server will now look for config files under ~/.rcssserver-server.conf
+	and ~/.rcssserver-player.conf, unless -sfile of -pfile are specified.
+	If a config file does not exist a default (Seattle settings) file is
+	created.
+
+	The sample client is now named rcssclient and will be built if
+	the `--enable-rcssclient' option is given to `./configure'
+
+[7.11]
+ * Added options for this years evaluation session.
+   `slowness_on_top_for_left_team' adjusts `player_speed_max',
+   `player_accel_max' and `dash_power_rate' for all players on the left team
+   when they are in the top half of the field. `slowness_on_top_for_right_team'
+   does the same for players on the right team.  The value of these options are
+   sent to players in the server_param message only if they connect to the
+   server specifying version 7.11 or above.
+
+ * There was a typo in the coach_lang_grammar file. 'pmode' should
+   have been 'playm'
+
+ * A "synchronized mode" has been added to the simulator. The server
+   will operate in this mode if you provide the synch_mode flag. Here
+   is how the synchronous mode works:
+
+   - Cycles no longer take a fixed amount of time.
+   - Each cycle, the server determines which messages will be sent to
+     the players before 60ms (synch_offset) into the cycle. All of
+     those messages are sent.
+   - The server then sends "(think)" to all the agents (coach and
+     trainer included)
+   - At this point, the agents should do their action selection and
+     send commands to the server. The server processes commands as
+     they come in.
+   - The agents should then send "(done)" to the server. Once the
+     server has received "(done)" from all agents, it will advance to
+     the next cycle
+
+   Note that the server will allow a few cycles to go by without
+   receiving a (done) from all the agents, and will print a warning
+   when it is doing so.
+
+ * There is a new option in the player parameters 'random_seed'. It
+   allows you to specify the random seed for generating heterogeneous
+   types (in order to reproducible types). Using the same seed will
+   give you exactly the same player types.
+
+[7.10]
+ * Fixed bug in new collision detection/modelling.  If the mode is not playon,
+   collisions with the ball will not move it.
+
+[7.09]
+ * Fixed bug in collision detection/modelling. In the old impementation, it
+   was possible for object A to collide with object B, but object B would not
+   collide with object A.  As such object A would be repositioned and have
+   its velocity multiplied by -0.1, and nothing would happen to object B.
+   The new implementation checks for collisions against every object strictly
+   after every object has been moved.  When the server detects a collision
+   between two objects, it calculates a new postion for both objects. After
+   every object has been checked for collision, the server then moves all the
+   objects that have collided to their collision position, or the average of
+   it's collision positions if the object collided with multiple objects.
+   The detection and movement process is repeated until no more collisions
+   are detected or a maxiumum of 10 times.  This is so objects that are moved
+   because of a collision are then checked to see if that movement may have
+   caused a collision with another object.  As a last step, each object that
+   has been recorded in one or more collisions has it's velocity multiplied
+   by -0.1.
+ * Increased maximum packet size to from the server to 8K. This mainly
+   has implications for the coach and the coach language. In
+   particular, the actual message part of a coach 'say' command should
+   be no more than: 8192-38 = 8154 characters long (i.e. in (say STR),
+   the length of STR should be no more than 8154). This is to allow
+   the proper formatting for the message sent to the players to remain
+   under 8K.
+
+[7.08]
+  * Fixed logplayer for Solaris (was broken in 7.05 by the
+    introduction of a usleep command)
+  * Coach language change: The mark and markl directives now take a
+    unum set instead of just a unum
+  * Coach language change: The ppos directive is now
+   | (ppos <TEAM> <UNUM_SET> <INT> <INT> <REGION>)
+   where the first int specifies the minimum number of players and the
+   second specifies the maximum number of players for unum_set which
+   have to be in region in order for the condition to match;
+  * Coach language change: The <POINT> type can now be relative to
+    another point, the ball, or a player.
+    <POINT> -> (pt [real] [real]) #xcoord, ycoord
+	      | (pt [real] [real] <POINT>)
+              | (pt ball)
+	      | (pt <TEAM> <UNUM>)
+  * in 7.07, a space was accidentally removed from the online coach
+    messages (right before TIME_RECEIVED_BY_SERVER). This has been
+    fixed.
+  * Removed references to SA_RESETHAND which were having no effect.
+  * Fixed setting of player type in new display/logging.
+
+[7.07]
+  * Pre V7 online coach messages to v7 and above players are quoted.
+  * Pre V7 online coach messages are sent to all players.
+  * Offline coach messages to v7 players are quoted and have coach as
+    origin (rather than referee)
+
+    A summary of audio format is
+
+      From referee
+	(hear TIME referee PLAY_MODE)
+      From offline coach
+	(hear TIME coach "MSG")
+      From pre V7 online coach (sent to all players)
+	(hear TIME online_coach_{left|right} "MSG")
+      From V7 and above online coach
+	(hear TIME online_coach_{left|right} TIME_RECEIVED_BY_SERVER CLANG_MSG)
+      From player to itself
+	(hear TIME self "MSG")
+      From player to others
+	(hear TIME DIR "MSG")
+
+
+  * The logplayer did not send server param, player param, and player
+    type messages. This has been fixed.
+  * The monitor would crash on some logfiles because stamina_max
+    seemed to be set to 0. The monitor will no longer crash this way.
+
+[7.06]
+  * Fixed a bug where version 7.xx online coach messages were never
+    sent to the right team. Thank you to Timo Steffens for finding and
+    fixing this bug.
+
+[7.05]
+  * Soccer server will now work with Windows NT/2000 with Cygwin
+    installed, though it has not been heavily tested. The logplayer
+    and monitor do not work as yet. Cygwin is available from
+    http://cygwin.com/
+  * A bug was fixed in the sending of the coach messages. Previously,
+    quotes were put around part of messages in the standard coach
+    language. These quotes have been removed.
+  * Fixed memory leak in collision checking.
+    Thanks to Artur Merke and Andreas Hoffman for finding it at for
+    the fix.
+  * For quite some time, the logplayer has occasionally "skipped" so
+    that certain cycles were never displayed by the logplayer. This
+    seems to be caused by the logplayer sending too many UDP packets
+    for the monitor to receive. Therefore, a new parameter has been
+    added to the logplayer 'message_delay_interval'. After sending
+    that many messages, the logplayer sleeps for 1 microsecond, giving
+    the monitor a chance to catch up. This is not a guaranteed to
+    work, but it seems to help significantly. If you still have a
+    problem with the logplayer/monitor "skipping", try reducing
+    message_delay_interval from it's default value of 10. Setting
+    message_delay_interval to a negative number causes there to be no
+    delay.
+  * The server used to truncate messages received from the players and
+    coach to 128 characters before recording them in the logfile. This
+    has been fixed.
+
+
+[7.04]
+  * If a client connects with version > 7.0, all angles sent out by
+    the server are rounded instead of truncated (as they were
+    previously) This makes the error from quantization of angles
+    (i.e. conversion of floats to ints) both uniform throughout the
+    domain and two sided. This change was also made to all values put
+    into the dispinfo_t structure for the monitors and logfiles.
+  * Fixed a bug which misrecorded the the span angle in the arc region.
+  * Fixes a bug where no space was printed after send_vi_step in the
+    server_param message (thanks to Peter Stone for pointing this out)
+
+[7.03]
+  * Added a new parameter drop_ball_time. If the play mode remains in
+    any free kick mode for one team (kick_off_{left,right},
+    corner_kick_{left,right}, free_kick_{left,right}, etc) for
+    drop_ball_time cycles, the ball will automatically be dropped. In
+    accordance with past competition rules, if the ball is in a
+    penalty area, it will be dropped on the nearest inside corner.
+    (contributed by Oliver Obst)
+  * Changes to allow the server to compile on NetBSD systems.
+  * Players now continue to receive see messages when fullstate_[lr]
+    is turned on.
+
+[7.02]
+  * Minor modification to get compilation on Linux RedHat 7.0 systems.
+  * Fix to the server.conf file to correctly set ball_accel_max
+  * An error message is now printed if there is an unrecognized option
+    in a .conf file
+  * Fix to the coach language implementation to allow the use of named
+    actions.
+  * Fix to the coach language parsing. Previously, because of the use
+    of a static buffer, use of multiple defined things in one message
+    were incorrectly interpreted.
+  * Visual angle is server_param message is now reported in degrees
+    instead of radians.
+  * A new command has been added to the monitor protocol:
+    (dispplayer SIDE UNUM POSX POSY ANG)
+    SIDE: 1 (for left) | -1 (for right)
+    UNUM: 1--11
+    POSX, POSY: new position, each coordinate will be divided by
+                SHOWINFO_SCALE
+    ANG: The new angle of the player, in degrees
+    (contributed by Artur Merke)
+  * Two new parameters (fullstate_l and fullstate_r) have been added
+    which enable sending the full state of the world to the players on
+    the left and right teams respectively. This is for debugging purposes
+    only, and will never be turned on in a competition. The players
+    will not receive visual information. Instead, immediately after
+    each sense_body, they will receive a string in the following format
+    (fullstate TIME (pmode MODE) (vmode QUALITY WIDTH) (score LSCORE RSCORE)
+      (ball POSX POSY VELX VELY)
+      (PLAYERNAME POSX POSY VELX VELY BODYANG NECKANG STAMINA EFFORT RECOVERY)
+       ...)
+    MODE: any of the normal playmodes, as well as
+    goalie_catch_ball_[lr]
+    QUALITY: high | low
+    WIDTH: narrow | normal | wide
+    NECKANG: is in the relative neck angle
+    PLAYERNAME: format is [lr]_NUM (for example: l_1, r_6)
+
+    The value of these parameters go at the end of the server_param
+    message.
+    (contributed by Artur Merke)
+
+
+[7.01]
+  * Play stops and players are recovered every half_time cycles
+  * Score command added having the format
+	(score)
+    To which the server replies
+	(score <time> <your_score> <enemy_score>)
+  * Some cosmetic changes to coach_lang.[yh] and coach_lang_comp.[Ch],
+    including fixing a "bug" dealing with quotes in define
+    messages. The external behavior of the server should be unchanged.
+  * Fixed a bug in the count of freeform messages said by the coach
+    which caused all messages to be included in the freeform message
+    count.
+  * Server now processes all commands from both trainer and coach
+    instead every recv_step. Previously, only the last message on the
+    socket was processed.
+  * Added two new parameters start_goal_l and start_goal_r which are
+    is the starting score of the game.
+  * Online coaches no longer hear any messages from on online coach
+    (themselves or the opponents coach)
+  * Coach and trainers connecting with version >= 7.0 get the new
+    short player format in hear messages
+    (p "TEAMNAME" num) instead of (player TEAMNAME num)
+  * Small changes to the coach language.
+    * Add a definition type for actions: (definea "[string]" ACTION)
+    * Move the time to live value from the messages level to the token
+      level. New token format: (<TIME> <CONDITION> <DIRECTIVE_LIST)
+      Advice and info messages no longer contain the time to live.
+
+[7.00]
+  * Added support for the new coach language. The grammar can be found
+    in the file "coach_lang_grammar". For semantics, please see the
+    discussion from the coach-l list:
+    http://www.coral.cs.cmu.edu/mailman/listinfo/coach-l
+
+	Note that now you must have flex and bison in order to compile
+	the server. These utilities can be found at
+	http://www.gnu.org/software/bison/bison.html
+	http://www.gnu.org/software/flex/flex.html
+
+	The following parameters have been added: clang_win_size,
+	clang_define_win, clang_meta_win, clang_advice_win,
+	clang_info_win, clang_mess_delay, clang_mess_per_cycle
+
+	Each online coach (which connects with version >= 7.0) can
+	send clang_define_win(1) define messages, clang_meta_win(1)
+	meta messages, clang_advice_win(1) advice messages, and
+	clang_info_win (1) info messages per clang_win_size(100)
+	cycles. Note that if any of the clang_*_win parameters are
+	negative, then there is no restriction on that type of
+	message. The messages are heard by the players
+	clang_mess_delay(50) cycles after being received by the
+	server.
+
+	If the play mode is not play on, clang_mess_per_cycle (1)
+	coach message(s) are sent to the players each cycles,
+	regardless of whether the clang_mess_delay time for each
+	message has elapsed. Further, messages *sent* while the play
+	mode is not play_on do not count towards the clang_*_win
+	limits.
+
+	Note that the server will always send messages to the players
+	in the same order which they were received from the coach.
+
+	The restrictions say_coach_cnt_max and say_coach_msg_size
+	still apply to "freeform" messages (see the grammar).
+
+	Further the format for the hear command of the coach has
+	change slightly, it is now
+	(hear <TIME_SENT> online_coach_{left,right} <TIME_RECEIVED> <MESSAGE>)
+
+  * Included the head angle into the display of the soccermonitor
+    (source conributed by Ken Nguyen)
+
+  * Added Hetro Player support and substitusions.
+
+	Player types ( 7 including default type ) are generated randomly
+	when the server starts. the random types are based on predifined
+	tradeoffs which can be adjusted from the player.conf file.
+
+	On connecting to the server, clients (v7.0+) receive player type
+    	information.
+
+    	The online coach can change player types unlimited times in
+    	before_kick_off play_mode and change player types 3 times during
+	other non-playon play_modes using the following command:
+
+	    (change_player_type <UNUM> <PLAYER_TYPE>)
+
+	where UNUM is the uniform number of the player and PLAYER_TYPE is
+	a number from 0 to 6 specifying one of the 7 player types, where
+	0 is the default player type.
+
+	The server responds to the online coach with:
+
+	    (warning cannot_sub_while_playon) 	If the play_mode is playon.
+	    (warning no_team_found)		If the coach has no team
+						( should never happen ).
+	    (warning no_subs_left)		If the coach has made it's
+						3 subs for the game.
+	    (error illegal_command_form)	If change_player_type is
+						not followed by two integers
+						and a close bracket.
+	    (warning max_of_that_type_on_field) If the player_type is not
+						the default and there are
+						3 of that type already on
+						the field.
+	    (warning no_such_player)		If there is no player with
+						that uniform number on the
+						team.
+	    (warning cannot_change_goalie)	If the coach tries to change
+						the player type of the
+						goalie.
+	    (ok change_player_type UNUM TYPE)	If the substitution was made.
+
+	The server responds to the teammates with:
+
+	    (change_player_type UNUM TYPE)
+
+	and opponents ( including opponent coach ) with:
+
+	    (change_player_type UNUM)
+
+	If substituitions are made before a client connects to the server,
+	the are advised of the substituitions made via one of the above two
+	messages for each substitution made.
+
+	The offline coach can change player types any time with the
+	following command:
+
+	    (change_player_type <TEAM_NAME> <UNUM> <PLAYER_TYPE>)
+
+	where TEAM_NAME is the name of the team on whioch the change is to
+	be made.
+
+	The server responds to the offline coach with:
+
+	    (warning no_team_found)		If the team does not exist.
+	    (error illegal_command_form)	If change_player_type is
+						not followed by a string,
+						two integers and a close
+						bracket.
+	    (warning no_such_player)		If there is no player with
+						that uniform number on that
+						team.
+    	    (ok change_player_type TEAM UNUM TYPE)	If the substitution
+							was made.
+
+	The server responds to teammates and opponents as usual and adivises
+	the teams coach in the same way as the team members.
+
+  * Added initalisation message for offline coaches in the following format:
+	(init (version <VER>))
+    to which to the server responds with
+	(init ok)
+    Initalising a offline coach with the new init message does not start the
+    server.
+
+  * Added start command for offline coaches using new init message, with the
+    following format:
+	(start)
+    to which the server responds with
+	(ok start)
+
+  * Changed visual information for (online and offline) coaches connecting with version
+    7 or higher.
+	- visual information stats with "see_global" instead of "see"
+	- Short names are used.
+	- The body and head angles have been moved to the end of the object info.  The
+	  new grammer is
+		ObjInfo ::= (ObjName Pos) |
+			    (ObjName Pos Velocity) |
+			    (ObjName Pos Velocity Angles)
+
+  * Added server_param message for players and coaches connecting with version 7 or
+    above. It has the following format:
+
+	(server_param <gwidth> <inertia_moment> <psize> <pdecay> <prand> <pweight>
+	 <pspeed_max> <paccel_max> <stamina_max> <stamina_inc> <recover_init>
+	 <recover_dthr> <recover_min> <recover_dec> <effort_init> <effort_dthr>
+	 <effort_min> <effort_dec> <effort_ithr> <effort_inc> <kick_rand>
+	 <team_actuator_noise> <prand_factor_l> <prand_factor_r><kick_rand_factor_l>
+	 <kick_rand_factor_r> <bsize> <bdecay> <brand> <bweight> <bspeed_max>
+	 <baccel_max> <dprate> <kprate> <kmargin> <ctlradius> <ctlradius_width>
+	 <maxp> <minp> <maxm> <minm> <maxnm> <minnm> <maxn> <minn> <visangle>
+	 <visdist> <windir> <winforce> <winang> <winrand> <kickable_area>
+	 <catch_area_l> <catch_area_w> <catch_prob> <goalie_max_moves> <ckmargin>
+	 <offside_area> <win_no> <win_random> <say_cnt_max> <SayCoachMsgSize>
+	 <clang_win_size> <clang_define_win> <clang_meta_win>
+	 <clang_advice_win> <clang_info_win> <clang_mess_delay> <clang_mess_per_cycle>
+	 <half_time> <sim_st> <send_st> <recv_st> <sb_step> <lcm_st> <SayMsgSize>
+	 <hear_max> <hear_inc> <hear_decay> <cban_cycle> <slow_down_factor>
+	 <useoffside> <kickoffoffside> <offside_kick_margin> <audio_dist> <dist_qstep>
+	 <land_qstep> <dir_qstep> <dist_qstep_l> <dist_qstep_r> <land_qstep_l>
+	 <land_qstep_r> <dir_qstep_l> <dir_qstep_r> <CoachMode> <CwRMode> <old_hear>
+	 <sv_st>)
+
+  * Added player_param message for players and coaches connecting with version 7 or
+    above. It has the following format:
+
+	(player_param <player_types> <subs_max>	<pt_max>
+	 <player_speed_max_delta_min> <player_speed_max_delta_max>
+	 <stamina_inc_max_delta_factor>	<player_decay_delta_min>
+	 <player_decay_delta_max> <inertia_moment_delta_factor>
+	 <dash_power_rate_delta_min> <dash_power_rate_delta_max>
+	 <player_size_delta_factor> <kickable_margin_delta_min>
+	 <kickable_margin_delta_max> <kick_rand_delta_factor>
+	 <extra_stamina_delta_min> <extra_stamina_delta_max>
+	 <effort_max_delta_factor> <effort_min_delta_factor>)
+
+  * Added player_type message for players and coaches connecting with version 7 or
+    above. It has the following format:
+
+	(player_type <id> <player_speed_max> <stamina_inc_max> <player_decay>
+	 <inertia_moment> <dash_power_rate> <player_size> <kickable_margin>
+	 <kick_rand> <extra_stamina> <effort_max> <effort_min>)
+
+  * Added Quotation marks around the message part of a hear messege from players and
+    coaches for players and coaches connecting with version 7 or above.
+
+  * Added catch count, move count and change_view count to sense_body
+    for players connecting to version 7 with above.
+
+  * Externalised the config file reader into a generic reader which
+    is used for reading server.conf and for reading player.conf which
+    has settings for hetro players.
+
+  * Added striplog to tools directory.
+
+  * Added exteamname to tools directory.
+
+  * Added tools directory.  Programs in tools directory need to be
+    explicitly compiled.
+
+  * In server.conf, changed stamina_max from 3500 to 4000,
+    stamina_inc_max from 35 to 45, kick_power_rate from 0.016 to
+    0.027, and baccel_max from 1.6 to 2.7
+
+  * Added log_times parameter to server.conf for loging ms between cycles
+
+  * Added coach commands to command log
+
+  * Added BALL_COLLIDE and PLAYER_COLLIDE to player's alive member.
+    BALL_COLLIDE signifies that the player collided with the ball.
+    PLAYER_COLLIDE signifies that the player collided with another player.
+    The monitor displays both types with a black circle around the player.
+
+  * Introduced new monitor and logging protocol
+    Monitor protocol version 2 format:
+	A repeated series of dispinfo_t2 structs specifing game state
+
+    Only monitors connecting with:
+	(dispinit version 2)
+    will recieve data in the new format
+
+    Logging protocol version 3 format:
+	file starts with "UGL" and version number (3), followed by a
+	a series of shorts, specifying the type of data structure and
+	the data structures specified.
+
+	Each short specifying mode is followed by
+	i)	if mode == PM_MODE,
+			a char specifying play mode.
+
+	ii)	if mode == TEAM_MODE,
+			a team_t struct for the left side and
+			a team_t struct for the right side.
+
+	iii)	if mode == SHOW_MODE,
+			a short_showinfo_t2 struct specifying ball and
+			player positions and states.
+
+	iv)	if mode == MSG_MODE,
+			a short specifying the message board,
+			a short specifying the length of the message,
+			a string containing the message.
+
+	v)	if mode == PARAM_MODE,
+			a server_params_t struct specifying the current server
+			parameters.
+
+	vi)	if mode == PPARAM_MODE
+			a player_params_t struct specifying the current hetro
+			player parameters.
+
+	vii)	if mode == PT_MODE,
+			a player_type_t struct specifying the parameters of a
+			specific player type.
+
+    Play mode is only written if the playmode changes.
+    Team data is only written if a new team connects or the score changes.
+    Server parameters are only written once at the beginning of the logfile.
+    Hetro player parameters are only written once at the beginning of the
+    logfile.
+    Player type info is only written once for each player type at the beginning
+    of the logfile.
+
+    Data Conversion:
+    Values such as x, y positions are meters multiplied by SHOWINFO_SCALE2.
+
+    Values such as deltax, deltay are meters/cycle multiplied by
+    SHOWINFO_SCALE2.
+
+    Values such as body_angle, head_angle and view_width are in radians multiplied
+    by SHOWINFO_SCALE2.
+
+    Other values such as stamina, effort and recovery have also been multiplied by
+    SHOWINFO_SCALE2.
+
+  * Fixed logging so that the last cycle of a game is logged.
+
+  * Sense body information is now always sent to players before visual
+    information. Previously, if a player was due to recieve visual
+    information at the begining of a cycle the visual information would
+    be sent before the sense body information.
+
+  * Added missing initialization for part of sigaction structures
+    (contributed by Frank Rehberger)
+
+[6.07]
+  (These changes were made for the evaluation session of RoboCup2000)
+  * Added a parameter kick_rand which to add noise directly to the
+    kick command of the players. It is used the same way as
+    player_rand or ball_rand
+  * Added parameters team_actuator_noise: (on/off) whether the
+    following params are used
+  * prand_factor_l, prand_factor_r: The player_rand value is
+    multiplied by this (for the left and right teams) to get the
+    actual noise level
+  * kick_rand_factor_l, kick_rand_factor_r: The kick_rand value is
+    multiplied by this (for the left and right teams) to the get the
+    actual noise level.
+
+[6.06]
+  * A new parameter 'slow_down_factor' (default 1) has been
+    added. This parameter can used to slow the server down by an
+    integer factor. Specifically, the following values are multiplied
+    by slow_down_factor after option processing: simulator_step,
+    send_step, send_vi_step, sense_body_step. Note however that this
+    parameter does *not* affect the length of half-time. The number of
+    cycles in a half is calculated as if slow_down_factor does not
+    exist.
+
+[6.05]
+  * The say_coach_cnt_max parameter now limits the number of messages
+    which the online coach can say. The parameter existed before but
+    had no effect. The online coach receives (error said_too_many_messages)
+    if it trys to say too many messages. A value < 0 for say_coach_cnt_max
+    turns off the limit on the number of messages.
+  * If the game continues into extended_time, the online coaches are
+    given an additional say_coach_cnt_max messages to say every
+    additional 3000 cycles (or whatever the normal length game
+    is). The first additional messages are given at the start of
+    extended time. Allowed messages are cumulative.
+
+[6.04]
+  * Made the ball move immediately when the goalie issues a move
+    command after a catch. Previoulsy, the goalie could see the ball
+    in it's old location after the goalie moved.
+
+[6.03]
+  * The angle reported in the speed field of sense_body is now
+    normalized.
+  * (Also note that in the visual info, the teamname in enclosed in
+    quotes. This was present in a previous release, but was not
+    mentioned in this file)
+
+[6.02]
+  * Goalie is now identified in the visual info. This is only seen
+    only when the player's uniform number is also seen. The object
+    string in the visual info for seeing the goalie is:
+    (p "<team_name>" <num> goalie). Visual info is unchanged
+    otherwise. This affects all clients which connect with version
+    >=6.00
+
+[6.01]
+  * Fixed a bug that caused the server to send B instead of G for a
+    goal that was very close
+
+[6.00]
+  * The speed entry of sense_body now contains two arguments: (speed r
+    ang) where r is the magnitude of the player's velocity and ang is
+    the angle relative to the player's view angle.
+    << ") (speed " << Quantize(vel.r(), 0.01) << " "
+    << Rad2IDeg(vel.th() - angle_body - angle_neck_committed)
+  * The visual information has been shortened. All object names are
+    now a single character long.
+	Old       New
+	flag      f
+	player    p
+	ball      b
+	line      l
+	goal      g
+    The versions with capital letters (for felt objects) are just
+    capital single letters.
+  * Added vector addition for kicks with a maximum acceleration of 1.6m/c
+  * Added a parameter goalie_max_moves (default 2) which limits the
+    number of times the goalie can move after a catch. A negative
+    parameter allows infinite moves. "(error too_many_moves)" is sent
+    to the client if it tries to move too many times.
+  * Online coach connecting with (init TeamName) now receives a (init
+    Side ok) reply.
+  * Coach (on- or offline) can now send an (team_names) command and receives
+    (ok team_names [(team Side1 TeamName1) [(team Side2 TeamName2)]])
+  * Offline coach (aka trainer) can send (recover) to reset players'
+    stamina, recovery, effort and hear_capacity to the values at the
+    beginning of the game. The server replies with (ok recover).
+  * Added the following PlayMode items and a flag for player status.
+	[enum PlayMode]
+	PM_PK_{Left|Right}, PM_FirstHalfOver, PM_Pause, PM_Human,
+	PM_Foul_Charge_{Left|Right}, PM_Foul_Push_{Left|Right},
+	PM_Foul_MultipleAttacker_{Left|Right},
+	PM_Foul_BallOut_{Left|Right}
+	[player status]
+	#define LOST			0x0200
+    These additions are required from infrastructure group who
+    try to develop 3D viewer, commentator and logger for small size league.
+    The change will not affect normal behavior of Soccer Server
+    as a platform for the simulation league.
+
+[5.27]
+  * Fixed a bug which caused sensory info to be sent 4 times too often.
+  * Fixed a bug with popup windows in monitor which caused the monitor
+    to crash on some systems.
+  * For the logplayer's record mechanism, changed the length field to
+    be in network byte order
+
+[5.26]
+  * Fixed a bug where the ball would sometimes stick to a player other
+    than the goalie after a catch
+  * Fixed a bug where if the goalie ran out of bounds with the ball, a
+    corner kick or goal was not correctly assigned
+  * The length field in version 2 of the logfile is now put into
+    network byte order
+  * fixed problems with sensory information coming in 160ms intervals
+    rather than 150ms.
+  * fixed the problem that this sensory information could become out
+    of sync with the server. i.e. a 160ms (or 150ms) cycle could (in
+    some cases) become extended to 170ms or 180ms etc. whilst still
+    maintaining a 100ms simulator cycle.
+  * Fixed problems with signal being lost if the server was busy when
+    they arrived
+
+[5.25]
+  * Fix a bug that the referee sometimes misjudges "goal"s.
+	(reported by Mikhail Prokopenko and Jan Colin Murray)
+  * Parameters for quantization_step_* can be set separately for each team.
+	(for evaluation)
+
+[5.24]
+  * Fix a bug of logplayer that behaves strange way when goto mode.
+
+[5.23]
+  * Fix a bug that sense_body does not send version-4's format.
+	(reported by Patrick. F Riley)
+  * Apply a patch contributed by Klaus Dorer to netif.C.
+    Now, the server check all messages from clients.
+
+[5.22]
+  * Fix a bug that sense_body information is sent in version-5 format
+    even if the client connects with version-4 format.
+    (reported by Patrick F Riley)
+  * Fix a bug that messages said by online-coachs are informed as
+    referee's messages.
+    Now, onlin-coaches' messages are informed as the following format:
+	(hear TIME online_coach_right MESSAGE)
+	(hear TIME online_coach_left MESSAGE)
+    (reported by Patrick F Riley and Emiel Corten)
+  * Fix a bug that the ball is hold by goalie if the 2nd half is
+    end in draw.
+    (reported by Oliver Obst)
+
+[5.21]
+  * Fix a bug that logplayer cannot be compiled on SunOS4.
+
+[5.20]
+  * Fix a bug that the goalie can not kick the ball after a catch
+    if the ball is far.
+    Now, the ball is moved to the next of the goalie after a successful catch.
+
+[5.19]
+  * The value of half_time in server.conf is corrected for
+    the RoboCup-99's regulation.
+  * Fix a bug of logplayer. (Patched by Gerhard Sander).
+  * Add rec_msg_mode flag to the server to reduce the size of logfile
+    (Contributed by Patrick F. Riley).
+  * Fix a bug that the server executes turn_neck commands exclusively with
+    turn, dash and kick commands.
+  * Fix a bug that some players remain in side of 9.15m from the offside line
+    after offside call (Reported Klaus Dorer).
+  * Fix a bug the server can not parse "offside_kick_margin" line
+    in "server.conf" file.
+
+[5.18]
+  * Fix a bug of neck directions and turn_neck commands.
+  * "Move" commands after catch moves the goalie and the ball
+    keeping the relative position between them.
+  * When the referee calls "offside", the server move offside players
+    to 9.15m behind from the offside-line.  Y-position is kept.
+    (Previously, the server moved them to random position.)
+  * An offline coach can set the velocity by "move" command.
+  * Fix a bug that the server crashs in some situation.
+  * All information of "sense_body" and "see" reflects values after the server
+    commits the commands at the end of a simulation cycle.
+  * The values of stamina_max and stamina_inc_max in the default "server.conf"
+    file are set for RoboCup-99's regulations.
+  * Limit the value of turn_neck and angle_neck.
+
+[5.17]
+  * Fix a bug of behavior after goalie's catch command.
+  * Fix a bug in functions defined in utility.h.
+
+[5.16]
+  * Fix spelling miss of "illigal".
+
+[5.15]
+  * Normal coach (not online coach) becomes to be able to use
+    "(eye on/off)" command.
+
+[5.14.1]
+  * Fix a bug that the server moves players wrong side when
+    the second catch command occer.
+
+[5.14]
+  * Fix a bug that the server move players to wrong place at a goal kick.
+  * Fix a bug that the human referee can not take free kick during
+    a goalie catchs a ball.
+
+[5.13]
+  * -lbsd option is omited. (Oliver Obst's patch)
+
+[5.12]
+  * Fix a bug that the server does not accept "drop ball" during
+    a goalie catch a ball.
+
+[5.11]
+  * Fix a bug that coach and online-coach receives direction in radian.
+  * Fix a bug that the server coredump when a client send a turn_neck
+    immediately after establishing the connection.
+
+[5.10]
+  * Change the direct number "11" to "MAX_PLAYER" in source file
+    for generalization.
+
+[5.09]
+  * online coach can use two ways to get visual information:
+	(1) (look) protocol
+		The coach requires the information actively
+		every time it needs.
+		As same as off-line coach, the coach client
+		sends a "(look)" command, then the server
+		returns "(ok look ...)" with all absolute positions of
+		objects.
+	(2) (eye on/off) protocol
+		When the coach sends a "(eye on)" command,
+		then the server starts to send "(see ...)" information
+		every 100ms (the interval is specified by send_vi_step
+		parameter) automatically to the client.
+		When the coach sends a "(eye off)" command,
+		then the server stops to send.
+  * Add new option "-redraw_player (on/off)" to soccermonitor.
+    Then soccermonitor redraw player widgets every cycle.
+    This option is for avoid a bug of XFree86 server for SVGA,
+    and it makes soccermonitor heavy.
+    So, it is better do not use this option when soccermonitor
+    works well without the option.
+
+[5.08]
+  * The server accepts "(look)" commands from on-line coach.
+  * Fix a bug that sampleclient can not be compiled on Linux.
+
+[5.07]
+  * Push out opponent players from a penalty area when
+    a goal kick occer.
+  * Goalie can use "(move X Y)" command after catching the ball.
+  * Fix a bug of the version control in sense_body information.
+  * on-line coach get visual information in "(see ...)" format
+    rather than "(ok look ...)" format.
+  * Fix a mistake of a name of option in server.conf file.
+	(look_step -> send_vi_step)
+
+[5.06]
+  * Fix a bug that head-angle is reported in float value.
+  * Fix a bug about wrong initialization of turn_neck.
+  * Fix a bug that distance to the player is reported twice.
+  * Parameters in "server.conf" is modified for RoboCup99.
+  * On-line coach mode is added.
+    In order to start on-line coach,
+	* An on-line coach client sends "(init team-name)" to
+	  the port 6002/UDP of the server.
+ 	* The client can use "(look)" and "(say)" commands.
+	  "(look)" command returns with visual information.
+ 	  "(say)" command broadcase the message to the all player client.
+	* Also, the coach client can use "(say)" commands
+  * An on-line coach receives information about positions of players and
+    ball in absolute coodinate system (x-y coordinate system).
+  * An on-line coach become not to use "move" and "change-mode" commands.
+
+[5.04]
+  * Version Control
+  * Fix the offside bug that the server moves players to the wrong side.
+  * Add information about player's body- and head-direction and velosity
+    into data that a coach client gets.
+  * Sense-body information sends every 100ms.
+    The interval is able to be modified by command-line option "-???"
+  * Fix a bug that head-angle is reported in radian.
+
+[5.03]
+  * Fix a bug that the server reports head_angle in radiants.
+  * Fix a bug that the server move players to wrong place after offside call.
+
+[5.02]
+  * Fix the bug that offensive players move into offside areas when
+    offside is called by the referee.
+  * Fix the bug that players can not move before kickoff.
+  * Fix the bug that (turn_neck Angle) commands turns wrong directon of angle.
+    (In the regulation, Angle should be positive value when he/she will
+    turn his/her neck right.)
+  * Fix the bug that inconsistency about angles of lines.
+  * `sense_body' information includes the following information:
+	* the number of executed turn_neck commands.
+		(turn_neck XXX)
+	* the angle of head relative to the body.
+		(head_angle XXX)
+  * Format about players in visual information are changed as follows:
+
+	((player TEAM UNUM) Distance Direction DistChng DirChng
+		BodyFacingDir HeadFacingDir)
+
+[5.01]
+  * Operation after offside call is modified.
+	When offside is called,  offending players inside of 9.15m from
+	the ball and in the offside area are moved back to onside area.
+  * Clearance at goal-kicks is modified.
+	When goal-kick, all offending player can not enter the penalty area.
+	The play-mode does not turn to play-on until the ball goes out
+	of the penalty area.
+  * All body commands (turn, dash, kick, and catch) have its effects
+    at the end of simulation cycle.
+
+[5.00]
+  * Neck is introduced.
+	A player have a neck.
+	A client can use "(turn_neck ANGLE)" command to turn the neck.
+	ANGLE is added to the current neck-angle.
+	possible neck-angle is [-90,90] (parameterized)
+	The neck-angle is relative to the direction of body,
+	so that when a client "(turn X)", then the view angle also
+	turns X degrees.
+	A client can use "neck" commands with turn, dash, kick in the same
+	simulation cycle.
+  * Backward Dash
+	A player can dash backword more powerful (for example, (dash -100)),
+	but consumes doubled stamina.
+  * sense_body
+	Sense_body information is sent automatically in every 100ms.
+
+[4.21]
+  * Shuffle the order of recv_from for of clients to equalize chances
+    of kicking ball.
+  * When the soccerserver runs with "-send_log off" option, then
+    the server does not send information about communication between
+    the server and clients to soccermonitors.
+    This option reduces network trafic.
+  * When the soccermonitor runs with "-eval on" option, then
+    the server runs as evaluation mode.  In the evaluation mode,
+    a user can discard a player from the pull-down menu on the monitor.
+
+[4.20]
+  * Fix a bug reported by David Andre about drop-ball.
+  * Official Version used in RoboCup98 Paris
+
+[4.19]
+  * Fix a bug in offside judgement reported by Milind Tambe.
+
+[4.18]
+  * Fix a bug that the server does not accept second player in team-r.
+  * Fix a typo reported by soccer@cs-gw.utcluj.ro.
+
+[4.17]
+  * Fix a bug of judging offside and its restart-position.
+  * Install team `bench's.
+    Now, 11 players of each team are standing at their bench
+    even before (init) commands are received.
+    When the server receives a (bye) command, it move the player
+    to the bench.
+  * The server does not receive (reconnect) commands in play-on mode.
+  * Fix a bug in the definition of ReducedDashPower(p).
+  * The server saves rediced-size logfile.  This algorithm is
+    contributed by Mr. Klaus Dorer (klaus@cognition.iig.uni-freiburg.de).
+    You can select the old format of logfile and Klaus's format by
+    a new option "-record_version [1|2]", where '1' is old format and
+    '2' is Klaus's format.
+
+[4.16]
+  * Offside is called in the following condition.
+	+ An offside player aproachs to the ball in 9.15m.
+	+ The offside player is the nearest player in the offending team.
+  * When offside is called, the server restarts the match from
+    the nearest point on the offside line from the position where
+    the offside player was when the passer kicked the ball.
+  * Add the following flags about collision to the protocol from
+    soccerserver to soccermonitor:
+
+	dinfo.body.show.pos[i].enable = PLAYER_TO_BALL (0x40)
+					BALL_TO_PLAYER (0x80)
+
+[4.15]
+  * Fix a bug that the server does not disconnect correctly when "(bye)"
+    command is received.
+
+[4.14]
+  * Inertia moment parameter (IMPARAM in source of the previous version)
+    becomes a command-line parameter named "inertia_moment".
+  * Reduce double definition of 'turn()' method for MPObject class and
+    Player class.  Now, only Player class has 'turn()' method.
+  * Fix the bug that a player initialized by version 3 can not see
+    players initialized by version 4.
+  * The referee restarts a match after 'offside' from position
+    where the offending player was when the passer kicked the ball.
+  * Add play-modes for offside.
+    When 'offside' occers, the server changes the playmode to "offside_l"
+    or "offside_r" (referee's message), and suspend the match 3 seconds,
+    with a popup window, and restart the match.
+    The following new options are introduced:
+	-offside_label_width WIDTH
+	-offside_label_font FONT
+  * Change the name of an option "-print_goal" to "-popup_msg".
+    When "-popup_msg on", the server displays both popup windows of
+    "Goal!!" and "Offside!".  Else, the server does not use popup windows.
+    Default is "on".
+  * New option "-ball_file FILE", which specifies the file of a bitmap
+    picture of ball, is introduced.
+  * Soccermonitor display kicking players with double circle,
+    and catching goalies with filled circle.
+  * Goalies are displayed different color.
+    You can specify the color by "-goalie_l_color COLOR" and
+    "-goalie_r_color COLOR" option.
+  * Protocol from soccerserver to soccermonitor is changed as follow:
+	dinfo.body.show.pos[i].enable = DISABLE     (0x00)
+					STAND       (0x01)
+					KICK        (0x02)
+					KICK_FAULT  (0x04)
+					GOALIE      (0x08)
+					CATCH       (0x10)
+					CATCH_FAULT (0x20)
+    Actual value is bit-or of these information.
+  * Fix the bug that re-connected players can not be seen in monitor
+    when the player disconnected by a "(bye)" command.
+  * Equation about stamina written in [4.00] is wrong.
+	    /* consume stamina by dash */
+	     effective_dash_power = effort * dash_power
+	     stamina -= effective_dash_power
+    should be
+	    /* consume stamina by dash */
+	     effective_dash_power = effort * dash_power
+	     stamina -= fabs(dash_power)
+
+[4.13]
+  * Small modification was done just for distribution.
+
+[4.12]
+  * Used RoboCup Japan Open 98.
+  * When offside rule is applied, the server restarts the game
+    from the point where the offside player received the ball.
+    In the previous implementation, the server restarts the game
+    from the point where the passer kicked the ball.
+  * Change configure script.
+    If the new configure script does not work well, please use
+    configure2 script that is the same as the old configure script.
+
+[4.11]
+  * Fix the condition of offside.  The correct offside position is:
+	(1) between the center line and the opponent goal line.
+	(2) between the ball and the opponent goal line.
+ 	(3) between the second defender and the opponent goal line.
+
+[4.10]
+  * Fix the following bug of checking offside.
+    The server judged offside even if a player try to do free-kick,
+    corner-kick, etc.
+  * Change the name of option 'permit_kick_off_offside' to
+    'forbit_kick_off_offside'.
+
+[4.09]
+  * Use Xlib instead of Xt to display players and ball in soccermonitor.
+    So, soccermonitor becomes light so that even laptop machines can
+    display soccermonitor without fricker.
+
+[4.08]
+  * New command line option "-verbose [on/off]" is introduced.
+    Then soccerserver is invoked with "-verbose on" then
+    the server reports some trouble-messages like "recvfrom error".
+    If "-verbose off" then the server does not reports such warning.
+    The default is "off".
+
+[4.07]
+  * Corrct the positions of flags of goal-posts.
+    In version 4.06 and before, the positions is calculated from
+    constant value of default goal width rather than the parameter in
+    "server.conf" file.
+
+[4.06]
+  * Fit the code to calculate actual kick-power to the description
+    in [4.02] of this list.  This was pointed out by Peter Stone.
+
+[4.05]
+  * Fix a bug that 'move' command does not work in version 4.04.
+
+[4.04]
+  * Speed value in sense_body is quantized by 0.01.
+  * New flags introduced in version 4 are invisible for clients
+    who init by version 3.0.
+  * Fix a bug some value in 'see' information becomes NaN.
+  * Fix a bug of stamina model.
+  * Clients can not specify goalie mode or version at 'reconnect'.
+  * Null char is written '\000' instead of 'NULL'.
+  * The server warns when a client use too long teamname in 'init'.
+  * '-nowindow' and '-nw' for logplayer' option are the same.
+  * The server does not return '(error unknow_command)' when
+    a client sends more than one command in a simulation cycle.
+
+[4.03a,b]
+  * Fix a bug of configure.
+  * Fix a bug to fail to compile server/field.C.
+  * Fix a bug in scanning init command.
+  * Change the formula to decide kick_power_rate as follows:
+	kick-power-rate := max-kick-power-rate *
+			(1 -
+			 0.25 * |dirDiference|/180 -
+			 0.25 * (distBallPlayer - BallSize - PlayerSize)/
+			 	kick_margin)
+  * No window mode of logplayer.
+    When logplayer is invoked with -nowindow option,
+    it start without window and accept commands from the standard input.
+    Possible commands are as follows:
+		play [FROM] [to TO]
+			Play from FROM to TO in normal speed.
+			If FROM > TO, it plays backword.
+			FROM and TO should be integer, 'here'(current counter),
+			or 'end' (last of the log).
+		feed to TO
+			Feed forward until TO.
+			When TO is less than the current counter,
+			It rewind to TO.
+		feed {+|-}COUNT
+			Feed {+|-}COUND steps.
+		jump to TO
+			Jump to TO without displaying.
+		jump {+|-}COUNT
+			Jump to {+|-}COUNT without displaying.
+		step [COUNT]
+			play COUNT steps.
+		sleep SECOND
+			sleep SECOND seconds.
+			SECOND should be positive integer or forever.
+		quit
+			quit and finish loplayer.
+  * Fix a small bug of X interface in logplayer.
+
+[4.03]
+  * The server parse `init' command more correctly.
+  * Reform the configure script.
+  * Fix minor bugs in logplayer.
+
+[4.02]
+  * Kick command accerelate the velosity of the ball rather than sets it.
+  * Maximum ball speed is introduced.
+	max_ball_speed = 32
+    When the ball speed becomes larger than this, the speed is reduced
+    to this maximum speed.
+    Player also have a maximum speed.
+  * 'kick_power_rate' is calculated in the following way.
+	kick-power-rate := max-kick-power-rate * (1 -
+                   0.25 *  |dirDifference|/180 -
+                   0.25 * distBallPlayer / controlRadiusWidth
+
+     where
+	  dirDifference := the angle between the view direction of the
+        	           player and the ball position
+
+	  distBallPlayer := the distance between the edge of the player
+	                    and the ball
+	  controlRadiusWidth := control_radius - player_size
+  * 'sense_body' information includes the following information:
+	(kick KICK_COUNT)
+	(dash DASH_COUNT)
+	(turn TURN_COUNT)
+	(say SAY_COUNT)
+    Each of them tell how many commands are executed.
+  * `goalie_catch_probability', the probability that a goalie succeed
+    to catch the ball by a catch command is introduced. (default is 1)
+
+[4.01]
+  * Minor change of logplayer window.
+
+[4.00]
+  [Major Changes]
+  * Version control by init command.
+    When a client connects the server with '(init TEAMNAME (version 4.00))',
+    the server uses the new protocols for the client.
+    If the client sends only '(init TEAMNAME)' then the server uses
+    the old (version 3.2x) protocol.
+  * Goalie
+    When a client connects the server with '(init TEAMNAME (goalie)',
+    the client becomes a goalies.  The goalie can use '(catch DIR)' command
+    that enable to capture the ball in the following rectangle area:
+
+			    ___
+		**********   |
+		G*********   W   ---> DIR
+		**********   |
+			    ~~~
+		|<---L--->|
+    where
+	W : GOALIE_CATCHABLE_AREA_W (default 1)
+	L : GOALIE_CATCHABLE_AREA_L (default 2)
+    The goalie can not use catch commands GOALIE_CATCH_DEC cycles after
+    it uses a catch command.
+    Only a goalie is available in a team.
+  * Kick command set the ball velocity rather than accelerate it.
+  * A new command, 'sense_body', which tells internal status of a player
+    in the following way:
+	(sense_body) ->
+		(sense_body TIME (view_mode QUALTY WIDTH)
+				 (stamina STAMINA EFFORT)
+				 (speed AMOUNT_OF_SPEED))
+  * The server executes one of kick, turn or dash command in a simulation
+    cycle.
+    Other commands (say, change_view, sense_body) are executable in the same
+    cycle.
+  * Offside rule is introduced.
+    The algorithm is as follows:
+	(1) When a player of team-X kick a ball,
+	    players of team-X in offside position are
+	    marked ``offside''.
+	(2) When a player marked ``offside'' try to kick the ball,
+	    the referee judges ``offside!!''.
+	(3) ``offside'' mark is cleared by each effective kick.
+    where, `offside options' is:
+	(1) in the opponent side
+	(2) between the ball and the opponent goal line
+	(3) between the second defending player and the goal line.
+    The user can turn off this offside rule by '-use_offside off' option.
+  * Long term stamina is introduced as follows
+    /* recover-stamina phase */
+     if( stamina <= 0.3*max_stamina ){
+       if( recovery <= 0.1 ){
+         /* do nothing */;
+       else
+         recovery -= .05;
+     if( stamina <= 0.4*max_stamina ){
+       if( effort <= 0.1 )
+          /* do nothing */;
+       else
+          effort -= .05;
+     if( stamina >= 0.9*max_stamina ){
+       if( effort >= 1.0 ){
+         /* do nothing */;
+       else
+         effort += .05;
+     stamina += recovery * maximum_recovery
+
+    /* consume stamina by dash */
+     effective_dash_power = effort * dash_power
+     stamina -= effective_dash_power
+  * New Landmarks
+	center mark	(flag c)
+	goal posts	(flag g l t)	left-top
+			(flag g l b)	left-bottom
+			(flag g r t)	right-top
+			(flag g r b)	right-bottom
+	flags outside of the pitch
+			(flag TB LR XX)
+			(flag LR TB YY)
+				TB ::= [t|b]
+				LR ::= [l|r]
+				XX ::= [10|20|30|40|50]
+				YY ::= [10|20|30]
+			(flag TBLR 0)
+				TBLR ::= [t|b|l|r]
+		These flags are located at 5 meter outside from the
+		edge of the pitch.
+		For example, (flag t l 20) is 5 meters above from the top
+		touch line and 20 meters left from the center line.
+		In the same way (flag r b 10) is 5 meters right from the right
+		goal line and 10 meters below from the center of right goal.
+		In the similar way, (flag b 0) is 5 meters below from the
+		midpoint of bottom touch line, and (flag l 0) is 5 meters
+		left from the center of the left goal.
+ * Default visual sensing time is 150ms.
+ * Visual information about a player tells its facing direction
+   in the following format.
+     ((player TEAMNAME UNUM) DISTANCE DIRECTION DISTCHANGE DIRCHANGE FACEDIR)
+   where FACEDIR is the relative facing direction.
+   For example,
+
+	P=>	<=Q		... Q's FACEDIR is 180
+
+	P=>	Q		... Q's FACEDIR is 90
+		v
+
+  [Minor Changes]
+  * Fix a bug that stamina increase when a player dashs with negative power.
+  * If the server is invoked with '-permit_kick_off_offside off' option,
+    the server does not permit for players to enter the opponent sides.
+
+[3.32]
+  * UDP port number used in logplayer is changed by -port PORT option.
+
+[3.31]
+  * The following drawing facility is added to soccermonitor.
+    	- draw point
+	- draw line
+	- draw circle
+  * Delete all code for Motif.
+
+[3.30]
+  * Stepwise replay functions is added to 'logplayer'.
+  * Refine the interface of logplayer.
+  * Kickable margin (1.0m) becomes a parameter that can be specifiled
+    in a conf file for soccerserver.
+
+[3.29]
+  * A logfile includes informaiton about communication between clients and
+    the server when soccerserver is invoked with '-record_log on' option.
+    If you need not the information in the log file (only for information
+    about locations of players and the ball), the server should be invoked
+    with '-record_log off' option.
+  * Logplayer accepts multiple monitor.
+
+[3.23--3.28] (These modification was done on site of RoboCup-97 :-)
+  * Force players in their own sides before kick-off.
+  * Change to use larger fonts.
+
+[3.22a]
+  * Fix a typo in monitor/field.C
+
+[3.22]
+  * Fix a bug that the server does not record a log file when no monitor
+    is running.  [contributed by William Webber, RMIT]
+
+[3.21]
+  * A small change in pop-up window when a team get a goal.
+
+[3.20]
+  * Stamina and hear_capacity is refleshed at the begining of
+    the 2nd half.
+
+[3.19]
+  * The file of image on the field is changable by -mark_file_name
+    option.  Default file is "mark.xbm".
+
+[3.18]
+  * A radius of kickable area was decided by constants in previous
+    versions.  Now, the radius is decided actual parameters of
+    ball_size and player_size.
+
+[3.17]
+  * Now, an image appears on the field.  By default, RoboCup logo appears.
+    The image file is monitor/mark.xbm.
+    You can turn off this facility by specifying "print_mark off" option
+    on the command line or configulation file for soccermonitor.
+  * When a team gets a goal, a popup menu labeled "Goal!!".
+    You can turn off this facility by specifying "print_goak off" option
+    on the command line or configulation file for soccermonitor.
+
+[3.16]
+  * Small change in popuping foul menu.
+
+[3.15]
+  * Fix a bug repoted by Sean Luke.  The bug is:
+	In 3.13 and earlier versions a negative number will cause the server
+	to incorrectly do time_over after a goal is made. This is because it
+	is comparing the current time with the (negative) half_time time, and
+	the current time is much greater, so it thinks the game is over.
+
+[3.14]
+  * Small modification of soccermonitor to avoid the bug (maybe) of X11R5.
+    soccermonitor becomes to use XtSetVaue() instead of XtMoveWidget().
+
+[3.13]
+  * Fix a bug that the server does not keep out defending players from the
+    center circle when the server already receives some "kick" commands.
+
+[3.12]
+  * Add an option of "drop_ball" in foul menu that pop-ups when
+    an user clicks a mouse on the field.  When you choose "drop_ball",
+    then:
+	(1) The referee announce "drop_ball" to all player.
+ 	(2) It moves the ball to the mouse cursor.
+	(3) Players are moved to keep 9.15m away from the ball.
+	(4) The referee restarts the match.
+  * The margin of corner kick (default is 1m) becomes to be modified
+    by command-line options or the configuration file.
+    The name of the option is "ckick_margin".
+
+[3.11]
+  * Change the format of pop-up menu when an user clicks a mouse on
+    the field.
+  * The point to restart a match by a corner-kick is changed to
+    (1m,1m) inside from the corner.
+
+[3.10]
+  * Fix a bug of the foul menu introduced in version 3.09.  The bug
+    is that the server core-dumps when a user click out of the field.
+
+[3.09]
+  * The process to take a foul by a human referee is changed.
+    Previously, the human referee must click on a player who does foul.
+    Now, the human referee clicks at the point on the field where the
+    game restarts.  Then a menu pop-ups and select a team that will
+    do a free-kick.
+
+[3.08]
+  * Player's "hear_capacity" becomes to recover constantly
+    when the simulation clock stops before a match, during half-time,
+    and after a goal.  Previously, hear_capacity recovered only when
+    simulation clock was running, so that, players could not communicate
+    with each other after a goal, for example.  Now,  players can
+    communicate during such out-of-play time.
+
+[3.07]
+  * A player becomes to be able to hear its own message without
+    exhausting its hearing capacity.
+    So, the player can hear a message from a teammate just after saying
+    something.
+
+[3.06]
+  * Fix a bug that a player can kick a ball after a goal.
+    Now, players can never kick a ball for 5 seconds between a goal
+    and the next kick-off.
+  * Fix a bug that the server sometimes accepts more than one command in
+    one simulation cycle (100ms).
+    Now, the server accepts one command in one simulation cycle at most.
+
+[3.05]
+  * "logplayer" becomes to support X11R5.
+  * In order to make sure to set the velocity of the ball to zero,
+    the server moves the ball to the center mark at the end of first half.
+  * The value of goal_width in "monitor.conf" is now 14.02, which is
+    consistent value in "server.conf".
+  * Revise "sserver" shell script to set LD_LIBRARY_PATH and the path of
+    tcsh correctly.
+  * "soccermonitor" becomes to support X11R5 correctly.
+
+[3.04]
+  * Fix a bug of "XtDestroyApplicationContext" problem in
+    soccermonitor for Solaris.
+  * Fix a bug of zero-divide problem in relative movement values in
+    visual information.  Version 3.03 sometimes sends the following
+    visual information.
+
+	(see 0 ((goal r) 52.5 0) .... ((ball) 0 0 NaN NaN) ...
+
+    In some platforms, the server core-dumps because of the same reason.
+    Now, this problem is fixed.
+  * Change Makefile in order not to make logplayer in the case of X11R5,
+    because logplayer does not support X11R5.
+  * The server moves players into their own side at kick-off if they are
+    in the opponent side.
+  * Quantization unit for dir_change becomes small, so that clients
+    can know more detailed information about relative movements.
+  * Fix a bug of information about near-objects.
+    In version 3.03, information about near-objects (objects near to the
+    player and out of view-cone) includes dist_change and dir_change.
+    This is not fit to the regulation for RoboCup-97.  Now, the server
+    only sends distance and direction about near-objects.
+  * Change the value of kick_power_rate in server.conf from 0.02 to 0.013,
+    because a player can shoot the ball to a goal from the center circle
+    in the previous setting.
+
+[3.03]
+  * The server becomes to inform about relative movements
+    of flags and goals in visual information.
+
+[3.02]
+  * The following bug is fixed.
+	The server coredumps when move two objects to the same place.
+
+  * The server ignores 'kick' commands 5 seconds after a goal, which
+    is the period that players go back to their home position.
+
+[3.01]
+  * The following bug is fixed.
+	Information about relative movements of objects in the "see"
+	information is wrong.  Even if the player and objects stop,
+	"see" information returns non-zero values of DistChange and
+	DirChange.
+  * The following bug is fixed.
+	The server controls the players' capacity of hearing message
+	in the wrong way.
+
+[3.00]
+  * The format each object in 'see' information is changed as following.
+	(ObjName Distance Direction DistChange DirChange)
+    where DistChange and DirChange mean amount of changes of Distance
+    and Direction respectively.
+  * Quantize step for visual and movable objects (players and the ball)
+    is now 0.1 rather than 0.01.  This means that the accuracy of
+    the distance information is low when the object is far from the player.
+  * The player can see all objects that is within 3m from the player.
+    In this case, the player can know the type , the distance and the
+    direction of the object, but can not know the name of the object.
+    Actually, the player gets the following information.
+
+	(ObjType Distance Direction)
+	ObjType ::= (Flag) | (Ball) | (Goal) | (Player)
+  * During 5 seconds between a goal and kick-off, the client can use
+    'move' commands to come back home.
+
+[2.93]
+  * Stamina is treated in the same scale as power parameters in dash commands.
+    Previously, the stamina was treated in the scale of power multiplied
+    a small constant.
+  * Each player can hear N messages during M simulation cycles.
+    N and M is decided from the parameter `hear_max', `hear_decay'
+    and `hear_inc' as follows:
+	M = (hear_max)/(hear_inc)
+	N = (hear_max)/(hear_decay)
+    This limitation is effective only for messages from players.
+    The player always can hear messages from the referee.
+
+[2.92]
+  * The process after a team gets a goal is changed as follow:
+
+	(1) The referee broadcasts "goal_SIDE_POINT".
+	(2) During 50 simulation steps, the player must return its own side
+	    to restart the game.  During this interval, the clock is stopped
+ 	    and the ball stays in the goal.
+	(3) If players are in the opponent side after the interval,
+	    the referee move them into their own side randomly.
+	(4) The referee broadcasts "kick_off_SIDE".
+  * The wind brows to the reverse direction in the second half.
+    This means it seems that two teams exchange the side excepts the
+    name of landmarks.
+  * 'soccermonitor' displays the field upside down in the second half.
+    This change is only in 'soccermonitor', but there is no change
+    in 'soccerserver'.  Therefore, you need not change the client
+    at the halftime.
+
+[2.91]
+  * Two new features 'BLANK' and 'RECORD' is added to `logplayer'.
+    These feature are useful for editing the logfile.  Start logplayer
+    as following:
+
+	% logplayer LOGFILE -out NEWLOGFILE
+
+    Then, you can make new log file (=NEWLOGFILE) by pushing RECORD button.
+
+  * A new command "(bye)" for clients.  When a client sends "(bye)" to
+    the server, the server deletes its player from the field.
+
+[2.90]
+  * A new utility, logplayer, is included.  Using this, you can replay a
+    logfile of soccerserver.  It can play, pause, feed-forward and rewind
+    like video.  The usage of logplayer is:
+
+	% logplayer LOGFILE
+
+  * The main script 'sserver' is modified for tcsh.
+  * A player can see all lines in its view.  Previously, the player can see
+    only the nearest line.  Now, the player can see two lines when it is
+    out of the pitch and facing to the pitch.
+  * A message from a player is informed only to players with a certain
+    distance from the player.  The distance is specified by
+    'audio_cut_dist' in "server.conf" or a command line-options.
+    Messages from the referee and the coach is informed to all players.
+  * Little change of the alignment of bottoms in the window.
+
+[2.89]
+  * When the ball is stopping (the velocity is less than BALL_T_VEL(=0.001)),
+    the value of VDirection of the ball in the "see" information is -360.
+    The client becomes to be able to detect the ball is moving or stopping.
+  * The weather (wind) factor is implemented.  The wind forces objects
+    (ball and players) to accelerate a certain direction.  The parameters of
+    the wind is:
+
+	wind_force	(0 -- 100) 	The power of the wind
+	wind_dir	(-180 -- 180) 	The direction of the wind
+	wind_rand	(0 -- 100)	The degree of the change of direction
+					during a match
+     These parameters are specified in the "server.conf" or options
+     in a command line.  The server also permits the following options:
+
+	-wind_none		Ignore wind factor.
+	-wind_random		Set these parameters randomly
+
+     In addition to it, the following new parameter about the weight of
+     objects is introduced.
+
+	ball_weight	(default 0.2)
+	player_weight   (default 60.0)
+
+[2.88]
+  * Add a converter of recorded log file of communication between
+    soccerserver and soccermonitor into the package.  The converter is
+    under the directory recfile_change.  The usage is,
+
+	% recfile_change log_in_old_format log_in_new_format
+
+    It supports reverse conversion like
+
+	% recfile_change -old log_in_new_format log_in_old_format
+
+[2.87]
+ * A coach client receives hear messages in the same format as players
+   receive.  If the server invoked with -old_coach_hear, it receives
+   the old format.
+ * Communication between soccerserver and soccermonitor becomes machine
+   independent.
+
+[2.86]
+ * The small changes for preRoboCup. Please ignore.
+   (If compile soccerserver with -DWRONG_LINE_VIEW option,
+    the server sends visual information about lines in the old format
+    (before Ver. 2.83).)
+
+[2.85]
+ * The size of goal that soccermonitor displays becomes changeable.
+   If you starts soccermonitor with -goal_width option like:
+
+	% soccermonitor -goal_width 14.64
+   then the goal displayed in the specified width.
+ * Avoid a bug of XtVaSetValues function in old X11R5.
+   Some old version of X11R5 has buggy XtVaSetValues function.
+   So, the program use XtMoveWidget rather than the function
+   In the case of X11R5.
+ * Do call signal() function before setitimer() function.
+   This change is to avoid that the server sometimes
+   terminates by ALARM signal.
+ * When a player is judged FOUL by mouse, the player is moved 9.15m
+   away from the ball automatically.
+
+
+[2.84]
+ * Fix the bug that a client receive wrong visual information about lines
+   when the player is out of the field.
+ * Change over-writing log files rather than appending them.
+
+[2.83]
+ * Add a new option to record and replay process of a match.
+   When a soccerserver is invoked with the following options,
+   the server saves data for soccerdisplay into a specified logfile.
+	% soccerserver -record LOGFILE
+   Then, soccerserver replays the process of the match by invoked
+   as follows:
+	% soccerserver -replay LOGFILE
+ * Support IRIX 5.
+
+[2.82]
+ * Add a new option to save log-file of messages between the server
+   and clients.
+   When soccerserver is invoked with the following options,
+   messages (control-commands and sensor-informations) are saved
+   into a specified log file.
+	% soccerserver -log_file LOGFILE
+
+[2.81]
+ * Team colors becomes changeable.
+   When soccermonitor is invoked with the following options,
+   each team is displayed with the specified color.
+	% soccermonitor -team_l_color "purple" -team_r_color "blue"
+ * Fix the bug that the referee judges wrong goal.
+
+[2.80]
+ * Fix the bug that the server core-dumps when no players entry and
+   the match ends.
+ * Fix the bug that a match sometimes does not suspend at the half-time
+   and the time-up.
+ * Fix the bug the server returns error for coach's change_mode command.
+
+[2.79]
+ * Fix the bug that the monitor goes down when the server receives
+   too long messages.
+
+[2.78a]
+ * Correct the value of half_time parameter.
+
+[2.78]
+ * Add noise to MOMENT parameter in 'turn' command.
+ * Change the referee's message string "entyo" to "time_extended",
+   which is broadcast when the second half ends in a draw.
+ * Fix a bug that a match is sometimes not suspended when the half time
+   comes.
+ * Fix a bug that the referee sometimes calls a goal when the ball
+   goes out from the side line.
+
+[2.77]
+ * Fix a bug of judgment of goal.
+   In the version 2.76, the server sometimes judges the right side team
+   gets a score even when the left side team gets a goal.
+
+[2.76]
+ * The port number for a coach client becomes modifiable by a configuration
+   file for soccerserver. ('coach_port' option)
+ * The server starts to use a more precise algorithm of judging a goal.
+   Previously, the server judges a goal when the ball is in a goal-region
+   after it moves.  Now, the server judges a goal when the ball cross a
+   goal line between goal posts.
+
+[2.75]
+ * Parameters of move commands change to mean relative position.
+   In other words, (move -10 -10) means left-forward in both cases of
+   left and right teams.
+ * Maximum length of message in say and hear commands can be specified
+   by a command line option or configuration file.
+
+[2.74]
+ * The server becomes to execute only one command per player in a
+   simulation cycle.
+
+[2.73]
+ * Execute XFlush every cycle.
+ * Support Linux.
+ * Include Peter's config file.
+
+[2.72]
+ * Execute Xflush everytime when each player changes the position.
+ * Support NEWS-OS 4.2.1R
+ * Fix a bug of change_view.
+
+[2.71]
+ * Add -coach_w_referee mode.
+ * Change the format of "see" information when the low-quality is specified
+   by change_view commands.
+	(OBJNAME DIR [VDIR]) -> (OBJNAME DIR)
+
+[2.70]
+ * Change the name of flags to fit to the description in the manual.
+	(flag [t|b])   -->  (flag c [t|b])
+ * Polish up Makefile
+ * Fix the bug that soccermonitor does not display log of communications.
+ * Fix the bug that the server core-dumps when the 22nd client connects
+   with the server.
+ * Fix the bug that the server can not read the configuration files.

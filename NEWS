@@ -1,0 +1,1846 @@
+[11.1.1]
+  * Fixed a bug related to the boost::random.
+
+  * Fixed a bug in the offside referee.
+
+  * Fixed a problem in the module path string configuration.
+
+[11.1.0]
+  * Just updated a minor version number. Official relasese for the
+	RoboCup2007.
+
+[11.0.5]
+  * Supported a client protocol version 10 and 11. There are no
+    difference between version 9 and 10. If the clients connect as a
+    version 11 client, server_param message contains new parameters,
+    'ball_stuck_area' and 'coach_msg_file'. And, if the file specified
+    by 'coach_msg_file' exists, version 11 coaches receive the external
+    message contained by the 'coach_msg_file'.
+
+  * Changed the format of the external message format for the coach
+    client. Now,included data is sent by the following format:
+
+     (include <BYTES> <DATA>)
+
+  e.g.
+
+     (include 4 test)
+     (include 26 ((name LEFT) 5 3 1 1 12 2))
+     (include 30 ((team LEFT) (team RIGHT) 2 1))
+
+  <BYTES> means the byte size of <DATA>. So, We can also send a binary
+  data to the coaches.
+
+  * Fixed first two problems in the penalty kick(#1720067). Thanks go
+    to Ralf Berger for reporting the problem and providing the patch.
+
+  * Fixed third problem in #1720067. Now, if the defending team player
+    kicks the ball, penalty_foul() is called immediately and the score
+    is awarded to the taker team. Thanks go to Ralf Berger for
+    reporting the problem.
+
+  * Fiexed a penalty kick bug that the goalie can catch the ball
+    anywhere.
+
+  * Fixed a rule about goalie catch fault and back pass. Now, if the
+    goalie catches the ball outside the penalty area, catch_fault_[lr]
+    is called and an indirect free kick is awarded to the opposite
+    team at the ball caught point after CATCH_FAULT_WAIT(30) cycles.
+
+  * Fixed bugs in the gzip compressor/decompressor reset operation.
+
+[11.0.4]
+  * Fixed a defect in the random number generation.
+
+[11.0.3]
+  * Fixed a goal kick rule. Now, any opposite side players must not
+   kick or touch the ball while goal kick mode. If opposite side
+   players kick or touch the ball before the ball goes out of the
+   penalty area, referee awards a goal kick again.
+
+  * Fixed a bug about trainer initialization.
+
+[11.0.2]
+   * Fixed a defect of game logging.
+
+[11.0.1]
+   * Fixed a problem of boost::uniform_real on some platform.
+
+[11.0.0]
+   * Supported 64-bits OS.
+
+   * Added automatic drop ball for the ball stuck situation. New
+     server parameter 'ball_stuck_area' have been introduced. If
+     playmode is play_on and ball is within ball_stuck_area distance
+     for 'drop_ball_time' cycles, referee will drop the ball at the
+     current ball position.
+
+   * Added new server parameter 'coach_msg_file'. If this option is
+     given, data conatined by the specified file is sent to coaches as
+     one of the initial messages. Coaches must connect as the client
+     version 11 or later.
+
+   * Fixed trainer's hear message format.
+
+   * Fixed a goal kick bug. Now any player cannot dribble while goal
+     kick modes.
+
+[10.0.7]
+   * Fixed defect introduced by fixing defect #1235909
+
+[10.0.6]
+   * Fixed defect #1235909 bug in parsing of unquoted player say messages.
+     Thanks go to Ma Jie and Yang Fan for reporting this bug.
+
+   * Fixed defect #1235911 in parsing 'and' conditionals within CLang.  Thanks
+     go to Sina Iravanian for reporting this bug.
+
+[10.0.5]
+   * Fixed build/install issue which cause libraries not to be found
+
+   * Fixed configure bug which cause configure to hang on rpm macro expansion
+
+[10.0.4]
+  * Fixed defect #1222134 in which the kickable area used to decide possession
+    in KeepawayRef was too small.  Also changed the number of consecutive
+    cycles in which a taker must touch the ball to declare a turnover from 5
+    to 4.
+
+  * Fixed compilation problems on with gcc 3.4.  Thanks go to Alexander
+    Ferrein for providing a patch.
+
+  * Fixed gcc 4.0 build problems
+
+  * Fixed crash on exit when using libcsvsaver
+
+[10.0.3]
+  * Fixed defect #1182281 which resulted in linking problem with playerparam
+    library.  Thanks go to HuangZhuo and Ma Jie for reporting this problem
+    and testing the fix.
+
+  * Fixed defect #1183388 which resulted in all .conf files containing server
+    parameters, rather then the parameters they are supposed to contain.
+    Thanks go to Thomas Gabel for reporting this defect.
+
+  * Fixed defect #1183390 which caused the server crash when parsing CLang
+    messages. Thanks go to Thomas Gabel for reporting this defect.
+
+  * Fixed possible memory leak in coach parser.  Hopfully this will fix defect
+    #754241 reported by Brian Tanner a very long time ago.  Thanks go to Brian
+    Tanner for reporting this and to Pat Riley for suggesing the possible
+    cause.
+
+  * Fixed part one of defect #773792 in which the ball speed is not set to
+    zero when heterogeneous players with a non-zero kick_rand parameter
+    violate the FreeKickFault rule, and as a result (of the non-zero ball
+    speed) the server changed the playmode to play_on immediately.  This was
+    caused by ball noise being added to the ball after the FreeKickFault was
+    called.  Thanks go to Hidehisa Akiyama for reporting this problem and for
+    providing a very useful analysis of the defect.
+
+  * Fixed part two of defect #773792 in which a FreeKickFault would not be
+    called if the kick taker kicks the ball and then collides with the ball
+    without dashing and subsequently dashes into the ball or kicks the ball
+    before any other player.  Thanks go to Hidehisa Akiyama for reporting this
+    problem and for providing a very useful analysis of the defect.
+
+[10.0.2]
+  * Fixed default value for half_time.  If the
+    ~/rcssserver/server.conf was created with a defective version of
+    the server, then you will need to either remove your
+    ~/rcssserver/server.conf or replace the line
+
+      server::half_time = 30
+
+    with
+
+      server::half_time = 300
+
+    in order to set the half_time length to 3000 cycles.
+
+  * Removed debugging output that occurred when players issue move
+    commands.
+
+  * Fixed bug that prevented online coaches from connecting.  The
+    server would report that there was no serialiser for the version
+    specified by the online coach.
+
+[10.0.1]
+  * Requires RCSSBase 10.0.9
+
+  * The configuration parser library from RCSSBase now allows '-' or
+    '--' before the options. This means the following three commands are
+    the same:
+
+    	`rcssserver server::port=6000`
+   	`rcssserver -server::port=6000`
+    	`rcssserver --server::port=6000`
+
+  * The configuration parser now directly supports module loading (as
+    opposed to the server::module option) via the "load=<libname>",
+    "setpath=<path>" and "addpath=<path>" options.  The
+    "server::module" and "server::module_path" options are no longer
+    supported.  If the library cannot be loaded, a list of available
+    modules will be listed, so long as rcssmodtest (from rcssbase) is
+    in your path, othewise you can get a list of available modules
+    via the --help option (see below).
+
+  * The new parser also supports a new help option.  run
+
+        `rcssserver --help`
+
+    for details.  Each namespace provides it's own help information
+    via the
+
+	`--<namespace>::help`
+
+    option, where <namespace> is the namespace you require help with.
+
+    Help for a particular module can on be displayed if that module
+    has been loaded.  You can load the module and display it's help
+    information by using
+
+    	`--load="<libname>" --<namespace>::help`,
+
+    where <libname> is the name of the module you wish to load.  If you
+    don't know what namespace the module uses, it will be listed if you
+    use
+
+	`--load="<libname>" --help`.
+
+  * Fixed bug that would prevent (on certain platforms) modules from
+    being found when the server was installed.
+
+  * Fixed OS X build issues
+
+[10.0.0]
+  * Requires RCSSBase 10.0.8
+
+  * The configuration script will now look for a RCSSBASE enviroment
+  variable and set the approriate flags to look for the rcssbase
+  libraries, headers and exes in the location specified by rcssbase.
+  For instance, if rcssbase was configured with a prefix of $HOME,
+  then you should configure rcsssever with RCSSBASE equal to $HOME.
+
+  * Modules are now installed into PREFIX/lib/rcssserver/modules and
+  server::module_dir paramter should be set to PREFIX/lib/rcssserver/modules,
+  where PREFIX is the installation prefix (/usr/local by default or
+  /usr if you are using rpms).  You can then specify what modules
+  should be loaded by using the server::module parameter (do not include the
+  suffix for the library).  The only exception to this is the synctimer and
+  stdtimer modules.  In this case the correct module is loaded based on the
+  value of server::sync_mode parameter.
+
+  * Fixed defects regarding the slow_down_factor parameter which could alter
+  the length of a half or cause the simulator to crash if set too high.
+
+  * Fixed build problems on OS X. The file created in the build directory runs
+  but haven't tested beyond that. The installed version has problems
+  running because it can find load the modules.  Very strange.  The best
+  approach at this stage is to install (so the modules go into the right
+  place), but use the exectuable from the build directory.
+
+  * Fixed build problems on Solaris 9. It has a similar problem to the OS X
+  build, but it can at least load the std timer.  The version in the build
+  directory can load all modules.  The sample client does not build with a
+  ncurses interface and `--without-ncurses` must be used during configure.
+
+[9.4.5]
+  * Fixed defects in penatly shootouts.  Now if automatic player
+  placement is on, only the players out of place are moved.
+
+  * Fixed defect in locating the configuration directory on windows
+  systems without cygwin installed.  The config files will now go
+  into "My Documents/.rcssserver" on all windows systems.
+
+[9.4.4]
+  * Fixed defect that send "halfTime()" to players at half_time,
+  rather than "half_time".
+
+  * Fixed defect that would set the ball to not caught immediately
+  after it was caught, thus preventing goalies from moving with the
+  ball.
+
+[9.4.3]
+  * Fixed defect in penalty shootout procedure that made it impossible
+  to score when opponent team didn't had a goalkeeper on the field.
+
+  * Fixed defect that called the kickTaken callback instead of the
+  ballCaught callback of the referees.
+
+  * Fixed defect that allowed indirect kicks to be circumvented by
+  waiting for a drop ball.  Now if a drop ball is awarded, the team
+  that was given the indirect free kick cannot score unless the ball
+  touches two of it's players or an opponent or the play is stopped
+  for some other reason.
+
+  * Fixed defect that would allow the penalty shootout kicker to kick
+  the ball in the same cycle that it was caught by the goalie.
+
+  * Fixed defect that would cause the server to go straight into
+  penalty shootout mode when the half_time parameter was negative.
+
+  * Fixed defect that would no include the goalies in the list of
+  kickers in penalty shootouts.
+
+  * Fixed defect that allowed goalies to move with the ball outside of
+  the penalty area.  Now if the goalie moves or dashes while that ball
+  is caught and moves the ball out of the penalty area, a catch fault
+  is awarded and the ball placed on the closest edge of the penalty
+  area, unless the goalie takes it over it's own goal line, in which
+  case a goal or corner kick is awarded. The goalie is not moved
+  unless it is within 9.15 meters of where the free kick is given.
+
+  * Fixed defect in configuration file generation, where some values
+  where written in their modified form (i.e. half_time was 3000
+  instead of 300).
+
+  * MySQLSaver will now create the tables it uses if they don't exist
+  in the database.  This now means that there is very little setup
+  required to start saving results to a MySQL database.  All you need
+  to do is start mysqld and create a database for the results and
+  grant access to that database.  For instance, something like
+
+  mysql -u root
+
+  mysql> create database `rcss`;
+  mysql> grant all privileges on `rcss` to 'myuser';
+  mysql> flush privileges;
+
+  should do the trick.
+
+  The start the server with the following options
+
+  MySQLSaver::save=on
+  MySQLSaver::db='rcss'
+  MySQLSaver::user='myuser'
+
+  and optionally
+
+  MySQLSaver::round_name='the name of the round'
+  MySQLSaver::event_name='the name of the event'
+
+  or edit their defaults in ~/.rcssserver/MySQLSaver.conf
+
+  * Fixed bug which caused MySQLSaver and StdOutSaver to always be
+  disabled
+
+  * Fixed bug in MySqlSaver in the formating of the time field.
+
+  * Added time output to StdOutSaver.
+
+  * Added CSVSaver.  This module saves the results to a file as comma
+  seperated values.  It is turned off by default, but can be enabled
+  with the CSVSaver::save option.  The default file is
+  "rcssresults.csv", which can be changed with the
+  CSVSaver::filename option.  If the file does not exist, it will be
+  created.  If it does exist the data will be appended to the end of
+  the file.  Each line contains the results for a game in the
+  following format:
+
+    TIME, TEAM_LEFT, TEAM_RIGHT, COACH_LEFT, COACH_RIGHT, SCORE_LEFT,
+    SCORE_RIGHT, PEN_ATTEMPTS_LEFT, PEN_ATTEMPTS_RIGHT,
+    PEN_SCORED_LEFT, PEN_SCORED_RIGHT, COIN_TOSS_WINNER
+
+  Where:
+
+   TIME is in the format %Y-%m-%d %H:%M:%S,
+   TEAM_LEFT is the name of the left team in double quotes or NULL
+   TEAM_RIGHT is the name of the right team in double quotes or NULL
+   COACH_LEFT is the name of the left coach in double quotes or NULL
+   COACH_RIGHT is the name of the right coach in double quotes or NULL
+   SCORE_LEFT is the number or goals scored by the left team
+   SCORE_RIGHT is the number or goals scored by the right team
+   PEN_ATTEMPTS_LEFT is the number or penalties attempted by the left
+   team or NULL
+   PEN_ATTEMPTS_RIGHT is the number or penalties attempted by the right
+   team or NULL
+   PEN_SCORED_LEFT is the number or penalties scored by the left team
+   or NULL
+   PEN_SCORED_RIGHT is the number or penalties scored by the right
+   team or NULL
+   COIN_TOSS_WINNER is LEFT, RIGHT or NULL
+
+  * Fixed problem in locating llimporter
+
+  * The result savers are now loaded before the game.  This way any
+  errors in parsing the configuration files or command line are seen
+  before the game starts.
+
+  * The MySQLSaver now has a few more parameters.  Please also note
+  that the file parameter that was previously mentioned never
+  existed.  Use the include parameter instead.  The saver now has a
+  port parameter to specify what port should be used for the TCP
+  connection.  There is also a unix_socket parameter, to specify the
+  name of a socket or named pipe that should be used for the
+  connection.  You can enable compression and ssl on the connection by
+  using the compress and ssl parameters respectively. You can now
+  specify the round_id that the game is part of.  If the round_id is
+  not specified, round_name is used, along with the event_id or
+  event_name parameters.  If the event_id is specified, then the
+  event_name is ignored.
+
+[9.4.2]
+  * Fixed bug in build process that would complain that there was not
+  target fot the -lrcsslibloader library
+
+[9.4.1]
+  * Fixed bugs in CLang that would cause crashed when using point
+  arithmetic and comparison operations.
+
+[9.4.0]
+  * The server will now try to interprete ~ in filenames correctly on
+  Windows platforms.  The code is untested and as such probably
+  buggy.  Please provide as much information as possible when
+  reporting bugs on this.
+
+  * Added new server parameter option pen_coach_moves_players. When
+  this value is set to true and one of the players of a team is not
+  standing correctly at the end of the setup period in the penalty
+  shootout, all players of this team are repositioned to a legal
+  position. If during the penalty a player moves to a invalid
+  position, it will be automatically move to the correct position.
+  This means that with this option enabled, positional fouls are no
+  longer possible during penalty shootouts.
+
+  Do note that the player moved to the position to take the penalty
+  shootout is the first of the players in the set of players that have
+  not yet taken a shootout. This can thus be the goalkeeper and also
+  does not have to be the player positioned closest to the ball.
+
+  * Added a result saver that stores the results in a mysql database.
+  This module will only be created if the mysql libraries can be found
+  on your system.  This saver read configuration information from the
+  command line arguments in the form of
+
+  module::MySQLSaver::PARAM=VALUE
+
+  where PARAM is a configuration parameter and VALUE is the value you
+  want to set it to.  The following is the list of parameters
+  understood by the MySQLSaver, their default values and a brief
+  description:
+
+  +-------+---------+---------------------------------------------+
+  | Param | Default | Description                                 |
+  +=======+=========+=============================================+
+  | host  | ""      | The host name of IP of the machine running  |
+  |       |         | the MySQL database.  An empty string        |
+  |       |         | indicates that the localhost will be used.  |
+  +-------+---------+---------------------------------------------+
+  | user  | ""      | The username to use connecting to the       |
+  |       |         | database.  The empty string indicates that  |
+  |       |         | current unix username will be used          |
+  +-------+---------+---------------------------------------------+
+  | pass  | ""      | The database password for the user being    |
+  |       |         | used.                                       |
+  +-------+---------+---------------------------------------------+
+  | db    | ""      | The name of the database to use.  An empty  |
+  |       |         | string indicates that that default database |
+  |       |         | will be used.                               |
+  +-------+---------+---------------------------------------------+
+
+  * Added a result saver that prints the results of the game to
+  stdout in a human readable format.  You should not try to parse this
+  with another program, as no guarantees about it's format are made,
+  and it may change from version to version.  If you wish to get text
+  results in a parsable format, please create your own module for
+  doing so.
+
+  * Added support for saving game results via dynamically loaded
+  modules (see below for information about modules).  A result saver
+  must inherit from rcss::ResultSaver and on initialisation of the
+  module, it must register with rcss::ResultSaver::Factory factory.
+  An example of how this is done can be seen in stdoutsaver.cpp.
+
+  * Integrated the new configuration parser in rcssbase. The old
+  configuration file format is no longer supported, but can be
+  easily converted to the new format using the following awk script.
+
+    awk '/^[ \\t]*$/ {} \
+    /^[^#]+[:]/ { gsub(/:/, \"=\" ); $1 = \"server::\" $1; } \
+    /^[ \\t]*[^#:=]+$/ { $1 = \"server::\" $1 \" = true\"; } \
+    { print; }' \
+    oldserver.conf > newserver.conf
+
+  The server uses this technique to read ~/.rcssserver-server.conf if
+  it exists and ~/.rcssserver/server.conf (the new conf file) does not
+  and then save the configuration to ~/.rcssserver/server.conf.  This
+  means that most users will be unaffected by the configuration file
+  changes and ~/.rcssserver/server.conf will be created with all their
+  current options.
+
+  A similar procedure is used for ~/.rcssserver-player.conf and can
+  be used for other player.conf files.
+
+  You will also need to modify any scripts you have that pass
+  parameters to rcssserver, by replacing -PARAM VALUE with either
+  server::PARAM = VALUE or player::PARAM = VALUE and -sfile FILE and
+  -pfile FILE with include = FILE.
+
+  * Added support for automatic module loading.  Modules can be added
+  or removed by adding them to the module directory (default is
+  /usr/local/share/rcssserver/modules) which can be specified with
+  the module_dir server parameter.  On systems where dynamic loading
+  is not supported, or static compilation is used, module loading can
+  be simulated by using the RCSSSERVER_DLOPEN_LIBS option during
+  configure.
+
+  Custom modules must contain the following line
+
+  LIBLOADER_EXPORT( libname, init, fin );
+
+  Where libname is the name of the library without the file extention
+  (e.g libstdoutsaver) and init and fin are the names of
+  initialisation and finalisation functions for the module.  These
+  functions must take not parameters and must return void.
+
+  Your module must also register (and deregister) it's class(es) with
+  an object factory (this is usually done in the initialisation and
+  finalisation functions), which is used in the server to create
+  instances of the class.  Please see the base class's object factory
+  interface for more details.
+
+  * Added support for coach names in the log file names.  The online
+  init command now has the following format:
+
+  (init TEAMNAME [COACHNAME] [(version X)])
+
+  e.g.
+
+  (init myteam (version 7))
+  (init myteam mycoach)
+  (init myteam mycoach (version 6))
+
+  are all valid online coach init string.
+
+  At the end of the game, the logfiles are renamed and if the online
+  coach specifies a coachname when it connects, then _COACHNAME is
+  added after the team name.
+
+  e.g.
+
+  200305081101-test_coach_1-vs-test2_coach2_2.rcl
+
+  is an example of a log file for 'team' vs 'team2', where 'team' had
+  an online coach called 'coach' and 'team2' had an online coach
+  called 'coach2'.
+
+  * Fixed a defect where pointing players were sent twice in a see
+  message.
+
+[9.3.7]
+  * Fixed defect in the sending of team graphics to monitors where the
+  first line of the data was repeated and there was no space between
+  team_graphic_{l|r} and(.  Thanks got to Matus Horvath for reporting
+  the problem and providing the patch.
+
+  * Fixed gcc3.3 compilation problem.
+
+[9.3.6]
+  * Fixed defect that caused a segmentation fault when a player
+  reconnected.
+
+[9.3.5]
+  * Fixed bug in the handling of ear on/off commands sent by players,
+  where partial and complete where inverted.
+
+  * To help with future user problems, the server now also outputs at
+  startup the version of rcssbase being used.
+
+  * Fixed catch_fault_r string which was perviously cacth_fault_r.
+
+  * Fixed online coach releated seg fault.  This may have been caused
+  if a coach tryed to connect after a coach had already connected and
+  disconnected for the same team.
+
+  * A bug was fixed that was causing nested conditions in CLang to be
+  restructured in logically incorrect way.
+
+[9.3.4]
+  * The default values for tackle_dist and tackle_width have been
+  changed to 2.0 and 1.0 respectively.  You will either need to change
+  these manually in your ~/.rcssserver-server.conf remove your
+  ~/.rcssserver-server.conf to have the defaults regenerated.
+
+  * Added constraint such that substitutions are not allowed after
+  the normal and extra halfs have passed. It is thus not possible
+  anymore to make substitutions during or just before the penalty
+  shootouts.
+
+[9.3.3]
+  * The rcsoccersim script will now report errors if the server or a
+  monitor cannot be found.  The script has also been modifed to use
+  the monitor specified by the RCSSMONITOR enviroment variable as the
+  default monitor (this can be handy of you use your own monitor or
+  wish to change the default to the classic monitor).  If RCSSMONITOR
+  is not set, the script will try to use either rcssmonitor or failing
+  that, rcssmonitor_classic.  At anytime you can override the default
+  by using the -frameview and -classic options.
+
+  * Fixed bug where recover_init was sent to v8 players when it
+  shouldn't have been.
+
+  * Some build problems on OS X have now been fixed.  The server seams
+  to work on OS X, if built statically.  For dynamic libs to work you
+  will at the very least need to rebuild the libtool and auto*
+  components by running
+
+  aclocal
+  glibtoolize --force --copy
+  aclocal
+  autoheader
+  automake --add-missing --copy
+  autoconf
+
+  from the rcssserver directory.  There may be other problems that I
+  am unaware of.
+
+[9.3.2]
+  * RCSSClient can now be compiled without ncurses on systems that do
+  have ncurses, by using the '--without-ncurses' parameter to configure.
+
+  * The SED environment variable is now set automatically in the
+  libtool script, during configure.
+
+  * Fixed crash during initialization of default server paramters on
+  Solaris platforms
+
+  * RCSServer now will compile with either sstream or strstream,
+    depending on which is available.
+
+[9.3.0]
+  * Fixed bug in synch mode that would cause the server to send
+  "think" commands to disconnected clients and wait for a response
+  from them.
+
+  * Fixed bug in flex usage that would require manual editing of the
+  generated source files on some systems.  This bugs would only affect
+  people who are checking out the code from CVS, those editing the .ll
+  files or those rebuilding the generated code for other reasons.
+
+  * Fixed bug in synch mode that would result in a server crash when
+  clients disconnect.
+
+  * Fixed bug that allowed kicks and tackles after the end of the match.
+
+  * Fixed bug where the effort_init server parameter was not set, not used,
+  but sent to players as part of the server param message.
+
+  * Fixed bug where the recover_init server parameter was not set, not used,
+  but sent to players as part of the server param message.
+
+  * Added automatic penalty mode.
+
+  First of all two different server parameters have been added that specify
+  how many halfs are played:
+  nr_normal_halfs (default=2) - number of halfs that are always fully played
+  nr_max_extra_halfs          - number of extra halfs when score is a draw
+                                golden goal rule applies in these halfs
+
+  If no goals are scored and the server parameter penalty_shootouts is true,
+  the automatic penalty mode is started.
+
+  New play modes, messages and server parameters have been introduced:
+
+  New PlayModes:
+  PM_PenaltySetup_Left/Right (message: penalty_setup_l/r)
+  PM_PenaltyReady_Left/Right (message: penalty_ready_l/r)
+  PM_PenaltyTaken_Left/Right (message: penalty_taken_l/r)
+  PM_PenaltyMiss_Left/Right  (message: penalty_miss_l/r)
+  PM_PenaltyScore_Left/Right (message: penalty_score_l/r)
+
+  Messages:
+  penalty_onfield_l/r
+  penalty_foul_l/r
+  penalty_winner_l/r
+  penalty_draw
+
+  Server parameters
+  pen_before_setup_wait
+  pen_setup_wait
+  pen_ready_wait
+  pen_taken_wait
+  pen_nr_kicks
+  pen_max_extra_kicks
+  pen_dist_x
+  pen_max_goalie_dist_x
+  pen_allow_mult_kicks
+  pen_random_winner
+
+  The procedure is as follows
+
+  1. The referee announces on which side the penalties will be taken using
+     the message (penalty_onfield_l/r).
+
+  2. The ref moves the ball to the penalty mark, which is on a distance of
+     pen_dist_x from the goal.
+
+  3. The ref chooses a team to start at random and announces it
+    (penalty_setup_l/r).
+
+  4. The referee then waits pen_setup_wait cycles and then checks whether the
+     players are moved according to the following rules:
+     - the defending goalie must move to within goalie_pen_line_dist meter of
+       the goal line and between the posts
+     - the other goalie must move behind the goal line and outside the penalty
+       area line (the only exception is when the goalie takes the penalty)
+     - the defending players and the teammates of the player must move
+       within the center circle.
+     - one of the players of the team that takes the penalty has to move within
+       2 meters of the position of the ball. One player is not allowed to be
+       the penalty taker again before all eleven players (including the goalie!)
+       have taken a penalty.
+     If after pen_setup_wait cycles one or both teams do not obey the above
+     rules the penalty is over. In case the attacking team makes a mistake, it
+     is counted as a miss, otherwise as a score.
+     If both teams obey the rules, the mode changes to
+     PM_PenaltyReady_Left/Right
+
+  5. The attacker then has pen_ready_wait cycles to take the first kick.
+     If one of the rules of 4 is not obeyed during these cycles or the time has
+     elapsed, the penalty is over and is counted as a foul for that team.
+     After this first kick, the play mode changes to
+     PM_PenaltyTaken_Left/Right..
+
+  6. Depending on the server paramater pen_allow_mult_kicks the attacker is
+     now allowed to kick the ball again or not. When the ball is catched or
+     passed the goalline within pen_taken_wait cycles, it is either called a
+     miss or a score (depending where the ball crossed the goalline)
+     immediately.
+     When pen_taken_wait cycles have elapsed without a catch or the ball passing
+     the goalline, it is also called a miss. In case of a miss the play mode
+     changes to  PM_PenaltyMiss_Left/Right, otherwise to
+     PM_PenaltyScore_Left/Right.
+
+  7. Now it is checked whether one of the teams has won.
+     One of the two teams has won when.
+     - pen_nr_kicks penalties have been played and one team has scored more
+       goals than the other
+     - less than pen_nr_kicks have been played but one of the teams can never
+       get to the score of the other team within pen_nr_kicks
+     - it was a draw after pen_nr_kicks but after an even number of extra
+       penalties sessions (less than pen_max_extra_kicks) one team has scored
+       more goals
+     In the case of a win the message pen_winner_l/r is communicated and the
+     playmode changes to PM_TimeOver.
+     Otherwise when pen_nr_kicks + pen_max_extra_kicks have been played, the
+     game is a draw. Depending on the parameter pen_random_winner the server
+     picks a random winner or not. In the latter case the message pen_draw is
+     communicated.
+     In all other situations, and no team has won yet, the referee goes back to
+     2 after pen_before_setup_wait cycles.
+
+  *  Changed file format of log files and game logs because of possible
+     automated penalties after a match. The new format is as follows:
+
+     {date}-{team_l_info}-vs-{team_r_info}.rc[gl]
+
+     where {team_[lr]_info} looks as follows:
+      {team}_{score}[_{pen_score}[w]]
+
+     with
+      team:      name of the team
+      score:     goals scored by this team (excluding penalty goals)
+      pen_score: scored penalty of this team (optional)
+      w:         optional winner indication when penalties were also a draw
+                 and this team was the random winner (pen_random_winner: on)
+
+     Possible examples are
+     - normal game without penalties
+         200303180158-MRB2003_1-vs-UvA_Trilearn_2.rg
+     - with penalties
+         200303180158-MRB2003_1_4-vs-UvA_Trilearn_1_5.rg
+     - with penalties, pen_nr_kicks + pen_max_extra_kicks didn't bring a
+       winner and no winner was picked randomly (pen_random_winnner: off)
+         200303180158-MRB2003_1_7-vs-UvA_Trilearn_1_7.rg
+     - penalties was also a draw and winner (Trilearn) was picked randomly
+         200303180158-MRB2003_1_4-vs-UvA_Trilearn_1_4w.rg
+
+[9.2.4]
+  * Fixed defect that would incorrectly award an indirect free kick to
+  the right team after a catch fault by the right team.  An indirect
+  free kick to the left team is now awarded.
+
+  * Fixed defect that would cause compilation to fail with gcc3.2
+
+[9.2.3]
+  * Fixed defect where the server would not send version 9 parameters
+  to version 9 coaches.
+
+[9.2.2]
+  * Fixed defect where the server would send "(ok move)" to the offline
+  coach after it issued a move command, even if there was no such
+  object that could be moved.  Now the server sends
+  "(error illegal_object_form)".
+
+  * Clients can now connect specifying version 9 as the protocol
+  version.  This simply adds support for the new server parameters
+  that have been introduced.
+
+[9.2.1]
+  * Offsides are now no longer possible from a kick-in, goal-kick or
+  corner-kick.  This is in compliance with FIFA regualtions.
+
+  * A new limitation has been added to the random player types (hetero
+  players) which prevents players from having a maximum speed above
+  the default player and consume less stamina at maximum speed than
+  the default player.
+
+[9.2.0]
+  * Configuration now fails if the SED environment variable is not
+  set.  Libtool needs this to be set to function correctly
+
+  * Goal posts have now been added.  They are circular with a radius
+  of 6cm and they are located at:
+
+  x = +- (FIELD_LENGTH*0.5 - 6cm)
+  y = +- (GOAL_WIDTH*0.5 + 6cm)
+
+  The goal posts have different collision dynamics than other
+  objects. An object collides with a post if it's path gets within
+  object.size + 6cm of the center of the post.  An object that
+  collides with the post bounces off elastically.
+
+  * The dynamics of the goalie catch have now changed.  If the goalie
+  successfully catches a ball it is moved adjacent to and facing the
+  ball and both the goalie and ball have their velocities set to
+  zero.  When the goalie moves, dashes or turns while the ball is
+  caught, the ball remains adjacent to and directly in front of the
+  goalie.
+
+  * The goalie can now issue catch commands at any location.  If the
+  catch is successful, and the ball is outside of the penalty area or
+  if the goalie moves the ball outside of the penalty area and it's
+  still in the field, an indirect free kick is awarded to the opposing
+  team at the ball's current location. If a caught ball is moved over
+  the goal line but not inside the goal, a corner kick is awarded.  If
+  a caught ball is moved into the goal, a goal is awarded.
+
+  * Checking for goals, out of bounds and within penalty area no
+  complies with FIFA regulations.  For a goal to be scored the ball
+  must be totally within the goal - i.e.
+
+  |ball.x| > FIELD_LENGTH*0.5 + ball_radius
+
+  Similarly the ball must be completely out of the pitch before it is
+  considered out - i.e
+
+  |ball.x| > FIELD_LENGTH*0.5 + ball_radius ||
+  |ball.y| > FIELD_WIDTH*0.5 + ball_radius
+
+  Lastly the ball is within the penalty area (and thus catchable) if
+  the ball is at least partially within the penalty area - i.e.
+
+  |ball.y| <= PENALTY_WIDTH*0.5 + ball_radius &&
+  |ball.x| <= FIELD_LENGTH*0.5 + ball_radius &&
+  |ball.x| >= FIELD_LENGTH*0.5 - (PENALTY_LENGTH*0.5 + ball_radius)
+
+[9.1.5]
+  * Fixed bug in static compilation
+
+  * Fixed crash on win32 systems where the USER environment variable
+    has not been set.  The server now reports and error and exits if
+    the USER variable is needed (most commonly for locating the config
+    files) but not available.
+
+[9.1.4]
+  * Fixed compilation problems introduced by libtools 1.4.3 on
+  platforms where the SED environment variable is not set.
+
+  * Fixed compilation bug on some platformsm due to an invalid
+  preprocessor directive
+
+[9.1.3]
+  * Fixed bug which would cause terminiation of the server due to
+  problems with audio messages and the associated random number generator.
+
+[9.1.2]
+  * Fixed bug in configuration that would prevent the detection of
+  certain libraries when rcssserver is configured before rcssbase is built.
+
+[9.1.1]
+  * Fixed compilation problem on some platforms due to
+  incompatibilities between gcc3.2 and inttypes.h
+
+  * Fixed bug in static compilation when rcssbase has not yet been
+  installed.
+
+[9.1.0]
+  * The server now supports a new game: Keepaway.  In this game, the
+  left team (the "keepers") attempt to keep the ball away from the right
+  team (the "takers").  An episode ends when the takers capture the ball
+  or the ball leaves the rectangular play region.  When this happens,
+  the referee sends a message "training Keepaway 1" to the players
+  indicating that the episode has ended.
+
+  In Keepaway mode, the simulator logs episode data to a ".kwy" file.
+  This log file records the episode start/end times, the episode
+  duration, and the condition under which the episode ended.
+
+  To play Keepaway, turn on the 'keepaway' parameter.  You can specify
+  the number of players on each team and the size of the play region
+  using additional parameters.  A full list of options can be found in
+  the "rcssserver-server.conf" file.
+
+  When using this feature, it is strongly recommended that you turn
+  off the offside rule.  Also, it is recommended that you set the
+  halftime to -1.  To start the server in Keepaway mode using the
+  default options:
+  rcssserver -keepaway on -use_offside off -half_time -1
+
+  Also see the 'm_keepaway' parameter of the monitor to use the
+  Keepaway field layout.
+
+  Details of the Keepaway task as well as some sample experiments can
+  be found in the following article available from
+  http://www.cs.utexas.edu/~pstone/papers.html.
+
+  @Incollection(StoneSutton2001,
+        Author="Peter Stone and Richard S. Sutton",
+        Title="Keepaway Soccer:  a Machine Learning Testbed",
+        booktitle= "{R}obo{C}up-2001: Robot Soccer World Cup {V}",
+        Editor="Andreas Birk and Silvia Coradeschi and Satoshi Tadokoro",
+        Publisher="Springer Verlag",address="Berlin",year="2002")
+
+  Support for Keepaway in the rcssserver and rcssmonitor was
+  implemented by Greg Kuhlmann.
+
+  * The server now supports dlopening libraries.  The intention is to
+  allow dlopening of players at some stage, but to test the concept,
+  the timers are now dlopened on platforms that support it.  This also
+  means that if you specify a prefix to configure, you *must* not use
+  relative directories, otherwise the server won't be able to find the
+  libraries.  To disable dlopening use the --disable-shared flag to
+  configure.
+
+  * Fixed incorrect back pass detection when a player tackles the
+  ball.
+
+  * Fixed incorrect back pass detection when players from both teams
+  kick or tackle the ball
+
+  * Fixed incorrect initialisation of kick_off_wait and connect_wait
+  parameters which are used for automatic mode.
+
+  * Visuals have been re-written (again), this time using the
+  sender-serializer design which was initially used with audio
+  messages.  While making the code a lot simpler and easier to
+  maintain, it also resulted in significant performance
+  improvements. On my machine, the average time taken to produce
+  visuals as decreased by 12.5% and the maximum time taken to produce
+  a visual has reduced by 80% (possibly an outlier).
+
+  * The server now will wait till the left team has connected at least
+  one player before starting the right team.  This only applies when
+  using the team_*_start configuration options.  If the team on the
+  left does not connect, the right team will not be started.
+
+  * Fixed installation problem with machines that don't have flex.
+
+  * The compression commands now accept -1 to indicate that zlib is
+  not to be used (default) and 0 to 9 indicate levels of compression
+  as per the zlib library.
+
+[9.0.4]
+  * The server.conf file now supports tilde expantion for other users
+  (i.e.  ~foobar expands the the home directory of user foobar).
+  Thaks go to Marc Butler for providing the patch.
+
+  * RCSSClient now uses the new streaming sockets in rcssbase and is
+  multithreaded.  The client no longer accepts the -e option, instead
+  simply cat the script file and pipe it to the client.
+
+  * RCSSClient now uses ncurses when it's available to seperate the
+  input and output, this can be disabled ( like when you want to
+  redirect the output to a file ) by using the -nogui option.
+
+  * RCSSClient's command line argument parseing has changed. Now the
+  server and port are specified with '-server SERVER' and '-port PORT'
+
+[9.0.3]
+  * Fixed errors in default server.conf generation.  Thanks go to
+  Michael Gollin for providing the fix.
+
+[9.0.2]
+  * The server can now be run automatically.  When 'auto_mode' is on
+  the server will wait 'connect_wait' cycles for the players to
+  connect and 'kick_off_wait' cycles before kicking off.  At the end
+  of the two halves, the server will wait 'game_over_wait' cycles
+  before exiting.  It will not continue into extra time.
+
+  * String command line and .conf parameters may now be enclosed in
+    quotes.
+
+  * Two new parameters have been added, 'team_l_start' and
+  'team_r_start' that can be used to specify a command to run to start
+  the left and right team respectively.  If the command contains a
+  space make sure you enclose the entire command in double quotes.
+
+  For instance, to start the left team on 'team_host', connecting to a
+  server on 'server_host', one could use something like
+
+  rcssserver -team_l_start "ssh team_host \"~/startMyTeam server_host\""
+
+  or add
+
+  team_l_start : "ssh another_host "~/startMyTeam some_host""
+
+  to the '~/.rcssserver-server.conf' file
+
+[9.0.1]
+  * The automatic output of CLang messages as full hear messages has
+  been disabled due to problems with output during games.
+
+[9.0.0]
+  * CLang messages will now output as
+
+  (hear TIME_SENT online_coach_{left|right} TIME_RECV (message))
+
+  if the side and time recv have been set, otherwise they are output
+  as normal.  This is only intended as a convenience feature for
+  clients so that they can compare the output of the parsed message
+  with the actual message parsed.
+
+  * rcss::clang::Parser now inherits from the new rcss::Parser, found
+  in rcssbase/parser.h
+
+  * The CLang lexer is now reentrant, and can only be rebuilt using
+    flex.
+
+  * The order in which the search for the rcssbase files is performed
+  has changed.  If the "rcssbase" environment variable is set, then it
+  will first look in the path specified by "rcssbase".  Next it will
+  try to look into rcssbase directly, by assuming rcssserver and
+  rcssbase are being installed as part of the larger rcsoccersim
+  package.  Failing that it will then search for the headers as it
+  would for any other header file.
+
+[8.05]
+  [rel_10]
+  * Fixed defect where a back passes is detected when the goalie sends
+   a catch but the ball is too far away.
+
+  [rel_9]
+  * To save on compile time and space, debuging infomration is now
+  disabled by default.  Use `./configure CXXFLASG="<YOUR FLAGS>"' to
+  overide the new defualt of "-O2".
+
+  * Shared libraries are no longer built by default.  If you want to
+  use shared libraries you will need to specify --enable-shared at
+  configure time.
+
+  [rel_8]
+  * Fixed egcs 2.91.66 compilation problems
+
+  [rel_7]
+  * Fixed minor defect which would reverse the order of points in
+  CLang Quad, Tri and Rec regions.
+
+  * Fixed defect where quotes where missing from CLang define messages.
+
+  * Fixed defect that would send CLang messages that required support
+  for both CLang 7 and CLang 8 to clients that supported only one of
+  CLang 7 or CLang 8.
+
+  * Disabled by default the sending of (hear time TEAM [UNUM])
+    messages.
+
+  * The type audio messages received by a player can now be enabled
+  and disabled via the ear command in the form
+
+  (ear ({on|off} [TEAM] [TYPE]))
+
+  TEAM is "our", "opp", "left", "l", "right", "r" or the team name of
+  a team.  If TEAM is omitted, the message will apply to messages from
+  both teams.  TYPE is used to specify the type of audio, where
+  "complete" or "c" is used to specify messages which contain the
+  audio data and "partial" or "p" is used to specify messages which do
+  not contain audio data.  If TYPE is not specified, the message will
+  apply to both types.
+
+  For example:
+
+  '(ear (on))' enables all audio.
+  '(ear (off partial))' disables '(hear time TEAM [UNUM])' messages.
+  '(ear (on our complete))' enables '(hear time TEAM [UNUM] "message")'
+  messages from the players team mates.
+  '(ear (off opp))' disables all audio from opponent players.
+
+  * Fixed compilation problem on GCC 2.96
+
+  * Added support for queueing of CLang RuleMsgs and DelMsgs.  The
+  number of these types of messages that can be sent each CLang
+  windows is specifed by two new parameters, 'clang_rule_win' and
+  'clang_del_win', both of whcih have defaults of 1.
+
+  * Fixed bug with proper goal kicks which would award a goal kick to
+  the opposition it a opposing team member kicked the ball when the
+  play mode was still goal kick.  Instead the goal kick is retaken.
+
+  * Fixed some problems when compiling on Cygwin
+
+  * Fixed bug that would allow a player to kick the ball if the goalie
+  had caught the ball and move on top of the player.
+
+  * Defualt for the offide area is now 2.5
+
+  * Proper goal kicks (aka LAW 16) is now off by default.
+
+  * Fixed rcssclient compilation problem when libz is not detected on
+  the system.
+
+  * Replay parameter in no longer available.  This was for some pretty
+  old code to replay the games.  This is done by rcsslogplayer instead
+  (and has been for a long while).
+
+  * Corrected an old defect that would allow players to dash in before
+  kick off and have the acceleration accumulate until the kick off.
+  Thanks go to Michael Gollin for reporting this bug and how to
+  correct it.
+
+  [rel_6]
+  * The team graphic protocol has been changed to make it easier to
+  detect and recover from lost messages.  The new format requires the
+  256x64 image to be broken up into 8x8 tiles (to make sure it will
+  fit into the message to the monitors) and has the form
+
+  (team_graphic (<X> <Y> "<XPM line>" ... "<XPM line>"))
+
+  Where X and Y are the co-ordinates of the 8x8 tile in the complete
+  256x64 image, starting at 0 and ranging upto 31 and 7 respectively.
+  Each XPM line is a line from the 8x8 xpm tile.
+
+  The server responds with
+
+  (ok team_graphic <X> <Y>)
+
+  The server then sends
+
+  (team_graphic_{l|r} (<X> <Y> "<XPM line>" ... "<XPM line>"))
+
+  to each monitor via the message board.
+
+  * Fixed defaut values for new parameters in server.conf.
+
+  * Fixed defect which would not allow online coaches to substitute a
+  player for the same player type if there was already the maximum of
+  that player type on the field.
+
+  * Tackle power is no longer reduced by the probablility of the
+    tackle.
+
+  * Substitutions are now explicitly recorded in the log-files. The
+  message board is now used to record player substitutions in the game
+  log and send the data to the monitors in the form
+
+  (change_player_type {l|r} <unum> <player_type>)
+
+  * Fixed problem parsing parameters when compiled with gcc 3.x
+
+  [rel_5]
+  * Parameters have been added to enable and disable free kick faults
+  and back passes.  They are
+
+  free_kick_faults back_passes
+
+  and they are both enabled by default.
+
+  * Parameters have been added for the enforcement of proper goal
+  kicks.  They are
+
+  proper_goal_kicks stopped_ball_vel max_goal_kicks
+
+  and they have default values of on, 0.01 and 3 respectively.
+
+  * The server will now allow online coaches to send team_graphic
+  commands before kick off.  The graphic must be a 256 x 64 XPM and
+  each team_graphic command must contain just one line of the XPM.
+  The command has the form
+
+  (team_graphic "<line>")
+
+  and the server will respond with
+
+  (ok team_graphic)
+
+  for each line and
+
+  (ok team_graphic_done)
+
+  when the image is complete.
+
+  As each line is received it is sent to the monitors on the message
+  board in the form
+
+  team_graphic_{l|r} "<line>"
+
+  At this stage the monitor must be connected at the time the lines
+  are sent.
+
+	* Fixed defect which dereferenced Stadium::M_caught_ball when
+      NULL.
+
+  * Fixed defect in kick faults where a kick fault was not called if
+  the player taking the free kick, kicked the ball multiple times
+  before dashing and then kicking.
+
+  * Fixed defect in server params where visible_angle was reported in
+  radians instead of degrees.
+
+  * Corrected defect where the ball going out of bounds from a goal
+  kick would result in a drop ball on the side line.
+
+  [rel_4]
+  * Server param messages now contain tackle parameters of version 8+
+  clients.  The way the message is generated now means that the order
+  of items has changed and derived values are not sent.  All string
+  values are now quoted to ease paring should they contain brakets.
+
+  * Fixed defect where collisions were modelled between the goalie and
+  the ball when the ball was caught by the goalie.
+
+  * The it is now required that the ball is kicked directly into play
+  from the goal kick in compliance with FIFA law 16.  If the ball
+  stops or another player kicks the ball before it leaves the penalty
+  area, the kick is re-taken. If the player taking the goal kick
+  cannot manage to kick the ball directly into play after 3 attempts,
+  a free kick is awarded to the opposing team in the nearest penalty
+  corner.  IMO the player should also receive a yellow card for
+  incompetence and time wasting, but we don't have yellow cards yet.
+
+  * Added a tackle_power_rate(0.027), which was previously missing and
+  resulted in all but the smallest of tackles producing a maximum ball
+  speed.  The effective power is now reduced by the probability of the
+  tackle succeeding.  This is done by simply multiplying the
+  probability of success with power requested.
+
+  * Fixed defect that allowed players to kick and tackle after a free
+  kick or back pass infringement but before the free kick was awarded.
+
+  * Fixed defect that allowed players to be close to the ball during
+  an opponents free kick.
+
+  * Fixed 1 cycle delay in play mode change after a free kick was
+    taken.
+
+  * Removed audio debugging messages
+
+  * Fixed defect in backpasses where a kick from a player on team A
+  followed by a freekick and a catch by the goalie would be
+  incorrectly called a back pass.
+
+	* Fixed bug in the reported pointto directions.  Previously they
+  were incorrectly adjusted by the players orientation.  Thanks to
+  Michael Gollin for pointing out the bug and providing the
+  correction.
+
+  * Fixed bug in the bracket counting of quoted say messages.
+  Messages such as (say "Test)") are now parsed correctly.
+
+  * Fixed bug in new Vectors that are uses in pointto.  The setHead()
+  method would transpose the X and Y coordinates.  Thanks to Michael
+  Gollin for pointing out the bug and providing the correction.
+
+  [rel_3]
+  * Added rules to CLang.  Clients can now define rules, which can be
+  turned on and off and deleted later on.  Rules are can be defined as
+  follows
+
+  (define DEFS)
+
+  DEFS : // same as old defs
+       | (definerule VAR {model|direc} RULE)
+
+  VAR : [abe-oqrt-zA-Z_]+[a-zA-Z0-9_]*
+
+  RULE : (CONDITION DIRECTIVE_LIST)
+       | (CONDITION RULE_LIST)
+       | ID_LIST
+
+  RULE_LIST : RULE_LIST RULE | RULE
+
+  ID_LIST : all | VAR | (ID_LIST2)
+
+  ID_LIST2 : ID_LIST2 VAR | VAR
+
+  CONDITION :  // unchanged
+
+  DIRECTIVE_LIST : // unchanged
+
+  For example the following messages are valid
+
+  (define (definerule MyRule12345 model ((true) "dostuff")))
+  (define (definerule MyRule2 direc ((true) "doStuff" "andOtherStuff")))
+  (define (definerule MyRule3 model ((true) "dostuff"))
+          (definerule MyRule3 model ((true) "doStuff" "andOtherStuff")))
+  (define (definerule MyRule4 direc MyRule2))
+  (define (definerule MyRule4 direc (MyRule2 MyRule3)))
+  (define (definerule MyRule4 direc ((true) MyRule2)))
+  (define (definerule MyRule4 direc ((true) (MyRule2 MyRule3))))
+  (define (definerule MyRule4 direc all))
+  (define (definerule MyRule4 direc ((true) all)))
+
+  Rules may be deleted at a later date by using the delete message, which has
+  the form
+
+  (delete IDLIST)
+
+  For example the following messages are valid
+
+  (delete all)
+  (delete MyRule12345)
+  (delete (foo bar))
+
+  Rules are then activated or deactivate using a rule message, which has the
+  form
+
+  (rule ACTIVATION_LIST)
+
+  ACTIVATION_LIST : ACTIVATION_LIST ACTIVATION_ELEM | ACTIVATION_ELEM
+
+  ACTIVATION_ELEM : ({on|off} ID_LIST)
+
+  For example the following message is valid
+
+  (rule (off all) (on (foo bar)) (off MyRule12345))
+
+  Each activation element should be applied in the order it is listed.  For the
+  above example, all the rules should be turned off, then the rules 'foo'
+  and 'bar' should be turned on and finally 'MyRule12345' should be turned off.
+
+  [rel_2]
+  * Added new trade-off between dash_power_rate and stamina_inc_max. The
+  old trade-offs between dash_power_rate vs. player_size and
+  stamina_inc_max vs. player_speed_max are switched off now by
+  default. V8 clients get additional info regarding the new trade-off.
+  player_speed_max is 1.2 now for all player types by default.
+
+  * Players kicking the ball to themselves after a free kick is no longer
+  allowed.  Players may kick the ball several times so long as they do not dash
+  in between any of the kicks.  Once another player kicks the ball, the free
+  kick taker may proceed to the ball as normal.  If a player does kick the ball
+  to themselves after a free kick, a free kick is awarded to the opposing team
+  at the point that the second kick occurred.  When this occurs the play mode
+  changes to free_kick_fault_[lr], where the l or r is the side of the
+  offending player.  After AFTER_FREE_KICK_FAULT_WAIT(30) cycles the playmode
+  changes to free_kick_[lr], where l or r is the opposite side of the offending
+  player.
+
+  * Fixed bug in the setting of the team side of a ball owner condition in
+  CLang.
+
+  * Back passes are no longer allowed.  The server defines a back pass as when
+  a player kicks the ball and it is caught by the goalie of the same team,
+  without interference of a player from the other team.  If a back pass does
+  occur, a free kick is awarded to the other teams in the closest corner of
+  the penalty box. When this occurs the play mode changes to back_pass_[lr],
+  where the l or r is the side of the offending goalie.  After
+  AFTER_BACK_PASS_WAIT(30) cycles the playmode changes to free_kick_[lr],
+  where l or r is the opposite side of the offending goalie.
+  A pass from a player on team X bouncing of team Y player and then being
+  caught by to team X goalie is *not* a back pass. A pass from a player on
+  team X bouncing of an team Y player and then being caught by the team Y
+  goalie is *not* a back pass.
+
+  * Audio from players now has the form
+
+  (hear time direction TEAM [UNUM] "message")
+  (hear time TEAM [UNUM])
+
+  where TEAM is
+
+  opp | our
+
+  and the uniform number is only given for the player's own team (to simulate
+  recognition of team-mates' voices).
+
+  The first format is for the first message from each team in each cycle,
+  all other messages received that cycle have the second format.
+
+  * Players can now send say messages with the message enclosed in quotes.
+  For instance
+
+  (say "message")
+
+  It has the same effect as
+
+  (say message)
+
+  The only difference is that the later version must be followed by a null,
+  whereas the new version may be followed by other commands.  For instance
+
+  (say "message")(dash 100)
+
+  would be interpreted by the server as a say and a dash command, but
+
+  (say message)(dash 100)
+
+  would be interpreted as a single say message only, and the data being said as
+  "message)(dash 100)"
+
+  * Fixed a line ordering problem experienced by old clients.  Some of these
+  clients rely on the order in which lines are presented (nearest first), so
+  now the server sorts lines into nearest first for pre v8 clients. V8 and
+  clients should not rely on the order of any of components of messages sent.
+  BTW code I wrote for clients I was working on exhibits this reliance on
+  ordering :)=
+
+  * Added support for CLang Freeform messages during certain times during
+  playon.  Coaches can send Freeform messages for freeform_send_period cycles
+  after every freeform_wait_period cycles.  Default values for
+  freeform_send_period and freeform_wait_period are 20 and 600 respectively.
+  For example, if the playmode changes to playon at cycle 420 and stays in
+  playon till the end of this example, the coaches can send freeform messages
+  between 1020 and 1040, 1620 and 1640, etc.
+
+  [rel_1]
+  * The CLang lib has changed and is not compatible with the previous version.
+  To reflect this the library version has changed from 0.0.0 to 1.0.0.  Some of
+  the classes still need a little work before I would say they are fully usable
+  in client code, but what is already there should make it a lot easier than
+  starting from scratch.  Just remember that the entire simulator is under
+  LGPL (except for rcssmonitor which is under GPL), so if you do use modified
+  server code in you clients, you *must* release these modifications when you
+  release your binary. Earlier and more frequent releases would be more than
+  welcome.  Hopefully this way we can start some sort of Standard RoboCup
+  Library (SRCLib).
+
+  * Added support for arithmetic on points within CLang messages.  Points can
+  now have the form
+
+  (<POINT_LIST>)
+
+  where POINT_LIST is
+
+  <POINT_LIST> <ARITH_OP> <POINT_LIST> | <POINT>
+
+  where ARITH_OP is
+
+  + | - | * | /
+
+  Normal operator precedence and bracket usage applies. As an example the
+  following is the point halfway between the ball and the opponent player 5.
+
+  (((pt ball) + (pt opp 5)) / (pt 2 2))
+
+  The clients should interprete all point arithmetic operations are applied to
+  the X and Y co-ordinate independently.  For instance,
+
+  ((pt A B) ? (pt C D))
+
+  where ? is one of the operators, should be interpreted as
+
+  (pt A?B C?D)
+
+  * Added support for triangular and rectangular regions in CLang.  They have
+  the form
+
+  (tri <point> <point> <point>)
+  (rec <point> <point>)
+
+  * Added support for multiple actions in directives.  Players should treat
+  directives with multiple actions in the same manner as if each action was
+  sent as part of an individual directive.  The grammar for the new directives
+  is
+
+  ({do|dont} {our|opp} <UNUM_SET> <ACTION_LIST>)
+
+  * Added ActPassReg, ActPassUNum, ActDribble, ActClear, ActShoot, ActHold,
+  ActIntercept and ActTackle to CLang, which have the form
+
+  (pass <REGION>)
+  (pass <UNUM_SET>)
+  (dribble <REGION>)
+  (clear <REGION>)
+  (shoot)
+  (hold)
+  (intercept)
+  (tackle <UNUM_SET>)
+
+  * Added CondUNum messages to the CLang, which has the form
+
+  (unum <VAR> <UNUM_SET>)
+
+  This allows coaches to limit the set of uniform numbers that can match a
+  variable, such as
+
+  (info ( 9000 (and (bowner opp {X})(unum X {1 3 5})) (do our {5} (mark {X}))))
+
+  * Added Player var messages to CLang, which allows messages similar to
+
+  (info ( 9000 (bowner opp {X}) (do our {5} (mark {X}))))
+
+  Players should evaluate the above message for X set to 1 ~ 11.  For instance
+  if the current ball owner happens to be the opponent player 3, the player 5
+  should mark opponent 3.
+
+  The variables may be quoted can have the form
+
+  [abe-oqrt-z]+[a-zA-Z0-9_]*
+
+  or
+
+  \"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\"
+
+  The format for unquoted variables may look a bit strange.  This is because
+  the character p, d, c, and s can not be used to begin an unquoted variable as
+  they are ball move tokens.
+
+  Quoted variables do *not* equal unquoted variables -- i.e X is not the same
+  as "X".
+
+  * Added comparison messages to CLang. They have the form
+
+  (time <COMP> <INT>)
+  (opp_goals <COMP> <INT>)
+  (own_goals <COMP> <INT>)
+  (goal_diff <COMP> <INT>)
+  (<INT> <COMP> time)
+  (<INT> <COMP> opp_goals)
+  (<INT> <COMP> our_goals)
+  (<INT> <COMP> goal_diff)
+
+  Where COMP is <, <=, ==, !=, >= or > and INT is some integer value that you
+  are comparing the current time, or goals to.  Players should evaluate
+  comparisons to true is the *current time* or *current goals* compared to the
+  int is true.  The players should *not* take the time or goals to mean the
+  time the command  was sent or the time the command was received.
+
+[8.04]
+  [rel_5]
+  * Fixed bug on some platforms in which no data is ever written to rcg files
+
+  * Fixed bug in serialisation on 'clang ver' messages to clients
+
+  * Fixed seg fault when players send 'clang ver' messages before the coach
+	has connected.
+
+  * Fixed bug in minimum recovery fix.
+
+  * Added missing ')' to 'ok clang' message.
+
+  [rel_4]
+  * Fixed bug in which CLang messages were not sent to players because the side
+  in the CLang message was not set correctly
+
+  * Fixed bug that allowed minimum recovery to fall below recovery_min.
+
+  * Added support for full-state messages when server is in synch mode.
+  Thank you to Michael Gollin for pointing out the problem and the code
+  for fixing it.
+
+  * Fixed bug in automatic generation of server.conf for Tackle parameters
+
+  * Logs are now flush manually to prevent log delays when they build up and
+  flush manually
+
+  * Fixed bug for reconnecting clients
+
+  [rel_3]
+  * Fixed compilation problems experienced on some machines.
+
+  [rel_1]
+  * The server now requires all players that support the Coach Language to
+  explicitly advise the server, through the following command
+
+  (clang (ver <MIN> <MAX>))
+
+  Where MIN and MAX are unsigned ints indicating the minimum and maximum
+  version numbers supported by the player.  Min must be less than or equal to
+  max. If no such command is received by the server, it assumes that no CLang
+  is supported.  When players hear an unsupported CLang message the get the
+  following
+
+  (hear <TIME> online_coach_{left|right} (unsupported_clang))
+
+  instead of the actual clang message sent.  This means that previous clients
+  need to be modified to be supported, they should send the following:
+
+  (clang (ver 7 7))
+
+  * Version 8 and above Online Coaches receive the following
+
+  (clang (ver (<player_name>) <min> <max>))
+
+  to indicate what version of clang players support.
+
+  * Added tackle variables to server.conf.  They still need to be added
+  to the server_param messages.
+
+  * Fixed  bugs in compression and decompression.  Thanks go to Hiroki Shimora
+  for the patch.
+
+  * Fixed error in reported direction of pointto.
+
+  * Changed values of tackle and tackle fault which previously conflicted
+  with ball collide and player collide
+
+  * Fixed bug which saw all online coach commands parsed as offline coach
+  commands.
+
+  * Fixed bug in serialisation of player audio for pre-version 7 online
+  coaches.
+
+  * Fixed bug in penalty area flags being at +- 20.175, instead of +- 20.16
+
+  * Recently the server has logged both messages sent and messages received.
+  This sent messages are no longer logged for space reasons.  Later on this
+  may be switchable via the server.conf
+
+  * Fixed bug that caused server to sometimes output
+  "../rcssbase/rcssbase/udpsocket.h: 307: Error receiving from client:
+  Interrupted system call"
+
+  * Fixed bug when online coach connects
+
+  * Introduced rcssclangparser library for easy use of a clang parser in
+  clients
+
+  * Players can now tackle by using the tackle command in the form
+
+  `(tackle <POWER>)'
+
+  This renders the player immobile for 10 cycles.  The tackle success is
+  determined randomly with the probability based of the ball's position
+  relative to the tackling player using the following formula:
+
+  fail_prob = ( player_2_ball.x / tackle_dist )^6
+              + ( |player_2_ball.y| / 1.25 )^6;
+
+  where tackle_dist is 2.5 if the ball is in front of the player and 0.5
+  otherwise. Player_2_ball is a vector from the player to the ball, relative
+  to the player's body direction.
+
+  If the tackle is successfull, the ball is pushed in the direction of the
+  players body.
+
+  When players can see another players team, they can also see if that player
+  is tackling via a `t' flag as follows:
+
+  `((p "<TEAMNAME>" <UNUM>) <DIST> <DIR> <DISTCHG> <DIRCHG>
+                            <BDIR> <HDIR> [<POINTDIR>] [t])'
+
+  `((p "<TEAMNAME>") <DIST> <DIR> [<POINTDIR>] [t])'
+
+  Players can get information about their tackling in the sense body message,
+  where
+
+  `(tackle (expires <EXPIRES>) (count <COUNT>))'
+
+  is placed after the arm information.  EXPIRES is the number of cycles the
+  current tackle will last for, with 0 indicating that the player isn't
+  tackling.  COUNT is the number of times tackle has been executed by that
+  player.
+
+  Coach visuals now can indicate if a player is tackling via a `t' flag as
+  follows:
+
+  `((p "<TEAMNAME>" <UNUM>) <X> <Y> <VEL_X> <VEL_Y> <ANGLE> <NECK_ANGLE>
+                            [<ARM_DIR>] [t])'
+
+  * Rcssclient now supports very basic scripting.  The client will read from a
+  file specified with the -script option and send one line immediately after
+  receiving a sense body message.  Since the first to arguments are used to
+  specify the host and port, one must specify these as well as the -script
+  option.  For instance the following command:
+
+  rcssclient localhost 6000 -script foobar
+
+  will start the client using the script foobar.
+
+  To send more than one message per cycle, simply put multiple messages on one
+  line.  NOTE: When sending multiple messages, the say message must be last.
+
+  * The pointto count is now incremented for both turning it on and turning
+  it off.  Before pointto off commands would not affect the pointto count.
+
+  * Players can now hear 1 msg per cycle from each team with a maximum length
+  of 10 bytes.
+
+  * Hear messages for version 8 and above players are now delayed to the
+  beginning of the next cycle (after the sensebody message).
+
+  * Version 8 and above players can now send attentionto commands to focus
+  their attention on a particular player.  The command has the form:
+
+  (attentionto <TEAM> <UNUM>) | (attentionto off)
+
+  Where <TEAM> is
+
+  opp | our | l | r | left | right | <TEAM_NAME>
+
+  and <UNUM> is integer identifying a member of the team specified. Players
+  can only focus on one player at a time (each attentionto command overrides
+  the previous) and cannot focus on themselves.
+
+  If the player focuses on player A from team T (AKA pTA), the player will hear
+  one message selected randomly from the say messages issued by pTA in the
+  previous cycle.  If pTA did not issue any say commands, the player will hear
+  one message selected randomly from all the say messages issued by players in
+  team T.  At the same time, the player will hear one message selected randomly
+  from the other team.  If attentionto is off (default) the player will hear
+  one message from each team selected randomly from the messages available.
+
+  The current state of focus is reported in the sense body message to the
+  player, where either of the follwing
+
+  (focus (target none) (count <COUNT>))
+  (focus (target {l|r} <UNUM>) (count <COUNT>)
+
+  is added as the last element of the sense body message.
+
+[8.03]
+  * Full state messages now are sent without the redundant stamina
+  data at the beginning of the message.
+
+  * Landmark reader has been disabled due to problems on Solaris.
+
+  * rcssclient now prints the port and host is is connecting to.
+
+  * Players can now send commands to point to a spot on the field of
+  the form:
+
+    `(pointto <DIST> <DIR>)'
+
+  or
+
+    `(pointto off)'
+
+  The first form will cause the arm to point to the spot DIST meters
+  from the player in DIR direction, relative to the player's current
+  face direction.
+  The player will continue to point to the same location on the field
+  independent of an motion or rotation of the player for at least
+  `point_to_ban' cycles (5), and until another `pointto' command is
+  issued or `point_to_duration' cycles (20) pass.
+  The second form disables a previous call of `pointto'.
+
+  * Version 8+ players can now see where a player is pointing, if the
+  player is pointing, the player is in view and they are close enough
+  to determine their team name. In these cases the player part of the
+  `see' message has the form (without the newline):
+
+    `(p "<TEAMNAME>" <UNUM>) <DIST> <DIR> <DISTCHG> <DIRCHG>
+                             <BDIR> <HDIR> <POINTDIR>)'
+
+  or
+
+    `(p "<TEAMNAME>") <DIST> <DIR> <POINTDIR>)'
+
+  Where `POINTDIR' is the direction the players are is pointing with
+  random Gaussian (normal)noise added to the actual direction, with a
+  mean of zero and a standard deviation calculated as follows:
+
+    sigma = pow(dist / team_too_far_length, 4) * 178.25 + 1.75
+
+  This means that sigma is a minimum of 1.75 deg and reaches 180 deg
+  when the player is observing a pointing arm from a distance of
+  team_too_far_length.  Since 95% of values in a normal distribution
+  are within two standard deviations, then 95% of the time the noise
+  will be in the range +- 2.5 deg when the player is very close and
+  in the range +- 360.0 deg when the player is team_too_far_length
+  away.  Beware the other 5% of cases ;)
+
+  * Version 8+ coaches (on and offline) can see where a player is
+  pointing to if the player is pointing.  The direction the player
+  is pointing comes just after the players neck angle.
+
+  * Fullstate messages have both <POINTDIST> and <POINTDIR> included
+  between neck angle and stamina.  The players own arm state has the
+  same format as in sense body (see below) and can be found between
+  the count and score part.
+
+  * sensebody messages for version 8+ clients now contain information
+  about the arm actuator.  The following has been inserted into the
+  sensebody message, just before the last `)', without the new line:
+
+    `(arm (movable <MOVABLE>) (expires <EXPIRES>)
+          (target <DIST> <DIR>) (count <COUNT>))'
+
+  Where:
+
+    - <MOVABLE> is the number of cycles till the arm is movable.
+      0 indicates the arm is movable now
+
+    - <EXPIRES> is the number of cycles till the arm stops pointing.
+      0 indicates that the arm is no longer pointing,
+
+    - <DIST> and <DIR> are the distance and direction of the point the
+      player is pointing to, relative to the players location,
+      orientation and neck angle, accurate to 10cm or 0.1 deg.
+
+    - <COUNT> is the number of times the `pointto' command has been
+      successfully executed by the player.
+
+
+  * Server param has two new parameters:
+    - `point_to_ban' is the minimum number of cycles between each
+      successful `pointto' command.
+
+    - `point_to_duration' is the number of cycles a `pointto' will last
+      before expiring.
+
+  * Use of the dedicated sockets is now enforced for version 8+ clients.
+  Version 8+clients that send commands to the init sockets get the
+  following reply
+
+    (error only_init_allowed_on_init_port)
+
+  and have their command(s) discarded.
+
+  * If the server looses UDP connectivity with a client, the server will
+  treat that client as though is sent bye or dispbye.
+
+  * Added missing parameters to server_param. Please see serverparam.C
+  for details of the new format.
+
+  * Sensors have been rewritten to make the code cleaner, easier to
+  maintain, easier to extend and best of all, faster! :D
+
+  * Created warning message for version 8.0 and above players that send
+  commands without null terminators.  This happens usually because
+  players specify the length of the message with strlen, which does not
+  include the null terminator.  The warning message has the format
+
+    `(warning message_not_null_terminated)'
+
+  * Added support for compressed communication with clients. clients can
+  now send
+
+    `(compression <level>)'
+
+  to the server.  If the server is compiled without ZLib, the server
+  will respond with
+
+    `(warning compression_unsupported)'
+
+  else if <level> is not a number between 0 and 9 inclusive, the server
+  will respond with
+
+    `(error illegal_command_form)'
+
+  else the server will respond with
+
+    `(ok compression <level>)'
+
+  and all subsequent messages to that client will be compressed at that
+  level, until a new compression command is received.
+
+  If a compression level above zero is selected, then the client is
+  expected to compress their commands to the server.
+
+  Specifying a level of zero turns off compression completely (default).
+
+  * The sample client supports the new compression option.  i.e. Compressed
+  messages will be uncompressed before they are written to the console and
+  commands to the server are compressed before sending.
+
+  * Added a profile option to the server parameters. If profile is on and
+  text logging is enabled, then the time take for different parts of the
+  simulation cycle is written to the text log.  Default is off
+
+  * Fixed bug in server's command line option parsing.
+
+  * Fixed possible, but rare infinite loop in collision modelling.
+
+See ChangeLog for previous changes.

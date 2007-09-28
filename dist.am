@@ -1,0 +1,43 @@
+install_files: always
+	@$(MAKE) $(AM_MAKEFLAGS) DESTDIR=$(PWD)/staging install; \
+	cd $(PWD)/staging; \
+	find . ! -type d -print | \
+	$(AWK) '/^\.\/usr\/local\/lib/ { \
+				sub( /\.\/usr\/local\/lib/, "%{_libdir}" ); } \
+			/^\.\/usr\/local\/bin/ { \
+				sub( /\.\/usr\/local\/bin/, "%{_bindir}" ); } \
+			/^\.\/usr\/local\/include/ { \
+				sub( /\.\/usr\/local\/include/, "%{_includedir}" ); } \
+			/^\.\/usr\/local\/share/ { \
+				sub( /\.\/usr\/local\/share/, "%{_datadir}" ); } \
+			/^\.\/usr\/local/ { \
+				sub( /\.\/usr\/local/, "%{_prefix}" ); } \
+			/^\./ { sub( /\./, "" ); } \
+			/./ { print; }' > $(PWD)/install_files.tmp; \
+	rm -rf $(PWD)/staging
+	@if test -f "install_files"; then \
+		diff install_files.tmp install_files >& /dev/null; \
+		if test $$? -eq 1; then \
+			mv install_files.tmp install_files; \
+		else \
+			rm -f install_files.tmp; \
+		fi \
+	else \
+		mv install_files.tmp install_files; \
+	fi
+
+always:
+
+dist-src: dist-all
+	list='$(EXTRA_SRC_DISTS)'; \
+	for dist in $$list; do \
+		$(MAKE) $(AM_MAKEFLAGS) dist-$$dist; \
+	done
+
+dist-bin:
+	list='$(EXTRA_BIN_DISTS)'; \
+	for dist in $$list; do \
+		$(MAKE) $(AM_MAKEFLAGS) dist-$$dist; \
+	done
+
+dist2 dist-all2: dist-src dist-bin 

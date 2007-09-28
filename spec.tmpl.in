@@ -1,0 +1,37 @@
+Summary: The RoboCup Soccer Simulator
+Name: @PACKAGE@
+Version: @VERSION@
+Release: 0
+Copyright: LGPL
+Group: Applications/Engineering
+Source0: http://prdownloads.sourceforge.net/sserver/%{name}-%{version}.tar.gz
+URL: http://sserver.sf.net
+BuildRoot: %{_tmppath}/%{name}-root
+Requires: rcssbase >= 10.0.9
+Prefix: %{_prefix}
+
+%description
+The RoboCup Soccer Simulator Server (rcssserver) is a research and
+educational tool for mutli-agent systems and artificial
+intelligence. It allows 11 simulated autonomous robotic players to
+play soccer (football).
+
+%prep
+%setup
+
+%build
+%configure
+make
+
+%install
+%makeinstall
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+
+%doc AUTHORS Acknowledgement BUGS COPYING INSTALL NEWS README
+
+%changelog
