@@ -169,6 +169,15 @@
 	Added the check and the creation of log directories using
 	boost::filesystem.
 
+2007-10-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+        * configure.ac:
+        Fixed a offside bug. Official Release 11.1.2.
+
+        * src/referee.cc:
+        * src/referee.h:
+        Fixed a bug in the offside referee.
+
 2007-07-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:

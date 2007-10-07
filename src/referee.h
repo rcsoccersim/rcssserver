@@ -254,6 +254,9 @@ public:
     virtual
     void analyse();
 
+    virtual
+    void playModeChange( PlayMode pm );
+
 private:
 
     void setOffsideMark( const Player & kicker );
@@ -481,9 +484,6 @@ public:
     void playModeChange( PlayMode pmode );
 
 private:
-
-    PVector moveOutOfGoalArea( const Side side,
-                               PVector ball_pos );
 
     void callBackPass( const Side side );
 

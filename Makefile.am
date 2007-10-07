@@ -28,8 +28,7 @@ tools/exteamname/test.sh \
 tools/striplog/Makefile \
 tools/striplog/striplog.c \
 tools/striplog/striplog.pro \
-PLATFORMS \
-missingflex 
+missingflex
 
 CLEANFILES = \
 *~ \
@@ -37,6 +36,6 @@ core \
 *.tar.gz \
 *.tmp
 
-DISTCLEANFILES = @INCLUDE_MK_FILE@ 
+DISTCLEANFILES = @INCLUDE_MK_FILE@
 
 @INCLUDE_MK@

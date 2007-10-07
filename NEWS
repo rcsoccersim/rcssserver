@@ -1,3 +1,6 @@
+[11.1.2]
+  * Fixed a bug in the offside referee.
+
 [11.1.1]
   * Fixed a bug related to the boost::random.
 
