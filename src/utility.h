@@ -121,6 +121,18 @@ normalize_angle( double ang )
     return ang;
 }
 
+namespace rcss {
+
+template < typename T >
+const T &
+bound( const T & low,
+       const T & value,
+       const T & high )
+{
+    return std::min( std::max( low, value ), high );
+}
+
+}
 
 #ifdef __cplusplus
 extern "C" {

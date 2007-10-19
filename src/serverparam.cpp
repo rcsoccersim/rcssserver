@@ -65,13 +65,31 @@
 bool ServerParam::s_in_init = false;
 std::string ServerParam::S_program_name = "rcssserver";
 
+
+const int ServerParam::SIMULATOR_STEP_INTERVAL_MSEC = 100;
+const int ServerParam::UDP_RECV_STEP_INTERVAL_MSEC = 10;
+const int ServerParam::UDP_SEND_STEP_INTERVAL_MSEC = 150;
+const int ServerParam::SENSE_BODY_INTERVAL_MSEC = 100;
+const int ServerParam::SEND_VISUALINFO_INTERVAL_MSEC = 100;
+
+const double ServerParam::IMPARAM = 5.0;
+
+const double ServerParam::BALL_SIZE	= 0.085;
+const double ServerParam::BALL_DECAY = 0.94;
+const double ServerParam::BALL_RAND = 0.05;
+const double ServerParam::BALL_WEIGHT = 0.2;
+const double ServerParam::BALL_T_VEL = 0.001;
+const double ServerParam::BALL_SPEED_MAX = 3.3; // [12.0.0] 2.7 -> 3.3
+const double ServerParam::BALL_ACCEL_MAX = 2.7;
+
+
 #ifdef WIN32
 const char ServerParam::LANDMARK_FILE[] = "~\\.rcssserver-landmark.xml";
 const char ServerParam::SERVER_CONF[] = "~\\.rcssserver\\server.conf";
 const char ServerParam::OLD_SERVER_CONF[] = "~\\.rcssserver-server.conf";
 #else
 const char ServerParam::LANDMARK_FILE[] = "~/.rcssserver-landmark.xml";
-const char ServerParam::SERVER_CONF[] = "~/.rcssserver/server.conf";
+const char ServerParam::SERVER_CONF[] = "~/.rcssserver/server12.conf";
 const char ServerParam::OLD_SERVER_CONF[] = "~/.rcssserver-server.conf";
 #endif
 
@@ -115,7 +133,9 @@ const double ServerParam::TACKLE_BACK_DIST = 0.5;
 const double ServerParam::TACKLE_WIDTH = 1.0;
 const double ServerParam::TACKLE_EXPONENT = 6.0;
 const unsigned int ServerParam::TACKLE_CYCLES = 10;
-const double ServerParam::TACKLE_POWER_RATE = 0.027;
+const double ServerParam::TACKLE_POWER_RATE = 0.0135; // [12.0.0] 0.027 -> 0.0135
+const double ServerParam::MIN_TACKLE_POWER = 0.0;
+const double ServerParam::MAX_TACKLE_POWER = 100.0;
 
 const int ServerParam::NR_NORMAL_HALFS = 2;
 const int ServerParam::NR_EXTRA_HALFS = 2;
@@ -518,6 +538,8 @@ ServerParam::addParams()
     addParam( "tackle_exponent", M_tackle_exponent, "", 8 );
     addParam( "tackle_cycles", M_tackle_cycles, "", 8 );
     addParam( "tackle_power_rate", M_tackle_power_rate, "", 8 );
+    addParam( "min_tackle_power", M_min_tackle_power, "", 12 );
+    addParam( "max_tackle_power", M_max_tackle_power, "", 12 );
 
     addParam( "freeform_wait_period", M_freeform_wait_period, "", 8 );
     addParam( "freeform_send_period", M_freeform_send_period, "", 8 );
@@ -861,6 +883,8 @@ ServerParam::setDefaults()
     M_tackle_exponent = TACKLE_EXPONENT;
     M_tackle_cycles = TACKLE_CYCLES;
     M_tackle_power_rate = TACKLE_POWER_RATE;
+    M_min_tackle_power = MIN_TACKLE_POWER;
+    M_max_tackle_power = MAX_TACKLE_POWER;
 
     M_freeform_wait_period = FREEFORM_WAIT_PERIOD;
     M_freeform_send_period = FREEFORM_SEND_PERIOD;

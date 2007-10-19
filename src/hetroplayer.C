@@ -121,8 +121,11 @@ HetroPlayer::delta( const Value & min,
 
 HetroPlayer::HetroPlayer()
 {
-    bool reject = true;
-    do
+#if 1
+    const int MAX_TRIAL = 1000;
+
+    int trial = 0;
+    while ( ++trial <= MAX_TRIAL )
     {
         Value tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
                                               PlayerParam::instance().playerSpeedMaxDeltaMax() );
@@ -163,25 +166,124 @@ HetroPlayer::HetroPlayer()
         effort_min = ServerParam::instance().effortMin()
             + tmp_delta * PlayerParam::instance().effortMinDeltaFactor();
 
-        // the amount of power consumed by a default player while running at max speed
-        static double homo_power_cons_at_max_vel
-            = ( ( ServerParam::instance().playerSpeedMax()
-                  * ( 1 - ServerParam::instance().playerDecay() ) )
-                / ServerParam::instance().dashPowerRate() )
-            - ServerParam::instance().staminaInc();
+
+        double real_speed_max
+            = ( ServerParam::instance().maxPower()
+                * dash_power_rate
+                * effort_max )
+            / ( 1.0 - player_decay );
+
+        if ( real_speed_max < player_speed_max + EPS )
+        {
+            break;
+        }
+    }
+    std::cout << "HetroPlayer creation trial = " << trial << std::endl;
+
+    // TODO: print error message and exit the simulator.
+    if ( trial > MAX_TRIAL )
+    {
+        std::cout << "HetroPlayer set default parameters." << std::endl;
+        // set the default type parameters
+        player_speed_max = ServerParam::instance().playerSpeedMax();
+        stamina_inc_max = ServerParam::instance().staminaInc();
+
+        player_decay = ServerParam::instance().playerDecay();
+        inertia_moment = ServerParam::instance().inertiaMoment();
+
+        dash_power_rate = ServerParam::instance().dashPowerRate();
+        player_size = ServerParam::instance().playerSize();
+
+        kickable_margin = ServerParam::instance().kickableMargin();
+        kick_rand = ServerParam::instance().kickRand();
+
+        extra_stamina = PlayerParam::instance().extraStaminaDeltaMin();
+        effort_max = ServerParam::instance().effortInit();
+        effort_min = ServerParam::instance().effortMin();
+    }
+#else
+    // the real max speed of the default type player
+    static const double homo_speed_max
+        = std::min( ServerParam::instance().playerSpeedMax(),
+                    ( ServerParam::instance().maxPower()
+                      * ServerParam::instance().dashPowerRate()
+                      * ServerParam::instance().effortInit() )
+                    / ( 1.0 - ServerParam::instance().playerDecay() ) );
+
+    // the amount of power consumed by a default player while running at max speed
+    static const double homo_power_cons_at_max_vel
+        = ( ( homo_speed_max //ServerParam::instance().playerSpeedMax()
+              * ( 1 - ServerParam::instance().playerDecay() ) )
+            / ServerParam::instance().dashPowerRate() )
+        - ServerParam::instance().staminaInc();
+
+    int trial = 0;
+    bool reject = true;
+    do
+    {
+        ++trial;
+
+        Value tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
+                                              PlayerParam::instance().playerSpeedMaxDeltaMax() );
+        player_speed_max = ServerParam::instance().playerSpeedMax() + tmp_delta;
+        stamina_inc_max = ServerParam::instance().staminaInc()
+            + tmp_delta * PlayerParam::instance().staminaIncMaxDeltaFactor();
+
+        tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerDecayDeltaMin(),
+                                        PlayerParam::instance().playerDecayDeltaMax() );
+        player_decay = ServerParam::instance().playerDecay() + tmp_delta;
+        inertia_moment = ServerParam::instance().inertiaMoment()
+            + tmp_delta * PlayerParam::instance().inertiaMomentDeltaFactor();
+
+        tmp_delta = HetroPlayer::delta( PlayerParam::instance().dashPowerRateDeltaMin(),
+                                        PlayerParam::instance().dashPowerRateDeltaMax() );
+        dash_power_rate = ServerParam::instance().dashPowerRate() + tmp_delta;
+        player_size = ServerParam::instance().playerSize()
+            + tmp_delta * PlayerParam::instance().playerSizeDeltaFactor();
+
+        // trade-off stamina_inc_max with dash_power_rate
+        tmp_delta = HetroPlayer::delta( PlayerParam::instance().newDashPowerRateDeltaMin(),
+                                        PlayerParam::instance().newDashPowerRateDeltaMax() );
+        dash_power_rate = ServerParam::instance().dashPowerRate() + tmp_delta;
+        stamina_inc_max = ServerParam::instance().staminaInc()
+            + tmp_delta * PlayerParam::instance().newStaminaIncMaxDeltaFactor();
+
+        tmp_delta = HetroPlayer::delta( PlayerParam::instance().kickableMarginDeltaMin(),
+                                        PlayerParam::instance().kickableMarginDeltaMax() );
+        kickable_margin = ServerParam::instance().kickableMargin() + tmp_delta;
+        kick_rand = ServerParam::instance().kickRand()
+            + tmp_delta * PlayerParam::instance().kickRandDeltaFactor();
+
+        tmp_delta = HetroPlayer::delta( PlayerParam::instance().extraStaminaDeltaMin(),
+                                        PlayerParam::instance().extraStaminaDeltaMax() );
+        extra_stamina = tmp_delta;
+        effort_max = ServerParam::instance().effortInit()
+            + tmp_delta * PlayerParam::instance().effortMaxDeltaFactor();
+        effort_min = ServerParam::instance().effortMin()
+            + tmp_delta * PlayerParam::instance().effortMinDeltaFactor();
+
+
+        double real_speed_max
+            = std::min( player_speed_max,
+                        ( ServerParam::instance().maxPower()
+                          * dash_power_rate
+                          * effort_max )
+                        / ( 1.0 - player_decay ) );
 
         // the amount of power consumend by this player while running at max speed
         double hetero_power_cons_at_max_vel
-            = ( ( player_speed_max
+            = ( ( real_speed_max //player_speed_max
                   * ( 1 - player_decay ) )
                 / dash_power_rate )
             - stamina_inc_max;
 
         // if the generated player can run faster than default and consume less power, then reject this player type and select a new one.
-        reject = ( player_speed_max > ServerParam::instance().playerSpeedMax()
+        reject = ( real_speed_max > homo_speed_max
                    && hetero_power_cons_at_max_vel < homo_power_cons_at_max_vel );
     }
     while ( reject );
+    std::cout << "HetroPlayer trial = " << trial << std::endl;
+#endif
 }
 
 HetroPlayer::HetroPlayer( int )

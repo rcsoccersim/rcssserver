@@ -112,6 +112,24 @@ private:
                     int version );
 
     // default values
+
+    static const int SIMULATOR_STEP_INTERVAL_MSEC; /* milli-sec */
+    static const int UDP_RECV_STEP_INTERVAL_MSEC; /* milli-sec */
+    static const int UDP_SEND_STEP_INTERVAL_MSEC; /* milli-sec */
+    static const int SENSE_BODY_INTERVAL_MSEC; /* milli-sec */
+    static const int SEND_VISUALINFO_INTERVAL_MSEC; /* milli-sec */
+
+    static const double IMPARAM; /* Inertia-Moment Parameter */
+
+    static const double BALL_SIZE;
+    static const double BALL_DECAY;
+    static const double BALL_RAND;
+    static const double BALL_WEIGHT;
+    static const double BALL_T_VEL;
+    static const double BALL_SPEED_MAX;
+    // th 6.3.00
+    static const double BALL_ACCEL_MAX;
+
     static const char LANDMARK_FILE[];
     static const char SERVER_CONF[];
     static const char OLD_SERVER_CONF[];
@@ -157,6 +175,8 @@ private:
     static const double TACKLE_EXPONENT;
     static const unsigned int TACKLE_CYCLES;
     static const double TACKLE_POWER_RATE;
+    static const double MIN_TACKLE_POWER;
+    static const double MAX_TACKLE_POWER;
 
     static const int NR_NORMAL_HALFS;
     static const int NR_EXTRA_HALFS;
@@ -407,6 +427,8 @@ private:
     double M_tackle_exponent;
     int M_tackle_cycles;
     double M_tackle_power_rate;
+    double M_min_tackle_power;
+    double M_max_tackle_power;
 
     int M_freeform_wait_period;
     int M_freeform_send_period;
@@ -825,7 +847,9 @@ public:
     const double & tackleWidth() const { return M_tackle_width; }
     const double & tackleExponent() const { return M_tackle_exponent; }
     unsigned int tackleCycles() const { return (unsigned int)M_tackle_cycles; }
-    const double tacklePowerRate() const { return M_tackle_power_rate; }
+    const double & tacklePowerRate() const { return M_tackle_power_rate; }
+    const double & minTacklePower() const { return M_min_tackle_power; }
+    const double & maxTacklePower() const { return M_max_tackle_power; }
 
     unsigned int freeformWaitPeriod() const { return (unsigned int)M_freeform_wait_period; }
     unsigned int freeformSendPeriod() const { return (unsigned int)M_freeform_send_period; }

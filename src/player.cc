@@ -48,54 +48,72 @@ inline
 double
 NormalizeDashPower( const double & p )
 {
-    return std::max( std::min( p,
-                               ServerParam::instance().maxPower() ),
-                     ServerParam::instance().minPower() );
+//     return std::max( std::min( p,
+//                                ServerParam::instance().maxPower() ),
+//                      ServerParam::instance().minPower() );
+    return rcss::bound( ServerParam::instance().minPower(),
+                        p,
+                        ServerParam::instance().maxPower() );
 }
 
 inline
 double
 NormalizeKickPower( const double & p )
 {
-    return std::max( std::min( p,
-                               ServerParam::instance().maxPower() ),
-                     ServerParam::instance().minPower() );
+//     return std::max( std::min( p,
+//                                ServerParam::instance().maxPower() ),
+//                      ServerParam::instance().minPower() );
+    return rcss::bound( ServerParam::instance().minPower(),
+                        p,
+                        ServerParam::instance().maxPower() );
 }
 
 inline
 double
 NormalizeTacklePower( const double & p )
 {
-    return std::max( std::min( p,
-                               ServerParam::instance().maxPower() ),
-                     ServerParam::instance().minPower() ); // 0.0 );
+//     return std::max( std::min( p,
+//                                ServerParam::instance().maxTacklePower() ),
+//                      ServerParam::instance().minTacklePower() );
+    return rcss::bound( ServerParam::instance().minTacklePower(),
+                        p,
+                        ServerParam::instance().maxTacklePower() );
 }
 
 inline
 double
 NormalizeMoment( const double & p )
 {
-    return Deg2Rad( std::max( std::min( p,
-                                        ServerParam::instance().maxMoment() ),
-                              ServerParam::instance().minMoment() ) );
+//     return Deg2Rad( std::max( std::min( p,
+//                                         ServerParam::instance().maxMoment() ),
+//                               ServerParam::instance().minMoment() ) );
+    return Deg2Rad( rcss::bound( ServerParam::instance().minMoment(),
+                                 p,
+                                 ServerParam::instance().maxMoment() ) );
 }
 
 inline
 double
 NormalizeNeckMoment( const double & p )
 {
-    return Deg2Rad( std::max( std::min( p,
-                                        ServerParam::instance().maxNeckMoment() ),
-                              ServerParam::instance().minNeckMoment() ) );
+//     return Deg2Rad( std::max( std::min( p,
+//                                         ServerParam::instance().maxNeckMoment() ),
+//                               ServerParam::instance().minNeckMoment() ) );
+    return Deg2Rad( rcss::bound( ServerParam::instance().minNeckMoment(),
+                                 p,
+                                 ServerParam::instance().maxNeckMoment() ) );
 }
 
 inline
 double
 NormalizeNeckAngle( const double & p )
 {
-    return std::max( std::min( p,
-                               Deg2Rad( ServerParam::instance().maxNeckAngle() ) ),
-                     Deg2Rad( ServerParam::instance().minNeckAngle() ) );
+//     return std::max( std::min( p,
+//                                Deg2Rad( ServerParam::instance().maxNeckAngle() ) ),
+//                      Deg2Rad( ServerParam::instance().minNeckAngle() ) );
+    return rcss::bound( Deg2Rad( ServerParam::instance().minNeckAngle() ),
+                        p,
+                        Deg2Rad( ServerParam::instance().maxNeckAngle() ) );
 }
 
 } // end of no-name namespace

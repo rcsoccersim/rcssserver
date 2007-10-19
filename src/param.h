@@ -41,13 +41,6 @@
 /*
  *   for Simulator
  */
-#define SIMULATOR_STEP_INTERVAL_MSEC	100 /* milli-sec */
-#define UDP_RECV_STEP_INTERVAL_MSEC	10  /* milli-sec */
-#define UDP_SEND_STEP_INTERVAL_MSEC	150 /* milli-sec */
-#define SENSE_BODY_INTERVAL_MSEC	100 /* milli-sec */
-#define SEND_VISUALINFO_INTERVAL_MSEC	100 /* milli-sec */
-
-#define IMPARAM	5.0	/* Inertia-Moment Parameter */
 
 #define	TIMEDELTA	10					/* polling interval [milli-sec] */
 
@@ -261,14 +254,6 @@
 
 #define BALL_NAME		"(ball)"
 #define BALL_NAME_SHORT		"(b)"
-#define BALL_SIZE		0.085
-#define BALL_DECAY		0.94
-#define BALL_RAND		0.05
-#define BALL_WEIGHT		0.2
-#define BALL_T_VEL		0.001
-#define BALL_SPEED_MAX		2.7
-// th 6.3.00
-#define BALL_ACCEL_MAX		2.7
 //
 #define REFEREE_NAME		"referee"
 #define REFEREE_NAME_SHORT	"r"
