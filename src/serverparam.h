@@ -113,6 +113,10 @@ private:
 
     // default values
 
+    static const int DEFAULT_PORT_NUMBER;
+    static const int COACH_PORT_NUMBER;
+    static const int OLCOACH_PORT_NUMBER;
+
     static const int SIMULATOR_STEP_INTERVAL_MSEC; /* milli-sec */
     static const int UDP_RECV_STEP_INTERVAL_MSEC; /* milli-sec */
     static const int UDP_SEND_STEP_INTERVAL_MSEC; /* milli-sec */
@@ -129,6 +133,72 @@ private:
     static const double BALL_SPEED_MAX;
     // th 6.3.00
     static const double BALL_ACCEL_MAX;
+
+    static const double PLAYER_SIZE;
+    static const double	PLAYER_WIDGET_SIZE;
+    static const double PLAYER_DECAY;
+    static const double PLAYER_RAND;
+    static const double PLAYER_WEIGHT;
+    static const double PLAYER_SPEED_MAX;
+    // th 6.3.00
+    static const double PLAYER_ACCEL_MAX;
+    //
+    static const double	STAMINA_MAX;
+    static const double	STAMINA_INC_MAX;
+    static const double RECOVERY_DEC_THR;
+    static const double RECOVERY_DEC;
+    static const double RECOVERY_MIN;
+    static const double EFFORT_DEC_THR;
+    static const double EFFORT_DEC;
+    static const double EFFORT_MIN;
+    static const double EFFORT_INC_THR;
+    static const double EFFORT_INC;
+
+    static const double KICK_RAND;
+    static const double PRAND_FACTOR_L;
+    static const double PRAND_FACTOR_R;
+    static const double KICK_RAND_FACTOR_L;
+    static const double KICK_RAND_FACTOR_R;
+
+    static const double GOALIE_CATCHABLE_POSSIBILITY;
+    static const double GOALIE_CATCHABLE_AREA_LENGTH;
+    static const double GOALIE_CATCHABLE_AREA_WIDTH;
+    static const int GOALIE_CATCH_BAN_CYCLE;
+    static const int GOALIE_MAX_MOVES;
+
+    static const double VisibleAngle;
+    static const double VisibleDistance;
+    static const double AUDIO_CUT_OFF_DIST;
+
+    static const double DASHPOWERRATE;
+    static const double KICKPOWERRATE;
+    static const double MAXPOWER;
+    static const double MINPOWER;
+
+    static const double KICK_RANDOM_RATE;
+    static const double KICKABLE_MARGIN;
+    static const double CONTROL_RADIUS;
+
+    static const double DIST_QSTEP;
+    static const double LAND_QSTEP;
+    static const double DIR_QSTEP;
+
+    static const double MAXMOMENT;
+    static const double MINMOMENT;
+
+    static const double MAX_NECK_MOMENT;
+    static const double MIN_NECK_MOMENT;
+
+    static const double MAX_NECK_ANGLE;
+    static const double MIN_NECK_ANGLE;
+
+    static const int DEF_SAY_COACH_MSG_SIZE;
+    static const int DEF_SAY_COACH_CNT_MAX;
+
+    static const double	WIND_DIR;
+    static const double	WIND_FORCE;
+    static const double	WIND_RAND;
+    //static const double WIND_WEIGHT;
 
     static const char LANDMARK_FILE[];
     static const char SERVER_CONF[];
@@ -219,78 +289,78 @@ private:
 
     static const double BALL_STUCK_AREA;
 
-		Value gwidth; /* goal width */
-		Value inertia_moment; /* intertia moment for turn */
-		Value psize; /* player size */
-		Value pdecay; /* player decay */
-		Value prand; /* player rand */
-		Value pweight; /* player weight */
-		Value pspeed_max; /* player speed max */
+		double gwidth; /* goal width */
+		double inertia_moment; /* intertia moment for turn */
+		double psize; /* player size */
+		double pdecay; /* player decay */
+		double prand; /* player rand */
+		double pweight; /* player weight */
+		double pspeed_max; /* player speed max */
 		// th 6.3.00
-		Value paccel_max; /* player acceleration max */
+		double paccel_max; /* player acceleration max */
 		//
-		Value stamina_max; /* player stamina max */
-		Value stamina_inc; /* player stamina inc */
-		Value recover_init; /* player recovery init */
-		Value recover_dthr; /* player recovery decriment threshold */
-		Value recover_min; /* player recovery min */
-		Value recover_dec; /* player recovery decriment */
-		Value effort_init; /* player dash effort init */
-		Value effort_dthr; /* player dash effort decriment threshold */
-		Value effort_min; /* player dash effrot min */
-		Value effort_dec; /* player dash effort decriment */
-		Value effort_ithr; /* player dash effort incriment threshold */
-		Value effort_inc; /* player dash effort incriment */
+		double stamina_max; /* player stamina max */
+		double stamina_inc; /* player stamina inc */
+		double recover_init; /* player recovery init */
+		double recover_dthr; /* player recovery decriment threshold */
+		double recover_min; /* player recovery min */
+		double recover_dec; /* player recovery decriment */
+		double effort_init; /* player dash effort init */
+		double effort_dthr; /* player dash effort decriment threshold */
+		double effort_min; /* player dash effrot min */
+		double effort_dec; /* player dash effort decriment */
+		double effort_ithr; /* player dash effort incriment threshold */
+		double effort_inc; /* player dash effort incriment */
 		// pfr 8/14/00: for RC2000 evaluation
-		Value kick_rand; /* noise added directly to kicks */
+		double kick_rand; /* noise added directly to kicks */
 		bool team_actuator_noise; /* flag whether to use team specific actuator noise */
-		Value prand_factor_l; /* factor to multiple prand for left team */
-		Value prand_factor_r; /* factor to multiple prand for right team */
-		Value kick_rand_factor_l; /* factor to multiple kick_rand for left team */
-		Value kick_rand_factor_r; /* factor to multiple kick_rand for right team */
+		double prand_factor_l; /* factor to multiple prand for left team */
+		double prand_factor_r; /* factor to multiple prand for right team */
+		double kick_rand_factor_l; /* factor to multiple kick_rand for left team */
+		double kick_rand_factor_r; /* factor to multiple kick_rand for right team */
 
-		Value bsize; /* ball size */
-		Value bdecay; /* ball decay */
-		Value brand; /* ball rand */
-		Value bweight; /* ball weight */
-		Value bspeed_max; /* ball speed max */
+		double bsize; /* ball size */
+		double bdecay; /* ball decay */
+		double brand; /* ball rand */
+		double bweight; /* ball weight */
+		double bspeed_max; /* ball speed max */
 		// th 6.3.00
-		Value baccel_max; /* ball acceleration max */
+		double baccel_max; /* ball acceleration max */
 		//
-		Value dprate; /* dash power rate */
-		Value kprate;	/* kick power rate */
-		Value kmargin; /* kickable margin */
-		Value ctlradius; /* control radius */
-		Value ctlradius_width; /* (control radius) - (plyaer size) */
+		double dprate; /* dash power rate */
+		double kprate;	/* kick power rate */
+		double kmargin; /* kickable margin */
+		double ctlradius; /* control radius */
+		double ctlradius_width; /* (control radius) - (plyaer size) */
     //public:
-		Value maxp; /* max power */
-		Value minp; /* min power */
-		Value maxm;	/* max moment */
-		Value minm;	/* min moment */
-		Value maxnm; /* max neck moment */
-		Value minnm; /* min neck moment */
-		Value maxn; /* max neck angle */
-		Value minn; /* min neck angle */
+		double maxp; /* max power */
+		double minp; /* min power */
+		double maxm;	/* max moment */
+		double minm;	/* min moment */
+		double maxnm; /* max neck moment */
+		double minnm; /* min neck moment */
+		double maxn; /* max neck angle */
+		double minn; /* min neck angle */
     //private:
-		Value visangle; /* visible angle */
+		double visangle; /* visible angle */
     //public:
-		Value visdist; /* visible distance */
+		double visdist; /* visible distance */
 		Angle windir; /* wind direction */
-		Value winforce; /* wind force */
-		Value winang; /* wind angle for rand */
-		Value winrand; /* wind force for force */
+		double winforce; /* wind force */
+		double winang; /* wind angle for rand */
+		double winrand; /* wind force for force */
     //private:
-		Value kickable_area; /* kickable_area */
+		double kickable_area; /* kickable_area */
     //public:
-		Value catch_area_l; /* goalie catchable area length */
-		Value catch_area_w; /* goalie catchable area width */
-		Value catch_prob; /* goalie catchable possibility */
+		double catch_area_l; /* goalie catchable area length */
+		double catch_area_w; /* goalie catchable area width */
+		double catch_prob; /* goalie catchable possibility */
     int goalie_max_moves; /* goalie max moves after a catch */
     bool kaway; /* keepaway mode on/off */
-    Value ka_length; /* keepaway region length */
-    Value ka_width; /* keepaway region width */
-		Value ckmargin; /* corner kick margin */
-		Value offside_area; /* offside active area size */
+    double ka_length; /* keepaway region length */
+    double ka_width; /* keepaway region width */
+		double ckmargin; /* corner kick margin */
+		double offside_area; /* offside active area size */
 		bool win_no; /* wind factor is none */
 		bool win_random; /* wind factor is random */
 		int portnum; /* port number */
@@ -341,19 +411,19 @@ private:
 		int slow_down_factor; /* factor to slow down simulator and send intervals */
 		bool useoffside; /* flag for using off side rule */
 		bool kickoffoffside; /* flag for permit kick off offside */
-		Value offside_kick_margin; /* offside kick margin */
-		Value audio_dist; /* audio cut off distance */
-		Value dist_qstep; /* quantize step of distance */
-		Value land_qstep; /* quantize step of distance for landmark */
+		double offside_kick_margin; /* offside kick margin */
+		double audio_dist; /* audio cut off distance */
+		double dist_qstep; /* quantize step of distance */
+		double land_qstep; /* quantize step of distance for landmark */
 #ifdef NEW_QSTEP
-		Value dir_qstep; /* quantize step of direction */
+		double dir_qstep; /* quantize step of direction */
     //private:
-		Value dist_qstep_l; /* team right quantize step of distance */
-		Value dist_qstep_r; /* team left quantize step of distance */
-		Value land_qstep_l; /* team right quantize step of distance for landmark */
-		Value land_qstep_r; /* team left quantize step of distance for landmark */
-		Value dir_qstep_l; /* team left quantize step of direction */
-		Value dir_qstep_r; /* team right quantize step of direction */
+		double dist_qstep_l; /* team right quantize step of distance */
+		double dist_qstep_r; /* team left quantize step of distance */
+		double land_qstep_l; /* team right quantize step of distance for landmark */
+		double land_qstep_r; /* team left quantize step of distance for landmark */
+		double dir_qstep_l; /* team left quantize step of direction */
+		double dir_qstep_r; /* team right quantize step of direction */
     bool defined_qstep_l;
     bool defined_qstep_r;
     bool defined_qstep_l_l;
@@ -633,75 +703,75 @@ public:
 
     // access methods
 
-    const Value & goalWidth() const { return gwidth; }
-    const Value & inertiaMoment() const { return inertia_moment; }
-    const Value & playerSize() const { return psize; }
-    const Value & playerDecay() const { return pdecay; }
-    const Value & playerRand() const { return prand; }
-    const Value & playerWeight() const { return pweight; }
-    const Value & playerSpeedMax() const { return pspeed_max; }
-    const Value & playerAccelMax() const { return paccel_max; }
-    const Value & staminaMax() const { return stamina_max; }
-    const Value & staminaInc() const { return stamina_inc; }
-    const Value & recoverInit() const { return recover_init; }
-		const Value & recoverDecThr() const { return recover_dthr; }
-    const Value & recoverMin() const { return recover_min; }
-		const Value & recoverDec() const { return recover_dec; }
-		const Value & effortInit() const { return effort_init; }
-		const Value & effortDecThr() const { return  effort_dthr; }
-		const Value & effortMin() const { return  effort_min; }
-		const Value & effortDec() const { return effort_dec; }
-		const Value & effortIncThr() const { return  effort_ithr; }
-		const Value & effortInc() const { return  effort_inc; }
-		const Value & kickRand() const { return  kick_rand; }
+    const double & goalWidth() const { return gwidth; }
+    const double & inertiaMoment() const { return inertia_moment; }
+    const double & playerSize() const { return psize; }
+    const double & playerDecay() const { return pdecay; }
+    const double & playerRand() const { return prand; }
+    const double & playerWeight() const { return pweight; }
+    const double & playerSpeedMax() const { return pspeed_max; }
+    const double & playerAccelMax() const { return paccel_max; }
+    const double & staminaMax() const { return stamina_max; }
+    const double & staminaInc() const { return stamina_inc; }
+    const double & recoverInit() const { return recover_init; }
+		const double & recoverDecThr() const { return recover_dthr; }
+    const double & recoverMin() const { return recover_min; }
+		const double & recoverDec() const { return recover_dec; }
+		const double & effortInit() const { return effort_init; }
+		const double & effortDecThr() const { return  effort_dthr; }
+		const double & effortMin() const { return  effort_min; }
+		const double & effortDec() const { return effort_dec; }
+		const double & effortIncThr() const { return  effort_ithr; }
+		const double & effortInc() const { return  effort_inc; }
+		const double & kickRand() const { return  kick_rand; }
 		bool teamActuatorNoise() const { return team_actuator_noise; }
-		const Value & playerRandFactorLeft() const { return prand_factor_l; }
-		const Value & playerRandFactorRight() const { return  prand_factor_r; }
-		const Value & kickRandFactorLeft() const { return  kick_rand_factor_l; }
-		const Value & kickRandFactorRight() const { return  kick_rand_factor_r; }
+		const double & playerRandFactorLeft() const { return prand_factor_l; }
+		const double & playerRandFactorRight() const { return  prand_factor_r; }
+		const double & kickRandFactorLeft() const { return  kick_rand_factor_l; }
+		const double & kickRandFactorRight() const { return  kick_rand_factor_r; }
 
-		const Value & ballSize() const { return bsize; }
-		const Value & ballDecay() const { return bdecay; }
-		const Value & ballRand() const { return brand; }
-		const Value & ballWeight() const { return bweight; }
-		const Value & ballSpeedMax() const { return bspeed_max; }
-		const Value & ballAccelMax() const { return baccel_max; }
-		const Value & dashPowerRate() const { return dprate; }
-		const Value & kickPowerRate() const { return kprate; }
-		const Value & kickableMargin() const { return kmargin; }
-		const Value & controlRadius() const { return ctlradius; }
-    const Value & CtlRadiusWidth() const { return ctlradius_width; }
+		const double & ballSize() const { return bsize; }
+		const double & ballDecay() const { return bdecay; }
+		const double & ballRand() const { return brand; }
+		const double & ballWeight() const { return bweight; }
+		const double & ballSpeedMax() const { return bspeed_max; }
+		const double & ballAccelMax() const { return baccel_max; }
+		const double & dashPowerRate() const { return dprate; }
+		const double & kickPowerRate() const { return kprate; }
+		const double & kickableMargin() const { return kmargin; }
+		const double & controlRadius() const { return ctlradius; }
+    const double & CtlRadiusWidth() const { return ctlradius_width; }
 
-    const Value & maxPower() const { return maxp; }
-		const Value & minPower() const { return minp; }
-		const Value & maxMoment() const { return maxm; }
-		const Value & minMoment() const { return minm; }
-		const Value & maxNeckMoment() const { return maxnm; }
-		const Value & minNeckMoment() const { return minnm; }
-		const Value & maxNeckAngle() const { return maxn; }
-		const Value & minNeckAngle() const { return minn; }
+    const double & maxPower() const { return maxp; }
+		const double & minPower() const { return minp; }
+		const double & maxMoment() const { return maxm; }
+		const double & minMoment() const { return minm; }
+		const double & maxNeckMoment() const { return maxnm; }
+		const double & minNeckMoment() const { return minnm; }
+		const double & maxNeckAngle() const { return maxn; }
+		const double & minNeckAngle() const { return minn; }
 
     double visAngle() const { return Deg2Rad(visangle); }
-    const Value & visAngleDeg() const { return visangle; }
-		const Value & visibleDistance() const{ return visdist; }
+    const double & visAngleDeg() const { return visangle; }
+		const double & visibleDistance() const{ return visdist; }
 		const Angle & windDir() const { return windir; }
-		const Value & windForce() const { return winforce; }
-		const Value & windAngle() const { return winang; }
-		const Value & windRand() const { return winrand; }
+		const double & windForce() const { return winforce; }
+		const double & windAngle() const { return winang; }
+		const double & windRand() const { return winrand; }
 
-    const Value & kickableArea() const { return kickable_area; }
+    const double & kickableArea() const { return kickable_area; }
 
-		const Value & catchAreaLength() const { return catch_area_l; }
-		const Value & catchAreaWidth() const { return catch_area_w; }
-		const Value & catchProb() const { return catch_prob; }
+		const double & catchAreaLength() const { return catch_area_l; }
+		const double & catchAreaWidth() const { return catch_area_w; }
+		const double & catchProb() const { return catch_prob; }
     int goalieMaxMoves() const { return goalie_max_moves; }
 
     bool keepAwayMode() const { return kaway; }
-    const Value & keepAwayLength() const { return ka_length; }
-    const Value & keepAwayWidth() const { return ka_width; }
+    const double & keepAwayLength() const { return ka_length; }
+    const double & keepAwayWidth() const { return ka_width; }
 
-		const Value & cornerKickMargin() const { return ckmargin; }
-		const Value & offsideActiveArea() const { return offside_area; }
+		const double & cornerKickMargin() const { return ckmargin; }
+		const double & offsideActiveArea() const { return offside_area; }
 
 		bool windNone() const { return win_no; }
 		bool windRandom() const { return win_random; }
@@ -750,36 +820,36 @@ public:
 		int slowDownFactor() const { return slow_down_factor; }
 		bool useOffside() const { return useoffside; }
 		bool kickOffOffside() const { return kickoffoffside; }
-		const Value & offsideKickMargin() const { return offside_kick_margin; }
+		const double & offsideKickMargin() const { return offside_kick_margin; }
 
-		const Value & audioDist() const { return audio_dist; }
+		const double & audioDist() const { return audio_dist; }
 
-		const Value & distQStep() const { return dist_qstep; }
-		const Value & landQStep() const { return land_qstep; }
+		const double & distQStep() const { return dist_qstep; }
+		const double & landQStep() const { return land_qstep; }
 
 #ifdef NEW_QSTEP
     const Vlaue & dirQStep() const { return dir_qstep; }
-    const Value & distQStepL() const
+    const double & distQStepL() const
       {
           return ( ! defined_qstep_l ? dist_qstep : dist_qstep_l );
       }
-    const Value & distQStepR() const
+    const double & distQStepR() const
       {
           return ( ! defined_qstep_r ? dist_qstep : dist_qstep_r );
       }
-    const Value & landQStepL() const
+    const double & landQStepL() const
       {
           return ( ! defined_qstep_l_l ? land_qstep : land_qstep_l );
       }
-    const Value & landQStepR() const
+    const double & landQStepR() const
       {
           return ( ! defined_qstep_r_l ? land_qstep : land_qstep_r );
       }
-    const Value & dirQStepL() const
+    const double & dirQStepL() const
       {
           return ( ! defined_qstep_dir_l ? dir_qstep : dir_qstep_l );
       }
-    const Value & dirQStepR() const
+    const double & dirQStepR() const
       {
           return ( ! defined_qstep_dir_r ? dir_qstep : dir_qstep_r );
       }

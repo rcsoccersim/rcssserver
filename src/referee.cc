@@ -562,6 +562,15 @@ Referee::clearPlayersFromBall( const Side side )
     // yellow cards if they repeatedly fail to stay clear.  Two yellows and your
     // out of the game.
 
+    const PlayMode pm = M_stadium.playmode();
+
+    const double clear_dist = ( ( pm == PM_Back_Pass_Left
+                                  || pm == PM_Back_Pass_Right )
+                                ? GOAL_AREA_LENGTH
+                                : KICK_OFF_CLEAR_DISTANCE );
+    const bool indirect = ( pm == PM_IndFreeKick_Left
+                            || pm == PM_IndFreeKick_Right );
+
     bool exist = false;
     int loop = 10;
     const Stadium::PlayerCont::iterator end = M_stadium.players().end();
@@ -580,11 +589,32 @@ Referee::clearPlayersFromBall( const Side side )
             if ( side == NEUTRAL
                  || (*it)->team()->side() == side )
             {
+                if ( indirect
+                     && std::fabs( (*it)->pos().x ) >= PITCH_LENGTH*0.5
+                     && std::fabs( (*it)->pos().y ) <= GOAL_WIDTH*0.5 )
+                {
+                    // defender is allowed to stand on the goal line.
+                    continue;
+                }
+
                 CArea clear_area( M_stadium.ball().pos(),
-                                  KICK_OFF_CLEAR_DISTANCE + (*it)->size() );
+                                  clear_dist + (*it)->size() );
                 if ( clear_area.inArea( (*it)->pos() ) )
                 {
-                    (*it)->place( clear_area.nearestEdge( (*it)->pos() ) );
+                    PVector new_pos = clear_area.nearestEdge( (*it)->pos() );
+                    if ( indirect
+                         && std::fabs( new_pos.x ) > PITCH_LENGTH*0.5
+                         && std::fabs( new_pos.y ) < GOAL_WIDTH*0.5 )
+                    {
+                        double tangent
+                            = ( new_pos.y - M_stadium.ball().pos().y )
+                            / ( new_pos.x - M_stadium.ball().pos().x );
+                        new_pos.x = PITCH_LENGTH*0.5
+                            * ( new_pos.x > 0.0 ? 1.0 : -1.0 );
+                        new_pos.y = M_stadium.ball().pos().y
+                            + tangent * ( new_pos.x - M_stadium.ball().pos().x );
+                    }
+                    (*it)->place( new_pos );
                     exist = true;
                 }
             }
@@ -2067,7 +2097,8 @@ CatchRef::analyse()
         clearPlayersFromBall( LEFT );
         if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT)
         {
-            M_stadium.change_play_mode( PM_FreeKick_Right );
+            //M_stadium.change_play_mode( PM_FreeKick_Right );
+            M_stadium.change_play_mode( PM_IndFreeKick_Right );
         }
         return;
     }
@@ -2077,7 +2108,8 @@ CatchRef::analyse()
         clearPlayersFromBall( RIGHT );
         if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT )
         {
-            M_stadium.change_play_mode( PM_FreeKick_Left );
+            //M_stadium.change_play_mode( PM_FreeKick_Left );
+            M_stadium.change_play_mode( PM_IndFreeKick_Left );
         }
         return;
     }
@@ -2087,8 +2119,8 @@ CatchRef::analyse()
         clearPlayersFromBall( LEFT );
         if( ++M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
         {
-            M_stadium.change_play_mode( PM_IndFreeKick_Right );
-            //M_stadium.change_play_mode( PM_FreeKick_Right );
+            //M_stadium.change_play_mode( PM_IndFreeKick_Right );
+            M_stadium.change_play_mode( PM_FreeKick_Right );
         }
         return;
     }
@@ -2098,8 +2130,8 @@ CatchRef::analyse()
         clearPlayersFromBall( RIGHT );
         if( ++M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
         {
-            M_stadium.change_play_mode( PM_IndFreeKick_Left );
-            //M_stadium.change_play_mode( PM_FreeKick_Left );
+            //M_stadium.change_play_mode( PM_IndFreeKick_Left );
+            M_stadium.change_play_mode( PM_FreeKick_Left );
         }
         return;
     }
@@ -2127,12 +2159,38 @@ CatchRef::playModeChange( PlayMode pmode )
     }
 }
 
+PVector
+CatchRef::moveOutOfGoalArea( const Side side,
+                             PVector ball_pos )
+{
+    if ( side != RIGHT )
+    {
+        if ( ball_pos.x <= -PITCH_LENGTH*0.5 + GOAL_AREA_LENGTH
+             && std::fabs( ball_pos.y ) <= GOAL_AREA_WIDTH *0.5 )
+        {
+            ball_pos.x = -PITCH_LENGTH*0.5 + GOAL_AREA_LENGTH + EPS;
+        }
+    }
+
+    if ( side != LEFT )
+    {
+        if ( ball_pos.x >= PITCH_LENGTH*0.5 - GOAL_AREA_LENGTH
+             && std::fabs( ball_pos.y ) <= GOAL_AREA_WIDTH *0.5 )
+        {
+            ball_pos.x = PITCH_LENGTH*0.5 - GOAL_AREA_LENGTH - EPS;
+        }
+    }
+
+    return ball_pos;
+}
+
 
 void
 CatchRef::callBackPass( const Side side )
 {
     PVector pos = truncateToPitch( M_stadium.ball().pos() );
-    pos = moveOutOfPenalty( side, pos );
+    //pos = moveOutOfPenalty( side, pos );
+    pos = moveOutOfGoalArea( side, pos );
 
     M_stadium.clearBallCatcher();
 

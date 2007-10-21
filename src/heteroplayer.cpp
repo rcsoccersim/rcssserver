@@ -32,7 +32,7 @@
 #include "config.h"
 #endif
 
-#include "hetroplayer.h"
+#include "heteroplayer.h"
 
 #include <boost/random.hpp>
 

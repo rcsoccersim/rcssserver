@@ -25,7 +25,7 @@
 #include "arm.h"
 #include "audio.h"
 #include "field.h"
-#include "hetroplayer.h"
+#include "heteroplayer.h"
 #include "object.h"
 #include "pcombuilder.h"
 #include "pcomparser.h"

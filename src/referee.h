@@ -485,6 +485,9 @@ public:
 
 private:
 
+    PVector moveOutOfGoalArea( const Side side,
+                               PVector ball_pos );
+
     void callBackPass( const Side side );
 
     void callCatchFault( Side side, PVector pos );

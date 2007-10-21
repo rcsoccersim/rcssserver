@@ -66,6 +66,10 @@ bool ServerParam::s_in_init = false;
 std::string ServerParam::S_program_name = "rcssserver";
 
 
+const int ServerParam::DEFAULT_PORT_NUMBER = 6000;
+const int ServerParam::COACH_PORT_NUMBER = 6001;
+const int ServerParam::OLCOACH_PORT_NUMBER = 6002;
+
 const int ServerParam::SIMULATOR_STEP_INTERVAL_MSEC = 100;
 const int ServerParam::UDP_RECV_STEP_INTERVAL_MSEC = 10;
 const int ServerParam::UDP_SEND_STEP_INTERVAL_MSEC = 150;
@@ -79,9 +83,75 @@ const double ServerParam::BALL_DECAY = 0.94;
 const double ServerParam::BALL_RAND = 0.05;
 const double ServerParam::BALL_WEIGHT = 0.2;
 const double ServerParam::BALL_T_VEL = 0.001;
-const double ServerParam::BALL_SPEED_MAX = 3.3; // [12.0.0] 2.7 -> 3.3
+const double ServerParam::BALL_SPEED_MAX = 2.7;
 const double ServerParam::BALL_ACCEL_MAX = 2.7;
 
+const double ServerParam::PLAYER_SIZE = 0.3;
+const double ServerParam::PLAYER_WIDGET_SIZE = 1.0;
+const double ServerParam::PLAYER_DECAY = 0.4;
+const double ServerParam::PLAYER_RAND = 0.1;
+const double ServerParam::PLAYER_WEIGHT = 60.0;
+const double ServerParam::PLAYER_SPEED_MAX = 1.2;
+// th 6.3.00
+const double ServerParam::PLAYER_ACCEL_MAX = 1.0;
+//
+const double ServerParam::STAMINA_MAX = 4000.0;
+const double ServerParam::STAMINA_INC_MAX = 45.0;
+const double ServerParam::RECOVERY_DEC_THR = 0.3;
+const double ServerParam::RECOVERY_DEC = 0.002;
+const double ServerParam::RECOVERY_MIN = 0.5;
+const double ServerParam::EFFORT_DEC_THR = 0.3;
+const double ServerParam::EFFORT_DEC = 0.005;
+const double ServerParam::EFFORT_MIN = 0.6;
+const double ServerParam::EFFORT_INC_THR = 0.6;
+const double ServerParam::EFFORT_INC = 0.01;
+
+const double ServerParam::KICK_RAND = 0.0;
+const double ServerParam::PRAND_FACTOR_L = 1.0;
+const double ServerParam::PRAND_FACTOR_R = 1.0;
+const double ServerParam::KICK_RAND_FACTOR_L = 1.0;
+const double ServerParam::KICK_RAND_FACTOR_R = 1.0;
+
+
+const double ServerParam::GOALIE_CATCHABLE_POSSIBILITY = 1.0;
+const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 1.2; // [12.0.0] 2.0 -> 1.2
+const double ServerParam::GOALIE_CATCHABLE_AREA_WIDTH = 1.0;
+const int ServerParam::GOALIE_CATCH_BAN_CYCLE = 5;
+const int ServerParam::GOALIE_MAX_MOVES = 2;
+
+const double ServerParam::VisibleAngle = 90.0;
+const double ServerParam::VisibleDistance = 3.0;
+const double ServerParam::AUDIO_CUT_OFF_DIST = 50.0;
+
+const double ServerParam::DASHPOWERRATE = 0.006;
+const double ServerParam::KICKPOWERRATE	= 0.027;
+const double ServerParam::MAXPOWER = 100.0;
+const double ServerParam::MINPOWER = -100.0;
+
+const double ServerParam::KICK_RANDOM_RATE = 0.1;
+const double ServerParam::KICKABLE_MARGIN = 0.7;
+const double ServerParam::CONTROL_RADIUS = 2.0;
+
+const double ServerParam::DIST_QSTEP = 0.1;
+const double ServerParam::LAND_QSTEP = 0.01;
+const double ServerParam::DIR_QSTEP = 0.1;
+
+const double ServerParam::MAXMOMENT = 180;
+const double ServerParam::MINMOMENT = -180;
+
+const double ServerParam::MAX_NECK_MOMENT = 180;
+const double ServerParam::MIN_NECK_MOMENT = -180;
+
+const double ServerParam::MAX_NECK_ANGLE = 90;
+const double ServerParam::MIN_NECK_ANGLE = -90;
+
+const int ServerParam::DEF_SAY_COACH_MSG_SIZE = 128;
+const int ServerParam::DEF_SAY_COACH_CNT_MAX = 128;
+
+const double ServerParam::WIND_DIR = 0.0;
+const double ServerParam::WIND_FORCE = 0.0;
+const double ServerParam::WIND_RAND = 0.0;
+//const double ServerParam::WIND_WEIGHT = 10000.0;
 
 #ifdef WIN32
 const char ServerParam::LANDMARK_FILE[] = "~\\.rcssserver-landmark.xml";

@@ -291,9 +291,9 @@ ac_lib_rcssclangparser.m4
 nodist_rcssserver_SOURCES = libimports.cpp
 
 rcssserver_SOURCES = \
-hetroplayer.C \
+heteroplayer.cpp \
 object.h \
-hetroplayer.h \
+heteroplayer.h \
 param.h \
 main.C \
 types.h \

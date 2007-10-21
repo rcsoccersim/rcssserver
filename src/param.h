@@ -41,15 +41,11 @@
 /*
  *   for Simulator
  */
-
 #define	TIMEDELTA	10					/* polling interval [milli-sec] */
 
 /*
  *   for network
  */
-#define DEFAULT_PORT_NUMBER		6000
-#define COACH_PORT_NUMBER		6001
-#define OLCOACH_PORT_NUMBER		6002
 //#define MaxMesg					2048
 //pfr 06/14/01: this is probably the maximum UDP size allowed in most applications
 #define MaxMesg					8192
@@ -263,69 +259,13 @@
 #define OLCOACH_NAME_L_SHORT	"cl"
 #define COACH_NAME		"coach"
 
-#define PLAYER_SIZE		0.3
-#define	PLAYER_WIDGET_SIZE	1.0
-#define PLAYER_DECAY		0.4
-#define PLAYER_RAND		0.1
-#define PLAYER_WEIGHT		60.0
-#define PLAYER_SPEED_MAX	1.2
-// th 6.3.00
-#define PLAYER_ACCEL_MAX	1.0
-//
-#define	STAMINA_MAX		4000.0
-#define	STAMINA_INC_MAX		45.0
-#define RECOVERY_DEC_THR	0.3
-#define RECOVERY_DEC		0.002
-#define RECOVERY_MIN		0.5
-#define EFFORT_DEC_THR		0.3
-#define EFFORT_DEC		0.005
-#define EFFORT_MIN		0.6
-#define EFFORT_INC_THR		0.6
-#define EFFORT_INC		0.01
-
-#define KICK_RAND             0.0
-#define PRAND_FACTOR_L        1.0
-#define PRAND_FACTOR_R        1.0
-#define KICK_RAND_FACTOR_L    1.0
-#define KICK_RAND_FACTOR_R    1.0
-
-
-#define GOALIE_CATCHABLE_POSSIBILITY	1.0
-#define GOALIE_CATCHABLE_AREA_LENGTH	2.0
-#define GOALIE_CATCHABLE_AREA_WIDTH	1.0
-#define GOALIE_CATCH_BAN_CYCLE		5
-#define GOALIE_MAX_MOVES        	2
-
-#define VisibleAngle 90.0
-#define VisibleDistance 3.0
-#define AUDIO_CUT_OFF_DIST 50.0
-
-#define DASHPOWERRATE	0.006
-#define KICKPOWERRATE	0.027
-#define MAXPOWER	100.0
-#define MINPOWER	-100.0
-
-#define KICK_RANDOM_RATE	0.1
-#define KICKABLE_MARGIN		0.7
-#define CONTROL_RADIUS		2.0
-
 //#define NormalizeDashPower(p)	(std::max(std::min((p),ServerParam::instance().maxp),ServerParam::instance().minp))
 //#define ReduceDashPower(p)	(p * player_type->dashPowerRate () / stadium->slowdownOnTop (pos, team->side) )
 //#define Sign(x)					(((x) > 0.0) ? 1.0:-1.0)
 //#define NormalizeKickPower(p) (std::max(std::min((p),ServerParam::instance().maxp),ServerParam::instance().minp))
-/*
-#define NormalizeKickPower(p) (std::max(std::min((p),ServerParam::instance().maxp),ServerParam::instance().minp) * ServerParam::instance().kprate)
-*/
-#define MAXMOMENT	180
-#define MINMOMENT	-180
+//#define NormalizeKickPower(p) (std::max(std::min((p),ServerParam::instance().maxp),ServerParam::instance().minp) * ServerParam::instance().kprate)
 //#define NormalizeMoment(p) Deg2Rad(std::max(std::min((p),ServerParam::instance().maxm),ServerParam::instance().minm))
-
-#define MAX_NECK_MOMENT	180
-#define MIN_NECK_MOMENT	-180
 //#define NormalizeNeckMoment(p) Deg2Rad(std::max(std::min((p),ServerParam::instance().maxnm),ServerParam::instance().minnm))
-
-#define MAX_NECK_ANGLE	90
-#define MIN_NECK_ANGLE	-90
 //#define NormalizeNeckAngle(p) (std::max(std::min((p),Deg2Rad(ServerParam::instance().maxn)),Deg2Rad(ServerParam::instance().minn)))
 
 
@@ -333,18 +273,11 @@
 #define RIGHT_STR	"r"
 #define SideStr(side)	(((side) == LEFT) ? LEFT_STR : RIGHT_STR )
 
-
-#define DIST_QSTEP	0.1
-#define LAND_QSTEP	0.01
-#define DIR_QSTEP   0.1
-
 /*
  *===================================================================
  *Part: for COACH
  *===================================================================
  */
-#define DEF_SAY_COACH_MSG_SIZE		128
-#define DEF_SAY_COACH_CNT_MAX		128
 #define BALL_POS_INFO_STRINGS 		{"","in_field","goal_l","goal_r","out_of_field",}
 #define BALL_POS_INFO_STRINGS_SHORT 	{"","i","gl","gr","o",}
 enum BallPosInfo {
@@ -361,9 +294,6 @@ enum BallPosInfo {
  *Part: for WEATHER
  *===================================================================
  */
-#define	WIND_DIR		0.0
-#define	WIND_FORCE		0.0
-#define	WIND_RAND		0.0
 #define WIND_WEIGHT		10000.0
 
 /*

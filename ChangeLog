@@ -1,3 +1,21 @@
+2007-10-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* player.h:
+	- renamed hetroplayer.[hC] to heteroplayer.{h,cpp}.
+
+	* param.h:
+	* serverparam.cpp:
+	* serverparam.h:
+	- some parameter macros are moved into ServerParam.
+	- changed GOALIE_CATCHABLE_AREA_LENGTH from 2.0 to 1.2
+
+	* src/referee.cc:
+	* src/referee.h:
+	- implemented new rules of catch fault and a new back pass.
+
 2007-10-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/utility.h:
@@ -6,7 +24,6 @@
 	* src/param.h:
 	* src/serverparam.cpp:
 	* src/serverparam.h:
-	- changed BALL_SPEED_MAX from 2.7 to 3.3.
 	- changed TACKLE_POWER_RATE from 0.027 to 0.0135.
 	- added min_tackle_power and max_tackle_power.
 
