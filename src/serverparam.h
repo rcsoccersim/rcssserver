@@ -199,7 +199,6 @@ private:
     static const double MAXPOWER;
     static const double MINPOWER;
 
-    static const double KICK_RANDOM_RATE;
     static const double KICKABLE_MARGIN;
     static const double CONTROL_RADIUS;
 

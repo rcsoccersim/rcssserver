@@ -304,12 +304,36 @@ Stadium::init()
     }
 
     M_player_types.push_back( new HetroPlayer( 0 ) );
-    //      std::cout << *(M_player_types[ 0 ]) << std::endl;
+    //std::cout << *(M_player_types[ 0 ]) << std::endl;
     for ( int i = 1; i < PlayerParam::instance().playerTypes(); i++ )
 		{
 				M_player_types.push_back( new HetroPlayer() );
-        //  				std::cout << *(M_player_types[i]) << std::endl;
+        //std::cout << *(M_player_types[i]) << std::endl;
 		}
+
+    if ( M_player_socket.bind( rcss::net::Addr( ServerParam::instance().playerPort() ) )
+         && M_offline_coach_socket.bind( rcss::net::Addr( ServerParam::instance().offlineCoachPort() ) )
+         && M_online_coach_socket.bind( rcss::net::Addr( ServerParam::instance().onlineCoachPort() ) ) )
+    {
+        if ( M_player_socket.setNonBlocking() == -1
+             || M_offline_coach_socket.setNonBlocking() == -1
+             || M_online_coach_socket.setNonBlocking() == -1 )
+        {
+            std::cerr << "Error setting sockets non-blocking: "
+                      << strerror( errno ) << std::endl;
+            //this->exit( EXIT_FAILURE );
+            disable();
+            return;
+        }
+    }
+    else
+    {
+        std::cerr << "Error initializing sockets: "
+                  << strerror( errno ) << std::endl;
+        //this->exit( EXIT_FAILURE );
+        disable();
+        return;
+    }
 
     if ( ServerParam::instance().textLogging() )
 		{
@@ -337,30 +361,6 @@ Stadium::init()
             disable();
             return;
         }
-    }
-
-    if ( M_player_socket.bind( rcss::net::Addr( ServerParam::instance().playerPort() ) )
-         && M_offline_coach_socket.bind( rcss::net::Addr( ServerParam::instance().offlineCoachPort() ) )
-         && M_online_coach_socket.bind( rcss::net::Addr( ServerParam::instance().onlineCoachPort() ) ) )
-    {
-        if ( M_player_socket.setNonBlocking() == -1
-             || M_offline_coach_socket.setNonBlocking() == -1
-             || M_online_coach_socket.setNonBlocking() == -1 )
-        {
-            std::cerr << "error setting sockets non-blocking: "
-                      << strerror( errno ) << std::endl;
-            //this->exit( EXIT_FAILURE );
-            disable();
-            return;
-        }
-    }
-    else
-    {
-        std::cerr << "error initializing sockets: "
-                  << strerror( errno ) << std::endl;
-        //this->exit( EXIT_FAILURE );
-        disable();
-        return;
     }
 
     M_weather.init();
@@ -2129,12 +2129,9 @@ void
 Stadium::renameLogs()
 {
     // add penalty to logfile when penalties are score or was draw and one team won
-    bool bAddPenaltyScore =  ( M_team_r->point() == M_team_l->point()
-                               && ServerParam::instance().penaltyShootOuts() );
-    //                           Std.team_r->penaltyPoint() > 0 ||
-    //                           Std.team_l->penaltyPoint() > 0 ||
-    //                           Std.team_l->pen_won == true ||
-    //                           Std.team_r->pen_won == true;
+    bool bAddPenaltyScore = ( M_team_r->point() == M_team_l->point()
+                              && M_team_l->penaltyTaken() > 0
+                              && M_team_r->penaltyTaken() > 0 );
 
     char time_str[32];
     std::strftime( time_str, 32,

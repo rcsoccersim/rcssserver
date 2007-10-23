@@ -40,15 +40,18 @@
 #include <rcssbase/lib/loader.hpp>
 #include <rcssbase/version.hpp>
 
-#include <csignal>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+//#include <dirent.h>
 
-#include <dirent.h>
+#include <csignal>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 namespace {
+
 Stadium Std;
 
 void
@@ -56,6 +59,7 @@ sigHandle ( int )
 {
     Std.finalize( "Server Killed. Exiting..." );
 }
+
 }
 
 int main(int argc, char *argv[])
@@ -64,20 +68,31 @@ int main(int argc, char *argv[])
               << Copyright << std::endl;
     std::cout << "Using rcssbase-" << rcss::base::version() << std::endl << std::endl;
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-    std::string config_dir_name = tildeExpand( "~\\.rcssserver" );
-#else
-    std::string config_dir_name = tildeExpand( "~/.rcssserver" );
-#endif
-    DIR* config_dir = opendir( config_dir_name.c_str() );
-    if ( config_dir == NULL )
     {
-        int err = mkdir( config_dir_name.c_str(), 0777 );
-        if ( err != 0 )
+#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
+        std::string config_dir_name = tildeExpand( "~\\.rcssserver" );
+#else
+        std::string config_dir_name = tildeExpand( "~/.rcssserver" );
+#endif
+        boost::filesystem::path config_dir( config_dir_name,
+                                            boost::filesystem::portable_posix_name );
+        if ( ! boost::filesystem::exists( config_dir )
+             && ! boost::filesystem::create_directory( config_dir ) )
         {
-            std::cerr << "Could not read or create config directory '" << config_dir_name << "': "
-                      << strerror( errno ) << std::endl;
+            std::cerr << "Could not read or create config directory '" << config_dir_name
+                      << std::endl;
         }
+
+//         DIR* config_dir = opendir( config_dir_name.c_str() );
+//         if ( config_dir == NULL )
+//         {
+//             int err = mkdir( config_dir_name.c_str(), 0777 );
+//             if ( err != 0 )
+//             {
+//                 std::cerr << "Could not read or create config directory '" << config_dir_name << "': "
+//                           << strerror( errno ) << std::endl;
+//             }
+//         }
     }
 
     ServerParam::init( argc, argv );
@@ -97,6 +112,12 @@ int main(int argc, char *argv[])
     }
 
     Std.init();
+
+    if ( ! Std.isAlive() )
+    {
+        ServerParam::instance().clear();
+        return 1;
+    }
 
     std::string timername;
     if ( ServerParam::instance().synchMode() )
@@ -121,7 +142,6 @@ int main(int argc, char *argv[])
     }
 
     ServerParam::instance().clear();
-    //Std.exit( EXIT_SUCCESS );
 
     return 0;
 }

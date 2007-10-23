@@ -128,7 +128,7 @@ const double ServerParam::EFFORT_MIN = 0.6;
 const double ServerParam::EFFORT_INC_THR = 0.6;
 const double ServerParam::EFFORT_INC = 0.01;
 
-const double ServerParam::KICK_RAND = 0.0;
+const double ServerParam::KICK_RAND = 0.1; // [12.0.0] 0.0 -> 0.1
 const double ServerParam::PRAND_FACTOR_L = 1.0;
 const double ServerParam::PRAND_FACTOR_R = 1.0;
 const double ServerParam::KICK_RAND_FACTOR_L = 1.0;
@@ -150,8 +150,7 @@ const double ServerParam::KICKPOWERRATE	= 0.027;
 const double ServerParam::MAXPOWER = 100.0;
 const double ServerParam::MINPOWER = -100.0;
 
-const double ServerParam::KICK_RANDOM_RATE = 0.1;
-const double ServerParam::KICKABLE_MARGIN = 0.7;
+const double ServerParam::KICKABLE_MARGIN = 0.8; // [12.0.0] 0.7 -> 0.8
 const double ServerParam::CONTROL_RADIUS = 2.0;
 
 const double ServerParam::DIST_QSTEP = 0.1;
@@ -386,6 +385,15 @@ ServerParam::init( const int & argc,
             std::exit( EXIT_SUCCESS );
         }
     }
+
+
+//     {
+//         rcss::lib::Loader module;
+//         if ( module.open( "libstdoutsaver" ) )
+//         {
+//             instance().m_builder->manageModule( module );
+//         }
+//     }
 
     return true;
 }

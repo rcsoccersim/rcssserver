@@ -77,23 +77,23 @@ const char PlayerParam::PLAYER_CONF[] = "~/.rcssserver/player12.conf";
 
 const int PlayerParam::DEFAULT_PLAYER_TYPES = 14; // [12.0.0] 7 -> 14
 const int PlayerParam::DEFAULT_SUBS_MAX = 3;
-const int PlayerParam::DEFAULT_PT_MAX = 1; // [12.0.0] 1 -> 3
+const int PlayerParam::DEFAULT_PT_MAX = 1; // [12.0.0] 3 -> 1
 
 const double PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MIN = 0.0;
 const double PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MAX = 0.0;
 const double PlayerParam::DEFAULT_STAMINA_INC_MAX_DELTA_FACTOR = 0.0;
 
 const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MIN = 0.0;
-const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX = 0.2;
+const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX = 0.1;  // [12.0.0] 0.2 -> 0.1
 const double PlayerParam::DEFAULT_INERTIA_MOMENT_DELTA_FACTOR = 25.0;
 
 const double PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MIN = 0.0;
 const double PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MAX = 0.0;
 const double PlayerParam::DEFAULT_PLAYER_SIZE_DELTA_FACTOR = -100.0;
 
-const double PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MIN = 0.0;
-const double PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MAX = 0.2;
-const double PlayerParam::DEFAULT_KICK_RAND_DELTA_FACTOR = 0.5;
+const double PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MIN = -0.1; // [12.0.0] 0.0 -> -0.1
+const double PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MAX = 0.1; // [12.0.0] 0.2 -> 0.1
+const double PlayerParam::DEFAULT_KICK_RAND_DELTA_FACTOR = 1.0; // [12.0.0] 0.5 -> 1.0
 
 const double PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MIN = 0.0;
 const double PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MAX = 100.0;

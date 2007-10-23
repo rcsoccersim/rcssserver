@@ -456,6 +456,9 @@ Player::kick( double power, double dir )
         // pfr 8/14/00: for RC2000 evaluation
         // add noise to kick
         double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
+        // added noise by current ball speed
+        maxrnd += M_kick_rand * M_stadium->ball().vel().r() / ServerParam::instance().ballSpeedMax();
+
         PVector kick_noise( drand(-maxrnd, maxrnd), drand(-maxrnd, maxrnd) );
         //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
         //M_stadium->ball->push( kick_noise );

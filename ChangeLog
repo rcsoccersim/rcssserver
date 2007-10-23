@@ -1,3 +1,26 @@
+2007-10-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/paramreader.C:
+	* src/paramreader.h:
+	* src/field.C:
+	* src/heteroplayer.cpp:
+	* src/main.C:
+	* src/player.cc:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- removed unused files.
+	- fixed a segmentation fault when the multiple servers are invoked
+	on the same machine.
+	- added new kick noise rule. Now, kick noise is inclreased in
+	proportion to the current ball speed.
+	- changed the default kickable margin from 0.7 to 0.8
+	- changed the default kickable rand from 0.0 to 0.1
+	- changed the default player_decay_delta_min from 0.2 to 0.1
+	- changed the default kickable_margin_delta_min from 0.0 to -0.1
+	- changed the default kickable_margin_delta_max from 0.2 to 0.1
+	- changed the default kick_rand_delta_factor from 0.5 to 1.0
+
 2007-10-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.C:
