@@ -1661,10 +1661,10 @@ Stadium::_Start( Stadium& stad )
     {
         if ( ( stad.time() / ServerParam::instance().halfTime() ) % 2 == 0 )
         {
-            //if ( ServerParam::instance().nr_normal_halfs >= 0
-            //     && stad.time < ( ServerParam::instance().halfTime()
-            //                      * ServerParam::instance().nr_normal_halfs )
-            //     )
+            if ( ServerParam::instance().nrNormalHalfs() >= 0
+                 && stad.time() < ( ServerParam::instance().halfTime()
+                                    * ServerParam::instance().nrNormalHalfs() )
+                 )
             {
                 stad.recoveryPlayers();
             }
@@ -1674,10 +1674,10 @@ Stadium::_Start( Stadium& stad )
         }
         else if ( ( stad.time() / ServerParam::instance().halfTime() ) % 2 == 1 )
         {
-            //if ( ServerParam::instance().nr_normal_halfs >= 0
-            //     && stad.time < ( ServerParam::instance().halfTime()
-            //                      * ServerParam::instance().nr_normal_halfs )
-            //     )
+            if ( ServerParam::instance().nrNormalHalfs() >= 0
+                 && stad.time() < ( ServerParam::instance().halfTime()
+                                    * ServerParam::instance().nrNormalHalfs() )
+                 )
             {
                 stad.recoveryPlayers();
             }

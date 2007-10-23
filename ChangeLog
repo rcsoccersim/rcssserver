@@ -1,5 +1,9 @@
 2007-10-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/field.C:
+	- implemented a strict stamina recovery rule. Now, players are
+	never recovered in the extended halves.
+
 	* src/coach.cpp:
 	* src/heteroplayer.cpp:
 	- fixed a bug in the change_player_types command parsing.
