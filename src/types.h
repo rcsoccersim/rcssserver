@@ -33,44 +33,20 @@
 
  *EndCopyright:
  */
-#ifndef _TYPES_H_
-#define _TYPES_H_
+#ifndef RCSSSERVER_TYPES_H
+#define RCSSSERVER_TYPES_H
 
-#include <sys/types.h>
 #include "param.h"
 
 #include <boost/cstdint.hpp>
 
-/*
- *ModifyHistory
- *
- *EndModifyHistory
- */
-
-typedef double Value;
-typedef int ID;
-typedef int TheNumber;
-//typedef char* Name;
-//typedef int Logical;
-
 #define NULLCHAR	'\000'
 
-#define SOCKLEN_T size_t
-
-/*
-class Angle : public double {};
-*/
-typedef double Angle;
 
 typedef boost::int16_t Int16;
 typedef boost::int32_t Int32;
 
-
-//#define TRUE 1
-//#define FALSE 0
-//#define	True 1
-//#define False 0
-
+#if 1
 #define	DISABLE			0x0000
 #define	STAND			0x0001
 #define	KICK			0x0002
@@ -90,32 +66,28 @@ typedef boost::int32_t Int32;
 #define TACKLE_FAULT 0x2000
 #define BACK_PASS 0x4000
 #define FREE_KICK_FAULT 0x8000
+#else
+enum PlayerState {
+    DISABLE = 0x0000,
+    STAND = 0x0001,
+    KICK = 0x0002,
+    KICK_FAULT = 0x0004,
+    GOALIE = 0x0008,
+    CATCH = 0x0010,
+    CATCH_FAULT = 0x0020,
+    BALL_TO_PLAYER = 0x0040,
+    PLAYER_TO_BALL = 0x0080,
+    DISCARD = 0x0100,
+    LOST = 0x0200, // [I.Noda:00/05/13] added for 3D viewer/commentator/small league
+    BALL_COLLIDE = 0x0400, // player collided with the ball
+    PLAYER_COLLIDE = 0x0800, // player collided with another player
+    TACKLE = 0x1000,
+    TACKLE_FAULT = 0x2000,
+    BACK_PASS = 0x4000,
+    FREE_KICK_FAULT = 0x8000,
+};
+#endif
 
-// enum State {
-//     DISABLE = 0x0000,
-//     STAND = 0x0001,
-//     KICK = 0x0002,
-//     KICK_FAULT = 0x0004,
-//     GOALIE = 0x0008,
-//     CATCH = 0x0010,
-//     CATCH_FAULT = 0x0020,
-//     BALL_TO_PLAYER = 0x0040,
-//     PLAYER_TO_BALL = 0x0080,
-//     DISCARD = 0x0100,
-//     LOST = 0x0200, // [I.Noda:00/05/13] added for 3D viewer/commentator/small league
-//     BALL_COLLIDE = 0x0400, // player collided with the ball
-//     PLAYER_COLLIDE = 0x0800, // player collided with another player
-//     TACKLE = 0x1000,
-//     TACKLE_FAULT = 0x2000,
-//     BACK_PASS = 0x4000,
-//     FREE_KICK_FAULT = 0x8000,
-// };
-
-
-//typedef int	Side;
-//#define LEFT	1
-//#define NEUTRAL	0
-//#define RIGHT 	-1
 enum Side {
     LEFT = 1,
     NEUTRAL = 0,
@@ -248,6 +220,32 @@ typedef enum _MPObjectType {
 #define Zero 0.0e0
 
 #define	COLOR_NAME_MAX	64
+
+const double SHOWINFO_SCALE = 16.0;
+const double SHOWINFO_SCALE2 = 65536.0;
+
+const int REC_OLD_VERSION = 1;
+const int REC_VERSION_2 = 2;
+const int REC_VERSION_3 = 3;
+const int DEFAULT_REC_VERSION = REC_VERSION_3;
+
+enum DispInfoMode {
+    NO_INFO = 0,
+    SHOW_MODE = 1,
+    MSG_MODE = 2,
+    DRAW_MODE = 3,
+    BLANK_MODE = 4,
+    PM_MODE = 5,
+    TEAM_MODE = 6,
+    PT_MODE = 7,
+    PARAM_MODE = 8,
+    PPARAM_MODE = 9,
+};
+
+enum BoardType {
+    MSG_BOARD = 1,
+    LOG_BOARD = 2,
+};
 
 typedef struct {
 	Int16	enable;

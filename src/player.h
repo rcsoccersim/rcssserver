@@ -58,7 +58,7 @@ private:
     rcss::FullStateObserver * M_fullstate_observer;
 
     Team * M_team;
-    const ID M_unum;  /* uniform number */
+    const int M_unum;  /* uniform number */
 
     std::string M_name_far;
     std::string M_name_toofar;
@@ -66,32 +66,32 @@ private:
     std::string M_short_name_far;
     std::string M_short_name_toofar;
 
-    Value M_stamina;
-    Value M_recovery;
-    Value M_effort;
+    double M_stamina;
+    double M_recovery;
+    double M_effort;
 
-    Value M_vis_angle;
+    double M_vis_angle;
 public:
-    const Value defangle;
-    const Value vis_distance;
-    const Value vis_distance2;
+    const double defangle;
+    const double vis_distance;
+    const double vis_distance2;
 private:
-    Value M_inertia_moment;
+    double M_inertia_moment;
 
-    Value M_version; //!< client protocol version
+    double M_version; //!< client protocol version
 #ifdef NEW_QSTEP
-    Value dist_qstep_player; /* each Player quantize step of distance */
-    Value land_qstep_player; /* each Player quantize step of distance for landmark */
-    Value dir_qstep_player; /* each Player quantize step of direction */
+    double dist_qstep_player; /* each Player quantize step of distance */
+    double land_qstep_player; /* each Player quantize step of distance for landmark */
+    double dir_qstep_player; /* each Player quantize step of direction */
 #endif
 
-    Angle M_angle_body; //!< temporal body angle
-    Angle M_angle_body_committed;
-    Angle M_angle_neck; //!< temporal neck angle
-    Angle M_angle_neck_committed;
+    double M_angle_body; //!< temporal body angle
+    double M_angle_body_committed;
+    double M_angle_neck; //!< temporal neck angle
+    double M_angle_neck_committed;
 
     // pfr 8/14/00: for RC2000 evaluation
-    Value M_kick_rand;
+    double M_kick_rand;
 
     int M_vis_send;
     //int sendcnt;
@@ -110,7 +110,7 @@ private:
 
     bool M_goalie;
     int M_goalie_catch_ban;
-    //Value M_goalie_catch_probability;
+    //double M_goalie_catch_probability;
     int M_goalie_moves_since_catch;
     //PVector relative_ball_ang;
 
@@ -146,10 +146,13 @@ private:
     const Player & operator=( const Player & );
 
 public:
-    Player( Team * team, Stadium *stad, ID number );
+    Player( Team * team,
+            Stadium * stad,
+            int number );
     ~Player();
 
-    void init( Value version, int goalie_flag );
+    void init( const double & version,
+               const bool goalie_flag );
 
     /** This function is called in the begin of each cycle
      * and in case a player sends a sense_body command. */
@@ -169,8 +172,8 @@ public:
     /** Inline-Deklarations */
     inline void parseMsg( const char* msg, const size_t& len );
 
-    inline void rotate( const Angle & a );
-    inline void rotate_to( const Angle & a );
+    inline void rotate( const double & a );
+    inline void rotate_to( const double & a );
 
     inline Arm& getArm();
     inline const Arm& getArm() const;
@@ -189,7 +192,7 @@ public:
 
     inline void place( const PVector & location );
     void place( const PVector & pos,
-                const Angle & angle,
+                const double & angle,
                 const PVector & vel,
                 const PVector & accel )
       {
@@ -235,29 +238,29 @@ public:
       }
 
     const
-    Value & stamina() const
+    double & stamina() const
       {
           return M_stamina;
       }
     const
-    Value & recovery() const
+    double & recovery() const
       {
           return M_recovery;
       }
     const
-    Value & effort() const
+    double & effort() const
       {
           return M_effort;
       }
 
     const
-    Value & visibleAngle() const
+    double & visibleAngle() const
       {
           return M_vis_angle;
       }
 
     const
-    Value & version() const
+    double & version() const
       {
           return M_version;
       }
@@ -290,13 +293,13 @@ public:
       }
 
     const
-    Angle & angleBodyCommitted() const
+    double & angleBodyCommitted() const
       {
           return M_angle_body_committed;
       }
 
     const
-    Angle & angleNeckCommitted() const
+    double & angleNeckCommitted() const
       {
           return M_angle_neck_committed;
       }
@@ -351,7 +354,7 @@ public:
     int changeViewCount() const { return M_change_view_count; }
     int sayCount() const { return M_say_count; }
 
-    Angle vangle( const PObject & obj ) const
+    double vangle( const PObject & obj ) const
       {
           return M_pos.vangle( obj.pos(), M_angle_body_committed );
       }
@@ -480,14 +483,14 @@ Player::parseMsg( const char* msg, const size_t& len )
 
 inline
 void
-Player::rotate( const Angle & a )
+Player::rotate( const double & a )
 {
     M_angle_body = normalize_angle( M_angle_body_committed + a );
 }
 
 inline
 void
-Player::rotate_to( const Angle & dir )
+Player::rotate_to( const double & dir )
 {
     M_angle_body = normalize_angle( dir );
 }

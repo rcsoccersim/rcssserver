@@ -125,6 +125,11 @@ class VisualSenderPlayer
 {
 public:
 
+    static const double UNUM_FAR_LENGTH;
+    static const double UNUM_TOOFAR_LENGTH;
+    static const double TEAM_FAR_LENGTH;
+    static const double TEAM_TOOFAR_LENGTH;
+
     class Params
     {
     public:

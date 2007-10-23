@@ -91,9 +91,9 @@ private:
     const Weather & operator=( const Weather & );
 public:
     PVector	wind_vector;
-    Value	wind_rand;
+    double wind_rand;
 
-    void	init();
+    void init();
 } ;
 
 
@@ -154,10 +154,8 @@ public:
 private:
 
     Ball * M_ball;
-    //Player * M_players[MAX_PLAYER*2];
     PlayerCont M_players; //!< player instance container
     Coach * M_coach;
-    //OnlineCoach * M_olcoaches[2];
     OnlineCoachCont M_olcoaches;
     Team * M_team_l;
     Team * M_team_r;
@@ -168,7 +166,7 @@ private:
 
     PlayMode M_playmode;
 
-    TheNumber M_time;
+    int M_time;
 
     std::vector< HetroPlayer * > M_player_types;
 
@@ -231,7 +229,7 @@ public:
           return M_playmode;
       }
 
-    TheNumber time() const
+    int time() const
       {
           return M_time;
       }
@@ -408,8 +406,8 @@ private:
     Player * newPlayer( const rcss::net::Addr &,
                         const char* init_message );
     Player * newPlayer( const char * teamname,
-                        Value version,
-                        int goalie_flag,
+                        const double & version,
+                        const bool goalie_flag,
                         const rcss::net::Addr& );
     Player * reconnectPlayer( const rcss::net::Addr&,
                              const char* init_message );
@@ -459,14 +457,14 @@ public:
     bool movePlayer( const Side side,
                      const int unum,
                      const PVector & pos,
-                     const Angle * ang,
+                     const double * ang,
                      const PVector * vel );
     bool movePlayer( const char * obj_name,
                      const PVector & pos,
                      const PVector & vel = PVector( 0.0, 0.0 ) );
     bool movePlayer( const char * obj_name,
                      const PVector & pos,
-                     const Angle & ang,
+                     const double & ang,
                      const PVector & vel = PVector( 0.0, 0.0 ) );
 
     void placePlayersInField();
@@ -521,11 +519,9 @@ public:
     void substitute( const Player * player,
                      const int player_type_id );
 
-private:
     void broadcastSubstitution( const int side,
                                 const int unum,
                                 const int player_type );
-public:
 
     void collisions();
 

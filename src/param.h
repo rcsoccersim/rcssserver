@@ -1,4 +1,4 @@
-/* -*- Mode: C -*-
+/* -*- Mode: c++ -*-
  *Header:
  *File: param.h
  *Author: Noda Itsuki
@@ -34,8 +34,8 @@
  *EndCopyright:
  */
 
-#ifndef _PARAM_H_
-#define _PARAM_H_
+#ifndef RCSSSERVER_PARAM_H
+#define RCSSSERVER_PARAM_H
 
 
 /*
@@ -57,25 +57,11 @@
 #define RECV 2
 #define SUBS 4
 
-#define	NO_INFO		0
-#define	SHOW_MODE	1
-#define	MSG_MODE	2
-#define DRAW_MODE	3
-#define	BLANK_MODE	4
-#define	PM_MODE		5
-#define	TEAM_MODE	6
-#define PT_MODE		7
-#define	PARAM_MODE	8
-#define PPARAM_MODE	9
-
 
 #define DrawClear	0
 #define DrawPoint	1
 #define DrawCircle	2
 #define DrawLine	3
-
-#define	MSG_BOARD	1
-#define	LOG_BOARD	2
 
 /*
  *   Objects
@@ -289,73 +275,7 @@ enum BallPosInfo {
 	BPI_MAX
 } ;
 
-/*
- *===================================================================
- *Part: for WEATHER
- *===================================================================
- */
-#define WIND_WEIGHT		10000.0
-
-/*
- *===================================================================
- *Part: Field Parameter
- *===================================================================
- */
-
-#define PITCH_LENGTH 		105.0
-#define PITCH_WIDTH 	 	68.0
-#define PITCH_MARGIN		 5.0
-#define CENTER_CIRCLE_R		9.15
-#define PENALTY_AREA_LENGTH	16.5
-#define PENALTY_AREA_WIDTH	40.32
-#define GOAL_AREA_LENGTH	 5.5
-#define GOAL_AREA_WIDTH		18.32
-#define GOAL_WIDTH		 14.02
-#define GOAL_DEPTH		 2.44
-#define PENALTY_SPOT_DIST	11.0
-#define CORNER_ARC_R		 1.0
-#define KICK_OFF_CLEAR_DISTANCE CENTER_CIRCLE_R
-
-#define KEEPAWAY_LENGTH         20.0
-#define KEEPAWAY_WIDTH          20.0
-
-#define CORNER_KICK_MARGIN	1.0
-
-#define LENGTH_MAGNIFY		6.0
-#define SHOWINFO_SCALE		16.0
-#define SHOWINFO_SCALE2		65536.0
 
 #define MAX_PLAYER			11
-#define	HALF_TIME		300
-#define DROP_TIME               200
-#define AFTER_GOAL_WAIT		50
-#define AFTER_OFFSIDE_WAIT	30
-#define AFTER_BACKPASS_WAIT	30
-#define AFTER_FREE_KICK_FAULT_WAIT	30
-#define AFTER_CATCH_FAULT_WAIT	30
-
-//#define MaxStringSize 		4096
-#define MaxStringSize 		8192
-
-#define MAX_FILE_LEN		256
-
-#define UNUM_FAR_LENGTH		20.0
-#define	UNUM_TOOFAR_LENGTH	40.0
-#define TEAM_FAR_LENGTH		40.0
-#define TEAM_TOOFAR_LENGTH	60.0
-
-#define	BOARD_ROWS			6
-
-#define VIEW_FOR	1
-#define VIEW_REV	-1
-
-#define OFFSIDE_ACTIVE_AREA_SIZE	2.5
-#define OFFSIDE_KICK_MARGIN		9.15
-
-#define REC_OLD_VERSION		1
-#define REC_VERSION_2		2
-#define REC_VERSION_3		3
-#define DEFAULT_REC_VERSION	REC_VERSION_3
-
 
 #endif

@@ -55,7 +55,7 @@ protected:
     bool M_assignedp;
     bool M_eye;
     bool M_hear;
-    Value M_version;
+    double M_version;
 
     Side M_side;
     bool M_done_received; //pfr:SYNCH
@@ -82,7 +82,7 @@ public:
       }
 
     const
-    Value & version() const
+    double & version() const
       {
           return M_version;
       }
@@ -111,7 +111,7 @@ public:
     void team_names( Stadium& stad );
     void recover( Stadium& stad );
     void check_ball( Stadium& stad );
-    void change_player_type( std::string team_name,
+    void change_player_type( const std::string & team_name,
                              int unum,
                              int player_type );
 
@@ -147,7 +147,7 @@ public:
 protected:
 
     virtual
-    bool setSenders( const Value & client_version );
+    bool setSenders( const double & client_version );
 
     virtual
     void sendInit();
@@ -182,7 +182,7 @@ private:
     int M_del_messages_left;
     int M_rule_messages_left;
 
-    TheNumber M_msg_left_update_time;
+    int M_msg_left_update_time;
 
     const rcss::SerializerOnlineCoach* M_serializer;
 
@@ -207,6 +207,9 @@ public:
     void say( char *message, bool standard = false );
     void say( const rcss::clang::Msg & message );
 
+private:
+    void change_player_types( const char * command );
+public:
     void change_player_type( int unum,
                              int player_type );
 
@@ -215,11 +218,11 @@ public:
 
     /* this deques and says any messages which should come out
        returns the number of messages se nt out */
-    int check_message_queue( TheNumber time );
+    int check_message_queue( int time );
 
 
     //returns whether it updated anything
-    bool update_messages_left( TheNumber time );
+    bool update_messages_left( int time );
 
     virtual
     void send( const char* msg )
@@ -276,7 +279,7 @@ public:
       }
 
     virtual
-    bool setSenders( const Value & client_version );
+    bool setSenders( const double & client_version );
 
     virtual
     void sendInit();

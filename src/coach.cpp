@@ -109,8 +109,8 @@ Coach::parse_init( Stadium& stad,
 {
     // (init[ (version <Ver>)])
 
-    char com[MaxStringSize] ;
-    int n ;
+    char com[MaxMesg];
+    int n;
     n = std::sscanf( command, "(%[-0-9a-zA-Z.+*/?<>_]", com );
     if( n < 1 )
     {
@@ -162,7 +162,7 @@ Coach::parse_init( Stadium& stad,
 
 
 bool
-Coach::setSenders( const Value & client_version )
+Coach::setSenders( const double & client_version )
 {
     M_version = client_version;
 
@@ -247,7 +247,7 @@ Coach::sendOKEye()
 void
 Coach::parse_command( const char *command )
 {
-    char com[MaxStringSize];
+    char com[MaxMesg];
 
     if ( std::sscanf( command, "(%[-0-9a-zA-Z.+*/?<>_]", com ) != 1 )
     {
@@ -262,7 +262,7 @@ Coach::parse_command( const char *command )
     }
     else if ( ! std::strcmp( com,"change_mode" ) )
     {
-        char new_mode[MaxStringSize] ;
+        char new_mode[MaxMesg];
         if ( std::sscanf( command, "(change_mode %[-0-9a-zA-Z.+*/?<>_])",
                           new_mode ) != 1 )
         {
@@ -274,7 +274,7 @@ Coach::parse_command( const char *command )
     }
     else if ( ! std::strcmp( com,"move" ) )
     {
-        char obj[MaxStringSize];
+        char obj[MaxMesg];
         double x = 0.0, y = 0.0, ang = 0.0, velx = 0.0, vely = 0.0;
 
         ++command;
@@ -402,7 +402,7 @@ Coach::parse_command( const char *command )
     }
     else if( ! std::strcmp( com, "say" ) )
     {
-        static char msg[MaxStringSize] ;
+        static char msg[MaxMesg] ;
         if ( std::sscanf( command, SAY_MESSAGE_SCAN_FORMAT, com, msg ) != 2 )
         {
             send( "(error illegal_command_form)" );
@@ -436,7 +436,7 @@ Coach::parse_command( const char *command )
         eye( mode );
         return;
     }
-    else if ( ! std::strcmp ( com, "change_player_type" ) )
+    else if ( ! std::strcmp( com, "change_player_type" ) )
     {
         char name[128];
         int unum, player_type;
@@ -748,8 +748,197 @@ Coach::recover( Stadium& stad )
 #endif
 }
 
+
 void
-Coach::change_player_type( std::string team_name,
+OnlineCoach::change_player_types( const char * command )
+{
+    if ( M_stadium->time() > 0 )
+    {
+        send( "(warning only_before_kick_off)" );
+        return;
+    }
+    else if ( M_stadium->time() >= ServerParam::instance().halfTime() *
+              ( ServerParam::instance().nrNormalHalfs() +
+                ServerParam::instance().nrExtraHalfs() ) )
+    {
+        send( "(warning no_subs_left)" );
+        return;
+    }
+
+    const Team * team = NULL;
+
+    if ( side() == LEFT )
+    {
+        team = &( M_stadium->teamLeft() );
+    }
+    if ( side() == RIGHT )
+    {
+        team = &( M_stadium->teamRight() );
+    }
+
+    if ( team == NULL )
+    {
+        send( "(warning no_team_found)" );
+        return;
+    }
+
+    if ( team->subsCount() >= PlayerParam::instance().subsMax() )
+    {
+        send( "(warning no_subs_left)" );
+        return;
+    }
+
+    int n_read = 0;
+    std::sscanf( command, " (change_player_types %n ", &n_read );
+    if ( n_read == 0 )
+    {
+        send( "(error illegal_command_form)" );
+        return;
+    }
+
+    command += n_read;
+
+    //
+    // parse the player type assignment
+    //
+
+    // key: unum, value: type id
+    std::map< const Player *, int > new_assign_map;
+
+    while ( *command == '(' )
+    {
+        int unum = 0, type = -1;
+        int n_read = 0;
+        if ( std::sscanf( command, " ( %d %d ) %n ",
+                          &unum, &type, &n_read ) != 2
+             || n_read == 0 )
+        {
+            send( "(error illegal_command_form)" );
+            return;
+        }
+
+        if ( type < 0
+             || PlayerParam::instance().playerTypes() <= type )
+        {
+            send( "(error out_of_range_player_type)" );
+            return;
+        }
+
+        const Player * player = NULL;
+        for ( int i = 0; i < team->size(); ++i )
+        {
+            const Player * p = team->player( i );
+            if ( p
+                 && p->alive != DISABLE
+                 && p->unum() == unum )
+            {
+                player = p;
+                break;
+            }
+        }
+
+        if ( ! player )
+        {
+            send( "(error no_such_player)" );
+            return;
+        }
+
+        if ( player->isGoalie() && type != 0 )
+        {
+            send( "(warning cannot_change_goalie)" );
+            return;
+        }
+
+        new_assign_map.insert( std::make_pair( player, type ) );
+    }
+
+    if ( new_assign_map.empty() )
+    {
+        send( "(error illegal_command_form)" );
+        return;
+    }
+
+    // copy the assigment map contained in the command
+    const std::map< const Player *, int > command_assign_map = new_assign_map;
+
+    // add the prevous assignment
+    for ( int i = 0; i < team->size(); ++i )
+    {
+        const Player * p = team->player( i );
+        if ( p )
+        {
+            std::map< const Player *, int >::iterator it = new_assign_map.find( p );
+            if ( it == new_assign_map.end() )
+            {
+                new_assign_map.insert( std::make_pair( p, p->playerTypeId() ) );
+            }
+        }
+    }
+
+
+    // check the total number of each player type
+    {
+        // key: type id, value: count
+        std::map< int, int > type_count;
+
+        for ( int id = 0; id < PlayerParam::instance().playerTypes(); ++id )
+        {
+            type_count[id] = 0;
+        }
+
+        for ( std::map< const Player *, int >::iterator it = new_assign_map.begin();
+              it != new_assign_map.end();
+              ++it )
+        {
+            type_count[ it->second ] += 1;
+        }
+
+        for ( std::map< int, int >::const_iterator it = type_count.begin();
+              it != type_count.end();
+              ++it )
+        {
+            std::cout << "change_player_types: id = " << it->first
+                      << "  count = " << it->second
+                      << std::endl;
+            if ( it->first == 0
+                 && ServerParam::instance().allowMultDefaultType() )
+            {
+                // no error
+            }
+            else if ( it->second > PlayerParam::instance().ptMax() )
+            {
+                send( "(warning max_of_that_type_on_field)" );
+                return;
+            }
+        }
+    }
+
+    // substitute & send ok message
+    for ( std::map< const Player *, int >::const_iterator it = command_assign_map.begin();
+          it != command_assign_map.end();
+          ++it )
+    {
+        if ( team->subsCount() >= PlayerParam::instance().subsMax() )
+        {
+            send( "(warning no_subs_left)" );
+            return;
+        }
+
+        std::cout << "change_player_types: substitute unum = " << it->first->unum()
+                  << "  type = " << it->second
+                  << std::endl;
+        M_stadium->substitute( it->first, it->second );
+
+        char buf[64];
+        std::snprintf( buf, 64, "(ok change_player_type %d %d)",
+                       it->first->unum(), it->second );
+        send( buf );
+    }
+
+}
+
+void
+Coach::change_player_type( const std::string & team_name,
                            int unum,
                            int player_type )
 {
@@ -989,7 +1178,7 @@ OnlineCoach::awardFreeformMessageCount()
 void
 OnlineCoach::parse_command( const char *command )
 {
-    char com[MaxStringSize];
+    char com[MaxMesg];
     int n;
 
     n = std::sscanf( command, "(%[-0-9a-zA-Z.+*/?<>_]", com );
@@ -1177,7 +1366,7 @@ OnlineCoach::parse_command( const char *command )
                 if( M_freeform_messages_said < M_freeform_messages_allowed
                     || M_freeform_messages_allowed < 0 )
                 {
-                    static char msg[MaxStringSize] ;
+                    static char msg[MaxMesg];
                     n = std::sscanf( command, SAY_MESSAGE_SCAN_FORMAT, com, msg );
                     if( n < 2 )
                     {
@@ -1217,6 +1406,11 @@ OnlineCoach::parse_command( const char *command )
         }
 
         eye( mode );
+        return;
+    }
+    else if ( ! std::strcmp( com, "change_player_types" ) )
+    {
+        change_player_types( command );
         return;
     }
     else if ( ! std::strcmp ( com, "change_player_type" ) )
@@ -1302,7 +1496,7 @@ OnlineCoach::sendPlayerClangVer( const Player& player )
 
 
 int
-OnlineCoach::check_message_queue( TheNumber time )
+OnlineCoach::check_message_queue( int time )
 {
     if ( M_message_queue.size() <= 0 )
     {
@@ -1398,6 +1592,22 @@ OnlineCoach::change_player_type( int unum,
         return;
     }
 
+    // check the substitution count for each player type
+    std::map< int, int >::const_iterator used_count = team->ptypeUsedCount().find( player_type );
+    if ( used_count != team->ptypeUsedCount().end() )
+    {
+        if ( player_type == 0
+             && ServerParam::instance().allowMultDefaultType() )
+        {
+
+        }
+        else if ( used_count->second >= PlayerParam::instance().ptMax() )
+        {
+            send( "(warning no_subs_left)" );
+            return;
+        }
+    }
+
     const Player * player = NULL;
     for ( int i = 0; i < team->size(); ++i )
     {
@@ -1442,7 +1652,7 @@ OnlineCoach::team_graphic( const char * command )
 {
     if ( M_stadium->playmode() != PM_BeforeKickOff )
     {
-        send( "warning only_before_kick_off" );
+        send( "(warning only_before_kick_off)" );
         return;
     }
 
@@ -1489,7 +1699,7 @@ OnlineCoach::team_graphic( const char * command )
 
 
 bool
-OnlineCoach::update_messages_left( TheNumber time )
+OnlineCoach::update_messages_left( int time )
 {
     if ( M_msg_left_update_time >= 0 &&
          time - M_msg_left_update_time < ServerParam::instance().clangWinSize() )
@@ -1511,7 +1721,7 @@ OnlineCoach::update_messages_left( TheNumber time )
 
 
 bool
-OnlineCoach::setSenders( const Value & client_version )
+OnlineCoach::setSenders( const double & client_version )
 {
     M_version = client_version;
 

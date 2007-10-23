@@ -100,10 +100,14 @@ const std::string Stadium::DEF_KAWAY_SUFFIX = ".kwy";
  *===================================================================
  */
 Field::Field()
-    : line_l( PObject::OT_LINE, LINE_L_NAME, LINE_L_NAME_SHORT, "(Line)", "(L)", PVector( -PITCH_LENGTH/2.0, 0.0 ) ),
-      line_r( PObject::OT_LINE, LINE_R_NAME, LINE_R_NAME_SHORT, "(Line)", "(L)", PVector(  PITCH_LENGTH/2.0, 0.0 ) ),
-      line_t( PObject::OT_LINE, LINE_T_NAME, LINE_T_NAME_SHORT, "(Line)", "(L)", PVector( -PITCH_WIDTH/2.0, 0.0 ) ),
-      line_b( PObject::OT_LINE, LINE_B_NAME, LINE_B_NAME_SHORT, "(Line)", "(L)", PVector(  PITCH_WIDTH/2.0, 0.0 ) )
+    : line_l( PObject::OT_LINE, LINE_L_NAME, LINE_L_NAME_SHORT, "(Line)", "(L)",
+              PVector( - ServerParam::PITCH_LENGTH / 2.0, 0.0 ) ),
+      line_r( PObject::OT_LINE, LINE_R_NAME, LINE_R_NAME_SHORT, "(Line)", "(L)",
+              PVector( + ServerParam::PITCH_LENGTH / 2.0, 0.0 ) ),
+      line_t( PObject::OT_LINE, LINE_T_NAME, LINE_T_NAME_SHORT, "(Line)", "(L)",
+              PVector( - ServerParam::PITCH_WIDTH / 2.0, 0.0 ) ),
+      line_b( PObject::OT_LINE, LINE_B_NAME, LINE_B_NAME_SHORT, "(Line)", "(L)",
+              PVector( + ServerParam::PITCH_WIDTH / 2.0, 0.0 ) )
 
 {
 
@@ -663,14 +667,14 @@ Stadium::newPlayer( const rcss::net::Addr & addr,
         while ( *msg != '\0' && std::isspace( *msg ) ) ++msg;
     }
 
-    return newPlayer( teamname, (Value)version, goalie, addr );
+    return newPlayer( teamname, (double)version, goalie, addr );
 }
 
 
 Player*
 Stadium::newPlayer( const char * teamname,
-                    Value version,
-                    int goalie_flag,
+                    const double & version,
+                    const bool goalie_flag,
                     const rcss::net::Addr& addr )
 {
     Team *tm;
@@ -733,7 +737,7 @@ Stadium::reconnectPlayer( const rcss::net::Addr& addr,
                           const char* reconnect_message )
 {
     char teamname[128];
-    ID rnum;
+    int rnum;
 
     if ( std::sscanf( reconnect_message, "(reconnect %s %d)", teamname, &rnum ) < 2 )
     {
@@ -798,7 +802,7 @@ Stadium::newCoach( const rcss::net::Addr & addr,
 
     const char * msg = init_message;
 
-		const Value default_olcoach_version = 5.0;
+		const double default_olcoach_version = 5.0;
 
 		char teamname[16];
     char coachname[128];
@@ -1343,21 +1347,25 @@ Stadium::recoveryPlayers()
 BallPosInfo
 Stadium::ballPosInfo()
 {
-    static RArea g_l( PVector( ( -PITCH_LENGTH-GOAL_DEPTH )*0.5
+    static RArea g_l( PVector( ( - ServerParam::PITCH_LENGTH
+                                 - ServerParam::GOAL_DEPTH )*0.5
                                - ServerParam::instance().ballSize(),
                                0.0 ),
-                      PVector( GOAL_DEPTH , ServerParam::instance().goalWidth()
+                      PVector( ServerParam::GOAL_DEPTH ,
+                               ServerParam::instance().goalWidth()
                                + ServerParam::instance().goalPostRadius() ) );
-    static RArea g_r( PVector( ( +PITCH_LENGTH+GOAL_DEPTH )*0.5
+    static RArea g_r( PVector( ( + ServerParam::PITCH_LENGTH
+                                 + ServerParam::GOAL_DEPTH )*0.5
                                + ServerParam::instance().ballSize(),
                                0.0 ),
-                      PVector( GOAL_DEPTH, ServerParam::instance().goalWidth()
+                      PVector( ServerParam::GOAL_DEPTH,
+                               ServerParam::instance().goalWidth()
                                + ServerParam::instance().goalPostRadius() ) );
 
     static RArea pt( PVector( 0.0, 0.0 ),
-                     PVector( PITCH_LENGTH
+                     PVector( ServerParam::PITCH_LENGTH
                               + ServerParam::instance().ballSize() * 2 ,
-                              PITCH_WIDTH
+                              ServerParam::PITCH_WIDTH
                               + ServerParam::instance().ballSize() * 2) );
 
     if ( g_l.inArea( M_ball->pos() ) ) return BPI_GoalL;
@@ -1369,9 +1377,11 @@ Stadium::ballPosInfo()
 void
 Stadium::placePlayersInField()
 {
-    static RArea fld( PVector( 0.0, 0.0 ),
-                      PVector( PITCH_LENGTH + PITCH_MARGIN*2.0,
-                               PITCH_WIDTH + PITCH_MARGIN*2.0 ) );
+    static const RArea fld( PVector( 0.0, 0.0 ),
+                            PVector( ServerParam::PITCH_LENGTH
+                                     + ServerParam::PITCH_MARGIN*2.0,
+                                     ServerParam::PITCH_WIDTH
+                                     + ServerParam::PITCH_MARGIN*2.0 ) );
 
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
@@ -1562,7 +1572,7 @@ bool
 Stadium::movePlayer( const Side side,
                      const int unum,
                      const PVector & pos,
-                     const Angle * ang,
+                     const double * ang,
                      const PVector * vel )
 {
     if ( unum < 1 || MAX_PLAYER < unum )
@@ -1587,7 +1597,7 @@ Stadium::movePlayer( const Side side,
         return false;
     }
 
-    Angle new_angle = player->angleBodyCommitted();
+    double new_angle = player->angleBodyCommitted();
     PVector new_vel = player->vel();
     PVector new_accel = player->accel();
     if ( vel )
@@ -1628,7 +1638,7 @@ Stadium::movePlayer( const char * player_name,
 bool
 Stadium::movePlayer( const char * player_name,
                      const PVector & pos,
-                     const Angle & ang,
+                     const double & ang,
                      const PVector & vel )
 {
     Player *p = get_player_by_name( player_name );
@@ -2044,8 +2054,8 @@ Stadium::writeTextLog( Player& p, const char *message, int flag )
          || ( game_log_open() && flag == RECV )
          || ( ServerParam::instance().sendComms() && flag == RECV ) )
     {
-        char tmp[MaxStringSize] ;
-        std::snprintf( tmp, MaxStringSize,
+        char tmp[MaxMesg];
+        std::snprintf( tmp, MaxMesg,
                        "%s %s_%d: %s\n",
                        (flag == SEND) ? "Send" : "Recv",
                        p.team()->name().c_str(), p.unum(), message );
@@ -2060,8 +2070,8 @@ Stadium::writeTextLog( Coach&, const char *message, int flag )
          || ( game_log_open() && flag == RECV )
          || ( ServerParam::instance().sendComms() && flag == RECV ) )
     {
-        char tmp[MaxStringSize] ;
-        std::snprintf( tmp, MaxStringSize,
+        char tmp[MaxMesg];
+        std::snprintf( tmp, MaxMesg,
                        "%s Coach: %s\n",
                        (flag == SEND) ? "Send" : "Recv",
                        message ) ;
@@ -2076,9 +2086,10 @@ Stadium::writeTextLog( OnlineCoach& p, const char *message, int flag )
          || ( game_log_open() && flag == RECV )
          || ( ServerParam::instance().sendComms() && flag == RECV ) )
     {
-        char tmp[MaxStringSize] ;
-        std::snprintf( tmp, MaxStringSize,
-                       "%s %s_Coach: %s\n", (flag == SEND) ? "Send" : "Recv",
+        char tmp[MaxMesg];
+        std::snprintf( tmp, MaxMesg,
+                       "%s %s_Coach: %s\n",
+                       (flag == SEND) ? "Send" : "Recv",
                        ( p.side() == LEFT ) ? M_team_l->name().c_str() : M_team_r->name().c_str(),
                        message );
         writeTextLog( tmp, flag );
@@ -2378,7 +2389,7 @@ Stadium::calcBallCollPos( Player * p )
     PVector b2p;
     if ( M_ball->pos() == p->pos() )
     {
-        Angle p_ang = drand( -M_PI, M_PI );
+        double p_ang = drand( -M_PI, M_PI );
         b2p = PVector::fromPolar( M_ball->size() + p->size() + EPS, p_ang );
     }
     else
@@ -2422,8 +2433,8 @@ Stadium::calcCollPos( MPObject * a,
         {
             // if the two objects are directly on top on one and other
             // then they will be separated at a random angle
-            Angle a_ang = drand ( -M_PI, M_PI );
-            Angle b_ang = normalize_angle( a_ang + M_PI );
+            double a_ang = drand ( -M_PI, M_PI );
+            double b_ang = normalize_angle( a_ang + M_PI );
             mid2a = PVector::fromPolar( ( a->size() + b->size() ) / 2.0 + EPS, a_ang );
             mid2b = PVector::fromPolar( ( a->size() + b->size() ) / 2.0 + EPS, b_ang );
         }

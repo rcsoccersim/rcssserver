@@ -231,6 +231,8 @@ public:
 class OffsideRef
     : public Referee {
 private:
+    static const int AFTER_OFFSIDE_WAIT;
+
     const Player * M_last_kicker;
     PVector M_offside_pos;
     int M_after_offside_time;
@@ -274,6 +276,8 @@ class FreeKickRef
     : public Referee
 {
 private:
+    static const int AFTER_FREE_KICK_FAULT_WAIT;
+
     int M_timer;
 
     bool M_kick_taken;
@@ -337,6 +341,9 @@ class TouchRef
     : public Referee
 {
 private:
+    // TODO? move to TimeRef
+    static const int AFTER_GOAL_WAIT;
+
     const Player * M_last_touched;
 
     const Player * M_last_indirect_kicker;
@@ -393,8 +400,8 @@ private:
     static const int TURNOVER_TIME;
     int M_episode;
     int M_keepers, M_takers;
-    TheNumber M_time;
-    TheNumber M_take_time;
+    int M_time;
+    int M_take_time;
     time_t M_start_time;
 public:
     KeepawayRef( Stadium& stadium )
@@ -446,6 +453,9 @@ private:
 class CatchRef
     : public Referee {
 private:
+    static const int AFTER_BACKPASS_WAIT;
+    static const int AFTER_CATCH_FAULT_WAIT;
+
     const Player * M_last_back_passer;
     bool M_team_l_touched;
     bool M_team_r_touched;

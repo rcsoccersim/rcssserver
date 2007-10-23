@@ -63,10 +63,10 @@
 
 const
 PVector &
-PVector::rotate(const Angle& ang)
+PVector::rotate(const double & ang)
 {
-    Value r1 = r();
-    Angle th1 = th();
+    double r1 = r();
+    double th1 = th();
 
     x = r1 * std::cos( th1 + ang );
     y = r1 * std::sin( th1 + ang );
@@ -131,14 +131,14 @@ RArea::nearestHEdge( const PVector & p ) const
 {
     return PVector( std::min( std::max( p.x, left ), right ),
                     ( std::fabs( p.y - top ) < std::fabs( p.y - bottom )
-                    ? top : bottom ) );
+                      ? top : bottom ) );
 }
 
 PVector
 RArea::nearestVEdge( const PVector & p ) const
 {
     return PVector( ( std::fabs( p.x - left ) < std::fabs( p.x - right )
-                    ? left : right ),
+                      ? left : right ),
                     std::min( std::max( p.y, top ), bottom ) );
 }
 
@@ -146,7 +146,7 @@ PVector
 RArea::nearestEdge( const PVector & p ) const
 {
     if ( std::min( std::fabs( p.x - left ), std::fabs( p.x - right ) )
-        < std::min( std::fabs( p.y - top ), std::fabs( p.y - bottom ) ) )
+         < std::min( std::fabs( p.y - top ), std::fabs( p.y - bottom ) ) )
     {
         return nearestVEdge( p );
     }
@@ -314,7 +314,7 @@ intersect( const PVector & begin,
 namespace {
 CArea
 nearestPost( const PVector & pos,
-             const Value & size )
+             const double & size )
 {
     PVector nearest_gpost;
 
@@ -322,14 +322,14 @@ nearestPost( const PVector & pos,
     {
         if ( pos.x > 0 )
         {
-            nearest_gpost = PVector( PITCH_LENGTH*0.5
+            nearest_gpost = PVector( ServerParam::PITCH_LENGTH*0.5
                                      - ServerParam::instance().goalPostRadius(),
                                      ServerParam::instance().goalWidth()*0.5
                                      + ServerParam::instance().goalPostRadius() );
         }
         else
         {
-            nearest_gpost = PVector( -PITCH_LENGTH*0.5
+            nearest_gpost = PVector( - ServerParam::PITCH_LENGTH*0.5
                                      + ServerParam::instance().goalPostRadius(),
                                      ServerParam::instance().goalWidth()*0.5
                                      + ServerParam::instance().goalPostRadius() );
@@ -339,16 +339,16 @@ nearestPost( const PVector & pos,
     {
         if ( pos.x > 0 )
         {
-            nearest_gpost = PVector( PITCH_LENGTH*0.5
+            nearest_gpost = PVector( ServerParam::PITCH_LENGTH*0.5
                                      - ServerParam::instance().goalPostRadius(),
-                                     -ServerParam::instance().goalWidth()*0.5
+                                     - ServerParam::instance().goalWidth()*0.5
                                      - ServerParam::instance().goalPostRadius() );
         }
         else
         {
-            nearest_gpost = PVector( -PITCH_LENGTH*0.5
+            nearest_gpost = PVector( - ServerParam::PITCH_LENGTH*0.5
                                      + ServerParam::instance().goalPostRadius(),
-                                     -ServerParam::instance().goalWidth()*0.5
+                                     - ServerParam::instance().goalWidth()*0.5
                                      - ServerParam::instance().goalPostRadius() );
         }
     }
@@ -363,7 +363,7 @@ nearestPost( const PVector & pos,
  *===================================================================
  */
 
-TheNumber PObject::S_object_count = 0;
+int PObject::S_object_count = 0;
 
 /* pfr 06/07/200 added short name support */
 PObject::PObject( const  PObject::obj_type& object_type,
@@ -372,7 +372,7 @@ PObject::PObject( const  PObject::obj_type& object_type,
                   const std::string & close_name,
                   const std::string & short_close_name,
                   const PVector & p,
-                  const Value & v )
+                  const double & v )
     : M_object_type ( object_type ),
       M_id( S_object_count ),
       M_name( name ),
@@ -427,19 +427,19 @@ MPObject::MPObject( Stadium * stadium,
 
 std::ostream &
 MPObject::print( std::ostream & o ) const
- {
-     o << "#Ob[" << this->id();
-     if( ! name().empty() )
-         o << ":" << name() << "";
-     return o << ":pos=" << this->M_pos
-              << ",size=" << this->M_size
-         //<< ",angle=" << Rad2IDegRound( this->M_angle )
-              << ",vel=" << this->M_vel
-              << ",acc=" << this->M_accel
-              << ",decay=" << this->M_decay
-              << ",randp=" << this->M_randp
-              << "]";
- }
+{
+    o << "#Ob[" << this->id();
+    if( ! name().empty() )
+        o << ":" << name() << "";
+    return o << ":pos=" << this->M_pos
+             << ",size=" << this->M_size
+        //<< ",angle=" << Rad2IDegRound( this->M_angle )
+             << ",vel=" << this->M_vel
+             << ",acc=" << this->M_accel
+             << ",decay=" << this->M_decay
+             << ",randp=" << this->M_randp
+             << "]";
+}
 
 void
 MPObject::moveTo( const PVector & pos,
@@ -454,12 +454,12 @@ MPObject::moveTo( const PVector & pos,
 }
 
 void
-MPObject::setConstant( const Value & size,
-                       const Value & decay,
-                       const Value & randp,
-                       const Value & weight,
-                       const Value & max_speed,
-                       const Value & max_accel )
+MPObject::setConstant( const double & size,
+                       const double & decay,
+                       const double & randp,
+                       const double & weight,
+                       const double & max_speed,
+                       const double & max_accel )
 {
     M_size = size;
     M_decay = decay;
@@ -472,7 +472,7 @@ MPObject::setConstant( const Value & size,
 PVector
 MPObject::noise()
 {
-    Value maxrnd = M_randp * vel().r();
+    double maxrnd = M_randp * vel().r();
     return PVector( drand( -maxrnd, maxrnd ),
                     drand( -maxrnd, maxrnd ) );
 }
@@ -489,18 +489,18 @@ MPObject::wind()
         return PVector( 0.0, 0.0 );
     }
 
-//     return PVector( M_vel.r() * ( M_weather->wind_vector.x +
-//                                   drand( - M_weather->wind_rand, M_weather->wind_rand) ) /
-//                     (M_weight * WIND_WEIGHT), M_vel.r() * ( M_weather->wind_vector.y +
-//                                                             drand( - M_weather->wind_rand, M_weather->wind_rand ) ) /
-//                     (M_weight * WIND_WEIGHT));
+    //     return PVector( M_vel.r() * ( M_weather->wind_vector.x +
+    //                                   drand( - M_weather->wind_rand, M_weather->wind_rand) ) /
+    //                     (M_weight * WIND_WEIGHT), M_vel.r() * ( M_weather->wind_vector.y +
+    //                                                             drand( - M_weather->wind_rand, M_weather->wind_rand ) ) /
+    //                     (M_weight * WIND_WEIGHT));
     const double speed = M_vel.r();
     return PVector( speed * ( w.wind_vector.x +
                               drand( - w.wind_rand, + w.wind_rand) ) /
-                    (M_weight * WIND_WEIGHT),
+                    ( M_weight * ServerParam::instance().windWeight() ),
                     speed * ( w.wind_vector.y +
                               drand( - w.wind_rand, + w.wind_rand ) ) /
-                    (M_weight * WIND_WEIGHT));
+                    ( M_weight * ServerParam::instance().windWeight() ));
 }
 
 void
@@ -508,16 +508,16 @@ MPObject::_inc()
 {
     if ( M_accel.x || M_accel.y )
 	  {
-         double max_a = maxAccel();
-         double max_s = maxSpeed();
+        double max_a = maxAccel();
+        double max_s = maxSpeed();
 
-         Value tmp = M_accel.r();
-         if ( tmp > max_a )
-             M_accel *= (max_a / tmp);
-         M_vel += M_accel;
-         tmp = M_vel.r();
-         if ( tmp > max_s )
-             M_vel *= (max_s / tmp);
+        double tmp = M_accel.r();
+        if ( tmp > max_a )
+            M_accel *= (max_a / tmp);
+        M_vel += M_accel;
+        tmp = M_vel.r();
+        if ( tmp > max_s )
+            M_vel *= (max_s / tmp);
     }
 
     updateAngle();
@@ -641,15 +641,15 @@ MPObject::_inc()
 
 // void MPObject::collide(MPObject& obj)
 // {
-//     Value r = size + obj.size;
+//     double r = size + obj.size;
 //     PVector dif = (pos - obj.pos);
-//     Value d = pos.distance(obj.pos);
+//     double d = pos.distance(obj.pos);
 //     Angle th = fabs(dif.angle(vel));
-//     Value l1 = d * cos(th);
-//     Value h = d * sin(th);
-//     Value cosp = h / r;
-//     Value sinp = sqrt(1.0 - square(cosp));
-//     Value l2 = r * sinp;
+//     double l1 = d * cos(th);
+//     double h = d * sin(th);
+//     double cosp = h / r;
+//     double sinp = sqrt(1.0 - square(cosp));
+//     double l2 = r * sinp;
 //     PVector dv = vel;
 
 //     dv.normalize(-(l1 + l2));
@@ -705,7 +705,8 @@ Team::Team( Stadium *stad, const Side s )
 {
     for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
     {
-        ptype_count[ i ] = 0;
+        M_ptype_count[ i ] = 0;
+        M_ptype_used_count[ i ] = 0;
     }
 
 #ifdef NEW_QSTEP
@@ -751,7 +752,8 @@ Team::~Team()
 }
 
 Player*
-Team::newPlayer( Value version, int goalie_flag )
+Team::newPlayer( const double & version,
+                 const bool goalie_flag )
 {
     if ( size() >= MAX_PLAYER )
     {
@@ -785,7 +787,41 @@ Team::newPlayer( Value version, int goalie_flag )
     }
 
     ++M_size;
-    ++ptype_count[ 0 ];
+
+
+    //++M_ptype_count[ 0 ];
+    //++M_ptype_used_count[ 0 ];
+    if ( goalie_flag
+         || ServerParam::instance().allowMultDefaultType() )
+    {
+        ++M_ptype_count[ 0 ];
+        ++M_ptype_used_count[ 0 ];
+    }
+    else
+    {
+        bool substituted = false;
+        for ( int type = 1; type < PlayerParam::instance().playerTypes(); ++type )
+        {
+            if ( M_ptype_used_count[type] >= PlayerParam::instance().ptMax() )
+            {
+                continue;
+            }
+
+            substituted = true;
+            p->substitute( type );
+            ++M_ptype_count[ type ];
+            ++M_ptype_used_count[ type ];
+
+            M_stadium->broadcastSubstitution( M_side, p->unum(), type );
+            break;
+        }
+
+        if ( ! substituted )
+        {
+            ++M_ptype_count[ 0 ];
+            ++M_ptype_used_count[ 0 ];
+        }
+    }
 
     return p;
 }
@@ -810,8 +846,8 @@ Team::assignCoach( OnlineCoach * coach )
 int
 Team::ptypeCount( const int player_type ) const
 {
-    std::map< int, int >::const_iterator it = ptype_count.find( player_type );
-    if ( it == ptype_count.end() )
+    std::map< int, int >::const_iterator it = M_ptype_count.find( player_type );
+    if ( it == M_ptype_count.end() )
     {
         return 0;
     }
@@ -828,11 +864,11 @@ Team::substitute( const Player * player,
         return;
     }
 
-    std::map< int, int >::iterator old_it = ptype_count.find( player->playerTypeId() );
-    std::map< int, int >::iterator new_it = ptype_count.find( player_type );
+    std::map< int, int >::iterator old_it = M_ptype_count.find( player->playerTypeId() );
+    std::map< int, int >::iterator new_it = M_ptype_count.find( player_type );
 
-    if ( old_it == ptype_count.end()
-         || new_it == ptype_count.end() )
+    if ( old_it == M_ptype_count.end()
+         || new_it == M_ptype_count.end() )
     {
         return;
     }
@@ -859,16 +895,34 @@ Team::substitute( const Player * player,
         return;
     }
 
-    old_it->second -= 1;
-
     candidate->substitute( player_type );
+
+    old_it->second -= 1;
+    new_it->second += 1;
 
     if ( M_stadium->playmode() != PM_BeforeKickOff )
     {
         ++M_subs_count;
     }
 
-    new_it->second += 1;
+    if ( M_stadium->time() <= 0 ) // before kick off
+    {
+        for ( std::map< int, int >::iterator it = M_ptype_used_count.begin();
+              it != M_ptype_used_count.end();
+              ++it )
+        {
+            it->second = 0;
+        }
+
+        for ( int i = 0; i < this->size(); ++i )
+        {
+            M_ptype_used_count[ M_players[i]->playerTypeId() ] += 1;
+        }
+    }
+    else
+    {
+        M_ptype_used_count[player_type] += 1;
+    }
 }
 
 

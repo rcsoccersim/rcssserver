@@ -76,7 +76,27 @@ const int ServerParam::UDP_SEND_STEP_INTERVAL_MSEC = 150;
 const int ServerParam::SENSE_BODY_INTERVAL_MSEC = 100;
 const int ServerParam::SEND_VISUALINFO_INTERVAL_MSEC = 100;
 
-const double ServerParam::IMPARAM = 5.0;
+const int ServerParam::HALF_TIME = 300;
+const int ServerParam::DROP_TIME = 200;
+
+const double ServerParam::PITCH_LENGTH = 105.0;
+const double ServerParam::PITCH_WIDTH = 68.0;
+const double ServerParam::PITCH_MARGIN = 5.0;
+const double ServerParam::CENTER_CIRCLE_R = 9.15;
+const double ServerParam::PENALTY_AREA_LENGTH = 16.5;
+const double ServerParam::PENALTY_AREA_WIDTH = 40.32;
+const double ServerParam::GOAL_AREA_LENGTH = 5.5;
+const double ServerParam::GOAL_AREA_WIDTH = 18.32;
+const double ServerParam::GOAL_WIDTH = 14.02;
+const double ServerParam::GOAL_DEPTH = 2.44;
+const double ServerParam::PENALTY_SPOT_DIST = 11.0;
+const double ServerParam::CORNER_ARC_R = 1.0;
+const double ServerParam::KICK_OFF_CLEAR_DISTANCE = CENTER_CIRCLE_R;
+
+const double ServerParam::CORNER_KICK_MARGIN = 1.0;
+
+const double ServerParam::KEEPAWAY_LENGTH = 20.0;
+const double ServerParam::KEEPAWAY_WIDTH = 20.0;
 
 const double ServerParam::BALL_SIZE	= 0.085;
 const double ServerParam::BALL_DECAY = 0.94;
@@ -95,6 +115,8 @@ const double ServerParam::PLAYER_SPEED_MAX = 1.2;
 // th 6.3.00
 const double ServerParam::PLAYER_ACCEL_MAX = 1.0;
 //
+const double ServerParam::IMPARAM = 5.0;
+
 const double ServerParam::STAMINA_MAX = 4000.0;
 const double ServerParam::STAMINA_INC_MAX = 45.0;
 const double ServerParam::RECOVERY_DEC_THR = 0.3;
@@ -151,7 +173,10 @@ const int ServerParam::DEF_SAY_COACH_CNT_MAX = 128;
 const double ServerParam::WIND_DIR = 0.0;
 const double ServerParam::WIND_FORCE = 0.0;
 const double ServerParam::WIND_RAND = 0.0;
-//const double ServerParam::WIND_WEIGHT = 10000.0;
+const double ServerParam::WIND_WEIGHT = 10000.0;
+
+const double ServerParam::OFFSIDE_ACTIVE_AREA_SIZE = 2.5;
+const double ServerParam::OFFSIDE_KICK_MARGIN = 9.15;
 
 #ifdef WIN32
 const char ServerParam::LANDMARK_FILE[] = "~\\.rcssserver-landmark.xml";
@@ -676,6 +701,8 @@ ServerParam::addParams()
               rcss::conf::makeGetter( M_coach_msg_file ),
               "", 11 );
 
+    addParam( "allow_mult_default_type", M_allow_mult_default_type, "", 12 );
+
 }
 
 
@@ -980,6 +1007,8 @@ ServerParam::setDefaults()
     M_ball_stuck_area = BALL_STUCK_AREA;
 
     M_coach_msg_file = "";
+
+    M_allow_mult_default_type = false;
 
     setHalfTime( HALF_TIME );
 

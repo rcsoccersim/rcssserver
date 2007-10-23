@@ -123,7 +123,29 @@ private:
     static const int SENSE_BODY_INTERVAL_MSEC; /* milli-sec */
     static const int SEND_VISUALINFO_INTERVAL_MSEC; /* milli-sec */
 
-    static const double IMPARAM; /* Inertia-Moment Parameter */
+    static const int HALF_TIME;
+    static const int DROP_TIME;
+
+public:
+    static const double PITCH_LENGTH;
+    static const double PITCH_WIDTH;
+    static const double PITCH_MARGIN;
+    static const double CENTER_CIRCLE_R;
+    static const double PENALTY_AREA_LENGTH;
+    static const double PENALTY_AREA_WIDTH;
+    static const double GOAL_AREA_LENGTH;
+    static const double GOAL_AREA_WIDTH;
+    static const double GOAL_WIDTH;
+    static const double GOAL_DEPTH;
+    static const double PENALTY_SPOT_DIST;
+    static const double CORNER_ARC_R;
+    static const double KICK_OFF_CLEAR_DISTANCE;
+
+    static const double CORNER_KICK_MARGIN;
+
+private:
+    static const double KEEPAWAY_LENGTH;
+    static const double KEEPAWAY_WIDTH;
 
     static const double BALL_SIZE;
     static const double BALL_DECAY;
@@ -143,6 +165,8 @@ private:
     // th 6.3.00
     static const double PLAYER_ACCEL_MAX;
     //
+    static const double IMPARAM; /* Inertia-Moment Parameter */
+
     static const double	STAMINA_MAX;
     static const double	STAMINA_INC_MAX;
     static const double RECOVERY_DEC_THR;
@@ -198,7 +222,10 @@ private:
     static const double	WIND_DIR;
     static const double	WIND_FORCE;
     static const double	WIND_RAND;
-    //static const double WIND_WEIGHT;
+    static const double WIND_WEIGHT;
+
+    static const double OFFSIDE_ACTIVE_AREA_SIZE;
+    static const double OFFSIDE_KICK_MARGIN;
 
     static const char LANDMARK_FILE[];
     static const char SERVER_CONF[];
@@ -345,7 +372,7 @@ private:
 		double visangle; /* visible angle */
     //public:
 		double visdist; /* visible distance */
-		Angle windir; /* wind direction */
+		double windir; /* wind direction */
 		double winforce; /* wind force */
 		double winang; /* wind angle for rand */
 		double winrand; /* wind force for force */
@@ -524,6 +551,8 @@ private:
     double M_ball_stuck_area; /* threshold distance checked by BallStuckRef */
 
     std::string M_coach_msg_file; /* file name that contains the messages sent to coaches */
+
+    bool M_allow_mult_default_type;
 
 private:
 
@@ -754,10 +783,11 @@ public:
     double visAngle() const { return Deg2Rad(visangle); }
     const double & visAngleDeg() const { return visangle; }
 		const double & visibleDistance() const{ return visdist; }
-		const Angle & windDir() const { return windir; }
+		const double & windDir() const { return windir; }
 		const double & windForce() const { return winforce; }
 		const double & windAngle() const { return winang; }
 		const double & windRand() const { return winrand; }
+		const double & windWeight() const { return WIND_WEIGHT; }
 
     const double & kickableArea() const { return kickable_area; }
 
@@ -945,6 +975,8 @@ public:
     const double & ballStuckArea() const { return M_ball_stuck_area; }
 
     const std::string & coachMsgFile() const { return M_coach_msg_file; }
+
+    bool allowMultDefaultType() const { return M_allow_mult_default_type; }
 
 };
 

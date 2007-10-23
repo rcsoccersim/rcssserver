@@ -47,35 +47,9 @@
 #include <netinet/in.h>
 #endif
 
-// bool HetroPlayer::seeded = false;
-// boost::mt19937 HetroPlayer::S_rng;;
-
-// void HetroPlayer::seed()
-// {
-//     if ( ! HetroPlayer::seeded )
-//     {
-//         if ( PlayerParam::instance().randomSeed() >= 0 )
-//         {
-//             std::cout << "Using given Hetero Player Seed: "
-//                       << PlayerParam::instance().randomSeed() << std::endl;
-//             //srandom( PlayerParam::instance().randomSeed() );
-//             S_rng.seed( PlayerParam::instance().randomSeed() );
-//         }
-//         else
-//         {
-//             timeval now;
-//             gettimeofday ( &now, NULL );
-//             std::cout << "Hetero Player Seed: " << now.tv_usec << std::endl;
-//             //srandom( now.tv_usec );
-//             S_rng.seed( now.tv_usec );
-//         }
-//         HetroPlayer::seeded = true;
-//     }
-// }
-
-Value
-HetroPlayer::delta( const Value & min,
-                    const Value & max )
+double
+HetroPlayer::delta( const double & min,
+                    const double & max )
 {
     static bool s_seeded = false;
     static boost::mt19937 s_engine;
@@ -106,15 +80,15 @@ HetroPlayer::delta( const Value & min,
         return min;
     }
 
-    Value minv = min;
-    Value maxv = max;
+    double minv = min;
+    double maxv = max;
 
     if ( minv > maxv )
     {
-      std::swap( minv, maxv );
+        std::swap( minv, maxv );
     }
 
-    boost::uniform_real< Value > rng( minv, maxv );
+    boost::uniform_real< double > rng( minv, maxv );
     boost::variate_generator< boost::mt19937&, boost::uniform_real<> > gen( s_engine, rng );
     return gen();
 }
@@ -127,8 +101,8 @@ HetroPlayer::HetroPlayer()
     int trial = 0;
     while ( ++trial <= MAX_TRIAL )
     {
-        Value tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
-                                              PlayerParam::instance().playerSpeedMaxDeltaMax() );
+        double tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
+                                               PlayerParam::instance().playerSpeedMaxDeltaMax() );
         player_speed_max = ServerParam::instance().playerSpeedMax() + tmp_delta;
         stamina_inc_max = ServerParam::instance().staminaInc()
             + tmp_delta * PlayerParam::instance().staminaIncMaxDeltaFactor();
@@ -223,8 +197,8 @@ HetroPlayer::HetroPlayer()
     {
         ++trial;
 
-        Value tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
-                                              PlayerParam::instance().playerSpeedMaxDeltaMax() );
+        double tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
+                                               PlayerParam::instance().playerSpeedMaxDeltaMax() );
         player_speed_max = ServerParam::instance().playerSpeedMax() + tmp_delta;
         stamina_inc_max = ServerParam::instance().staminaInc()
             + tmp_delta * PlayerParam::instance().staminaIncMaxDeltaFactor();

@@ -32,10 +32,10 @@ const int KeepawayRef::TURNOVER_TIME = 4;
 PVector
 Referee::truncateToPitch( PVector ball_pos )
 {
-    ball_pos.x = std::min( ball_pos.x, +PITCH_LENGTH * 0.5 );
-    ball_pos.x = std::max( ball_pos.x, -PITCH_LENGTH * 0.5 );
-    ball_pos.y = std::min( ball_pos.y, +PITCH_WIDTH * 0.5 );
-    ball_pos.y = std::max( ball_pos.y, -PITCH_WIDTH * 0.5 );
+    ball_pos.x = std::min( ball_pos.x, + ServerParam::PITCH_LENGTH * 0.5 );
+    ball_pos.x = std::max( ball_pos.x, - ServerParam::PITCH_LENGTH * 0.5 );
+    ball_pos.y = std::min( ball_pos.y, + ServerParam::PITCH_WIDTH * 0.5 );
+    ball_pos.y = std::max( ball_pos.y, - ServerParam::PITCH_WIDTH * 0.5 );
 
     return ball_pos;
 }
@@ -46,34 +46,40 @@ Referee::moveOutOfPenalty( const Side side,
 {
     if ( side != RIGHT )
     {
-        if ( ball_pos.x <= -PITCH_LENGTH * 0.5 + PENALTY_AREA_LENGTH
-             && std::fabs( ball_pos.y ) <= PENALTY_AREA_WIDTH * 0.5 )
+        if ( ball_pos.x <= ( - ServerParam::PITCH_LENGTH * 0.5
+                             + ServerParam::PENALTY_AREA_LENGTH )
+             && std::fabs( ball_pos.y ) <= ServerParam::PENALTY_AREA_WIDTH * 0.5 )
         {
-            ball_pos.x = -PITCH_LENGTH * 0.5 + PENALTY_AREA_LENGTH + EPS;
+            ball_pos.x
+                = - ServerParam::PITCH_LENGTH * 0.5
+                + ServerParam::PENALTY_AREA_LENGTH + EPS;
             if ( ball_pos.y > 0 )
             {
-                ball_pos.y = +PENALTY_AREA_WIDTH * 0.5 + EPS;
+                ball_pos.y = +ServerParam::PENALTY_AREA_WIDTH * 0.5 + EPS;
             }
             else
             {
-                ball_pos.y = -PENALTY_AREA_WIDTH * 0.5 - EPS;
+                ball_pos.y = -ServerParam::PENALTY_AREA_WIDTH * 0.5 - EPS;
             }
         }
     }
 
     if ( side != LEFT )
     {
-        if ( ball_pos.x >= PITCH_LENGTH * 0.5 - PENALTY_AREA_LENGTH
-             && std::fabs( ball_pos.y ) <= PENALTY_AREA_WIDTH * 0.5 )
+        if ( ball_pos.x >= ( ServerParam::PITCH_LENGTH * 0.5
+                             - ServerParam::PENALTY_AREA_LENGTH )
+             && std::fabs( ball_pos.y ) <= ServerParam::PENALTY_AREA_WIDTH * 0.5 )
         {
-            ball_pos.x = PITCH_LENGTH * 0.5 - PENALTY_AREA_LENGTH - EPS;
+            ball_pos.x
+                = ServerParam::PITCH_LENGTH * 0.5
+                - ServerParam::PENALTY_AREA_LENGTH - EPS;
             if( ball_pos.y > 0 )
             {
-                ball_pos.y = +PENALTY_AREA_WIDTH * 0.5 + EPS;
+                ball_pos.y = +ServerParam::PENALTY_AREA_WIDTH * 0.5 + EPS;
             }
             else
             {
-                ball_pos.y = -PENALTY_AREA_WIDTH * 0.5 - EPS;
+                ball_pos.y = -ServerParam::PENALTY_AREA_WIDTH * 0.5 - EPS;
             }
         }
     }
@@ -86,39 +92,59 @@ Referee::moveIntoPenalty( Side side, PVector pos )
 {
     if ( side != RIGHT )
     {
-        if ( pos.x > -PITCH_LENGTH * 0.5 + PENALTY_AREA_LENGTH + ServerParam::instance().ballSize() )
+        if ( pos.x > ( -ServerParam::PITCH_LENGTH * 0.5
+                       + ServerParam::PENALTY_AREA_LENGTH
+                       + ServerParam::instance().ballSize() ) )
         {
-            pos.x = -PITCH_LENGTH * 0.5 + PENALTY_AREA_LENGTH + ServerParam::instance().ballSize();
+            pos.x
+                = -ServerParam::PITCH_LENGTH * 0.5
+                + ServerParam::PENALTY_AREA_LENGTH
+                + ServerParam::instance().ballSize();
         }
 
-        if ( std::fabs( pos.y ) > PENALTY_AREA_WIDTH * 0.5 + ServerParam::instance().ballSize() )
+        if ( std::fabs( pos.y ) > ( ServerParam::PENALTY_AREA_WIDTH * 0.5
+                                    + ServerParam::instance().ballSize() ) )
         {
             if ( pos.y > 0 )
             {
-                pos.y = PENALTY_AREA_WIDTH * 0.5 + ServerParam::instance().ballSize();
+                pos.y
+                    = ServerParam::PENALTY_AREA_WIDTH * 0.5
+                    + ServerParam::instance().ballSize();
             }
             else
             {
-                pos.y = -PENALTY_AREA_WIDTH * 0.5 - ServerParam::instance().ballSize();
+                pos.y
+                    = -ServerParam::PENALTY_AREA_WIDTH * 0.5
+                    - ServerParam::instance().ballSize();
             }
         }
     }
     if ( side != LEFT )
     {
-        if ( pos.x < PITCH_LENGTH * 0.5 - PENALTY_AREA_LENGTH - ServerParam::instance().ballSize() )
+        if ( pos.x < ( ServerParam::PITCH_LENGTH * 0.5
+                       - ServerParam::PENALTY_AREA_LENGTH
+                       - ServerParam::instance().ballSize() ) )
         {
-            pos.x = PITCH_LENGTH * 0.5 - PENALTY_AREA_LENGTH - ServerParam::instance().ballSize();
+            pos.x
+                = ServerParam::PITCH_LENGTH * 0.5
+                - ServerParam::PENALTY_AREA_LENGTH
+                - ServerParam::instance().ballSize();
         }
 
-        if ( std::fabs( pos.y ) > PENALTY_AREA_WIDTH * 0.5 + ServerParam::instance().ballSize() )
+        if ( std::fabs( pos.y ) > ( ServerParam::PENALTY_AREA_WIDTH * 0.5
+                                    + ServerParam::instance().ballSize() ) )
         {
             if ( pos.y > 0 )
             {
-                pos.y = PENALTY_AREA_WIDTH * 0.5 + ServerParam::instance().ballSize();
+                pos.y
+                    = ServerParam::PENALTY_AREA_WIDTH * 0.5
+                    + ServerParam::instance().ballSize();
             }
             else
             {
-                pos.y = -PENALTY_AREA_WIDTH * 0.5 - ServerParam::instance().ballSize();
+                pos.y
+                    = -ServerParam::PENALTY_AREA_WIDTH * 0.5
+                    - ServerParam::instance().ballSize();
             }
         }
     }
@@ -151,22 +177,22 @@ Referee::awardGoalKick( const Side side,
 {
     if ( pos.y > 0 )
     {
-        pos.y = GOAL_AREA_WIDTH * 0.5;
+        pos.y = ServerParam::GOAL_AREA_WIDTH * 0.5;
     }
     else
     {
-        pos.y = -GOAL_AREA_WIDTH * 0.5;
+        pos.y = -ServerParam::GOAL_AREA_WIDTH * 0.5;
     }
 
     M_stadium.clearBallCatcher();
     if ( side == LEFT )
     {
-        pos.x = -PITCH_LENGTH * 0.5 + GOAL_AREA_LENGTH;
+        pos.x = - ServerParam::PITCH_LENGTH * 0.5 + ServerParam::GOAL_AREA_LENGTH;
         M_stadium.placeBall( PM_GoalKick_Left, LEFT, pos );
     }
     else
     {
-        pos.x = PITCH_LENGTH * 0.5 - GOAL_AREA_LENGTH;
+        pos.x = ServerParam::PITCH_LENGTH * 0.5 - ServerParam::GOAL_AREA_LENGTH;
         M_stadium.placeBall( PM_GoalKick_Right, RIGHT, pos );
     }
 }
@@ -215,21 +241,29 @@ Referee::awardCornerKick( const Side side,
 
     if ( pos.y > 0 )
     {
-        pos.y = PITCH_WIDTH * 0.5 - ServerParam::instance().cornerKickMargin();
+        pos.y
+            = ServerParam::PITCH_WIDTH * 0.5
+            - ServerParam::instance().cornerKickMargin();
     }
     else
     {
-        pos.y = -PITCH_WIDTH * 0.5 + ServerParam::instance().cornerKickMargin();
+        pos.y
+            = -ServerParam::PITCH_WIDTH * 0.5
+            + ServerParam::instance().cornerKickMargin();
     }
 
     if ( side == LEFT )
     {
-        pos.x = PITCH_LENGTH * 0.5 - ServerParam::instance().cornerKickMargin();
+        pos.x
+            = ServerParam::PITCH_LENGTH * 0.5
+            - ServerParam::instance().cornerKickMargin();
         M_stadium.placeBall( PM_CornerKick_Left, LEFT, pos );
     }
     else
     {
-        pos.x = -PITCH_LENGTH * 0.5 + ServerParam::instance().cornerKickMargin();
+        pos.x
+            = -ServerParam::PITCH_LENGTH * 0.5
+            + ServerParam::instance().cornerKickMargin();
         M_stadium.placeBall( PM_CornerKick_Right, RIGHT, pos );
     }
 }
@@ -243,10 +277,12 @@ Referee::inPenaltyArea( const Side side,
     {
         // according to FIFA the ball is catchable if it is at
         // least partly within the penalty area, thus we add ball size
-        static RArea pen_area( PVector( -PITCH_LENGTH/2+PENALTY_AREA_LENGTH/2.0, 0.0 ),
-                               PVector( PENALTY_AREA_LENGTH
+        static RArea pen_area( PVector( - ServerParam::PITCH_LENGTH/2
+                                        + ServerParam::PENALTY_AREA_LENGTH/2.0,
+                                        0.0 ),
+                               PVector( ServerParam::PENALTY_AREA_LENGTH
                                         + ServerParam::instance().ballSize() * 2,
-                                        PENALTY_AREA_WIDTH
+                                        ServerParam::PENALTY_AREA_WIDTH
                                         + ServerParam::instance().ballSize() * 2 ) ) ;
         if ( pen_area.inArea( pos ) )
         {
@@ -258,10 +294,12 @@ Referee::inPenaltyArea( const Side side,
     {
         // according to FIFA the ball is catchable if it is at
         // least partly within the penalty area, thus we add ball size
-        static RArea pen_area( PVector( +PITCH_LENGTH/2-PENALTY_AREA_LENGTH/2.0, 0.0 ),
-                               PVector( PENALTY_AREA_LENGTH
+        static RArea pen_area( PVector( +ServerParam::PITCH_LENGTH/2
+                                        - ServerParam::PENALTY_AREA_LENGTH/2.0,
+                                        0.0 ),
+                               PVector( ServerParam::PENALTY_AREA_LENGTH
                                         + ServerParam::instance().ballSize() * 2,
-                                        PENALTY_AREA_WIDTH
+                                        ServerParam::PENALTY_AREA_WIDTH
                                         + ServerParam::instance().ballSize() * 2 ) ) ;
         if ( pen_area.inArea( pos ) )
         {
@@ -328,7 +366,7 @@ Referee::crossGoalLine( const Side side,
     }
 
     if ( std::fabs( M_stadium.ball().pos().x )
-         <= PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() )
+         <= ServerParam::PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() )
     {
         // ball hasn't crossed gline
         //          std::cout << time << ": hasn't crossed\n";
@@ -336,7 +374,7 @@ Referee::crossGoalLine( const Side side,
     }
 
     if ( std::fabs( prev_ball_pos.x )
-         > PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() )
+         > ServerParam::PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() )
     {
         // ball already over the gline
         //          std::cout << time << ": already crossed\n";
@@ -352,7 +390,7 @@ Referee::crossGoalLine( const Side side,
 
     if ( std::fabs( prev_ball_pos.y ) > ( ServerParam::instance().goalWidth()*0.5
                                           + ServerParam::instance().goalPostRadius() )
-         && std::fabs( prev_ball_pos.x ) > PITCH_LENGTH*0.5 )
+         && std::fabs( prev_ball_pos.x ) > ServerParam::PITCH_LENGTH*0.5 )
     {
         // then the only goal that could have been scored would be
         // from going behind the goal post.  I'm pretty sure that
@@ -369,8 +407,8 @@ Referee::crossGoalLine( const Side side,
     double gradient = delta_y / delta_x;
     double offset = prev_ball_pos.y - gradient * prev_ball_pos.x;
 
-    // determine y for x = PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() * -side
-    double x = ( PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() ) * -side;
+    // determine y for x = ServerParam::PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() * -side
+    double x = ( ServerParam::PITCH_LENGTH*0.5 + ServerParam::instance().ballSize() ) * -side;
     double y_intercept = gradient * x + offset;
 
     //      std::cout << time << ": prev = " << prev_ball_pos << std::endl;
@@ -492,10 +530,12 @@ TimeRef::analyse()
 void
 Referee::placePlayersInTheirField()
 {
-    static const RArea fld_l( PVector( -PITCH_LENGTH/4, 0.0 ),
-                              PVector( PITCH_LENGTH/2, PITCH_WIDTH ) );
-    static const RArea fld_r( PVector( PITCH_LENGTH/4, 0.0),
-                              PVector( PITCH_LENGTH/2, PITCH_WIDTH ) );
+    static const RArea fld_l( PVector( - ServerParam::PITCH_LENGTH/4, 0.0 ),
+                              PVector( ServerParam::PITCH_LENGTH/2,
+                                       ServerParam::PITCH_WIDTH ) );
+    static const RArea fld_r( PVector( ServerParam::PITCH_LENGTH/4, 0.0),
+                              PVector( ServerParam::PITCH_LENGTH/2,
+                                       ServerParam::PITCH_WIDTH ) );
 
     const bool kick_off_offside ( ServerParam::instance().kickOffOffside()
                                   && ( M_stadium.playmode() == PM_KickOff_Left
@@ -543,7 +583,7 @@ Referee::placePlayersInTheirField()
         if ( (*it)->team()->side() != M_stadium.kickOffSide() )
         {
             CArea expand_c( PVector( 0.0, 0.0 ),
-                            KICK_OFF_CLEAR_DISTANCE + (*it)->size() );
+                            ServerParam::KICK_OFF_CLEAR_DISTANCE + (*it)->size() );
 
             if ( expand_c.inArea( (*it)->pos() ) )
             {
@@ -566,17 +606,16 @@ Referee::clearPlayersFromBall( const Side side )
 
     const double clear_dist = ( ( pm == PM_Back_Pass_Left
                                   || pm == PM_Back_Pass_Right )
-                                ? GOAL_AREA_LENGTH
-                                : KICK_OFF_CLEAR_DISTANCE );
+                                ? ServerParam::GOAL_AREA_LENGTH
+                                : ServerParam::KICK_OFF_CLEAR_DISTANCE );
     const bool indirect = ( pm == PM_IndFreeKick_Left
                             || pm == PM_IndFreeKick_Right );
+    const double goal_half_width = ServerParam::instance().goalWidth()*0.5;
 
-    bool exist = false;
-    int loop = 10;
     const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    do
+    for ( int loop = 0; loop < 10; ++loop )
     {
-        exist = false;
+        bool exist = false;
         for ( Stadium::PlayerCont::iterator it = M_stadium.players().begin();
               it != end;
               ++it )
@@ -590,8 +629,8 @@ Referee::clearPlayersFromBall( const Side side )
                  || (*it)->team()->side() == side )
             {
                 if ( indirect
-                     && std::fabs( (*it)->pos().x ) >= PITCH_LENGTH*0.5
-                     && std::fabs( (*it)->pos().y ) <= GOAL_WIDTH*0.5 )
+                     && std::fabs( (*it)->pos().x ) >= ServerParam::PITCH_LENGTH*0.5
+                     && std::fabs( (*it)->pos().y ) <= goal_half_width )
                 {
                     // defender is allowed to stand on the goal line.
                     continue;
@@ -603,17 +642,27 @@ Referee::clearPlayersFromBall( const Side side )
                 {
                     PVector new_pos = clear_area.nearestEdge( (*it)->pos() );
                     if ( indirect
-                         && std::fabs( new_pos.x ) > PITCH_LENGTH*0.5
-                         && std::fabs( new_pos.y ) < GOAL_WIDTH*0.5 )
+                         && std::fabs( new_pos.x ) > ServerParam::PITCH_LENGTH*0.5
+                         && std::fabs( new_pos.y ) < goal_half_width )
                     {
                         double tangent
                             = ( new_pos.y - M_stadium.ball().pos().y )
                             / ( new_pos.x - M_stadium.ball().pos().x );
-                        new_pos.x = PITCH_LENGTH*0.5
+                        new_pos.x = ServerParam::PITCH_LENGTH*0.5
                             * ( new_pos.x > 0.0 ? 1.0 : -1.0 );
                         new_pos.y = M_stadium.ball().pos().y
                             + tangent * ( new_pos.x - M_stadium.ball().pos().x );
                     }
+                    else if ( std::fabs( new_pos.x ) > ( ServerParam::PITCH_LENGTH*0.5
+                                                         + ServerParam::PITCH_MARGIN )
+                              && std::fabs( new_pos.x ) > ( ServerParam::PITCH_WIDTH*0.5
+                                                            + ServerParam::PITCH_MARGIN ) )
+                    {
+                        new_pos -= M_stadium.ball().pos();
+                        new_pos.rotate( 180.0 );
+                        new_pos += M_stadium.ball().pos();
+                    }
+
                     (*it)->place( new_pos );
                     exist = true;
                 }
@@ -624,9 +673,11 @@ Referee::clearPlayersFromBall( const Side side )
         {
             M_stadium.collisions();
         }
-        --loop;
+        else
+        {
+            break;
+        }
     }
-    while ( exist && loop > 0 );
 }
 
 //**********
@@ -674,6 +725,8 @@ BallStuckRef::analyse()
 //**********
 // OffsideRef
 //**********
+
+const int OffsideRef::AFTER_OFFSIDE_WAIT = 30;
 
 void
 OffsideRef::kickTaken( const Player & kicker )
@@ -948,25 +1001,35 @@ OffsideRef::callOffside()
 
     PVector pos;
 
-    static RArea pt( PVector( 0.0, 0.0 ),
-                     PVector( PITCH_LENGTH - 2.0*ServerParam::instance().cornerKickMargin(),
-                              PITCH_WIDTH - 2.0*ServerParam::instance().cornerKickMargin() ) );
-    static RArea g_l( PVector( -PITCH_LENGTH/2.0 + GOAL_AREA_LENGTH/2.0, 0.0 ),
-                      PVector( GOAL_AREA_LENGTH, GOAL_AREA_WIDTH ) );
-    static RArea g_r( PVector( +PITCH_LENGTH/2.0 - GOAL_AREA_LENGTH/2.0, 0.0 ),
-                      PVector( GOAL_AREA_LENGTH, GOAL_AREA_WIDTH ) );
+    static const RArea pt( PVector( 0.0, 0.0 ),
+                           PVector( ServerParam::PITCH_LENGTH
+                                    - 2.0*ServerParam::instance().cornerKickMargin(),
+                                    ServerParam::PITCH_WIDTH
+                                    - 2.0*ServerParam::instance().cornerKickMargin() ) );
+    static const RArea g_l( PVector( - ServerParam::PITCH_LENGTH/2.0
+                                     + ServerParam::GOAL_AREA_LENGTH/2.0,
+                                     0.0 ),
+                            PVector( ServerParam::GOAL_AREA_LENGTH,
+                                     ServerParam::GOAL_AREA_WIDTH ) );
+    static const RArea g_r( PVector( + ServerParam::PITCH_LENGTH/2.0
+                                     - ServerParam::GOAL_AREA_LENGTH/2.0,
+                                     0.0 ),
+                            PVector( ServerParam::GOAL_AREA_LENGTH,
+                                     ServerParam::GOAL_AREA_WIDTH ) );
 
     M_after_offside_time = 0;
 
-    if ( M_offside_pos.x > PITCH_LENGTH/2.0 || g_r.inArea( M_offside_pos ) )
+    if ( M_offside_pos.x > ServerParam::PITCH_LENGTH/2.0
+         || g_r.inArea( M_offside_pos ) )
     {
-        pos.x = +PITCH_LENGTH/2.0-GOAL_AREA_LENGTH;
-        pos.y = ( M_offside_pos.y > 0 ? 1 : -1 ) * GOAL_AREA_WIDTH/2.0;
+        pos.x = + ServerParam::PITCH_LENGTH/2.0 - ServerParam::GOAL_AREA_LENGTH;
+        pos.y = ( M_offside_pos.y > 0 ? 1 : -1 ) * ServerParam::GOAL_AREA_WIDTH/2.0;
     }
-    else if ( M_offside_pos.x < -PITCH_LENGTH/2.0 || g_l.inArea( M_offside_pos ) )
+    else if ( M_offside_pos.x < - ServerParam::PITCH_LENGTH/2.0
+              || g_l.inArea( M_offside_pos ) )
     {
-        pos.x = -PITCH_LENGTH/2.0+GOAL_AREA_LENGTH;
-        pos.y = ( M_offside_pos.y > 0 ? 1 : -1 ) * GOAL_AREA_WIDTH/2.0;
+        pos.x = - ServerParam::PITCH_LENGTH/2.0 + ServerParam::GOAL_AREA_LENGTH;
+        pos.y = ( M_offside_pos.y > 0 ? 1 : -1 ) * ServerParam::GOAL_AREA_WIDTH/2.0;
     }
     else if ( ! pt.inArea( M_offside_pos ) )
     {
@@ -1011,14 +1074,16 @@ OffsideRef::checkPlayerAfterOffside()
 
     if ( M_stadium.playmode() == PM_OffSide_Right )
     {
-        ce += PVector( PITCH_LENGTH/4 + M_offside_pos.x/2, 0.0 );
-        si += PVector( PITCH_LENGTH/2 - M_offside_pos.x, PITCH_WIDTH );
+        ce += PVector( ServerParam::PITCH_LENGTH/4 + M_offside_pos.x/2, 0.0 );
+        si += PVector( ServerParam::PITCH_LENGTH/2 - M_offside_pos.x,
+                       ServerParam::PITCH_WIDTH );
         offsideside = RIGHT;
     }
     else if ( M_stadium.playmode() == PM_OffSide_Left )
     {
-        ce += PVector( -PITCH_LENGTH/4 + M_offside_pos.x/2, 0.0 );
-        si += PVector( PITCH_LENGTH/2 + M_offside_pos.x, PITCH_WIDTH );
+        ce += PVector( - ServerParam::PITCH_LENGTH/4 + M_offside_pos.x/2, 0.0 );
+        si += PVector( ServerParam::PITCH_LENGTH/2 + M_offside_pos.x,
+                       ServerParam::PITCH_WIDTH );
         offsideside = LEFT;
     }
     else
@@ -1065,6 +1130,8 @@ OffsideRef::checkPlayerAfterOffside()
 // FreeKickRef
 //**********
 
+const int FreeKickRef::AFTER_FREE_KICK_FAULT_WAIT = 30;
+
 void
 FreeKickRef::kickTaken( const Player & kicker )
 {
@@ -1096,18 +1163,21 @@ FreeKickRef::kickTaken( const Player & kicker )
             {
                 if ( ServerParam::instance().properGoalKicks() )
                 {
-                    awardGoalKick( M_kick_taker->team()->side(), M_stadium.ball().pos() );
+                    awardGoalKick( M_kick_taker->team()->side(),
+                                   M_stadium.ball().pos() );
                 }
             }
             else if ( M_kick_taker_dashes != M_kick_taker->dashCount() )
             {
                 if ( ServerParam::instance().freeKickFaults() )
                 {
-                    callFreeKickFault( kicker.team()->side(), M_stadium.ball().pos() );
+                    callFreeKickFault( kicker.team()->side(),
+                                       M_stadium.ball().pos() );
                 }
                 else if ( ServerParam::instance().properGoalKicks() )
                 {
-                    awardGoalKick( M_kick_taker->team()->side(), M_stadium.ball().pos() );
+                    awardGoalKick( M_kick_taker->team()->side(),
+                                   M_stadium.ball().pos() );
                 }
             }
             // else it's part of a compound kick
@@ -1429,11 +1499,17 @@ FreeKickRef::tooManyGoalKicks()
 void
 FreeKickRef::placePlayersForGoalkick()
 {
-    static RArea p_l( PVector( -PITCH_LENGTH/2+PENALTY_AREA_LENGTH/2.0, 0.0 ),
-                      PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH ) );
-    static RArea p_r( PVector( +PITCH_LENGTH/2-PENALTY_AREA_LENGTH/2.0, 0.0 ),
-                      PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH ) );
-    RArea* p_area;
+    static const RArea p_l( PVector( - ServerParam::PITCH_LENGTH/2
+                                     + ServerParam::PENALTY_AREA_LENGTH/2.0,
+                                     0.0 ),
+                            PVector( ServerParam::PENALTY_AREA_LENGTH,
+                                     ServerParam::PENALTY_AREA_WIDTH ) );
+    static const RArea p_r( PVector( + ServerParam::PITCH_LENGTH/2
+                                     - ServerParam::PENALTY_AREA_LENGTH/2.0,
+                                     0.0 ),
+                            PVector( ServerParam::PENALTY_AREA_LENGTH,
+                                     ServerParam::PENALTY_AREA_WIDTH ) );
+    const RArea * p_area;
 
     int oppside;
 
@@ -1457,7 +1533,7 @@ FreeKickRef::placePlayersForGoalkick()
             continue;
         if ( (*p)->team()->side() == oppside )
         {
-            const Value size = (*p)->playerType()->playerSize();
+            const double size = (*p)->playerType()->playerSize();
             RArea expand_area( p_area->left - size,
                                p_area->right + size,
                                p_area->top - size,
@@ -1466,20 +1542,19 @@ FreeKickRef::placePlayersForGoalkick()
             if ( expand_area.inArea( (*p)->pos() ) )
             {
                 PVector new_pos = expand_area.nearestEdge( (*p)->pos() );
-                if ( new_pos.x * oppside >= PITCH_LENGTH/2 )
+                if ( new_pos.x * oppside >= ServerParam::PITCH_LENGTH/2 )
                 {
-                    new_pos.x = (PITCH_LENGTH/2 - PENALTY_AREA_LENGTH) * oppside;
+                    new_pos.x
+                        = ( ServerParam::PITCH_LENGTH/2
+                            - ServerParam::PENALTY_AREA_LENGTH
+                            - size )
+                        * oppside;
                 }
 
                 (*p)->moveTo( new_pos );
             }
         }
     }
-
-//     if ( ! p_area->inArea( M_stadium.ball().pos() ) )
-//     {
-//         M_stadium.check_player_in_field();
-//     }
 }
 
 
@@ -1487,6 +1562,7 @@ FreeKickRef::placePlayersForGoalkick()
 // TouchRef
 //**********
 
+const int TouchRef::AFTER_GOAL_WAIT = 50;
 
 void
 TouchRef::analyse()
@@ -1534,7 +1610,8 @@ TouchRef::analyseImpl()
          && M_stadium.playmode() != PM_TimeOver )
     {
         if ( std::fabs( M_stadium.ball().pos().x )
-             > PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
+             > ServerParam::PITCH_LENGTH * 0.5
+             + ServerParam::instance().ballSize() )
         {
             // check for goal kick or corner kick
             Side side = NEUTRAL;
@@ -1544,7 +1621,8 @@ TouchRef::analyseImpl()
             }
 
             if ( M_stadium.ball().pos().x
-                 > PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
+                 > ServerParam::PITCH_LENGTH * 0.5
+                 + ServerParam::instance().ballSize() )
             {
                 if ( side == RIGHT )
                 {
@@ -1563,7 +1641,8 @@ TouchRef::analyseImpl()
                 }
             }
             else if ( M_stadium.ball().pos().x
-                      < PITCH_LENGTH * 0.5 - ServerParam::instance().ballSize() )
+                      < ServerParam::PITCH_LENGTH * 0.5
+                      - ServerParam::instance().ballSize() )
             {
                 if ( side == LEFT )
                 {
@@ -1583,7 +1662,8 @@ TouchRef::analyseImpl()
             }
         }
         else if ( std::fabs( M_stadium.ball().pos().y )
-                  > PITCH_WIDTH * 0.5 + ServerParam::instance().ballSize() )
+                  > ServerParam::PITCH_WIDTH * 0.5
+                  + ServerParam::instance().ballSize() )
         {
             // check for kick in.
 
@@ -1683,13 +1763,13 @@ TouchRef::checkGoal()
 
     // FIFA rules:  Ball has to be completely outside of the pitch to be considered out
     //  	static RArea pt( PVector(0.0,0.0),
-    //                       PVector( PITCH_LENGTH
+    //                       PVector( ServerParam::PITCH_LENGTH
     //                                + ServerParam::instance().ballSize() * 2,
-    //                                PITCH_WIDTH
+    //                                ServerParam::PITCH_WIDTH
     //                                + ServerParam::instance().ballSize() * 2 ) );
 
     if ( std::fabs( M_stadium.ball().pos().x )
-         <= PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
+         <= ServerParam::PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
     {
         return false;
     }
@@ -1982,6 +2062,8 @@ KeepawayRef::resetField()
 // CatchRef
 //************
 
+const int CatchRef::AFTER_BACKPASS_WAIT = 30;
+const int CatchRef::AFTER_CATCH_FAULT_WAIT = 30;
 
 void
 CatchRef::kickTaken( const Player & kicker )
@@ -2165,19 +2247,25 @@ CatchRef::moveOutOfGoalArea( const Side side,
 {
     if ( side != RIGHT )
     {
-        if ( ball_pos.x <= -PITCH_LENGTH*0.5 + GOAL_AREA_LENGTH
-             && std::fabs( ball_pos.y ) <= GOAL_AREA_WIDTH *0.5 )
+        if ( ball_pos.x <= ( - ServerParam::PITCH_LENGTH*0.5
+                             + ServerParam::GOAL_AREA_LENGTH )
+             && std::fabs( ball_pos.y ) <= ServerParam::GOAL_AREA_WIDTH *0.5 )
         {
-            ball_pos.x = -PITCH_LENGTH*0.5 + GOAL_AREA_LENGTH + EPS;
+            ball_pos.x
+                = - ServerParam::PITCH_LENGTH*0.5
+                + ServerParam::GOAL_AREA_LENGTH + EPS;
         }
     }
 
     if ( side != LEFT )
     {
-        if ( ball_pos.x >= PITCH_LENGTH*0.5 - GOAL_AREA_LENGTH
-             && std::fabs( ball_pos.y ) <= GOAL_AREA_WIDTH *0.5 )
+        if ( ball_pos.x >= ( ServerParam::PITCH_LENGTH*0.5
+                             - ServerParam::GOAL_AREA_LENGTH )
+             && std::fabs( ball_pos.y ) <= ServerParam::GOAL_AREA_WIDTH *0.5 )
         {
-            ball_pos.x = PITCH_LENGTH*0.5 - GOAL_AREA_LENGTH - EPS;
+            ball_pos.x
+                = ServerParam::PITCH_LENGTH*0.5
+                - ServerParam::GOAL_AREA_LENGTH - EPS;
         }
     }
 
@@ -2288,7 +2376,9 @@ PenaltyRef::analyseImpl()
                  && (*p)->team()->side() == side
                  && (*p)->isGoalie() )
             {
-                (*p)->moveTo( PVector( -M_pen_side * (PITCH_LENGTH/2-10), 10 ) );
+                (*p)->moveTo( PVector( -M_pen_side
+                                       * (ServerParam::PITCH_LENGTH/2-10),
+                                       10 ) );
             }
         }
 
@@ -2462,9 +2552,11 @@ PenaltyRef::handleTimer( const bool left_move_check,
             M_stadium.set_ball( M_pen_side, M_stadium.ball().pos() );
         }
         else if ( std::fabs( M_stadium.ball().pos().x )
-                 > PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize()
+                 > ServerParam::PITCH_LENGTH * 0.5
+                  + ServerParam::instance().ballSize()
                  || std::fabs( M_stadium.ball().pos().y )
-                 > PITCH_WIDTH * 0.5 + ServerParam::instance().ballSize() )
+                 > ServerParam::PITCH_WIDTH * 0.5
+                  + ServerParam::instance().ballSize() )
         {
             if ( M_bDebug )
                 std::cerr << "MISSED" << std::endl;
@@ -2712,7 +2804,9 @@ PenaltyRef::penalty_init()
                     : PM_PenaltySetup_Right );
     M_stadium.placeBall( pm,
                          NEUTRAL,
-                         PVector( - M_pen_side * ( PITCH_LENGTH/2 - ServerParam::instance().penDistX() ),
+                         PVector( - M_pen_side
+                                  * ( ServerParam::PITCH_LENGTH/2
+                                      - ServerParam::instance().penDistX() ),
                                   0.0 ) );
 }
 
@@ -2803,7 +2897,8 @@ PenaltyRef::penalty_check_score()
             std::cerr << "Final score: "
                       << M_stadium.teamLeft().penaltyPoint() << "-"
                       << M_stadium.teamRight().penaltyPoint() << std::endl;
-            if ( M_stadium.teamLeft().penaltyPoint() > M_stadium.teamRight().penaltyPoint() )
+            if ( M_stadium.teamLeft().penaltyPoint()
+                 > M_stadium.teamRight().penaltyPoint() )
             {
                 M_stadium.say( "penalty_winner_l" );
             }
@@ -2919,7 +3014,7 @@ PenaltyRef::penalty_check_players( const Side side )
             }
 
             CArea c( PVector( 0.0, 0.0 ),
-                     KICK_OFF_CLEAR_DISTANCE
+                     ServerParam::KICK_OFF_CLEAR_DISTANCE
                      - (*p)->size() );
             if ( ! c.inArea( (*p)->pos() ) )
             {
@@ -2954,8 +3049,8 @@ PenaltyRef::penalty_check_players( const Side side )
             }
         }
         // if goalie not outside field, check fails
-        else if ( std::fabs( posGoalie.x ) < PITCH_LENGTH/2.0 - 1.5
-                  || std::fabs( posGoalie.y ) < PENALTY_AREA_WIDTH/2.0 - 1.5 )
+        else if ( std::fabs( posGoalie.x ) < ServerParam::PITCH_LENGTH/2.0 - 1.5
+                  || std::fabs( posGoalie.y ) < ServerParam::PENALTY_AREA_WIDTH/2.0 - 1.5 )
         {
             if ( M_bDebug )
                 std::cerr << "side " << side << " goalie not correct "
@@ -2989,8 +3084,9 @@ PenaltyRef::penalty_check_players( const Side side )
              && M_stadium.playmode() != PM_PenaltyTaken_Right )
         {
             if ( std::fabs( posGoalie.x )
-                 < PITCH_LENGTH/2.0 - ServerParam::instance().penMaxGoalieDistX()
-                 || std::fabs( posGoalie.y ) > GOAL_WIDTH/2.0 )
+                 < ServerParam::PITCH_LENGTH/2.0 - ServerParam::instance().penMaxGoalieDistX()
+                 || std::fabs( posGoalie.y )
+                 > ServerParam::instance().goalWidth()*0.5 )
             {
                 if ( M_bDebug )
                     std::cerr << "side " << side << " goalie to catch not correct "
@@ -3053,8 +3149,8 @@ PenaltyRef::placeTakerTeamPlayers()
                              ? M_last_taker
                              : getCandidateTaker() );
 
-    const PVector goalie_wait_pos_b( -M_pen_side * ( PITCH_LENGTH / 2 + 2.0 ), +25.0 );
-    const PVector goalie_wait_pos_t( -M_pen_side * ( PITCH_LENGTH / 2 + 2.0 ), -25.0 );
+    const PVector goalie_wait_pos_b( -M_pen_side * ( ServerParam::PITCH_LENGTH / 2 + 2.0 ), +25.0 );
+    const PVector goalie_wait_pos_t( -M_pen_side * ( ServerParam::PITCH_LENGTH / 2 + 2.0 ), -25.0 );
 
     // then replace the players from the specified side
     const Stadium::PlayerCont::iterator end = M_stadium.players().end();
@@ -3072,7 +3168,7 @@ PenaltyRef::placeTakerTeamPlayers()
             if ( ! bPenTaken
                  && taker->pos().distance( M_stadium.ball().pos() ) > 2.0 )
             {
-                //PVector new_pos( -M_pen_side * ( PITCH_LENGTH/2 - ServerParam::instance().pen_dist_x - 2.0 ),
+                //PVector new_pos( -M_pen_side * ( ServerParam::PITCH_LENGTH/2 - ServerParam::instance().pen_dist_x - 2.0 ),
                 //0.0 );
                 CArea c( M_stadium.ball().pos(), 2.0 );
                 //(*p)->moveTo( new_pos );
@@ -3093,7 +3189,7 @@ PenaltyRef::placeTakerTeamPlayers()
             else // not goalie
             {
                 CArea center( PVector( 0.0, 0.0 ),
-                              KICK_OFF_CLEAR_DISTANCE
+                              ServerParam::KICK_OFF_CLEAR_DISTANCE
                               - (*p)->size()
                               //- ServerParam::instance().pspeed_max
                               );
@@ -3114,8 +3210,8 @@ PenaltyRef::placeOtherTeamPlayers()
                              || M_stadium.playmode() == PM_PenaltyTaken_Left );
     const double goalie_line
         = ( M_pen_side == LEFT
-            ? -PITCH_LENGTH/2.0 + ServerParam::instance().penMaxGoalieDistX()
-            : +PITCH_LENGTH/2.0 - ServerParam::instance().penMaxGoalieDistX() );
+            ? - ServerParam::PITCH_LENGTH/2.0 + ServerParam::instance().penMaxGoalieDistX()
+            : + ServerParam::PITCH_LENGTH/2.0 - ServerParam::instance().penMaxGoalieDistX() );
 
     const Stadium::PlayerCont::iterator end = M_stadium.players().end();
     for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
@@ -3151,7 +3247,7 @@ PenaltyRef::placeOtherTeamPlayers()
         else // not goalie
         {
             CArea center( PVector( 0.0, 0.0 ),
-                          KICK_OFF_CLEAR_DISTANCE
+                          ServerParam::KICK_OFF_CLEAR_DISTANCE
                           - (*p)->size()
                           //- ServerParam::instance().pspeed_max
                           );

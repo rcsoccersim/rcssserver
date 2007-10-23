@@ -61,6 +61,11 @@ VisualSender::~VisualSender()
 //===================================================================
 */
 
+const double VisualSenderPlayer::UNUM_FAR_LENGTH = 20.0;
+const double VisualSenderPlayer::UNUM_TOOFAR_LENGTH = 40.0;
+const double VisualSenderPlayer::TEAM_FAR_LENGTH = 40.0;
+const double VisualSenderPlayer::TEAM_TOOFAR_LENGTH = 60.0;
+
 VisualSenderPlayer::Factory&
 VisualSenderPlayer::factory()
 {
@@ -186,8 +191,8 @@ VisualSenderPlayerV1::sendLines()
     int line_count = 0;
     int max_line_count;
     int min_line_count;
-    if ( std::fabs( self().pos().x ) < PITCH_LENGTH*0.5
-         && std::fabs( self().pos().y ) < PITCH_WIDTH*0.5 )
+    if ( std::fabs( self().pos().x ) < ServerParam::PITCH_LENGTH*0.5
+         && std::fabs( self().pos().y ) < ServerParam::PITCH_WIDTH*0.5 )
     {
         min_line_count = max_line_count = 1;
     }
@@ -497,47 +502,47 @@ VisualSenderPlayerV1::sendLine( const PObject & line )
       x position. */
 
     //! left line
-    if ( line.pos().x == -PITCH_LENGTH*0.5 )
+    if ( line.pos().x == - ServerParam::PITCH_LENGTH*0.5 )
     {
         line_normal = M_PI;
         if ( self().pos().x < line.pos().x )
             line_normal = 0.0;
         player_2_line = line.pos().x - self().pos().x;
-        line_start = -PITCH_WIDTH*0.5;
-        line_stop = PITCH_WIDTH*0.5;
+        line_start = - ServerParam::PITCH_WIDTH*0.5;
+        line_stop = ServerParam::PITCH_WIDTH*0.5;
         vert = true;
     }
     //! right line
-    else if ( line.pos().x == PITCH_LENGTH*0.5 )
+    else if ( line.pos().x == ServerParam::PITCH_LENGTH*0.5 )
     {
         line_normal = 0.0;
         if( self().pos().x > line.pos().x )
             line_normal = M_PI;
         player_2_line = line.pos().x - self().pos().x;
-        line_start = -PITCH_WIDTH*0.5;
-        line_stop = PITCH_WIDTH*0.5;
+        line_start = - ServerParam::PITCH_WIDTH*0.5;
+        line_stop = ServerParam::PITCH_WIDTH*0.5;
         vert = true;
     }
     //! top line
-    else if ( line.pos().x == -PITCH_WIDTH*0.5 )
+    else if ( line.pos().x == - ServerParam::PITCH_WIDTH*0.5 )
     {
         line_normal = -M_PI*0.5;
         if ( self().pos().y < line.pos().x )
             line_normal = M_PI*0.5;
         player_2_line = line.pos().x - self().pos().y;
-        line_start = -PITCH_LENGTH*0.5;
-        line_stop = PITCH_LENGTH*0.5;
+        line_start = - ServerParam::PITCH_LENGTH*0.5;
+        line_stop = ServerParam::PITCH_LENGTH*0.5;
         vert = false;
     }
     //! bottom line
-    else if ( line.pos().x == PITCH_WIDTH*0.5 )
+    else if ( line.pos().x == ServerParam::PITCH_WIDTH*0.5 )
     {
         line_normal = M_PI*0.5;
         if ( self().pos().y > line.pos().x )
             line_normal = -M_PI*0.5;
         player_2_line = line.pos().x - self().pos().y;
-        line_start = -PITCH_LENGTH*0.5;
-        line_stop = PITCH_LENGTH*0.5;
+        line_start = - ServerParam::PITCH_LENGTH*0.5;
+        line_stop = ServerParam::PITCH_LENGTH*0.5;
         vert = false;
     }
     else

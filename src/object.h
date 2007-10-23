@@ -63,8 +63,8 @@
  */
 class PVector {
 public:
-    Value	x;
-    Value	y;
+    double x;
+    double y;
 
     explicit
     PVector( const double & xx = 0.0, const double & yy = 0.0 )
@@ -105,78 +105,79 @@ public:
           return *this;
       }
 
-    const PVector& operator*=( const Value & a )
+    const PVector& operator*=( const double & a )
       {
           x *= a;
           y *= a;
           return *this;
       }
 
-    const PVector& operator/=( const Value & a )
+    const PVector& operator/=( const double & a )
       {
           x /= a;
           y /= a;
           return *this;
       }
 
-    Value r2() const
+    double r2() const
       {
           return x*x + y*y;
       }
 
-    Value r() const
+    double r() const
       {
           return std::sqrt( x*x + y*y );
       }
 
-    Value th() const
+    double th() const
       {
           return ( (x == 0.0) && ( y == 0.0 )
                    ? 0.0
                    : std::atan2( y, x ) );
       }
 
-    const PVector & normalize( const Value & l = 1.0 )
+    const PVector & normalize( const double & l = 1.0 )
       {
           *this *= ( l / std::max( r(), EPS ) );
           return *this;
       }
 
-    Value distance2( const PVector & orig ) const
+    double distance2( const PVector & orig ) const
       {
           return ( PVector( *this ) -= orig ).r2();
       }
 
-    Value distance( const PVector & orig ) const
+    double distance( const PVector & orig ) const
       {
           return ( PVector( *this ) -= orig ).r();
       }
 
-    Value angle() const
+    double angle() const
       {
           return th();
       }
 
-    Value angle( const PVector & dir ) const
+    double angle( const PVector & dir ) const
       {
-          Angle ang = dir.th() - this->th();
+          double ang = dir.th() - this->th();
           return normalize_angle( ang );
       }
 
     const
-    PVector & rotate( const Angle & ang );
+    PVector & rotate( const double & ang );
 
-    Value vangle( const PVector & target,
-                  const PVector& origin ) const;
+    double vangle( const PVector & target,
+                   const PVector& origin ) const;
 
-    Value vangle( const PVector & target,
-                  const Angle & origin ) const;
+    double vangle( const PVector & target,
+                   const double & origin ) const;
 
     bool between( const PVector & begin,
                   const PVector & end ) const;
 
     static
-    PVector fromPolar( const Value & r, const Angle & ang )
+    PVector fromPolar( const double & r,
+                       const double & ang )
       {
           return PVector( r * std::cos( ang ),
                           r * std::sin( ang ) );
@@ -186,28 +187,32 @@ public:
 
 inline
 bool
-operator==( const PVector & lhs, const PVector & rhs )
+operator==( const PVector & lhs,
+            const PVector & rhs )
 {
     return ( lhs.x == rhs.x && lhs.y == rhs.y );
 }
 
 inline
 bool
-operator!=( const PVector & lhs, const PVector & rhs )
+operator!=( const PVector & lhs,
+            const PVector & rhs )
 {
     return !( lhs == rhs );
 }
 
 inline
 PVector
-operator+( const PVector & lhs, const PVector & rhs )
+operator+( const PVector & lhs,
+           const PVector & rhs )
 {
     return PVector( lhs ) += rhs;
 }
 
 inline
 PVector
-operator-( const PVector & lhs, const PVector & rhs )
+operator-( const PVector & lhs,
+           const PVector & rhs )
 {
     return PVector( lhs ) -= rhs;
 }
@@ -215,7 +220,8 @@ operator-( const PVector & lhs, const PVector & rhs )
 
 inline
 std::ostream &
-operator<<( std::ostream & o, const PVector & v )
+operator<<( std::ostream & o,
+            const PVector & v )
 {
     return o << "#V[" << v.x << "," << v.y << "]";
 }
@@ -223,17 +229,17 @@ operator<<( std::ostream & o, const PVector & v )
 
 
 inline
-Value
+double
 PVector::vangle( const PVector & target,
-                 const PVector& origin ) const
+                 const PVector & origin ) const
 {
     return ( origin - *this ).angle( target - *this );
 }
 
 inline
-Value
+double
 PVector::vangle( const PVector & target,
-                 const Angle & origin ) const
+                 const double & origin ) const
 {
     return normalize_angle( ( target - *this ).angle() - origin );
 }
@@ -248,15 +254,15 @@ PVector::vangle( const PVector & target,
  */
 class RArea {
 public:
-    Value left;
-    Value right;
-    Value top;
-    Value bottom;
+    double left;
+    double right;
+    double top;
+    double bottom;
 
-    RArea( const Value & l,
-           const Value & r,
-           const Value & t,
-           const Value & b )
+    RArea( const double & l,
+           const double & r,
+           const double & t,
+           const double & b )
         : left( l ),
           right( r ),
           top( t ),
@@ -306,11 +312,11 @@ public:
 class CArea {
 private:
     PVector M_center;
-    Value M_radius;
+    double M_radius;
 
 public:
     CArea( const PVector & center,
-           const Value & radius )
+           const double & radius )
         : M_center( center ),
           M_radius( radius )
       { }
@@ -322,7 +328,7 @@ public:
       }
 
     const
-    Value & radius() const
+    double & radius() const
       {
           return M_radius;
       }
@@ -363,7 +369,7 @@ operator!=( const CArea & lhs,
 //            PVector & inter );
 //CArea
 //nearestPost( const PVector & pos,
-//             const Value & size );
+//             const double & size );
 
 /*
  *===================================================================
@@ -384,20 +390,20 @@ public:
 
 private:
 
-    static TheNumber S_object_count;
+    static int S_object_count;
 
     const PObject::obj_type M_object_type;
-    const ID M_id;
+    const int M_id;
 
     std::string M_name;
     std::string M_short_name;
     std::string M_close_name;
     std::string M_short_close_name;
 
-    const Value M_obj_ver;
+    const double M_obj_ver;
 
 protected:
-    Value	M_size; //! object's radiuos value
+    double	M_size; //! object's radiuos value
 
     PVector M_pos;
     //Angle M_angle;
@@ -418,21 +424,21 @@ public:
              const std::string & close_name,
              const std::string & short_close_name,
              const PVector& p = PVector( 0.0,0.0 ),
-             const Value & v = 3.0 );
+             const double & v = 3.0 );
 
     virtual
     ~PObject()
       { }
 
-//     void Set( const PVector & p,
-//               const Value & s )
-//       {
-//           pos = p;
-//           size = s;
-//       }
+    //     void Set( const PVector & p,
+    //               const double & s )
+    //       {
+    //           pos = p;
+    //           size = s;
+    //       }
 
 
-    ID id() const
+    int id() const
       {
           return M_id;
       }
@@ -461,13 +467,13 @@ public:
       }
 
     const
-    Value & objVer() const
+    double & objVer() const
       {
           return M_obj_ver;
       }
 
     const
-    Value & size() const
+    double & size() const
       {
           return M_size;
       }
@@ -524,13 +530,13 @@ protected:
     PVector	M_vel;
 
     PVector	M_accel;
-    Value	M_decay;
-    Value	M_randp;
+    double	M_decay;
+    double	M_randp;
 
-    Value M_weight;
-    Value M_max_speed;
+    double M_weight;
+    double M_max_speed;
     // th 6.3.00
-    Value M_max_accel;
+    double M_max_accel;
 
 private:
     //const Weather * M_weather;
@@ -597,12 +603,12 @@ public:
                  const PVector & vel,
                  const PVector & accel );
 
-    void setConstant( const Value & size,
-                      const Value & decay,
-                      const Value & randp,
-                      const Value & weight,
-                      const Value & max_speed,
-                      const Value & max_accel );
+    void setConstant( const double & size,
+                      const double & decay,
+                      const double & randp,
+                      const double & weight,
+                      const double & max_speed,
+                      const double & max_accel );
 
     void push( const PVector & f )
       {
@@ -637,24 +643,16 @@ public:
 protected:
 
     virtual
-    void turnImpl()
-      { }
+    void turnImpl() = 0;
 
     virtual
-    void updateAngle()
-      { }
+    void updateAngle() = 0;
 
     virtual
-    double maxAccel() const
-      {
-          return M_max_accel;
-      }
+    double maxAccel() const = 0;
 
     virtual
-    double maxSpeed() const
-      {
-          return M_max_speed;
-      }
+    double maxSpeed() const = 0;
 
 };
 
@@ -676,6 +674,25 @@ public:
     explicit
     Ball( Stadium * stadium );
 
+    virtual
+    void turnImpl()
+      { }
+
+    virtual
+    void updateAngle()
+      { }
+
+    virtual
+    double maxAccel() const
+      {
+          return M_max_accel;
+      }
+
+    virtual
+    double maxSpeed() const
+      {
+          return M_max_speed;
+      }
 };
 
 
@@ -707,17 +724,18 @@ private:
 
 
 #ifdef	NEW_QSTEP
-    Value	M_dist_qstep_team;
-    Value	M_land_qstep_team;
-    Value	M_dir_qstep_team;
+    double	M_dist_qstep_team;
+    double	M_land_qstep_team;
+    double	M_dir_qstep_team;
 #endif
 
     // pfr 8/14/00: for RC2000 evaluation
-    Value M_prand_factor_team; //factor to multiply prand by
-    Value M_kick_rand_factor_team; //factor to multiple kick_rand by
+    double M_prand_factor_team; //factor to multiply prand by
+    double M_kick_rand_factor_team; //factor to multiple kick_rand by
 
     int M_subs_count;
-    std::map< int, int > ptype_count;
+    std::map< int, int > M_ptype_count;
+    std::map< int, int > M_ptype_used_count;
 
     OnlineCoach *M_olcoach;
 
@@ -735,7 +753,8 @@ public:
     Team( Stadium *stad, const Side side );
     ~Team();
 
-    Player* newPlayer( Value version, int goalie_flag );
+    Player* newPlayer( const double & version,
+                       const bool goalie_flag );
 
     void assignPlayer( int n, Player * player );
     void assignCoach( OnlineCoach * coach );
@@ -813,28 +832,28 @@ public:
       }
 #ifdef NEW_QSTEP
     const
-    Value & distQstepTeam() const
+    double & distQstepTeam() const
       {
           return M_dist_qstep_team;
       }
     const
-    Value & landQstepTeam() const
+    double & landQstepTeam() const
       {
           return M_land_qstep_team;
       }
     const
-    Value & dirQstepTeam() const
+    double & dirQstepTeam() const
       {
           return M_dir_qstep_team;
       }
 #endif
     const
-    Value & prandFactorTeam() const
+    double & prandFactorTeam() const
       {
           return M_prand_factor_team;
       }
     const
-    Value & kickRandFactorTeam() const
+    double & kickRandFactorTeam() const
       {
           return M_kick_rand_factor_team;
       }
@@ -842,6 +861,18 @@ public:
     int subsCount() const
       {
           return M_subs_count;
+      }
+
+    const
+    std::map< int, int > & ptypeCount() const
+      {
+          return M_ptype_count;
+      }
+
+    const
+    std::map< int, int > & ptypeUsedCount() const
+      {
+          return M_ptype_used_count;
       }
 
     int ptypeCount( const int player_type ) const;

@@ -46,17 +46,17 @@ public:
     HetroPlayer( int );
     ~HetroPlayer();
 
-    const Value & playerSpeedMax() const { return player_speed_max; }
-    const Value & staminaIncMax() const { return stamina_inc_max; }
-    const Value & playerDecay() const { return player_decay; }
-    const Value & inertiaMoment() const { return inertia_moment; }
-    const Value & dashPowerRate() const { return dash_power_rate; }
-    const Value & playerSize() const { return player_size; }
-    const Value & kickableMargin() const { return kickable_margin; }
-    const Value & kickRand() const { return kick_rand; }
-    const Value & extraStamina() const { return extra_stamina; }
-    const Value & effortMax() const { return effort_max; }
-    const Value & effortMin() const { return effort_min; }
+    const double & playerSpeedMax() const { return player_speed_max; }
+    const double & staminaIncMax() const { return stamina_inc_max; }
+    const double & playerDecay() const { return player_decay; }
+    const double & inertiaMoment() const { return inertia_moment; }
+    const double & dashPowerRate() const { return dash_power_rate; }
+    const double & playerSize() const { return player_size; }
+    const double & kickableMargin() const { return kickable_margin; }
+    const double & kickRand() const { return kick_rand; }
+    const double & extraStamina() const { return extra_stamina; }
+    const double & effortMax() const { return effort_max; }
+    const double & effortMin() const { return effort_min; }
 
     std::ostream & print( std::ostream & o ) const;
 
@@ -64,20 +64,20 @@ public:
 
 private:
 
-    Value delta( const Value & min,
-                 const Value & max );
+    double delta( const double & min,
+                  const double & max );
 
-    Value player_speed_max;
-    Value stamina_inc_max;
-    Value player_decay;
-    Value inertia_moment;
-    Value dash_power_rate;
-    Value player_size;
-    Value kickable_margin;
-    Value kick_rand;
-    Value extra_stamina;
-    Value effort_max;
-    Value effort_min;
+    double player_speed_max;
+    double stamina_inc_max;
+    double player_decay;
+    double inertia_moment;
+    double dash_power_rate;
+    double player_size;
+    double kickable_margin;
+    double kick_rand;
+    double extra_stamina;
+    double effort_max;
+    double effort_min;
 
 };
 

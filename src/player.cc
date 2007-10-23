@@ -121,7 +121,7 @@ NormalizeNeckAngle( const double & p )
 
 Player::Player( Team *tm,
                 Stadium *stad,
-                ID number )
+                int number )
     : MPObject( stad,
                 PObject::OT_PLAYER,
                 "", "",
@@ -175,7 +175,7 @@ Player::Player( Team *tm,
     M_max_accel = ServerParam::instance().playerAccelMax();
 
     M_pos.x = -( unum() * 3 * tm->side() );
-    M_pos.y = -PITCH_WIDTH/2.0 - 3.0;
+    M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
 
     // pfr 8/14/00: for RC2000 evaluation
     M_kick_rand = ServerParam::instance().kickRand();
@@ -207,8 +207,8 @@ Player::~Player()
 }
 
 void
-Player::init( Value version_tmp,
-              int goalie_flag )
+Player::init( const double & version_tmp,
+              const bool goalie_flag )
 {
     M_enable = true;
 
@@ -244,7 +244,7 @@ Player::init( Value version_tmp,
     M_angle_body_committed = SideDirection( team()->side() );
 
     // pfr 8/14/00: for RC2000 evaluation
-    Value my_prand = ServerParam::instance().playerRand();
+    double my_prand = ServerParam::instance().playerRand();
     if ( ServerParam::instance().teamActuatorNoise() )
     {
         my_prand *= team()->prandFactorTeam();
@@ -310,7 +310,6 @@ Player::setEnable()
 void
 Player::disable()
 {
-    //if ( connected() )
     if ( M_enable )
     {
         std::cout << "A player disconnected : ("
@@ -327,7 +326,7 @@ Player::disable()
     M_enable = false;
     alive = DISABLE;
     M_pos.x = -( unum() * 3 * team()->side() );
-    M_pos.y = -PITCH_WIDTH/2.0 - 3.0;
+    M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
     M_vel.x = 0.0;
     M_vel.y = 0.0;
     M_accel.x = 0.0;
@@ -413,8 +412,8 @@ Player::kick( double power, double dir )
         dir = NormalizeMoment( dir );
 
         PVector tmp;
-        Value dir_diff;
-        Value dist_ball;
+        double dir_diff;
+        double dist_ball;
 
         alive |= KICK;
 
@@ -447,7 +446,7 @@ Player::kick( double power, double dir )
         dist_ball = ( tmp.r() - M_player_type->playerSize()
                       - ServerParam::instance().ballSize() );
 
-        Value eff_power = power * ServerParam::instance().kickPowerRate()
+        double eff_power = power * ServerParam::instance().kickPowerRate()
             * (1.0 - 0.25*dir_diff/M_PI - 0.25*dist_ball/M_player_type->kickableMargin());
 
         PVector accel = PVector::fromPolar( eff_power,
@@ -456,7 +455,7 @@ Player::kick( double power, double dir )
 
         // pfr 8/14/00: for RC2000 evaluation
         // add noise to kick
-        Value maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
+        double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
         PVector kick_noise( drand(-maxrnd, maxrnd), drand(-maxrnd, maxrnd) );
         //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
         //M_stadium->ball->push( kick_noise );
@@ -868,8 +867,8 @@ Player::tackle( double power )
 
                 // pfr 8/14/00: for RC2000 evaluation
                 // add noise to kick
-                Value maxrnd = ( M_kick_rand * power * ( 1 - prob )
-                                 / ServerParam::instance().maxPower() );
+                double maxrnd = ( M_kick_rand * power * ( 1 - prob )
+                                  / ServerParam::instance().maxPower() );
                 PVector kick_noise( drand( -maxrnd, maxrnd ),
                                     drand( -maxrnd, maxrnd ) );
                 //M_stadium->ball->push( kick_noise );
