@@ -152,7 +152,11 @@ HetroPlayer::HetroPlayer()
             break;
         }
     }
-    std::cout << "HetroPlayer creation trial = " << trial << std::endl;
+
+    if ( ServerParam::instance().verboseMode() )
+    {
+        std::cout << "HetroPlayer creation trial = " << trial << std::endl;
+    }
 
     // TODO: print error message and exit the simulator.
     if ( trial > MAX_TRIAL )

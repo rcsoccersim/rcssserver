@@ -817,6 +817,8 @@ OnlineCoach::change_player_types( const char * command )
             return;
         }
 
+        command += n_read;
+
         if ( type < 0
              || PlayerParam::instance().playerTypes() <= type )
         {
@@ -883,7 +885,7 @@ OnlineCoach::change_player_types( const char * command )
 
         for ( int id = 0; id < PlayerParam::instance().playerTypes(); ++id )
         {
-            type_count[id] = 0;
+            type_count[ id ] = 0;
         }
 
         for ( std::map< const Player *, int >::iterator it = new_assign_map.begin();
@@ -897,9 +899,13 @@ OnlineCoach::change_player_types( const char * command )
               it != type_count.end();
               ++it )
         {
-            std::cout << "change_player_types: id = " << it->first
-                      << "  count = " << it->second
-                      << std::endl;
+            if ( ServerParam::instance().verboseMode() )
+            {
+                std::cout << "change_player_types: the number of type "
+                          << it->first << " = " << it->second
+                          << std::endl;
+            }
+
             if ( it->first == 0
                  && ServerParam::instance().allowMultDefaultType() )
             {
@@ -907,7 +913,10 @@ OnlineCoach::change_player_types( const char * command )
             }
             else if ( it->second > PlayerParam::instance().ptMax() )
             {
-                send( "(warning max_of_that_type_on_field)" );
+                char err_msg[128];
+                std::snprintf( err_msg, 128, "(warning max_of_type_%d_on_field)",
+                               it->first );
+                send( err_msg );
                 return;
             }
         }
@@ -924,9 +933,15 @@ OnlineCoach::change_player_types( const char * command )
             return;
         }
 
-        std::cout << "change_player_types: substitute unum = " << it->first->unum()
-                  << "  type = " << it->second
-                  << std::endl;
+        if ( ServerParam::instance().verboseMode() )
+        {
+            std::cerr << "change_player_types: substitute (player "
+                      << team->name() << ' '
+                      << it->first->unum()
+                      << ") to type " << it->second
+                      << std::endl;
+        }
+
         M_stadium->substitute( it->first, it->second );
 
         char buf[64];

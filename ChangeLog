@@ -1,6 +1,11 @@
 2007-10-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach.cpp:
+	* src/heteroplayer.cpp:
+	- fixed a bug in the change_player_types command parsing.
+	- added verbose message for debugging.
+
+	* src/coach.cpp:
 	* src/coach.h:
 	* src/field.C:
 	* src/field.h:
