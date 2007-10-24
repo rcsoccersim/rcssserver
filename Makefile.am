@@ -8,26 +8,6 @@ SUBDIRS = src \
 .
 
 EXTRA_DIST = \
-BUGS \
-AUTHORS \
-Acknowledgement \
-ChangeLog \
-NEWS \
-README \
-INSTALL \
-coach_lang_grammar \
-tools/clangparser/Licence \
-tools/clangparser/main.C \
-tools/clangparser/Makefile \
-tools/clangparser/README \
-tools/clangparser/test.input \
-tools/exteamname/exteamname.c \
-tools/exteamname/exteamname.pro \
-tools/exteamname/Makefile \
-tools/exteamname/test.sh \
-tools/striplog/Makefile \
-tools/striplog/striplog.c \
-tools/striplog/striplog.pro \
 missingflex
 
 CLEANFILES = \

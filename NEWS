@@ -1,3 +1,46 @@
+[12.0.0-pre-20071023]
+  * Changed a rule of the back pass. Now, indirect free kick is taken
+	after the back pass.
+
+  * Changed a rule of the catch fault. Now, direct free kick is taken
+    after the catch fault.
+
+  * Forbidden the backward tackle. The tackle power in the player's
+    command is restricted betwween server::min_tackle_power(0) and
+    server::max_tackle_power(100).
+
+  * server::tackle_power_rate is changed to 0.0135.
+
+  * catch_area_l is changed to 1.2.
+
+  * The default value of player::player_types parameter becomes 14,
+    and the default value of player::pt_max paremter becomes 1. And,
+    now, rcssserver automatically assigned the heterogeneous player
+    type to field players if server::allow_mult_default_type is
+    false(This is the default value). This means only one player type
+    can be used at the same time.
+
+  * Added a new restriction to the player substitution. Now, the
+    online coach can substitute the same player type within
+    player::pt_max times. This restriction is not applied to the
+    default player type. If player::pt_max is 1, each player type
+    except the default type can be used only once.
+
+  * Added new coach command "change_player_types". The online coaches
+    can change the player type assignment of all players with this
+    command. The command has the form:
+
+    (change_player_types [(<unum> <type>)]+)
+
+    For example, the following commands are valid:
+
+    (change_player_types (2 1) (3 2) (4 3))
+    (change_player_types (10 10) (3 8) (4 9) (5 1) (8 13))
+
+    Note that change_player_types command is allowed to use only
+    before the kick-off.
+
+
 [11.1.2]
   * Fixed a bug in the offside referee.
 
