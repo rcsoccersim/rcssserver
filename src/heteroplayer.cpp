@@ -133,7 +133,7 @@ HetroPlayer::HetroPlayer()
 
         tmp_delta = HetroPlayer::delta( PlayerParam::instance().extraStaminaDeltaMin(),
                                         PlayerParam::instance().extraStaminaDeltaMax() );
-        extra_stamina = tmp_delta;
+        extra_stamina = ServerParam::instance().extraStamina() + tmp_delta;
         effort_max = ServerParam::instance().effortInit()
             + tmp_delta * PlayerParam::instance().effortMaxDeltaFactor();
         effort_min = ServerParam::instance().effortMin()
@@ -146,7 +146,9 @@ HetroPlayer::HetroPlayer()
                 * effort_max )
             / ( 1.0 - player_decay );
 
-        if ( real_speed_max < player_speed_max + EPS )
+        if ( player_speed_max - ServerParam::instance().playerSpeedMaxRange() - EPS
+             < real_speed_max
+             && real_speed_max < player_speed_max + EPS )
         {
             break;
         }
@@ -174,7 +176,7 @@ HetroPlayer::HetroPlayer()
         kickable_margin = ServerParam::instance().kickableMargin();
         kick_rand = ServerParam::instance().kickRand();
 
-        extra_stamina = PlayerParam::instance().extraStaminaDeltaMin();
+        extra_stamina = ServerParam::instance().extraStamina();
         effort_max = ServerParam::instance().effortInit();
         effort_min = ServerParam::instance().effortMin();
     }
@@ -194,7 +196,7 @@ HetroPlayer::HetroPlayer( int )
     kickable_margin = ServerParam::instance().kickableMargin();
     kick_rand = ServerParam::instance().kickRand();
 
-    extra_stamina = PlayerParam::instance().extraStaminaDeltaMin();
+    extra_stamina = ServerParam::instance().extraStamina();
     effort_max = ServerParam::instance().effortInit();
     effort_min = ServerParam::instance().effortMin();
 }

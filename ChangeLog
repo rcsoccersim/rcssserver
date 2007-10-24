@@ -1,5 +1,20 @@
 2007-10-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/heteroplayer.cpp:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/types.h:
+	- added ServerParam::playerSpeedMaxRange(). This value is used to
+	restrict the player_speed_max.
+	- added ServerParam::extraStamina() as the parameter for the
+	default type player.
+	- changed the default kickable_margin to 0.7.
+	- changed the default player_decay_delta_min from 0 to -0.05
+	- changed the default new_dash_power_rate_delta_min from 0 to -0.0005.
+	- changed the default new_dash_power_rate_delta_max from 0.002 to
+	0.0015.
+
 	* src/paramreader.C:
 	* src/paramreader.h:
 	* src/field.C:
@@ -16,7 +31,7 @@
 	proportion to the current ball speed.
 	- changed the default kickable margin from 0.7 to 0.8
 	- changed the default kickable rand from 0.0 to 0.1
-	- changed the default player_decay_delta_min from 0.2 to 0.1
+	- changed the default player_decay_delta_max from 0.2 to 0.1
 	- changed the default kickable_margin_delta_min from 0.0 to -0.1
 	- changed the default kickable_margin_delta_max from 0.2 to 0.1
 	- changed the default kick_rand_delta_factor from 0.5 to 1.0

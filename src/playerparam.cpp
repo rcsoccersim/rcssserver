@@ -83,8 +83,8 @@ const double PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MIN = 0.0;
 const double PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MAX = 0.0;
 const double PlayerParam::DEFAULT_STAMINA_INC_MAX_DELTA_FACTOR = 0.0;
 
-const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MIN = 0.0;
-const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX = 0.1;  // [12.0.0] 0.2 -> 0.1
+const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MIN = -0.05; // [12.0.0] 0.0 -> -0.05
+const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX = 0.1; // [12.0.0] 0.2 -> 0.1
 const double PlayerParam::DEFAULT_INERTIA_MOMENT_DELTA_FACTOR = 25.0;
 
 const double PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MIN = 0.0;
@@ -102,8 +102,8 @@ const double PlayerParam::DEFAULT_EFFORT_MIN_DELTA_FACTOR = -0.002;
 
 const int    PlayerParam::DEFAULT_RANDOM_SEED = -1; //negative means generate a new seed
 
-const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MIN = 0.0;
-const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX = 0.002;
+const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MIN = -0.0005; // [12.0.0] 0 -> -0.0005
+const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX = 0.0015; // [12.0.0] 0.002 -> 0.0015
 const double PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR = -10000.0;
 
 

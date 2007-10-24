@@ -162,12 +162,14 @@ private:
     static const double PLAYER_RAND;
     static const double PLAYER_WEIGHT;
     static const double PLAYER_SPEED_MAX;
+    static const double PLAYER_SPEED_MAX_RANGE; // [12.0.0]
     // th 6.3.00
     static const double PLAYER_ACCEL_MAX;
     //
     static const double IMPARAM; /* Inertia-Moment Parameter */
 
     static const double	STAMINA_MAX;
+    static const double EXTRA_STAMINA;
     static const double	STAMINA_INC_MAX;
     static const double RECOVERY_DEC_THR;
     static const double RECOVERY_DEC;
@@ -326,6 +328,7 @@ private:
 		double paccel_max; /* player acceleration max */
 		//
 		double stamina_max; /* player stamina max */
+		double M_extra_stamina;
 		double stamina_inc; /* player stamina inc */
 		double recover_init; /* player recovery init */
 		double recover_dthr; /* player recovery decriment threshold */
@@ -738,8 +741,10 @@ public:
     const double & playerRand() const { return prand; }
     const double & playerWeight() const { return pweight; }
     const double & playerSpeedMax() const { return pspeed_max; }
+    const double & playerSpeedMaxRange() const { return PLAYER_SPEED_MAX_RANGE; }
     const double & playerAccelMax() const { return paccel_max; }
     const double & staminaMax() const { return stamina_max; }
+    const double & extraStamina() const { return M_extra_stamina; }
     const double & staminaInc() const { return stamina_inc; }
     const double & recoverInit() const { return recover_init; }
 		const double & recoverDecThr() const { return recover_dthr; }

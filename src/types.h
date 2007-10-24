@@ -515,16 +515,12 @@ typedef struct
 
 
   // spare variables which are to be used for paramenter added in the future
-  //Int32 sparelong1;
-  //Int32 sparelong2;
   Int32 slowness_on_top_for_left_team;
   Int32 slowness_on_top_for_right_team;
-  //Int32 sparelong3;
-  //Int32 sparelong4;
   Int32 ka_length;                    /* keepaway region length */
   Int32 ka_width;                     /* keepaway region width */
     Int32 ball_stuck_area; // automatic drop ball threshold while play_on
-  Int32 sparelong6;
+    Int32 extra_stamina;
   Int32 sparelong7;
   Int32 sparelong8;
   Int32 sparelong9;

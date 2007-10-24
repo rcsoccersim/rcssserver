@@ -112,12 +112,14 @@ const double ServerParam::PLAYER_DECAY = 0.4;
 const double ServerParam::PLAYER_RAND = 0.1;
 const double ServerParam::PLAYER_WEIGHT = 60.0;
 const double ServerParam::PLAYER_SPEED_MAX = 1.2;
+const double ServerParam::PLAYER_SPEED_MAX_RANGE = 0.4;
 // th 6.3.00
 const double ServerParam::PLAYER_ACCEL_MAX = 1.0;
 //
 const double ServerParam::IMPARAM = 5.0;
 
 const double ServerParam::STAMINA_MAX = 4000.0;
+const double ServerParam::EXTRA_STAMINA = 0.0;
 const double ServerParam::STAMINA_INC_MAX = 45.0;
 const double ServerParam::RECOVERY_DEC_THR = 0.3;
 const double ServerParam::RECOVERY_DEC = 0.002;
@@ -150,7 +152,7 @@ const double ServerParam::KICKPOWERRATE	= 0.027;
 const double ServerParam::MAXPOWER = 100.0;
 const double ServerParam::MINPOWER = -100.0;
 
-const double ServerParam::KICKABLE_MARGIN = 0.8; // [12.0.0] 0.7 -> 0.8
+const double ServerParam::KICKABLE_MARGIN = 0.7;
 const double ServerParam::CONTROL_RADIUS = 2.0;
 
 const double ServerParam::DIST_QSTEP = 0.1;
@@ -458,6 +460,7 @@ ServerParam::addParams()
     addParam( "player_accel_max", paccel_max, "The max acceleration of players", 7 );
     //
     addParam( "stamina_max", stamina_max, "The maximum stamina of players", 7 );
+    addParam( "extra_stamina", M_extra_stamina, "", 12 );
     addParam( "stamina_inc_max", stamina_inc, "The maximum player stamina increament", 7 );
     addParam( "recover_init", recover_init, "The intial recovery value for players", 9 );
     addParam( "recover_dec_thr", recover_dthr, "", 7 );
@@ -793,6 +796,7 @@ ServerParam::setDefaults()
     paccel_max = PLAYER_ACCEL_MAX ;
 
     stamina_max = STAMINA_MAX;
+    M_extra_stamina = EXTRA_STAMINA;
     stamina_inc = STAMINA_INC_MAX;
     recover_init = 1.0;
     recover_dthr = RECOVERY_DEC_THR;
@@ -1174,6 +1178,7 @@ ServerParam::convertToStruct ()
     tmp.ka_width = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * ka_width ) );
 
     tmp.ball_stuck_area = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_ball_stuck_area ) );
+    tmp.extra_stamina = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_extra_stamina ) );
 
     tmp.point_to_ban =  htons( static_cast< Int16 >( M_point_to_ban ) );
     tmp.point_to_duration =  htons( static_cast< Int16 >( M_point_to_duration ) );
