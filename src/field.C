@@ -1691,21 +1691,30 @@ Stadium::_Start( Stadium& stad )
 bool
 Stadium::openTextLog()
 {
-    boost::filesystem::path dir = ServerParam::instance().textLogDir();
+    boost::filesystem::path dir( ServerParam::instance().textLogDir(),
+                                 boost::filesystem::portable_posix_name );
     if ( ! boost::filesystem::exists( dir )
          && ! boost::filesystem::create_directory( dir ) )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't create text log dir."
+                  << ": can't create text log dir. text_log_dir = ["
+                  << ServerParam::instance().textLogDir() << ']'
                   << std::endl;
         return false;
     }
 
     M_text_log_name = ServerParam::instance().textLogDir();
+#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
+    if ( *M_text_log_name.rbegin() != '\\' )
+    {
+        M_text_log_name += '\\';
+    }
+#else
     if ( *M_text_log_name.rbegin() != '/' )
     {
         M_text_log_name += '/';
     }
+#endif
 
     if ( ServerParam::instance().textLogFixed() )
     {
@@ -1741,19 +1750,30 @@ Stadium::openTextLog()
 bool
 Stadium::openGameLog()
 {
-    boost::filesystem::path dir = ServerParam::instance().gameLogDir();
+    boost::filesystem::path dir( ServerParam::instance().gameLogDir(),
+                                 boost::filesystem::portable_posix_name );
     if ( ! boost::filesystem::exists( dir )
          && ! boost::filesystem::create_directory( dir ) )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't create game log dir. game_log_dir "
+                  << ": can't create game log dir. game_log_dir = ["
+                  << ServerParam::instance().gameLogDir() << ']'
                   << std::endl;
         return false;
     }
 
     M_game_log_name = ServerParam::instance().gameLogDir();
+#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
+    if ( *M_game_log_name.rbegin() != '\\' )
+    {
+        M_game_log_name += '\\';
+    }
+#else
     if ( *M_game_log_name.rbegin() != '/' )
+    {
         M_game_log_name += '/';
+    }
+#endif
 
     if ( ServerParam::instance().gameLogFixed() )
         M_game_log_name += ServerParam::instance().gameLogFixedName();
@@ -1830,7 +1850,8 @@ Stadium::openGameLog()
 bool
 Stadium::openKawayLog()
 {
-    boost::filesystem::path dir = ServerParam::instance().kawayLogDir();
+    boost::filesystem::path dir( ServerParam::instance().kawayLogDir(),
+                                 boost::filesystem::portable_posix_name );
     if ( ! boost::filesystem::exists( dir )
          && ! boost::filesystem::create_directory( dir ) )
     {
@@ -1841,10 +1862,17 @@ Stadium::openKawayLog()
     }
 
     M_kaway_log_name = ServerParam::instance().kawayLogDir();
+#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
+    if ( *M_kaway_log_name.rbegin() != '\\' )
+    {
+        M_kaway_log_name += '\\';
+    }
+#else
     if ( *M_kaway_log_name.rbegin() != '/' )
     {
         M_kaway_log_name += '/';
     }
+#endif
 
     if ( ServerParam::instance().kawayLogFixed() )
     {
