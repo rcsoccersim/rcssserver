@@ -433,5 +433,6 @@ lib::RegHolder vp8 = FullStateSenderPlayer::factory().autoReg( &create< FullStat
 lib::RegHolder vp9 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 9 );
 lib::RegHolder vp10 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 10 );
 lib::RegHolder vp11 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 11 );
+lib::RegHolder vp12 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 12 );
 }
 }

@@ -1,3 +1,20 @@
+2007-10-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/audio.cc:
+	* src/bodysender.cc:
+	* src/field.C:
+	* src/fullstatesender.cc:
+	* src/initsender.cc:
+	* src/player.cc:
+	* src/player.h:
+	* src/serializercoachstdv8.cc:
+	* src/serializeronlinecoachstdv8.cc:
+	* src/serializerplayerstdv8.cc:
+	* src/serverparam.cpp:
+	* src/visual.cc:
+	- started to implemente the protocol version 12.
+	- implemented new see message timing.
+
 2007-10-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/heteroplayer.cpp:

@@ -301,5 +301,6 @@ lib::RegHolder vp8 = BodySenderPlayer::factory().autoReg( &create< BodySenderPla
 lib::RegHolder vp9 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 9 );
 lib::RegHolder vp10 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 10 );
 lib::RegHolder vp11 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 11 );
+lib::RegHolder vp12 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 12 );
 }
 }

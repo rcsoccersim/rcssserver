@@ -165,6 +165,7 @@ public:
     void sendReconnect();
 
     void send_visual_info();
+    void sendSynchVisual();
 
     /* contributed by Artur Merke */
     void send_fullstate_information();

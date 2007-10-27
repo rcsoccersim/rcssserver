@@ -221,5 +221,6 @@ lib::RegHolder v8 = SerializerPlayer::factory().autoReg( &create, 8 );
 lib::RegHolder v9 = SerializerPlayer::factory().autoReg( &create, 9 );
 lib::RegHolder v10 = SerializerPlayer::factory().autoReg( &create, 10 );
 lib::RegHolder v11 = SerializerPlayer::factory().autoReg( &create, 11 );
+lib::RegHolder v12 = SerializerPlayer::factory().autoReg( &create, 12 );
 }
 }

@@ -2232,7 +2232,9 @@ Stadium::renameLogs()
             newname += ".gz";
         }
 
-        if ( std::rename( M_text_log_name.c_str(),
+        M_text_log.close();
+        M_gz_text_log.close();
+       if ( std::rename( M_text_log_name.c_str(),
                           newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
@@ -2261,6 +2263,8 @@ Stadium::renameLogs()
             newname += ".gz";
         }
 
+        M_game_log.close();
+        M_gz_game_log.close();
         if( std::rename( M_game_log_name.c_str(),
                          newname.c_str() ) )
         {
@@ -2284,6 +2288,8 @@ Stadium::renameLogs()
         }
         newname += team_name_score;
         newname += Stadium::DEF_KAWAY_SUFFIX;
+
+        M_kaway_log.close();
         if( std::rename( M_kaway_log_name.c_str(),
                          newname.c_str() ) )
         {
@@ -3151,6 +3157,20 @@ Stadium::doSendSenseBody()
 
     std::for_each( M_listeners.begin(), M_listeners.end(),
                    rcss::Listener::NewCycle() );
+
+
+    for (  PlayerCont::iterator it = M_remote_players.begin();
+          it != end;
+          ++it )
+    {
+        if ( (*it)->alive != DISABLE
+             && (*it)->connected() )
+        {
+            (*it)->sendSynchVisual();
+        }
+    }
+
+
     if ( text_log_open()
          && ServerParam::instance().profile() )
     {

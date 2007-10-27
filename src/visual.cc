@@ -1212,6 +1212,7 @@ lib::RegHolder vp8 = VisualSenderPlayer::factory().autoReg( &create< VisualSende
 lib::RegHolder vp9 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 9 );
 lib::RegHolder vp10 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 10 );
 lib::RegHolder vp11 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 11 );
+lib::RegHolder vp12 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 12 );
 
 
 template< typename Sender >
@@ -1232,6 +1233,7 @@ lib::RegHolder vc8 = VisualSenderCoach::factory().autoReg( &create< VisualSender
 lib::RegHolder vc9 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 9 );
 lib::RegHolder vc10 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 10 );
 lib::RegHolder vc11 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 11 );
+lib::RegHolder vc12 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 12 );
 
 }
 }

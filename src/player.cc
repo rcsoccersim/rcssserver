@@ -632,18 +632,41 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth, rcss::pcom::VIEW_QUALITY 
 {
     if ( viewWidth == rcss::pcom::NARROW )
     {
-        M_vis_angle = defangle / 2.0;
-        M_vis_send = 2;
+        if ( version() < 12.0 )
+        {
+            M_vis_angle = defangle / 2.0;
+            M_vis_send = 2;
+        }
+        else
+        {
+            return;
+        }
     }
     else if ( viewWidth == rcss::pcom::NORMAL )
     {
-        M_vis_angle = defangle;
-        M_vis_send = 4;
+        if ( version() < 12.0 )
+        {
+            M_vis_angle = defangle;
+            M_vis_send = 4;
+        }
+        else
+        {
+            M_vis_angle = defangle;
+            M_vis_send = 1;
+        }
     }
     else if ( viewWidth == rcss::pcom::WIDE )
     {
-        M_vis_angle = defangle * 2.0;
-        M_vis_send = 8;
+        if ( version() < 12.0 )
+        {
+            M_vis_angle = defangle * 2.0;
+            M_vis_send = 8;
+        }
+        else
+        {
+            M_vis_angle = defangle * 2.0;
+            M_vis_send = 2;
+        }
     }
     else
     {
@@ -656,8 +679,15 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth, rcss::pcom::VIEW_QUALITY 
     }
     else if ( viewQuality == rcss::pcom::LOW )
     {
-        M_vis_send /= 2;
-        M_highquality = false;
+        if ( version() < 12.0 )
+        {
+            M_vis_send /= 2;
+            M_highquality = false;
+        }
+        else
+        {
+            return;
+        }
     }
     else
     {
@@ -1000,7 +1030,19 @@ void
 Player::send_visual_info()
 {
     //sendVisual();
-    M_observer->sendVisual();
+    if ( version() < 12.0 )
+    {
+        M_observer->sendVisual();
+    }
+}
+
+void
+Player::sendSynchVisual()
+{
+    if ( version() >= 12.0 )
+    {
+        M_observer->sendVisual();
+    }
 }
 
 /* contributed by Artur Merke */

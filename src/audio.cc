@@ -880,6 +880,7 @@ lib::RegHolder vp8 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderP
 lib::RegHolder vp9 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 9 );
 lib::RegHolder vp10 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 10 );
 lib::RegHolder vp11 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 11 );
+lib::RegHolder vp12 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 12 );
 
 lib::RegHolder vc1 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 1 );
 lib::RegHolder vc2 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 2 );
@@ -892,6 +893,7 @@ lib::RegHolder vc8 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCo
 lib::RegHolder vc9 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 9 );
 lib::RegHolder vc10 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 10 );
 lib::RegHolder vc11 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 11 );
+lib::RegHolder vc12 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 12 );
 
 lib::RegHolder voc1 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 1 );
 lib::RegHolder voc2 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 2 );
@@ -904,5 +906,6 @@ lib::RegHolder voc8 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioS
 lib::RegHolder voc9 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 9 );
 lib::RegHolder voc10 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 10 );
 lib::RegHolder voc11 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 11 );
+lib::RegHolder voc12 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 12 );
 }
 }

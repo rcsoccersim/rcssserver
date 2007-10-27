@@ -1121,7 +1121,7 @@ lib::RegHolder vp8 = InitSenderPlayer::factory().autoReg( &create< InitSenderPla
 lib::RegHolder vp9 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 9 );
 lib::RegHolder vp10 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 10 );
 lib::RegHolder vp11 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 11 );
-
+lib::RegHolder vp12 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 12 );
 
 lib::RegHolder voc1 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 1 );
 lib::RegHolder voc2 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 2 );
@@ -1134,6 +1134,7 @@ lib::RegHolder voc8 = InitSenderOnlineCoach::factory().autoReg( &create< InitSen
 lib::RegHolder voc9 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 9 );
 lib::RegHolder voc10 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 10 );
 lib::RegHolder voc11 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 11 );
+lib::RegHolder voc12 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 12 );
 
 lib::RegHolder vc1 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 1 );
 lib::RegHolder vc2 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 2 );
@@ -1146,5 +1147,6 @@ lib::RegHolder vc8 = InitSenderOfflineCoach::factory().autoReg( &create< InitSen
 lib::RegHolder vc9 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 9 );
 lib::RegHolder vc10 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 10 );
 lib::RegHolder vc11 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 11 );
+lib::RegHolder vc12 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 12 );
 }
 }

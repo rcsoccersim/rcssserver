@@ -62,5 +62,6 @@ lib::RegHolder v8 = SerializerOnlineCoach::factory().autoReg( &create, 8 );
 lib::RegHolder v9 = SerializerOnlineCoach::factory().autoReg( &create, 9 );
 lib::RegHolder v10 = SerializerOnlineCoach::factory().autoReg( &create, 10 );
 lib::RegHolder v11 = SerializerOnlineCoach::factory().autoReg( &create, 11 );
+lib::RegHolder v12 = SerializerOnlineCoach::factory().autoReg( &create, 12 );
 }
 }
