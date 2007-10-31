@@ -102,8 +102,8 @@ public:
  *Part: Stadium Class
  *===================================================================
  */
-class Stadium : public virtual Timeable
-{
+class Stadium
+    : public virtual Timeable {
 public:
     // These are vectors and not lists, because we need to shuffle them
     typedef std::vector< OnlineCoach * > OnlineCoachCont;
@@ -212,7 +212,7 @@ public:
     virtual
     ~Stadium();
 
-    void init();
+    bool init();
 
     void finalize( const std::string & msg );
 

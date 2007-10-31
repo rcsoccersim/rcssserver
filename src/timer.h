@@ -8,7 +8,7 @@
     copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -31,39 +31,38 @@
     class. Specific timers can be derived from this class which has to implement
     the 'run' method. In this 'run' method the timeable methods from the
     timeable instance are called. */
-class Timer
-{
+class Timer {
 public:
     typedef rcss::lib::shared_ptr< Timer > Ptr;
-    typedef Ptr(*Creator)( Timeable& );
+    typedef Ptr (*Creator)( Timeable& );
     typedef rcss::lib::Factory< Creator > Factory;
 
     virtual
     ~Timer()
       { }
 
-	RCSSSERVER_API
+    RCSSSERVER_API
     static
-    Factory&
-    factory();
+    Factory & factory();
 
     virtual
-    void
-    run() = 0;
+    void run() = 0;
 
 protected:
-	RCSSSERVER_API
-    Timer( Timeable &timeable )
+    RCSSSERVER_API
+    Timer( Timeable & timeable )
         : M_timeable ( timeable )
-    {}
+      {}
 
-	RCSSSERVER_API
-    Timeable&
+    RCSSSERVER_API
+    Timeable &
     getTimeableRef()
-    { return M_timeable; }
+      {
+          return M_timeable;
+      }
 
 private:
-    Timeable& M_timeable;            /**< reference to the timeable object */
+    Timeable & M_timeable;            /**< reference to the timeable object */
 };
 
 #endif

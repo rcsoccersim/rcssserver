@@ -1,3 +1,8 @@
+2007-11-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	- added a small wait for monitor clients in the synch mode.
+
 2007-10-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/audio.cc:

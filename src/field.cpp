@@ -122,7 +122,6 @@ Stadium::Stadium()
       M_olcoaches( 2, static_cast< OnlineCoach * >( 0 ) ),
       M_team_l( NULL ),
       M_team_r( NULL ),
-      //M_motable( *this ),
       M_playmode( PM_BeforeKickOff ),
       M_time( 0 ),
       M_ball_catcher( NULL ),
@@ -252,7 +251,7 @@ Stadium::~Stadium()
  *Part: Create Stadium Window
  *===================================================================
  */
-void
+bool
 Stadium::init()
 {
     M_game_over_wait = ServerParam::instance().gameOverWait();
@@ -262,7 +261,8 @@ Stadium::init()
     // the game starts, not after it has finished.
     std::list< const char* > savers = rcss::ResultSaver::factory().list();
     for ( std::list< const char* >::iterator i = savers.begin();
-          i != savers.end(); ++i )
+          i != savers.end();
+          ++i )
     {
         rcss::ResultSaver::Creator creator;
         if ( rcss::ResultSaver::factory().getCreator( creator, *i ) )
@@ -279,11 +279,11 @@ Stadium::init()
 
 
     if ( ServerParam::instance().coachMode()
-        && ! ServerParam::instance().coachWithRefereeMode() )
+         && ! ServerParam::instance().coachWithRefereeMode() )
     {
-        for( std::list< Referee * >::iterator i = M_referees.begin();
-             i != M_referees.end();
-             ++i )
+        for ( std::list< Referee * >::iterator i = M_referees.begin();
+              i != M_referees.end();
+              ++i )
         {
             delete *i;
         }
@@ -296,9 +296,8 @@ Stadium::init()
         if ( ! reader )
         {
             perror( "Can not create landmark reader" );
-            //this->exit( EXIT_FAILURE );
             disable();
-            return;
+            return false;
         }
         delete reader;
     }
@@ -321,18 +320,16 @@ Stadium::init()
         {
             std::cerr << "Error setting sockets non-blocking: "
                       << strerror( errno ) << std::endl;
-            //this->exit( EXIT_FAILURE );
             disable();
-            return;
+            return false;
         }
     }
     else
     {
         std::cerr << "Error initializing sockets: "
                   << strerror( errno ) << std::endl;
-        //this->exit( EXIT_FAILURE );
         disable();
-        return;
+        return false;
     }
 
     if ( ServerParam::instance().textLogging() )
@@ -340,7 +337,7 @@ Stadium::init()
         if ( ! openTextLog() )
         {
             disable();
-            return;
+            return false;
         }
 		}
 
@@ -349,17 +346,17 @@ Stadium::init()
 				if ( ! openGameLog() )
         {
             disable();
-            return;
+            return false;
         }
     }
 
-    if ( ServerParam::instance().keepAwayMode() &&
-         ServerParam::instance().kawayLogging() )
+    if ( ServerParam::instance().keepAwayMode()
+         && ServerParam::instance().kawayLogging() )
     {
         if ( ! openKawayLog() )
         {
             disable();
-            return;
+            return false;
         }
     }
 
@@ -379,6 +376,7 @@ Stadium::init()
     std::memset( &M_dinfo.body.show.team[0].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
     std::memset( &M_dinfo.body.show.team[1].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
     M_dinfo.body.show.time = htons((unsigned short)-1);
+
     M_minfo.mode = htons( MSG_MODE );
 
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
@@ -391,8 +389,10 @@ Stadium::init()
     M_dinfo2.body.show.time = htons((unsigned short)-1);
 
 
-    M_kick_off_wait = ServerParam::instance().kickOffWait();
-    M_connect_wait = ServerParam::instance().connectWait();
+    M_kick_off_wait = std::max( 0, ServerParam::instance().kickOffWait() );
+    M_connect_wait = std::max( 0, ServerParam::instance().connectWait() );
+
+    return true;
 }
 
 void
@@ -1775,9 +1775,13 @@ Stadium::openGameLog()
 #endif
 
     if ( ServerParam::instance().gameLogFixed() )
+    {
         M_game_log_name += ServerParam::instance().gameLogFixedName();
+    }
     else
+    {
         M_game_log_name += Stadium::DEF_GAME_NAME;
+    }
     M_game_log_name += Stadium::DEF_GAME_SUFFIX;
 
     if ( ServerParam::instance().gameLogCompression() > 0 )
@@ -1787,9 +1791,11 @@ Stadium::openGameLog()
                             ServerParam::instance().gameLogCompression() );
     }
     else
+    {
         M_game_log.open( M_game_log_name.c_str(), ( std::ofstream::binary
                                                     | std::ofstream::out
                                                     | std::ofstream::trunc ) );
+    }
 
     if ( ! game_log_open() )
     {
@@ -2156,6 +2162,12 @@ Stadium::write_profile( timeval tv_start, timeval tv_end, char* str )
 void
 Stadium::renameLogs()
 {
+    if ( ! M_team_l
+         || ! M_team_r )
+    {
+        return;
+    }
+
     // add penalty to logfile when penalties are score or was draw and one team won
     bool bAddPenaltyScore = ( M_team_r->point() == M_team_l->point()
                               && M_team_l->penaltyTaken() > 0
@@ -2234,7 +2246,7 @@ Stadium::renameLogs()
 
         M_text_log.close();
         M_gz_text_log.close();
-       if ( std::rename( M_text_log_name.c_str(),
+        if ( std::rename( M_text_log_name.c_str(),
                           newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
@@ -3286,6 +3298,15 @@ Stadium::doSendThink()
         //still waiting for players to connect, so let's run a little more slowly
         usleep( 50 * 1000 );
     }
+    else if ( ! monitors().empty() )
+    {
+        static int monitor_wait_count = 0;
+        if ( ++monitor_wait_count >= 32 )
+        {
+            monitor_wait_count = 0;
+            usleep( 20 * 1000 );
+        }
+    }
 
     //figure out who we are going to wait for
     bool wait_players[MAX_PLAYER*2];
@@ -3301,11 +3322,12 @@ Stadium::doSendThink()
     bool waitTrainer = M_coach->isEyeOn();
 
     //tell the clients they should start thinking
-    for ( int i = 0; i<MAX_PLAYER*2; ++i )
+    for ( int i = 0; i < MAX_PLAYER*2; ++i )
     {
         if ( wait_players[i] && M_players[i]->connected() )
             M_players[i]->send( think_command );
     }
+
     for ( int i = 0; i < 2; ++i )
     {
         if ( waitCoach[i] && M_olcoaches[i]->connected() )
@@ -3313,6 +3335,7 @@ Stadium::doSendThink()
             M_olcoaches[i]->send( think_command );
         }
     }
+
     if ( waitTrainer
          && M_coach->connected() )
     {
@@ -3392,12 +3415,15 @@ Stadium::doSendThink()
                 shutdown = true;
             }
         }
-    } while (done == DS_FALSE);
+    } while ( done == DS_FALSE );
 
     if ( done != DS_TRUE_BUT_INCOMPLETE )
+    {
         cycles_missed = 0;
+    }
 
-    if ( text_log_open() && ServerParam::instance().logTimes() )
+    if ( text_log_open()
+         && ServerParam::instance().logTimes() )
     {
         text_log_stream() << time()
                           << "  Num sleeps called: "

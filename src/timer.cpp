@@ -5,7 +5,7 @@
               The timer class is an abstract base class for timing
                              -------------------
     begin                : AUG-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
  ***************************************************************************/
@@ -23,8 +23,9 @@
 #include "timer.h"
 
 
-Timer::Factory&
+Timer::Factory &
 Timer::factory()
 {
-    static Factory rval; return rval;
+    static Factory rval;
+    return rval;
 }

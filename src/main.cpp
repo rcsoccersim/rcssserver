@@ -62,7 +62,8 @@ sigHandle ( int )
 
 }
 
-int main(int argc, char *argv[])
+int
+main( int argc, char *argv[] )
 {
     std::cout << PACKAGE << "-" << VERSION << std::endl << std::endl
               << Copyright << std::endl;
@@ -82,7 +83,6 @@ int main(int argc, char *argv[])
             std::cerr << "Could not read or create config directory '" << config_dir_name
                       << std::endl;
         }
-
 //         DIR* config_dir = opendir( config_dir_name.c_str() );
 //         if ( config_dir == NULL )
 //         {
@@ -111,9 +111,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Std.init();
-
-    if ( ! Std.isAlive() )
+    if ( ! Std.init() )
     {
         ServerParam::instance().clear();
         return 1;
