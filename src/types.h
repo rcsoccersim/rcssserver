@@ -520,8 +520,8 @@ typedef struct
   Int32 ka_length;                    /* keepaway region length */
   Int32 ka_width;                     /* keepaway region width */
     Int32 ball_stuck_area; // automatic drop ball threshold while play_on
+    Int32 player_speed_max_min;
     Int32 extra_stamina;
-  Int32 sparelong7;
   Int32 sparelong8;
   Int32 sparelong9;
   Int32 sparelong10;

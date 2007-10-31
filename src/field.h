@@ -56,7 +56,7 @@
 #include <cstdio>
 #include <sys/time.h>
 
-class HetroPlayer;
+class HeteroPlayer;
 
 class Monitor;
 class Coach;
@@ -162,13 +162,11 @@ private:
 
     Weather	M_weather;
 
-    //MPObjectTable M_motable; /* Movable objects */
-
     PlayMode M_playmode;
 
     int M_time;
 
-    std::vector< HetroPlayer * > M_player_types;
+    std::vector< HeteroPlayer * > M_player_types;
 
 
     const Player * M_ball_catcher; /* goalie who has caught ball */
@@ -363,7 +361,7 @@ public:
     void addLandmark( PObject * new_obj );
 
     const
-    HetroPlayer * playerType( int id ) const;
+    HeteroPlayer * playerType( int id ) const;
 
 
     const

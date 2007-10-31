@@ -258,14 +258,22 @@ bool
 Stadium::parseMonitorInit( const char * message,
                            const rcss::net::Addr & addr )
 {
-    float ver = 1.0;
+    double ver = 1.0;
     if ( ! std::strcmp( message, "(dispinit)" ) )
     {
+        if ( ServerParam::instance().maxMonitors() > 0
+             && ( static_cast< int >( M_monitors.size() )
+                  >= ServerParam::instance().maxMonitors()  ) )
+        {
+            sendToPlayer( "(error no_more_monitor)", addr );
+            return true;
+        }
+
         Monitor * mon = new Monitor( *this, 1 );
         if( ! mon->connect( addr ) )
         {
             delete mon;
-            return false;
+            return true;
         }
         std::cout << "a new (v1) monitor connected\n";
         mon->setEnforceDedicatedPort( false );
@@ -273,12 +281,21 @@ Stadium::parseMonitorInit( const char * message,
         ++M_nr_monitor_v1;
         return true;
     }
-    else if ( std::sscanf( message, "(dispinit version %f)", &ver ) == 1 )
+    else if ( std::sscanf( message, "(dispinit version %lf)", &ver ) == 1 )
     {
+        if ( ServerParam::instance().maxMonitors() > 0
+             && ( static_cast< int >( M_monitors.size() )
+                  >= ServerParam::instance().maxMonitors()  ) )
+        {
+            sendToPlayer( "(error no_more_monitor)", addr );
+            return true;
+        }
+
         if ( ver < 1.0 || 3.0 <= ver )
         {
-            std::cout << "Unsupported monitor protocol version." << std::endl;
-            return false;
+            std::cout << "Unsupported monitor protocol version. " << ver
+                      << std::endl;
+            return true;
         }
 
         // a new monitor connected
@@ -287,11 +304,11 @@ Stadium::parseMonitorInit( const char * message,
         if( ! mon->connect( addr ) )
         {
             delete mon;
-            return false;
+            return true;
         }
         std::cout << "a new (v" << ver << ") monitor connected\n";
 
-        mon->setEnforceDedicatedPort( ver >= 3.0 );
+        mon->setEnforceDedicatedPort( ver >= 2.0 );
         M_monitors.push_back( mon );
 
         // send server parameter information to monitor
@@ -333,10 +350,8 @@ Stadium::parseMonitorInit( const char * message,
         }
         return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 void

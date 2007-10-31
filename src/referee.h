@@ -456,7 +456,9 @@ private:
     static const int AFTER_BACKPASS_WAIT;
     static const int AFTER_CATCH_FAULT_WAIT;
 
+    int M_last_back_passer_time;
     const Player * M_last_back_passer;
+
     bool M_team_l_touched;
     bool M_team_r_touched;
     int M_after_back_pass_time;
@@ -467,6 +469,7 @@ public:
     explicit
     CatchRef( Stadium & stadium )
         : Referee( stadium )
+        , M_last_back_passer_time( 0 )
         , M_last_back_passer( NULL )
         , M_team_l_touched( false )
         , M_team_r_touched( false )

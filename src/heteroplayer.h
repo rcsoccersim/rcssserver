@@ -28,8 +28,8 @@
  *EndCopyright:
  */
 
-#ifndef _HETROPLAYER_H_
-#define _HETROPLAYER_H_
+#ifndef HETEROPLAYER_H
+#define HETEROPLAYER_H
 
 #include "types.h"
 #include <cstdlib>
@@ -39,12 +39,12 @@
 
 #include <iostream>
 
-class HetroPlayer
+class HeteroPlayer
 {
 public:
-    HetroPlayer();
-    HetroPlayer( int );
-    ~HetroPlayer();
+    HeteroPlayer();
+    HeteroPlayer( int );
+    ~HeteroPlayer();
 
     const double & playerSpeedMax() const { return player_speed_max; }
     const double & staminaIncMax() const { return stamina_inc_max; }
@@ -84,7 +84,7 @@ private:
 inline
 std::ostream &
 operator<<( std::ostream & o,
-            const HetroPlayer & hp )
+            const HeteroPlayer & hp )
 {
     return hp.print( o );
 }

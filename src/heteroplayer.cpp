@@ -48,8 +48,8 @@
 #endif
 
 double
-HetroPlayer::delta( const double & min,
-                    const double & max )
+HeteroPlayer::delta( const double & min,
+                     const double & max )
 {
     static bool s_seeded = false;
     static boost::mt19937 s_engine;
@@ -93,46 +93,46 @@ HetroPlayer::delta( const double & min,
     return gen();
 }
 
-HetroPlayer::HetroPlayer()
+HeteroPlayer::HeteroPlayer()
 {
     const int MAX_TRIAL = 1000;
 
     int trial = 0;
     while ( ++trial <= MAX_TRIAL )
     {
-        double tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
-                                               PlayerParam::instance().playerSpeedMaxDeltaMax() );
+        double tmp_delta = HeteroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
+                                                PlayerParam::instance().playerSpeedMaxDeltaMax() );
         player_speed_max = ServerParam::instance().playerSpeedMax() + tmp_delta;
         stamina_inc_max = ServerParam::instance().staminaInc()
             + tmp_delta * PlayerParam::instance().staminaIncMaxDeltaFactor();
 
-        tmp_delta = HetroPlayer::delta( PlayerParam::instance().playerDecayDeltaMin(),
-                                        PlayerParam::instance().playerDecayDeltaMax() );
+        tmp_delta = HeteroPlayer::delta( PlayerParam::instance().playerDecayDeltaMin(),
+                                         PlayerParam::instance().playerDecayDeltaMax() );
         player_decay = ServerParam::instance().playerDecay() + tmp_delta;
         inertia_moment = ServerParam::instance().inertiaMoment()
             + tmp_delta * PlayerParam::instance().inertiaMomentDeltaFactor();
 
-        tmp_delta = HetroPlayer::delta( PlayerParam::instance().dashPowerRateDeltaMin(),
-                                        PlayerParam::instance().dashPowerRateDeltaMax() );
+        tmp_delta = HeteroPlayer::delta( PlayerParam::instance().dashPowerRateDeltaMin(),
+                                         PlayerParam::instance().dashPowerRateDeltaMax() );
         dash_power_rate = ServerParam::instance().dashPowerRate() + tmp_delta;
         player_size = ServerParam::instance().playerSize()
             + tmp_delta * PlayerParam::instance().playerSizeDeltaFactor();
 
         // trade-off stamina_inc_max with dash_power_rate
-        tmp_delta = HetroPlayer::delta( PlayerParam::instance().newDashPowerRateDeltaMin(),
-                                        PlayerParam::instance().newDashPowerRateDeltaMax() );
+        tmp_delta = HeteroPlayer::delta( PlayerParam::instance().newDashPowerRateDeltaMin(),
+                                         PlayerParam::instance().newDashPowerRateDeltaMax() );
         dash_power_rate = ServerParam::instance().dashPowerRate() + tmp_delta;
         stamina_inc_max = ServerParam::instance().staminaInc()
             + tmp_delta * PlayerParam::instance().newStaminaIncMaxDeltaFactor();
 
-        tmp_delta = HetroPlayer::delta( PlayerParam::instance().kickableMarginDeltaMin(),
-                                        PlayerParam::instance().kickableMarginDeltaMax() );
+        tmp_delta = HeteroPlayer::delta( PlayerParam::instance().kickableMarginDeltaMin(),
+                                         PlayerParam::instance().kickableMarginDeltaMax() );
         kickable_margin = ServerParam::instance().kickableMargin() + tmp_delta;
         kick_rand = ServerParam::instance().kickRand()
             + tmp_delta * PlayerParam::instance().kickRandDeltaFactor();
 
-        tmp_delta = HetroPlayer::delta( PlayerParam::instance().extraStaminaDeltaMin(),
-                                        PlayerParam::instance().extraStaminaDeltaMax() );
+        tmp_delta = HeteroPlayer::delta( PlayerParam::instance().extraStaminaDeltaMin(),
+                                         PlayerParam::instance().extraStaminaDeltaMax() );
         extra_stamina = ServerParam::instance().extraStamina() + tmp_delta;
         effort_max = ServerParam::instance().effortInit()
             + tmp_delta * PlayerParam::instance().effortMaxDeltaFactor();
@@ -146,8 +146,7 @@ HetroPlayer::HetroPlayer()
                 * effort_max )
             / ( 1.0 - player_decay );
 
-        if ( player_speed_max - ServerParam::instance().playerSpeedMaxRange() - EPS
-             < real_speed_max
+        if ( ServerParam::instance().playerSpeedMaxMin() - EPS < real_speed_max
              && real_speed_max < player_speed_max + EPS )
         {
             break;
@@ -156,13 +155,13 @@ HetroPlayer::HetroPlayer()
 
     if ( ServerParam::instance().verboseMode() )
     {
-        std::cout << "HetroPlayer creation trial = " << trial << std::endl;
+        std::cout << "HeteroPlayer creation trial = " << trial << std::endl;
     }
 
     // TODO: print error message and exit the simulator.
     if ( trial > MAX_TRIAL )
     {
-        std::cout << "HetroPlayer set default parameters." << std::endl;
+        std::cout << "HeteroPlayer set default parameters." << std::endl;
         // set the default type parameters
         player_speed_max = ServerParam::instance().playerSpeedMax();
         stamina_inc_max = ServerParam::instance().staminaInc();
@@ -182,7 +181,7 @@ HetroPlayer::HetroPlayer()
     }
 }
 
-HetroPlayer::HetroPlayer( int )
+HeteroPlayer::HeteroPlayer( int )
 {
     player_speed_max = ServerParam::instance().playerSpeedMax();
     stamina_inc_max = ServerParam::instance().staminaInc();
@@ -201,14 +200,14 @@ HetroPlayer::HetroPlayer( int )
     effort_min = ServerParam::instance().effortMin();
 }
 
-HetroPlayer::~HetroPlayer()
+HeteroPlayer::~HeteroPlayer()
 {
 }
 
 std::ostream&
-HetroPlayer::print( std::ostream & o ) const
+HeteroPlayer::print( std::ostream & o ) const
 {
-    o << "Hetro Player Type:\n";
+    o << "Hetero Player Type:\n";
     o << "\tPlayer speed max = " << playerSpeedMax () << '\n';
     o << "\tStamina inc = " << staminaIncMax () <<  '\n';
     o << "\tPlayer decay = " << playerDecay () << '\n';
@@ -229,7 +228,7 @@ HetroPlayer::print( std::ostream & o ) const
 }
 
 player_type_t
-HetroPlayer::convertToStruct( int id )
+HeteroPlayer::convertToStruct( int id )
 {
     player_type_t tmp;
 

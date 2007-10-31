@@ -112,7 +112,7 @@ const double ServerParam::PLAYER_DECAY = 0.4;
 const double ServerParam::PLAYER_RAND = 0.1;
 const double ServerParam::PLAYER_WEIGHT = 60.0;
 const double ServerParam::PLAYER_SPEED_MAX = 1.2;
-const double ServerParam::PLAYER_SPEED_MAX_RANGE = 0.4;
+const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.8;
 // th 6.3.00
 const double ServerParam::PLAYER_ACCEL_MAX = 1.0;
 //
@@ -191,8 +191,8 @@ const char ServerParam::OLD_SERVER_CONF[] = "~/.rcssserver-server.conf";
 
 const int ServerParam::SEND_COMMS = false;
 
-const int ServerParam::TEXT_LOGGING = true;
-const int ServerParam::GAME_LOGGING = true;
+const int ServerParam::TEXT_LOGGING = false;
+const int ServerParam::GAME_LOGGING = false;
 const int ServerParam::GAME_LOG_VERSION = 3;
 const char ServerParam::TEXT_LOG_DIR[] = "./";
 const char ServerParam::GAME_LOG_DIR[] = "./";
@@ -456,6 +456,8 @@ ServerParam::addParams()
     addParam( "player_rand", prand, "Player random movement factor", 7 );
     addParam( "player_weight", pweight, "The weight of the player", 7 );
     addParam( "player_speed_max", pspeed_max, "The max speed of players", 7 );
+    addParam( "player_speed_max_min", M_player_speed_max_min,
+              "The minumum value of the max speed of players", 12 );
     // th 6.3.00
     addParam( "player_accel_max", paccel_max, "The max acceleration of players", 7 );
     //
@@ -712,8 +714,7 @@ ServerParam::addParams()
               rcss::conf::makeGetter( M_coach_msg_file ),
               "", 11 );
 
-    addParam( "allow_mult_default_type", M_allow_mult_default_type, "", 12 );
-
+    addParam( "max_monitors", M_max_monitors, "", 12 );
 }
 
 
@@ -793,6 +794,7 @@ ServerParam::setDefaults()
     prand = PLAYER_RAND;
     pweight = PLAYER_WEIGHT;
     pspeed_max = PLAYER_SPEED_MAX;
+    M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
     paccel_max = PLAYER_ACCEL_MAX ;
 
     stamina_max = STAMINA_MAX;
@@ -1020,7 +1022,7 @@ ServerParam::setDefaults()
 
     M_coach_msg_file = "";
 
-    M_allow_mult_default_type = false;
+    M_max_monitors = -1;
 
     setHalfTime( HALF_TIME );
 
@@ -1178,6 +1180,8 @@ ServerParam::convertToStruct ()
     tmp.ka_width = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * ka_width ) );
 
     tmp.ball_stuck_area = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_ball_stuck_area ) );
+
+    tmp.player_speed_max_min = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_player_speed_max_min ) );
     tmp.extra_stamina = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_extra_stamina ) );
 
     tmp.point_to_ban =  htons( static_cast< Int16 >( M_point_to_ban ) );

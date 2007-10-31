@@ -788,11 +788,8 @@ Team::newPlayer( const double & version,
 
     ++M_size;
 
-
-    //++M_ptype_count[ 0 ];
-    //++M_ptype_used_count[ 0 ];
     if ( goalie_flag
-         || ServerParam::instance().allowMultDefaultType() )
+         || PlayerParam::instance().allowMultDefaultType() )
     {
         ++M_ptype_count[ 0 ];
         ++M_ptype_used_count[ 0 ];

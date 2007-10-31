@@ -263,7 +263,7 @@ Player::init( const double & version_tmp,
 void
 Player::setPlayerType( const int id )
 {
-    const HetroPlayer * type = M_stadium->playerType( id );
+    const HeteroPlayer * type = M_stadium->playerType( id );
     if ( ! type )
     {
         return;
@@ -368,7 +368,7 @@ Player::dash( double power )
                                       ? ServerParam::instance().slownessOnTopForLeft()
                                       : ServerParam::instance().slownessOnTopForRight() );
         }
-        //MPObject::dash( effective_dash_power );
+
         push( PVector::fromPolar( effective_dash_power,
                                   angleBodyCommitted() ) );
         ++M_dash_count;
@@ -451,17 +451,34 @@ Player::kick( double power, double dir )
 
         PVector accel = PVector::fromPolar( eff_power,
                                             dir + angleBodyCommitted() );
-        //M_stadium->ball->push( accel );
 
         // pfr 8/14/00: for RC2000 evaluation
         // add noise to kick
         double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
-        // added noise by current ball speed
-        maxrnd += M_kick_rand * M_stadium->ball().vel().r() / ServerParam::instance().ballSpeedMax();
 
-        PVector kick_noise( drand(-maxrnd, maxrnd), drand(-maxrnd, maxrnd) );
+        // add noise by current ball speed
+#if 0
+        maxrnd += M_kick_rand
+            * M_stadium->ball().vel().r()
+            / ServerParam::instance().ballDecay()
+            / ServerParam::instance().ballSpeedMax();
+#else
+        {
+            double max_dir_rand = M_PI
+                * M_kick_rand
+                * M_stadium->ball().vel().r()
+                / ServerParam::instance().ballDecay()
+                / ServerParam::instance().ballSpeedMax();
+            double dir_noise = drand( -max_dir_rand, max_dir_rand );
+            //std::cout << "Kick: max_dir_rand = " << max_dir_rand * 180 / M_PI
+            //          << "  dir_noise = " << dir_noise * 180 / M_PI
+            //          << std::endl;
+            accel.rotate( dir_noise );
+        }
+#endif
+        PVector kick_noise( drand( -maxrnd, maxrnd ),
+                            drand( -maxrnd, maxrnd ) );
         //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
-        //M_stadium->ball->push( kick_noise );
 
         accel += kick_noise;
 
@@ -537,11 +554,11 @@ Player::goalieCatch( double dir )
              || drand( 0, 1 ) >= ServerParam::instance().catchProb() )
         {
             alive |= CATCH_FAULT;
-            return ;
+            return;
         }
 
         M_goalie_catch_ban = ServerParam::instance().catchBanCycle();
-        M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
+
         {
             PVector new_pos = M_stadium->ball().pos() - this->pos();
             double mag = new_pos.r();
@@ -555,6 +572,8 @@ Player::goalieCatch( double dir )
             M_angle_body = new_pos.th();
             M_vel = PVector();
         }
+
+        M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
 
         M_stadium->ballCaught( *this );
 
@@ -896,15 +915,34 @@ Player::tackle( double power )
 
                 PVector accel = PVector::fromPolar( eff_power,
                                                     angleBodyCommitted() );
-                //M_stadium->ball->push( accel );
 
                 // pfr 8/14/00: for RC2000 evaluation
                 // add noise to kick
                 double maxrnd = ( M_kick_rand * power * ( 1 - prob )
                                   / ServerParam::instance().maxPower() );
+
+                // add noise by current ball speed
+#if 0
+                maxrnd += M_kick_rand
+                    * M_stadium->ball().vel().r()
+                    / ServerParam::instance().ballDecay()
+                    / ServerParam::instance().ballSpeedMax();
+#else
+                {
+                    double max_dir_rand = M_PI
+                        * M_kick_rand
+                        * M_stadium->ball().vel().r()
+                        / ServerParam::instance().ballDecay()
+                        / ServerParam::instance().ballSpeedMax();
+                    double dir_noise = drand( -max_dir_rand, max_dir_rand );
+                    //std::cout << "Tackle: max_dir_rand = " << max_dir_rand * 180 / M_PI
+                    //          << "  dir_noise = " << dir_noise * 180 / M_PI
+                    //          << std::endl;
+                    accel.rotate( dir_noise );
+                }
+#endif
                 PVector kick_noise( drand( -maxrnd, maxrnd ),
                                     drand( -maxrnd, maxrnd ) );
-                //M_stadium->ball->push( kick_noise );
 
                 accel += kick_noise;
 

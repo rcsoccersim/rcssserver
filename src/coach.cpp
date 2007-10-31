@@ -907,7 +907,7 @@ OnlineCoach::change_player_types( const char * command )
             }
 
             if ( it->first == 0
-                 && ServerParam::instance().allowMultDefaultType() )
+                 && PlayerParam::instance().allowMultDefaultType() )
             {
                 // no error
             }
@@ -1612,7 +1612,7 @@ OnlineCoach::change_player_type( int unum,
     if ( used_count != team->ptypeUsedCount().end() )
     {
         if ( player_type == 0
-             && ServerParam::instance().allowMultDefaultType() )
+             && PlayerParam::instance().allowMultDefaultType() )
         {
 
         }

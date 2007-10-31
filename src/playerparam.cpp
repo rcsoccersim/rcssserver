@@ -235,6 +235,7 @@ PlayerParam::addParams()
     addParam( "new_dash_power_rate_delta_min", new_dash_power_rate_delta_min, "", 8 );
     addParam( "new_dash_power_rate_delta_max", new_dash_power_rate_delta_max, "", 8 );
     addParam( "new_stamina_inc_max_delta_factor", new_stamina_inc_max_delta_factor, "", 8 );
+    addParam( "allow_mult_default_type", M_allow_mult_default_type, "", 12 );
 }
 
 template< typename P >
@@ -267,6 +268,8 @@ PlayerParam::setDefaults()
     player_types = PlayerParam::DEFAULT_PLAYER_TYPES;
     subs_max = PlayerParam::DEFAULT_SUBS_MAX;
     pt_max = PlayerParam::DEFAULT_PT_MAX;
+
+    M_allow_mult_default_type = false;
 
     player_speed_max_delta_min = PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MIN;
     player_speed_max_delta_max = PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MAX;

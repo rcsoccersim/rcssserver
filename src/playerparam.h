@@ -116,6 +116,8 @@ public:
     int subsMax() const { return subs_max; }
     int ptMax() const { return pt_max; }
 
+    bool allowMultDefaultType() const { return M_allow_mult_default_type; }
+
     const double & playerSpeedMaxDeltaMin() const { return player_speed_max_delta_min; }
 
     const double & playerSpeedMaxDeltaMax() const { return player_speed_max_delta_max; }
@@ -195,6 +197,8 @@ private:
     int player_types;
     int subs_max;
     int pt_max;
+
+    bool M_allow_mult_default_type;
 
     double player_speed_max_delta_min;
     double player_speed_max_delta_max;

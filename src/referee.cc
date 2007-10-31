@@ -2086,6 +2086,7 @@ CatchRef::kickTaken( const Player & kicker )
         else
         {
             M_last_back_passer = &kicker;
+            M_last_back_passer_time = M_stadium.time();
         }
     }
     else if ( M_last_back_passer != NULL
@@ -2144,6 +2145,7 @@ CatchRef::ballCaught( const Player & catcher )
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
          //         && ! M_stadium.ball().wasMultiKicked()
+         && M_stadium.time() != M_last_back_passer_time
          && M_last_back_passer != NULL
          && M_last_back_passer != &catcher
          && M_last_back_passer->team() == catcher.team()
@@ -2158,7 +2160,6 @@ CatchRef::ballCaught( const Player & catcher )
         return;
     }
 
-    //M_stadium.M_ball_catcher = &catcher;
     awardFreeKick( catcher.team()->side(), M_stadium.ball().pos() );
 }
 

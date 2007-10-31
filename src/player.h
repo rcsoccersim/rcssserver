@@ -126,7 +126,7 @@ private:
     bool M_offside_mark;
     PVector M_offside_pos;
 
-    const HetroPlayer * M_player_type;
+    const HeteroPlayer * M_player_type;
     int M_player_type_id;
 
     Arm M_arm;
@@ -374,7 +374,7 @@ public:
     //    int getPlayerType() const;
     void substitute( const int& );
     const
-    HetroPlayer * playerType() const
+    HeteroPlayer * playerType() const
       {
           return M_player_type;
       }

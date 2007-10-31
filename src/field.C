@@ -167,7 +167,7 @@ Stadium::Stadium()
 
 Stadium::~Stadium()
 {
-    for ( std::vector< HetroPlayer * >::iterator it = M_player_types.begin();
+    for ( std::vector< HeteroPlayer * >::iterator it = M_player_types.begin();
           it != M_player_types.end();
           ++it )
     {
@@ -303,11 +303,11 @@ Stadium::init()
         delete reader;
     }
 
-    M_player_types.push_back( new HetroPlayer( 0 ) );
+    M_player_types.push_back( new HeteroPlayer( 0 ) );
     //std::cout << *(M_player_types[ 0 ]) << std::endl;
     for ( int i = 1; i < PlayerParam::instance().playerTypes(); i++ )
 		{
-				M_player_types.push_back( new HetroPlayer() );
+				M_player_types.push_back( new HeteroPlayer() );
         //std::cout << *(M_player_types[i]) << std::endl;
 		}
 
@@ -520,7 +520,7 @@ Stadium::addLandmark( PObject * new_obj )
 }
 
 const
-HetroPlayer *
+HeteroPlayer *
 Stadium::playerType( int id ) const
 {
     try
@@ -978,7 +978,6 @@ Stadium::step()
 
     if ( playmode() == PM_BeforeKickOff )
     {
-        //M_motable._turn();
         turnMovableObjects();
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
     }
@@ -994,13 +993,11 @@ Stadium::step()
               || playmode() == PM_CatchFault_Left )
     {
         M_ball_catcher = NULL;
-        //M_motable._inc();
         incMovableObjects();
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
     }
     else if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
     {
-        //M_motable._inc();
         incMovableObjects();
 
         ++M_time;
@@ -1086,36 +1083,36 @@ Stadium::step()
 void
 Stadium::turnMovableObjects()
 {
-     std::random_shuffle( M_movable_objects.begin(),
-                          M_movable_objects.end(),
-                          irand ); //rcss::random::UniformRNG::instance() );
-     const MPObjectCont::iterator end = M_movable_objects.end();
-     for ( MPObjectCont::iterator it = M_movable_objects.begin();
-           it != end;
-           ++it )
-     {
-         (*it)->_turn();
-     }
+    std::random_shuffle( M_movable_objects.begin(),
+                         M_movable_objects.end(),
+                         irand ); //rcss::random::UniformRNG::instance() );
+    const MPObjectCont::iterator end = M_movable_objects.end();
+    for ( MPObjectCont::iterator it = M_movable_objects.begin();
+          it != end;
+          ++it )
+    {
+        (*it)->_turn();
+    }
 }
 
 void
 Stadium::incMovableObjects()
 {
-     std::random_shuffle( M_movable_objects.begin(),
-                          M_movable_objects.end(),
-                          irand ); //rcss::random::UniformRNG::instance() );
-     const MPObjectCont::iterator end = M_movable_objects.end();
-     for ( MPObjectCont::iterator it = M_movable_objects.begin();
-           it != end;
-           ++it )
-     {
-         if ( (*it)->isEnable() )
-         {
-             (*it)->_inc();
-         }
-     }
+    std::random_shuffle( M_movable_objects.begin(),
+                         M_movable_objects.end(),
+                         irand ); //rcss::random::UniformRNG::instance() );
+    const MPObjectCont::iterator end = M_movable_objects.end();
+    for ( MPObjectCont::iterator it = M_movable_objects.begin();
+          it != end;
+          ++it )
+    {
+        if ( (*it)->isEnable() )
+        {
+            (*it)->_inc();
+        }
+    }
 
-     collisions();
+    collisions();
 }
 
 void
@@ -2621,7 +2618,6 @@ Stadium::ballCaught( const Player & catcher )
         M_ball_catcher = &catcher;
     }
 }
-
 
 void
 Stadium::sendGraphic( Side side,

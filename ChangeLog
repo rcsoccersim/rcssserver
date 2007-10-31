@@ -1,3 +1,28 @@
+2007-10-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp:
+	* src/field.C:
+	* src/field.h:
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* src/initsender.cc:
+	* src/object.C:
+	* src/player.cc:
+	* src/player.h:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/referee.cc:
+	* src/referee.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- moved allow_mult_default_type option from ServerParam to
+	PlayerParam.
+	- renamed HetroPlayer to HeteroPlayer.
+	- added CatchRef::M_last_back_passer_time to check the occurance
+	of the kick and the catch in the same cycle.
+	- added ServerParam::maxMonitors() to restrict the number of
+	monitor client connections.
+
 2007-10-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/audio.cc:
@@ -22,7 +47,7 @@
 	* src/serverparam.cpp:
 	* src/serverparam.h:
 	* src/types.h:
-	- added ServerParam::playerSpeedMaxRange(). This value is used to
+	- added ServerParam::playerSpeedMaxThr(). This value is used to
 	restrict the player_speed_max.
 	- added ServerParam::extraStamina() as the parameter for the
 	default type player.

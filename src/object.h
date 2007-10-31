@@ -669,6 +669,7 @@ class Ball
     : public MPObject {
 private:
 
+
 public:
 
     explicit

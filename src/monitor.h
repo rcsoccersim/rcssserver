@@ -43,10 +43,12 @@ public:
     void parseMsg( const char* msg, const size_t& len )
       {
           char* str = (char*)msg;
-          if( str[ len - 1 ] != 0 )
+          if ( str[ len - 1 ] != 0 )
           {
-              if( M_version >= 3.0 )
+              if ( version() >= 2.0 )
+              {
                   send( "(warning message_not_null_terminated)" );
+              }
               str[ len ] = 0;
           }
           parseCommand( str );

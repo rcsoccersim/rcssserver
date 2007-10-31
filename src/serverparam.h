@@ -29,8 +29,8 @@
  */
 
 
-#ifndef _SERVER_PARAM_H_
-#define _SERVER_PARAM_H_
+#ifndef SERVER_PARAM_H
+#define SERVER_PARAM_H
 
 #include "rcssserverconfig.hpp"
 
@@ -162,7 +162,7 @@ private:
     static const double PLAYER_RAND;
     static const double PLAYER_WEIGHT;
     static const double PLAYER_SPEED_MAX;
-    static const double PLAYER_SPEED_MAX_RANGE; // [12.0.0]
+    static const double PLAYER_SPEED_MAX_MIN; // [12.0.0]
     // th 6.3.00
     static const double PLAYER_ACCEL_MAX;
     //
@@ -324,6 +324,8 @@ private:
 		double prand; /* player rand */
 		double pweight; /* player weight */
 		double pspeed_max; /* player speed max */
+    // 12.0.0
+		double M_player_speed_max_min; // minumum value of player speed max
 		// th 6.3.00
 		double paccel_max; /* player acceleration max */
 		//
@@ -554,7 +556,7 @@ private:
 
     std::string M_coach_msg_file; /* file name that contains the messages sent to coaches */
 
-    bool M_allow_mult_default_type;
+    int M_max_monitors; //!< The maximum number of monitor clients.
 
 private:
 
@@ -741,7 +743,7 @@ public:
     const double & playerRand() const { return prand; }
     const double & playerWeight() const { return pweight; }
     const double & playerSpeedMax() const { return pspeed_max; }
-    const double & playerSpeedMaxRange() const { return PLAYER_SPEED_MAX_RANGE; }
+    const double & playerSpeedMaxMin() const { return M_player_speed_max_min; }
     const double & playerAccelMax() const { return paccel_max; }
     const double & staminaMax() const { return stamina_max; }
     const double & extraStamina() const { return M_extra_stamina; }
@@ -980,7 +982,7 @@ public:
 
     const std::string & coachMsgFile() const { return M_coach_msg_file; }
 
-    bool allowMultDefaultType() const { return M_allow_mult_default_type; }
+    int maxMonitors() const { return M_max_monitors; }
 
 };
 
