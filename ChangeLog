@@ -1,5 +1,26 @@
 2007-10-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/coach_lang_comp.cpp:
+	* src/field.cpp:
+	* src/landmarkreader.cpp:
+	* src/main.cpp:
+	* src/netif.cpp:
+	* src/object.cpp:
+	* src/region.cpp:
+	* src/xmlreader.cpp:
+	- renamed extentions from .C to .cpp.
+
+	* src/coach_lang_comp.C:
+	* src/field.C:
+	* src/landmarkreader.C:
+	* src/main.C:
+	* src/netif.C:
+	* src/object.C:
+	* src/region.C:
+	* src/xmlreader.C:
+	* src/Makefile.am:
+
+
 	* src/coach.cpp:
 	* src/field.C:
 	* src/field.h:

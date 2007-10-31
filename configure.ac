@@ -3,7 +3,7 @@ AC_INIT([RCSSServer], 12.0.0-pre-20071025, sserver-admin@users.sf.net, rcssserve
 
 AC_PREREQ(2.59)
 
-AC_CONFIG_SRCDIR([src/main.C])
+AC_CONFIG_SRCDIR([src/types.h])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AC_CONFIG_HEADERS([config.h])
 AC_PROG_MAKE_SET
