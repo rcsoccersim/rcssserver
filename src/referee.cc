@@ -2068,7 +2068,7 @@ const int CatchRef::AFTER_CATCH_FAULT_WAIT = 30;
 void
 CatchRef::kickTaken( const Player & kicker )
 {
-    if ( ! kicker.isGoalie() )
+//     if ( ! kicker.isGoalie() )
     {
         if ( kicker.team()->side() == LEFT )
         {
@@ -2085,26 +2085,30 @@ CatchRef::kickTaken( const Player & kicker )
         }
         else
         {
+            std::cerr << "set back passer time = "
+                      << M_stadium.time()
+                      << " unum = "
+                      << kicker.unum() << std::endl;
             M_last_back_passer = &kicker;
             M_last_back_passer_time = M_stadium.time();
         }
     }
-    else if ( M_last_back_passer != NULL
-              && M_last_back_passer->team() != kicker.team() )
-    {
-        M_last_back_passer = NULL;
-        // The else if above is to handle rare situations where a player from team
-        // A kicks the ball, the goalie from team B kicks it, and then the goalie
-        // from team A cacthes it.  This should not be concidered a back pass and
-        // the else if make sure of that.
-    }
+//     else if ( M_last_back_passer != NULL
+//               && M_last_back_passer->team() != kicker.team() )
+//     {
+//         M_last_back_passer = NULL;
+//         // The else if above is to handle rare situations where a player from team
+//         // A kicks the ball, the goalie from team B kicks it, and then the goalie
+//         // from team A cacthes it.  This should not be concidered a back pass and
+//         // the else if make sure of that.
+//     }
 }
 
 void
 CatchRef::ballTouched( const Player & player )
 {
     // If ball is not kicked, back pass violation is never taken.
-    if ( ! player.isGoalie() )
+//    if ( ! player.isGoalie() )
     {
         if ( player.team()->side() == LEFT )
         {
@@ -2144,10 +2148,9 @@ CatchRef::ballCaught( const Player & catcher )
     if ( M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         //         && ! M_stadium.ball().wasMultiKicked()
          && M_stadium.time() != M_last_back_passer_time
          && M_last_back_passer != NULL
-         && M_last_back_passer != &catcher
+         //&& M_last_back_passer != &catcher
          && M_last_back_passer->team() == catcher.team()
          && ServerParam::instance().backPasses() )
     {

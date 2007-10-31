@@ -489,10 +489,10 @@ Coach::send( const char* msg )
 void
 Coach::sendExternalMsg()
 {
-    std::cerr << "sendExternalMsg" << std::endl;
+    //std::cerr << "sendExternalMsg" << std::endl;
     if ( ServerParam::instance().coachMsgFile().empty() )
     {
-        std::cerr << "sendExternalMsg no input file" << std::endl;
+        //std::cerr << "sendExternalMsg no input file" << std::endl;
         return;
     }
 

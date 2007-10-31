@@ -22,6 +22,8 @@
 	of the kick and the catch in the same cycle.
 	- added ServerParam::maxMonitors() to restrict the number of
 	monitor client connections.
+	- Now, goalie cannot catch the ball just after the kick by
+	himself.
 
 2007-10-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
