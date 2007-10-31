@@ -137,8 +137,8 @@ protected:
     std::vector< PObject * > M_landmarks;
 
     rcss::net::UDPSocket M_player_socket;
-    rcss::net::UDPSocket M_online_coach_socket;
     rcss::net::UDPSocket M_offline_coach_socket;
+    rcss::net::UDPSocket M_online_coach_socket;
 
     OnlineCoachCont M_remote_online_coaches;
     PlayerCont  M_remote_players; //!< connected player container
@@ -394,22 +394,27 @@ private:
     void udp_recv_from_coach();
     void udp_recv_from_online_coach();
 
-    void parsePlayerInit( const char* message,
-                          const rcss::net::Addr& cli_addr );
-    bool parseMonitorInit( const char* message,
-                           const rcss::net::Addr& cli_addr );
-    void parseOnlineCoachInit( const char* message,
-                               const rcss::net::Addr& cli_addr );
+    void parsePlayerInit( const char * message,
+                          const rcss::net::Addr & cli_addr );
+    bool parseMonitorInit( const char * message,
+                           const rcss::net::Addr & cli_addr );
+    bool parseCoachInit( const char * message,
+                         const rcss::net::Addr & cli_addr );
+    void parseOnlineCoachInit( const char * message,
+                               const rcss::net::Addr & cli_addr );
 
-    Player * newPlayer( const rcss::net::Addr &,
-                        const char* init_message );
+    Player * newPlayer( const char * init_message,
+                        const rcss::net::Addr & );
     Player * newPlayer( const char * teamname,
                         const double & version,
                         const bool goalie_flag,
-                        const rcss::net::Addr& );
-    Player * reconnectPlayer( const rcss::net::Addr&,
-                             const char* init_message );
-    OnlineCoach * newCoach( const rcss::net::Addr&, const char* );
+                        const rcss::net::Addr & );
+    Player * reconnectPlayer( const char * init_message,
+                              const rcss::net::Addr & );
+
+    OnlineCoach * newOnlineCoach( const char * init_message,
+                                  const rcss::net::Addr & );
+
 
     void removeDisconnectedClients();
 
@@ -477,6 +482,9 @@ private:
     //! diretcly send message to player client that has cli_addr
     void sendToPlayer( const char *msg,
                        const rcss::net::Addr& cli_addr );
+    //! diretcly send message to offline coach client that has cli_addr
+    void sendToCoach( const char *msg,
+                      const rcss::net::Addr& cli_addr );
     //! diretcly send message to online coach client that has cli_addr
     void sendToOnlineCoach( const char *msg,
                             const rcss::net::Addr& cli_addr );

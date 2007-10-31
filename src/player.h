@@ -151,8 +151,8 @@ public:
             int number );
     ~Player();
 
-    void init( const double & version,
-               const bool goalie_flag );
+    bool init( const double & ver,
+               const bool goalie );
 
     /** This function is called in the begin of each cycle
      * and in case a player sends a sense_body command. */

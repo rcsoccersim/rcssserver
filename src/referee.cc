@@ -2085,10 +2085,6 @@ CatchRef::kickTaken( const Player & kicker )
         }
         else
         {
-            std::cerr << "set back passer time = "
-                      << M_stadium.time()
-                      << " unum = "
-                      << kicker.unum() << std::endl;
             M_last_back_passer = &kicker;
             M_last_back_passer_time = M_stadium.time();
         }

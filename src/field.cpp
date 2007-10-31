@@ -582,8 +582,9 @@ Stadium::initObjects()
 }
 
 Player *
-Stadium::newPlayer( const rcss::net::Addr & addr,
-                    const char * init_message )
+Stadium::newPlayer( const char * init_message,
+                    const rcss::net::Addr & addr )
+
 {
     // (init <TeamName> [(version <Ver>)][ (goalie)])
     const char * msg = init_message;
@@ -714,7 +715,6 @@ Stadium::newPlayer( const char * teamname,
         return NULL;
     }
 
-
     if ( ! p->connect( addr ) )
     {
         sendToPlayer( "(error connection_failed)", addr );
@@ -733,8 +733,9 @@ Stadium::newPlayer( const char * teamname,
 }
 
 Player*
-Stadium::reconnectPlayer( const rcss::net::Addr& addr,
-                          const char* reconnect_message )
+Stadium::reconnectPlayer( const char* reconnect_message,
+                          const rcss::net::Addr & addr )
+
 {
     char teamname[128];
     int rnum;
@@ -794,9 +795,10 @@ Stadium::reconnectPlayer( const rcss::net::Addr& addr,
     }
 }
 
-OnlineCoach*
-Stadium::newCoach( const rcss::net::Addr & addr,
-                   const char * init_message )
+OnlineCoach *
+Stadium::newOnlineCoach( const char * init_message,
+                         const rcss::net::Addr & addr )
+
 {
     // (init <TeamName>[ <CoachName>][ (version <Ver>)])
 
@@ -914,7 +916,7 @@ Stadium::newCoach( const rcss::net::Addr & addr,
         return NULL;
     }
 
-    if ( olc->assignedp() )
+    if ( olc->assigned() )
     {
         sendToOnlineCoach( "(error already_have_coach)", addr );
         return NULL;
@@ -934,7 +936,7 @@ Stadium::newCoach( const rcss::net::Addr & addr,
         return NULL;
     }
 
-    olc->setEnforceDedicatedPort ( version >= 8.0 );
+    olc->setEnforceDedicatedPort( version >= 8.0 );
 
     addListener( olc );
 
@@ -2042,7 +2044,8 @@ Stadium::writeTextLog( const char *message, int flag )
         if ( ServerParam::instance().sendComms() )
         {
             for ( Stadium::MonitorCont::iterator i = monitors().begin();
-                  i != monitors().end(); ++i )
+                  i != monitors().end();
+                  ++i )
             {
                 if ( (*i)->version() >= 2.0 )
                 {
@@ -3220,7 +3223,7 @@ Stadium::doSendCoachMessages()
         gettimeofday ( &tv_start, NULL );
     }
 
-    if ( M_coach->assignedp()
+    if ( M_coach->assigned()
          && M_coach->isEyeOn() )
     {
         M_coach->send_visual_info();
@@ -3228,7 +3231,7 @@ Stadium::doSendCoachMessages()
 
     for ( int i = 0; i < 2; ++i )
     {
-        if ( M_olcoaches[i]->assignedp() && M_olcoaches[i]->isEyeOn() )
+        if ( M_olcoaches[i]->assigned() && M_olcoaches[i]->isEyeOn() )
         {
             M_olcoaches[i]->send_visual_info();
         }
@@ -3354,7 +3357,7 @@ Stadium::doSendThink()
             if ( waitCoach[i]
                  && M_olcoaches[i]->connected()
                  && ! M_olcoaches[i]->doneReceived()
-                 && M_olcoaches[i]->assignedp() )
+                 && M_olcoaches[i]->assigned() )
             {
                 done = DS_FALSE;
                 break;

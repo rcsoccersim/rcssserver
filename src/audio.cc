@@ -785,7 +785,7 @@ AudioSenderOnlineCoach::factory()
 bool
 AudioSenderOnlineCoach::generalPredicate() const
 {
-    return M_listener.assignedp();
+    return M_listener.assigned();
 }
 
 

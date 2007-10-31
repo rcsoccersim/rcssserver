@@ -775,14 +775,10 @@ Team::newPlayer( const double & version,
         }
     }
 
-    Player *p = M_players[size()];
+    Player * p = M_players[size()];
 
-    p->init( version, goalie_flag );
-
-    if ( ! p->setSenders() )
+    if ( ! p->init( version, goalie_flag ) )
     {
-        std::cerr << "Error: Could not find serializer or sender for version "
-                  << (int)( p->version() ) << std::endl;
         return NULL;
     }
 

@@ -52,7 +52,7 @@ protected:
 
     Stadium * M_stadium;
 
-    bool M_assignedp;
+    bool M_assigned;
     bool M_eye;
     bool M_hear;
     double M_version;
@@ -65,11 +65,9 @@ public:
     explicit
     Coach( Stadium *stad );
 
-    int parse_init( Stadium& stad, char *command,
-                    const rcss::net::Addr& addr );
-    bool assignedp() const
+    bool assigned() const
       {
-          return M_assignedp;
+          return M_assigned;
       }
 
     bool isEyeOn() const
@@ -144,13 +142,13 @@ public:
 
     void sendExternalMsg();
 
-protected:
-
     virtual
     bool setSenders( const double & client_version );
 
     virtual
     void sendInit();
+
+protected:
 
     void sendOKEye();
 

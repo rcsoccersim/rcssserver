@@ -83,7 +83,7 @@ Coach::Coach( Stadium *stad )
     : M_init_observer_coach( NULL ),
       M_observer( new rcss::ObserverCoach ),
       M_stadium( stad ),
-      M_assignedp( false ),
+      M_assigned( false ),
       M_eye( false ),
       M_hear( false ),
       M_version( 0.0 ),
@@ -96,70 +96,10 @@ Coach::Coach( Stadium *stad )
 void
 Coach::disable()
 {
-    M_assignedp = false;
+    M_assigned = false;
     RemoteClient::close();
     std::cout << "An offline coach disconnected\n";
 }
-
-
-int
-Coach::parse_init( Stadium& stad,
-                   char *command,
-                   const rcss::net::Addr& addr )
-{
-    // (init[ (version <Ver>)])
-
-    char com[MaxMesg];
-    int n;
-    n = std::sscanf( command, "(%[-0-9a-zA-Z.+*/?<>_]", com );
-    if( n < 1 )
-    {
-        send( "(error illegal_command_form)" );
-        return 0;
-    }
-
-    if ( ! std::strcmp ( com, "init" ) )
-    {
-        float ver = 3.0;
-        n = std::sscanf( command, "(init (version %f))", &ver );
-        if ( ( n != 0 && n != 1 )
-             || ver < 1.0 )
-        {
-            send( "(error illegal_command_form)" );
-            return 0;
-        }
-
-        if( ! connect( addr ) )
-        {
-            return 0;
-        }
-
-        if ( ! setSenders( ver ) )
-        {
-            std::cerr << "Error: Could not find serializer or sender for version"
-                      << (int)version() << std::endl;
-            send( "(error illegal_client_version)" );
-            return 0;
-        }
-
-        setEnforceDedicatedPort( ver >= 8.0 );
-        stad.addOfflineCoach( this );
-
-        stad.addListener( this );
-
-        sendInit();
-
-        M_assignedp = true;
-        return 1;
-    }
-    else
-    {
-        // old type of coach that doesn;t send an init message
-        M_assignedp = true;
-        return -1;
-    }
-}
-
 
 bool
 Coach::setSenders( const double & client_version )
@@ -224,6 +164,7 @@ Coach::setSenders( const double & client_version )
     //rcss::InitObserver<rcss::InitSenderOfflineCoach>::setInitSender( isoc );
     M_init_observer_coach->setInitSender( init_cre( init_params ) );
 
+    M_assigned = true;
     return true;
 }
 
@@ -241,7 +182,10 @@ Coach::sendInit()
 void
 Coach::sendOKEye()
 {
-    M_observer->sendOKEye();
+    if ( M_assigned )
+    {
+        M_observer->sendOKEye();
+    }
 }
 
 void
@@ -628,7 +572,10 @@ Coach::compression( int level )
 void
 Coach::look( Stadium& ) //stad )
 {
-    M_observer->sendLook();
+    if ( M_assigned )
+    {
+        M_observer->sendLook();
+    }
 // #ifdef HAVE_SSTREAM
 //     std::ostringstream ost;
 // #else
@@ -1161,7 +1108,7 @@ OnlineCoach::~OnlineCoach()
 void
 OnlineCoach::disable()
 {
-    if ( M_assignedp )
+    if ( M_assigned )
     {
         //std::cout << "An online coach disconnected\n";
         std::cout << "An online coach disconnected : ("
@@ -1172,7 +1119,7 @@ OnlineCoach::disable()
         std::cout << ")\n";
     }
 
-    M_assignedp = false;
+    M_assigned = false;
 
     if ( connected() )
     {
@@ -1407,7 +1354,6 @@ OnlineCoach::parse_command( const char *command )
     }
     else if ( ! std::strcmp( com, "bye" ) )
     {
-        //M_assignedp = false;
         disable();
         return;
     }
@@ -1798,7 +1744,7 @@ OnlineCoach::setSenders( const double & client_version )
     //rcss::InitObserver< rcss::InitSenderOnlineCoach >::setInitSender( isoc );
     M_init_observer_olcoach->setInitSender( init_cre( init_params ) );
 
-    M_assignedp = true;
+    M_assigned = true;
     return true;
 }
 

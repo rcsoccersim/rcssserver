@@ -206,19 +206,15 @@ Player::~Player()
     M_fullstate_observer = NULL;
 }
 
-void
-Player::init( const double & version_tmp,
-              const bool goalie_flag )
+bool
+Player::init( const double & ver,
+              const bool goalie )
 {
-    M_enable = true;
+    M_version = ver;
+    M_goalie = goalie;
 
-    M_version = version_tmp;
-    M_goalie = goalie_flag;
-    alive = STAND;
-    if ( isGoalie() )
-    {
-        alive |= GOALIE;
-    }
+    setEnable();
+
     M_goalie_catch_ban = 0;
     M_goalie_moves_since_catch = 0;
 
@@ -258,6 +254,16 @@ Player::init( const double & version_tmp,
     land_qstep_player = team->landQstepTeam();
     dir_qstep_player  = team->dirQstepTeam();
 #endif
+
+
+    if ( ! setSenders() )
+    {
+        std::cerr << "Error: Could not find serializer or sender for version "
+                  << version() << std::endl;
+        return false;
+    }
+
+    return true;
 }
 
 void
@@ -975,7 +981,7 @@ Player::clang( int min, int max )
 
     if( M_team != NULL
         && team()->olcoach() != NULL
-        && team()->olcoach()->assignedp() )
+        && team()->olcoach()->assigned() )
     {
         M_team->olcoach()->sendPlayerClangVer( *this );
     }

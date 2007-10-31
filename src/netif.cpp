@@ -203,11 +203,9 @@ Stadium::udp_recv_message()
 
 
 void
-Stadium::parsePlayerInit( const char *message,
-                          const rcss::net::Addr& cli_addr )
+Stadium::parsePlayerInit( const char * message,
+                          const rcss::net::Addr & cli_addr )
 {
-		Player *p;
-
 		if ( ! std::strncmp( message, "(reconnect ", std::strlen( "(reconnect " ) ) )
 		{
         //              std::cerr << "Got reconnect" << std::endl;
@@ -218,15 +216,10 @@ Stadium::parsePlayerInit( const char *message,
         }
 				else
 				{
-            p = reconnectPlayer( cli_addr, message );
-            if ( p == (Player *)NULL )
-            {
-                //sendToPlayer( "(error reconnect)", cli_addr );
-            }
-            else
+            Player * p = reconnectPlayer( message, cli_addr );
+            if ( p )
             {
                 p->sendReconnect();
-
                 writeTextLog( *p, message, RECV );
             }
 				}
@@ -234,16 +227,10 @@ Stadium::parsePlayerInit( const char *message,
 		else if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
     {
         // a new player connects to the server
-        p = newPlayer( cli_addr, message );
-        if ( ! p )
-        {
-            //sendToPlayer( "(error illegal_teamname_or_no_more_team_or_player_or_goalie)",
-            //              cli_addr );
-        }
-        else
+        Player * p = newPlayer( message, cli_addr );
+        if ( p )
         {
             p->sendInit();
-
             writeTextLog( *p, message, RECV );
         }
     }
@@ -396,18 +383,7 @@ Stadium::udp_recv_from_coach()
                 }
                 message[iMsgLength] = NULLCHAR;
 
-                int n = M_coach->parse_init( *this, message, cli_addr );
-                if ( n == -1 )
-                {
-                    _Start( *this ); // need to remove this line if we
-                    // dont want the server to start when the coach connects
-                    M_coach->parse_command( message );
-                    writeTextLog( *M_coach, message, RECV );
-                }
-                else if ( n == 1 )
-                {
-                    writeTextLog( *M_coach, message, RECV );
-                }
+                parseCoachInit( message, cli_addr );
             }
         }
         else if ( errno != EWOULDBLOCK )
@@ -417,6 +393,77 @@ Stadium::udp_recv_from_coach()
                       << strerror( errno ) << std::endl;
         }
     }
+}
+
+bool
+Stadium::parseCoachInit( const char * message,
+                         const rcss::net::Addr & cli_addr )
+{
+    if ( ! M_remote_offline_coaches.empty() )
+    {
+        sendToCoach( "(error already_have_offline_coach)", cli_addr );
+        return false;
+    }
+
+    char command[128];
+    int n = std::sscanf( message, "(%127[-0-9a-zA-Z.+*/?<>_]", command );
+    if( n < 1 )
+    {
+        sendToCoach( "(error illegal_command_form)", cli_addr );
+        return false;
+    }
+
+    // (init[ (version <Ver>)])
+
+    if ( ! std::strcmp ( command, "init" ) )
+    {
+        double ver = 3.0;
+        n = std::sscanf( message, "(init (version %lf))", &ver );
+        if ( ( n != 0 && n != 1 )
+             || ver < 1.0 )
+        {
+            sendToCoach( "(error illegal_command_form)", cli_addr );
+            return false;
+        }
+
+        if ( M_coach->open() != 0 )
+        {
+            sendToCoach( "(error socket_open_failed)", cli_addr );
+            return false;
+        }
+
+        if ( ! M_coach->connect( cli_addr ) )
+        {
+            sendToCoach( "(error connection_failed)", cli_addr );
+            return false;
+        }
+
+        if ( ! M_coach->setSenders( ver ) )
+        {
+            std::cerr << "Error: Could not find serializer or sender for version"
+                      << ver << std::endl;
+            sendToCoach( "(error illegal_client_version)", cli_addr );
+            return false;
+        }
+
+        M_coach->setEnforceDedicatedPort( ver >= 8.0 );
+        addOfflineCoach( M_coach );
+        addListener( M_coach );
+        M_coach->sendInit();
+
+        std::cout << "a new offline coach connected" << std::endl;
+
+        writeTextLog( *M_coach, message, RECV );
+    }
+    else
+    {
+        _Start( *this ); // need to remove this line if we
+        // dont want the server to start when the coach connects
+        M_coach->parse_command( message );
+        writeTextLog( *M_coach, message, RECV );
+    }
+
+    return true;
 }
 
 void
@@ -474,21 +521,13 @@ Stadium::udp_recv_from_online_coach()
 }
 
 void
-Stadium::parseOnlineCoachInit( const char* message,
+Stadium::parseOnlineCoachInit( const char * message,
                                const rcss::net::Addr & addr )
 {
-    //char tmp[MaxMesg];
-
-    //std::sscanf( message, "(%s", tmp );
     if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
     {
-        OnlineCoach * olc = newCoach( addr, message );
-        if ( olc == NULL)
-        {
-            //sendToOnlineCoach( "(error no_such_team_or_already_have_coach)",
-            //                   addr );
-        }
-        else
+        OnlineCoach * olc = newOnlineCoach( message, addr );
+        if ( olc )
         {
             writeTextLog( *olc, message, RECV );
         }
@@ -497,9 +536,6 @@ Stadium::parseOnlineCoachInit( const char* message,
     {
         sendToOnlineCoach( "(error illegal_command_form)",
                            addr );
-        //char errmsg[] = "(error illegal_command_form)";
-        //M_online_coach_socket.send( errmsg, std::strlen( errmsg ) + 1,
-        //                            addr );
     }
 }
 
@@ -569,7 +605,8 @@ Stadium::say( const char *message, bool ref )
 
 
 void
-Stadium::sendToPlayer( const char *msg, const rcss::net::Addr & cli_addr )
+Stadium::sendToPlayer( const char * msg,
+                       const rcss::net::Addr & cli_addr )
 {
     if ( M_player_socket.send( msg, std::strlen( msg ) + 1, cli_addr ) == -1 )
     {
@@ -580,7 +617,20 @@ Stadium::sendToPlayer( const char *msg, const rcss::net::Addr & cli_addr )
 }
 
 void
-Stadium::sendToOnlineCoach( const char *msg, const rcss::net::Addr & cli_addr )
+Stadium::sendToCoach( const char * msg,
+                      const rcss::net::Addr & cli_addr )
+{
+    if ( M_offline_coach_socket.send( msg, std::strlen( msg ) + 1, cli_addr ) == -1 )
+    {
+        std::cerr << __FILE__ ": " << __LINE__
+                  << ": Error sending to socket: "
+                  << strerror( errno ) << std::endl;
+    }
+}
+
+void
+Stadium::sendToOnlineCoach( const char * msg,
+                            const rcss::net::Addr & cli_addr )
 {
     if ( M_online_coach_socket.send( msg, std::strlen( msg ) + 1, cli_addr ) == -1 )
     {
@@ -619,7 +669,7 @@ Stadium::broadcastSubstitution( const int side,
 
     // tell coaches
     if ( M_olcoaches[1]
-         && M_olcoaches[1]->assignedp()
+         && M_olcoaches[1]->assigned()
          && M_olcoaches[1]->version() >= 7.0 )
     {
         if ( side == RIGHT )
@@ -635,7 +685,7 @@ Stadium::broadcastSubstitution( const int side,
     }
 
     if ( M_olcoaches[0]
-         && M_olcoaches[0]->assignedp()
+         && M_olcoaches[0]->assigned()
          && M_olcoaches[0]->version() >= 7.0 )
     {
         if ( side == LEFT )
