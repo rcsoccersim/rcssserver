@@ -1,3 +1,11 @@
+[12.0.0-pre-20071025]
+  * Changed default parameter values.
+    - player_decay_delta_min: 0 -> -0.05.
+    - new_dash_power_rate_delta_min: 0 -> -0.0005.
+    - new_dash_power_rate_delta_max: 0.002 -> 0.0015.
+
+  * Added a new server parameter extra_stamina(0.0).
+
 [12.0.0-pre-20071023]
   * Changed a rule of the back pass. Now, indirect free kick is taken
 	after the back pass.
