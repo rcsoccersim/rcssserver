@@ -320,11 +320,11 @@ void
 FullStateSenderPlayerV8::sendSelf()
 {
     rcss::geom::Vector2D arm_vec;
-    self().getArm().getRelDest ( rcss::geom::Vector2D ( self().pos().x,
-                                                        self().pos().y ),
-                                 self().angleBodyCommitted()
-                                 + self().angleNeckCommitted(),
-                                 arm_vec );
+    self().arm().getRelDest ( rcss::geom::Vector2D ( self().pos().x,
+                                                     self().pos().y ),
+                              self().angleBodyCommitted()
+                              + self().angleNeckCommitted(),
+                              arm_vec );
     serializer().serializeFSCounts( transport(),
                                     self().kickCount(),
                                     self().dashCount(),
@@ -335,10 +335,10 @@ FullStateSenderPlayerV8::sendSelf()
                                     self().changeViewCount(),
                                     self().sayCount() );
     serializer().serializeArm( transport(),
-                               self().getArm().getCyclesTillMovable(),
-                               self().getArm().getCyclesTillExpiry(),
+                               self().arm().getCyclesTillMovable(),
+                               self().arm().getCyclesTillExpiry(),
                                arm_vec.getMag(), Rad2IDegRound( arm_vec.getHead() ),
-                               self().getArm().getCounter() );
+                               self().arm().getCounter() );
 }
 
 void
@@ -391,12 +391,12 @@ FullStateSenderPlayerV8::sendPlayer( const Player& p )
                                          Rad2Deg( p.angleBodyCommitted() ),
                                          Rad2Deg( p.angleNeckCommitted() ) );
 
-    if( p.getArm().isPointing() )
+    if( p.arm().isPointing() )
     {
         rcss::geom::Vector2D arm_vec;
-        p.getArm().getRelDest( rcss::geom::Vector2D( p.pos().x, p.pos().y ),
-                               p.angleBodyCommitted() + p.angleNeckCommitted(),
-                               arm_vec );
+        p.arm().getRelDest( rcss::geom::Vector2D( p.pos().x, p.pos().y ),
+                            p.angleBodyCommitted() + p.angleNeckCommitted(),
+                            arm_vec );
         serializer().serializeFSPlayerArm( transport(),
                                            arm_vec.getMag(),
                                            arm_vec.getHead() );

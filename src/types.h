@@ -46,47 +46,26 @@
 typedef boost::int16_t Int16;
 typedef boost::int32_t Int32;
 
-#if 1
-#define	DISABLE			0x0000
-#define	STAND			0x0001
-#define	KICK			0x0002
-#define KICK_FAULT		0x0004
-#define	GOALIE			0x0008
-#define CATCH			0x0010
-#define CATCH_FAULT		0x0020
-#define BALL_TO_PLAYER		0x0040
-#define PLAYER_TO_BALL		0x0080
-#define DISCARD			0x0100
-// [I.Noda:00/05/13] added for 3D viewer/commentator/small league
-#define LOST			0x0200
-
-#define BALL_COLLIDE		0x0400 // player collided with the ball
-#define	PLAYER_COLLIDE		0x0800 // player collided with another player
-#define TACKLE       0x1000
-#define TACKLE_FAULT 0x2000
-#define BACK_PASS 0x4000
-#define FREE_KICK_FAULT 0x8000
-#else
 enum PlayerState {
-    DISABLE = 0x0000,
-    STAND = 0x0001,
-    KICK = 0x0002,
-    KICK_FAULT = 0x0004,
-    GOALIE = 0x0008,
-    CATCH = 0x0010,
-    CATCH_FAULT = 0x0020,
-    BALL_TO_PLAYER = 0x0040,
-    PLAYER_TO_BALL = 0x0080,
-    DISCARD = 0x0100,
-    LOST = 0x0200, // [I.Noda:00/05/13] added for 3D viewer/commentator/small league
-    BALL_COLLIDE = 0x0400, // player collided with the ball
-    PLAYER_COLLIDE = 0x0800, // player collided with another player
-    TACKLE = 0x1000,
-    TACKLE_FAULT = 0x2000,
-    BACK_PASS = 0x4000,
-    FREE_KICK_FAULT = 0x8000,
+    DISABLE = 0x00000000,
+    STAND = 0x00000001,
+    KICK = 0x00000002,
+    KICK_FAULT = 0x00000004,
+    GOALIE = 0x00000008,
+    CATCH = 0x00000010,
+    CATCH_FAULT = 0x00000020,
+    BALL_TO_PLAYER = 0x00000040,
+    PLAYER_TO_BALL = 0x00000080,
+    DISCARD = 0x00000100,
+    LOST = 0x00000200, // [I.Noda:00/05/13] added for 3D viewer/commentator/small league
+    BALL_COLLIDE = 0x00000400, // player collided with the ball
+    PLAYER_COLLIDE = 0x00000800, // player collided with another player
+    TACKLE = 0x00001000,
+    TACKLE_FAULT = 0x00002000,
+    BACK_PASS = 0x00004000,
+    FREE_KICK_FAULT = 0x00008000,
+    POST_COLLIDE = 0x00010000, // player collided with goal posts
 };
-#endif
 
 enum Side {
     LEFT = 1,

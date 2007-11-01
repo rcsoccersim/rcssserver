@@ -353,7 +353,7 @@ private:
 
     double calcRadDir( const PObject& obj )
       {
-          return normalize_angle( self().vangle( obj )
+          return normalize_angle( self().angleFromBody( obj )
                                   - self().angleNeckCommitted() );
       }
 

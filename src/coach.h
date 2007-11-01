@@ -48,8 +48,6 @@ protected:
 
     rcss::ObserverCoach * M_observer;
 
-    char M_buffer[ MaxMesg ];
-
     Stadium & M_stadium;
 
     bool M_assigned;

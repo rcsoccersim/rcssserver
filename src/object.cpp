@@ -74,21 +74,6 @@ PVector::rotate(const double & ang)
     return *this;
 }
 
-// Angle PVector::vangle(const PVector& target, const PVector& origin) const
-// {
-//     PVector axis = origin - *this;
-//     PVector dir = target - *this;
-//     return axis.angle( dir );
-// }
-
-// Angle PVector::vangle(const PVector& target, const Angle& origin) const
-// {
-//     PVector dir = target - *this;
-//     Angle ang = dir.angle() - origin;
-
-//     return normalize_angle( ang );
-// }
-
 bool
 PVector::between( const PVector& begin, const PVector& end ) const
 {
@@ -569,6 +554,8 @@ MPObject::_inc()
         //          std::cout << "pos = " << pos << endl;
         //          std::cout << "nearest post = " << post << endl;
         //          std::cout << "dist = " << (pos - post.center).r() << endl;
+
+        collidedWithPost();
     }
 
     PVector new_pos = pos() + M_vel;
@@ -631,6 +618,8 @@ MPObject::_inc()
         //          std::cout << "vel = " << vel << endl;
 
         second = false;
+
+        collidedWithPost();
     }
 
     M_pos = new_pos;
@@ -750,7 +739,7 @@ Team::~Team()
 
 }
 
-Player*
+Player *
 Team::newPlayer( const double & version,
                  const bool goalie_flag )
 {

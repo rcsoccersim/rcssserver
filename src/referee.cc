@@ -1533,7 +1533,7 @@ FreeKickRef::placePlayersForGoalkick()
             continue;
         if ( (*p)->team()->side() == oppside )
         {
-            const double size = (*p)->playerType()->playerSize();
+            const double size = (*p)->size();
             RArea expand_area( p_area->left - size,
                                p_area->right + size,
                                p_area->top - size,

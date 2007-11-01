@@ -771,8 +771,8 @@ InitSenderOnlineCoach::sendPlayerClangVer()
           i != stadium().remotePlayers().end();
           ++i )
     {
-        if ( (*i)->getClangMinVer() != 0
-             || (*i)->getClangMaxVer() != 0 )
+        if ( (*i)->clangMinVer() != 0
+             || (*i)->clangMaxVer() != 0 )
         {
             sendPlayerClangVer( **i );
         }
@@ -949,8 +949,8 @@ InitSenderOnlineCoachV8::sendPlayerClangVer( const Player & player )
 {
     serializer().serializePlayerClangVer( transport(),
                                           player.shortName(),
-                                          player.getClangMinVer(),
-                                          player.getClangMaxVer() );
+                                          player.clangMinVer(),
+                                          player.clangMaxVer() );
     transport() << std::ends << std::flush;
 }
 

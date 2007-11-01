@@ -973,7 +973,7 @@ Stadium::step()
           i != M_remote_players.end();
           ++i )
     {
-        (*i)->getArm().incAge();
+        (*i)->incArmAge();
     }
 
     if ( playmode() == PM_BeforeKickOff )
@@ -3155,10 +3155,9 @@ Stadium::doSendVisuals()
         if ( (*it)->alive() != DISABLE
              && (*it)->connected() )
         {
-            (*it)->send_visual_info();
+            (*it)->sendVisual();
         }
     }
-    //udp_send_message();
 
     if ( text_log_open()
          && ServerParam::instance().profile() )

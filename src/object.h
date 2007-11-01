@@ -166,11 +166,11 @@ public:
     const
     PVector & rotate( const double & ang );
 
-    double vangle( const PVector & target,
-                   const PVector& origin ) const;
+//     double vangle( const PVector & target,
+//                    const PVector & origin ) const;
 
-    double vangle( const PVector & target,
-                   const double & origin ) const;
+//     double vangle( const PVector & target,
+//                    const double & origin ) const;
 
     bool between( const PVector & begin,
                   const PVector & end ) const;
@@ -228,21 +228,21 @@ operator<<( std::ostream & o,
 
 
 
-inline
-double
-PVector::vangle( const PVector & target,
-                 const PVector & origin ) const
-{
-    return ( origin - *this ).angle( target - *this );
-}
+// inline
+// double
+// PVector::vangle( const PVector & target,
+//                  const PVector & origin ) const
+// {
+//     return ( origin - *this ).angle( target - *this );
+// }
 
-inline
-double
-PVector::vangle( const PVector & target,
-                 const double & origin ) const
-{
-    return normalize_angle( ( target - *this ).angle() - origin );
-}
+// inline
+// double
+// PVector::vangle( const PVector & target,
+//                  const double & origin ) const
+// {
+//     return normalize_angle( ( target - *this ).angle() - origin );
+// }
 
 
 
@@ -430,14 +430,6 @@ public:
     ~PObject()
       { }
 
-    //     void Set( const PVector & p,
-    //               const double & s )
-    //       {
-    //           pos = p;
-    //           size = s;
-    //       }
-
-
     int id() const
       {
           return M_id;
@@ -516,8 +508,7 @@ operator<<( std::ostream & o, const PObject & v )
 
 
 class Stadium;
-class Weather;
-class MPObjectTable;
+//class Weather;
 
 class MPObject
     : public PObject {
@@ -649,6 +640,9 @@ protected:
     void updateAngle() = 0;
 
     virtual
+    void collidedWithPost() = 0;
+
+    virtual
     double maxAccel() const = 0;
 
     virtual
@@ -681,6 +675,10 @@ public:
 
     virtual
     void updateAngle()
+      { }
+
+    virtual
+    void collidedWithPost()
       { }
 
     virtual

@@ -97,7 +97,7 @@ private:
     //int sendcnt;
     bool M_highquality;
 
-    int M_alive;
+    Int32 M_alive;
 
     bool M_command_done;
     bool M_turn_neck_done;
@@ -108,9 +108,7 @@ private:
 
     bool M_goalie;
     int M_goalie_catch_ban;
-    //double M_goalie_catch_probability;
     int M_goalie_moves_since_catch;
-    //PVector relative_ball_ang;
 
     int M_kick_count;
     int M_dash_count;
@@ -121,20 +119,19 @@ private:
     int M_change_view_count;
     int M_say_count;
 
+    Arm M_arm;
+
+    int M_tackle_cycles;
+    int M_tackle_count;
+
+    int M_clang_min_ver;
+    int M_clang_max_ver;
+
     bool M_offside_mark;
     PVector M_offside_pos;
 
     const HeteroPlayer * M_player_type;
     int M_player_type_id;
-
-    Arm M_arm;
-    unsigned int M_tackle_cycles;
-    unsigned int M_tackle_count;
-
-    char M_buffer[ MaxMesg ];
-
-    unsigned int M_clang_min_ver;
-    unsigned int M_clang_max_ver;
 
     rcss::pcom::Parser M_parser;
 
@@ -156,26 +153,26 @@ public:
     void disable();
     void discard();
 
-    int alive() const
+    Int32 alive() const
       {
           return M_alive;
       }
 
     void resetState();
 
-    void addState( const int state )
+    void addState( const Int32 state )
       {
           M_alive |= state;
       }
+
+    void sendInit();
+    void sendReconnect();
 
     /** This function is called in the begin of each cycle
      * and in case a player sends a sense_body command. */
     void sense_body();
 
-    void sendInit();
-    void sendReconnect();
-
-    void send_visual_info();
+    void sendVisual();
     void sendSynchVisual();
 
     /* contributed by Artur Merke */
@@ -184,35 +181,33 @@ public:
     /** Inline-Deklarations */
     inline void parseMsg( const char* msg, const size_t& len );
 
-    inline void rotate( const double & a );
-    inline void rotate_to( const double & a );
+    void incArmAge()
+      {
+          return M_arm.incAge();
+      }
+    const
+    Arm & arm() const
+      {
+          return M_arm;
+      }
 
-    inline Arm& getArm();
-    inline const Arm& getArm() const;
-    inline bool getArmDir( double & arm_dir ) const;
-    inline unsigned int getTackleCycles() const;
-    //inline void decrementTackleCycles();
-    inline bool isTackling() const;
-    inline unsigned int getTackleCount() const;
-    inline unsigned int getClangMinVer() const;
-    inline unsigned int getClangMaxVer() const;
-    inline bool isGoalie() const;
-    inline void setBackPasser();
-    inline void setFreeKickFaulter();
+    int tackleCycles() const { return M_tackle_cycles; }
+    bool isTackling() const { return M_tackle_cycles > 0; }
+    int tackleCount() const { return M_tackle_count; }
+
+    int clangMinVer() const { return M_clang_min_ver; }
+    int clangMaxVer() const { return M_clang_max_ver; }
+
+    void setBackPasser() { M_alive |= BACK_PASS; }
+    void setFreeKickFaulter() { M_alive |= FREE_KICK_FAULT; }
 
     inline void send( const char* msg );
 
-    inline void place( const PVector & location );
+    void place( const PVector & location );
     void place( const PVector & pos,
                 const double & angle,
                 const PVector & vel,
-                const PVector & accel )
-      {
-          M_pos = pos;
-          M_angle_body_committed = angle;
-          M_vel = vel;
-          M_accel = accel;
-      }
+                const PVector & accel );
 
     const
     Team * team() const
@@ -223,6 +218,11 @@ public:
     int unum() const
       {
           return M_unum;
+      }
+
+    bool isGoalie() const
+      {
+          return M_goalie;
       }
 
     const
@@ -366,29 +366,16 @@ public:
     int changeViewCount() const { return M_change_view_count; }
     int sayCount() const { return M_say_count; }
 
-    double vangle( const PObject & obj ) const
+    double angleFromBody( const PObject & obj ) const
       {
-          return M_pos.vangle( obj.pos(), M_angle_body_committed );
-      }
-
-    bool hasOffsideMark() const
-      {
-          return M_offside_mark;
-      }
-    const
-    PVector & offsidePos() const
-      {
-          return M_offside_pos;
+          //return M_pos.vangle( obj.pos(), M_angle_body_committed );
+          return normalize_angle( ( obj.pos() - this->pos() ).angle()
+                                  - M_angle_body_committed );
       }
 
     void setPlayerType( const int );
-    //    int getPlayerType() const;
-    void substitute( const int& );
-    const
-    HeteroPlayer * playerType() const
-      {
-          return M_player_type;
-      }
+    void substitute( const int );
+
     int playerTypeId() const
       {
           return M_player_type_id;
@@ -406,6 +393,16 @@ public:
     void clearOffsideMark();
     void setOffsideMark( const double & offside_line );
 
+    bool hasOffsideMark() const
+      {
+          return M_offside_mark;
+      }
+    const
+    PVector & offsidePos() const
+      {
+          return M_offside_pos;
+      }
+
 protected:
 
     virtual
@@ -422,6 +419,12 @@ protected:
       {
           M_angle_body_committed = this->M_angle_body;
           M_angle_neck_committed = this->M_angle_neck;
+      }
+
+    virtual
+    void collidedWithPost()
+      {
+          addState( POST_COLLIDE );
       }
 
     virtual
@@ -477,9 +480,11 @@ inline
 void
 Player::parseMsg( const char* msg, const size_t& len )
 {
-    char* command = const_cast<char*>(msg);
-    if ( command[ len - 1 ] != 0 ) {
-        if( version() >= 8.0 ){
+    char * command = const_cast< char * >( msg );
+    if ( command[ len - 1 ] != 0 )
+    {
+        if ( version() >= 8.0 )
+        {
             send( "(warning message_not_null_terminated)" );
         }
         command[ len ] = 0;
@@ -487,112 +492,11 @@ Player::parseMsg( const char* msg, const size_t& len )
     M_stadium.writeTextLog( *this, command, RECV );
 
     /** Call the PlayerCommandParser */
-    if ( M_parser.parse( command ) != 0 ){
+    if ( M_parser.parse( command ) != 0 )
+    {
         send( "(error illegal_command_form)" );
         std::cerr << "Error parsing >" << command << "<\n";
     }
-}
-
-inline
-void
-Player::rotate( const double & a )
-{
-    M_angle_body = normalize_angle( M_angle_body_committed + a );
-}
-
-inline
-void
-Player::rotate_to( const double & dir )
-{
-    M_angle_body = normalize_angle( dir );
-}
-
-inline
-Arm &
-Player::getArm()
-{
-    return M_arm;
-}
-
-inline
-const
-Arm &
-Player::getArm() const
-{
-    return M_arm;
-}
-
-inline
-bool
-Player::getArmDir( double& arm_dir ) const
-{
-    return M_arm.getRelDir ( rcss::geom::Vector2D( pos().x, pos().y ),
-                             angleBodyCommitted()+ angleNeckCommitted(),
-                             arm_dir );
-}
-
-inline
-unsigned int
-Player::getTackleCycles() const
-{
-    return M_tackle_cycles;
-}
-
-// inline
-// void
-// Player::decrementTackleCycles()
-// {
-//     if( M_tackle_cycles > 0 )
-//         M_tackle_cycles--;
-// }
-
-inline
-bool
-Player::isTackling() const
-{
-    return M_tackle_cycles > 0;
-}
-
-inline
-unsigned int
-Player::getTackleCount() const
-{
-    return M_tackle_count;
-}
-
-inline
-unsigned int
-Player::getClangMinVer() const
-{
-    return M_clang_min_ver;
-}
-
-inline
-unsigned int
-Player::getClangMaxVer() const
-{
-    return M_clang_max_ver;
-}
-
-inline
-bool
-Player::isGoalie() const
-{
-    return M_goalie;
-}
-
-inline
-void
-Player::setBackPasser()
-{
-    M_alive |= BACK_PASS;
-}
-
-inline
-void
-Player::setFreeKickFaulter()
-{
-    M_alive |= FREE_KICK_FAULT;
 }
 
 inline
@@ -603,15 +507,6 @@ Player::send( const char* msg )
     {
         M_stadium.writeTextLog( *this, msg, SEND );
     }
-}
-
-inline
-void
-Player::place( const PVector & location )
-{
-    M_accel = PVector( 0.0, 0.0 );
-    M_vel = PVector( 0.0, 0.0 );
-    M_pos = location;
 }
 
 #endif

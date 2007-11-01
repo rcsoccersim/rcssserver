@@ -952,7 +952,7 @@ public:
     const double & tackleBackDist() const { return M_tackle_back_dist; }
     const double & tackleWidth() const { return M_tackle_width; }
     const double & tackleExponent() const { return M_tackle_exponent; }
-    unsigned int tackleCycles() const { return (unsigned int)M_tackle_cycles; }
+    int tackleCycles() const { return M_tackle_cycles; }
     const double & tacklePowerRate() const { return M_tackle_power_rate; }
     const double & minTacklePower() const { return M_min_tackle_power; }
     const double & maxTacklePower() const { return M_max_tackle_power; }

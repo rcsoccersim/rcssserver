@@ -242,17 +242,23 @@ AudioSenderPlayerv1::sendCoachStdAudio( const rcss::clang::Msg& msg )
             // don't know what we have here so don't send anything
             return;
         }
-        if( msg.isSupported( M_listener.getClangMinVer(),
-                             M_listener.getClangMaxVer() ) )
+
+        if ( msg.isSupported( M_listener.clangMinVer(),
+                              M_listener.clangMaxVer() ) )
+        {
             M_serializer.serializeCoachStdAudio( transport(),
                                                  msg.getTimeSend(),
                                                  name,
                                                  msg );
+        }
         else
+        {
             M_serializer.serializeCoachStdAudio( transport(),
                                                  msg.getTimeSend(),
                                                  name,
                                                  rcss::clang::UnsuppMsg() );
+        }
+
         transport() << std::ends << std::flush;
     }
 }
@@ -273,7 +279,7 @@ AudioSenderPlayerv1::sendNonSelfPlayerAudio( const Player& player,
 {
     if( nonSelfPlayerPredicate( player ) )
     {
-        int dir = Rad2IDeg( M_listener.vangle( player ) );
+        int dir = Rad2IDeg( M_listener.angleFromBody( player ) );
         M_serializer.serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            dir,
@@ -287,8 +293,8 @@ void
 AudioSenderPlayerv1::sendOKClang()
 {
     M_serializer.serializeOKClang( transport(),
-                                   M_listener.getClangMinVer(),
-                                   M_listener.getClangMaxVer() );
+                                   M_listener.clangMinVer(),
+                                   M_listener.clangMaxVer() );
     transport() << std::ends << std::flush;
 }
 
@@ -338,7 +344,7 @@ AudioSenderPlayerv7::sendNonSelfPlayerAudio( const Player & player,
 {
     if ( nonSelfPlayerPredicate( player ) )
     {
-        int dir = Rad2IDegRound( M_listener.vangle( player ) );
+        int dir = Rad2IDegRound( M_listener.angleFromBody( player ) );
         M_serializer.serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            dir,
@@ -511,7 +517,7 @@ AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player& player,
             if ( ( player.team()->side() == LEFT && M_left_complete )
                  || ( player.team()->side() == RIGHT && M_right_complete ) )
             {
-                int dir = Rad2IDeg( M_listener.vangle( player ) );
+                int dir = Rad2IDeg( M_listener.angleFromBody( player ) );
                 if ( M_listener.team() == player.team() )
                 {
                     M_serializer.serializeAllyAudioFull( transport(),

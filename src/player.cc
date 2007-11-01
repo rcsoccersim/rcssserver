@@ -120,7 +120,7 @@ NormalizeNeckAngle( const double & p )
 
 
 Player::Player( Stadium & stadium,
-                Team *tm,
+                Team * team,
                 int number )
     : MPObject( stadium,
                 PObject::OT_PLAYER,
@@ -130,7 +130,7 @@ Player::Player( Stadium & stadium,
       M_observer( new rcss::ObserverPlayer ),
       M_body_observer( new rcss::BodyObserverPlayer ),
       M_fullstate_observer( new rcss::FullStateObserver ),
-      M_team( tm ),
+      M_team( team ),
       M_unum( number ),
       M_stamina( ServerParam::instance().staminaMax() ),
       M_recovery( ServerParam::instance().recoverInit() ),
@@ -154,16 +154,16 @@ Player::Player( Stadium & stadium,
       M_goalie( false ),
       M_goalie_catch_ban( 0 ),
       M_goalie_moves_since_catch( 0 ),
-      M_offside_mark( false ),
       M_arm( ServerParam::instance().pointToBan (),
              ServerParam::instance().pointToDuration () ),
-      M_tackle_cycles( 10 ),
+      M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_clang_min_ver( 0 ),
       M_clang_max_ver( 0 ),
+      M_offside_mark( false ),
       M_parser( *this )
 {
-    assert( tm );
+    assert( team );
 
     M_enable = false;
 
@@ -171,7 +171,7 @@ Player::Player( Stadium & stadium,
     M_max_speed = ServerParam::instance().playerSpeedMax();
     M_max_accel = ServerParam::instance().playerAccelMax();
 
-    M_pos.x = -( unum() * 3 * tm->side() );
+    M_pos.x = -( unum() * 3 * team->side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
 
     // pfr 8/14/00: for RC2000 evaluation
@@ -287,7 +287,7 @@ Player::setPlayerType( const int id )
 }
 
 void
-Player::substitute( const int& type )
+Player::substitute( const int type )
 {
     setPlayerType( type );
 
@@ -313,7 +313,7 @@ Player::setEnable()
 void
 Player::resetState()
 {
-    if ( getTackleCycles() > 0 )
+    if ( tackleCycles() > 0 )
     {
         M_alive &= ( STAND | GOALIE | DISCARD | TACKLE | TACKLE_FAULT );
     }
@@ -474,7 +474,7 @@ Player::kick( double power, double dir )
             return;
         }
 
-        dir_diff = std::fabs( this->vangle( M_stadium.ball() ) );
+        dir_diff = std::fabs( angleFromBody( M_stadium.ball() ) );
         tmp = M_stadium.ball().pos() - this->pos();
         dist_ball = ( tmp.r() - M_player_type->playerSize()
                       - ServerParam::instance().ballSize() );
@@ -538,7 +538,7 @@ Player::goalieCatch( double dir )
         //tom: actually the goalie can catch the ball in any playmode, but
         //infringements should be awarded.  Maybe later.
         if ( ! this->isGoalie()
-             || this->M_goalie_catch_ban > 0
+             || M_goalie_catch_ban > 0
              || ( M_stadium.playmode() != PM_PlayOn
                   && ! Referee::isPenaltyShootOut( M_stadium.playmode() ) )
              )
@@ -640,7 +640,8 @@ Player::score()
 }
 
 void
-Player::move( double x, double y )
+Player::move( double x,
+              double y )
 {
     if ( ! M_command_done )
     {
@@ -680,7 +681,8 @@ Player::move( double x, double y )
 }
 
 void
-Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth, rcss::pcom::VIEW_QUALITY viewQuality )
+Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
+                     rcss::pcom::VIEW_QUALITY viewQuality )
 {
     if ( viewWidth == rcss::pcom::NARROW )
     {
@@ -1098,9 +1100,8 @@ Player::sendReconnect()
 }
 
 void
-Player::send_visual_info()
+Player::sendVisual()
 {
-    //sendVisual();
     if ( version() < 12.0 )
     {
         M_observer->sendVisual();
@@ -1260,15 +1261,12 @@ Player::updateCapacity()
 void
 Player::resetCommandFlags()
 {
-    if ( getTackleCycles() > 0 )
+    if ( M_tackle_cycles > 0 )
     {
-        if ( M_tackle_cycles > 0 )
-        {
-            --M_tackle_cycles;
-        }
+        --M_tackle_cycles;
     }
 
-    if ( getTackleCycles() == 0 )
+    if ( tackleCycles() == 0 )
     {
         M_command_done = false;
     }
@@ -1290,4 +1288,24 @@ Player::setOffsideMark( const double & offside_line )
     M_offside_mark = true;
     M_offside_pos.x = offside_line;
     M_offside_pos.y = pos().y;
+}
+
+void
+Player::place( const PVector & location )
+{
+    M_pos = location;
+    M_vel.assign( 0.0, 0.0 );
+    M_accel.assign( 0.0, 0.0 );
+}
+
+void
+Player::place( const PVector & pos,
+               const double & angle,
+               const PVector & vel,
+               const PVector & accel )
+{
+    M_pos = pos;
+    M_angle_body_committed = angle;
+    M_vel = vel;
+    M_accel = accel;
 }

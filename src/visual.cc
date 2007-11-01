@@ -843,7 +843,10 @@ int
 VisualSenderPlayerV8::calcPointDir( const Player & player )
 {
     double dir = 0.0;
-    if ( player.getArmDir( dir ) )
+    //if ( player.getArmDir( dir ) )
+    if ( player.arm().getRelDir( rcss::geom::Vector2D( player.pos().x, player.pos().y ),
+                                 player.angleBodyCommitted() + player.angleNeckCommitted(),
+                                 dir ) )
     {
         dir += player.angleNeckCommitted()
             + player.angleBodyCommitted()
@@ -893,7 +896,7 @@ VisualSenderPlayerV8::serializePlayer( const Player & player,
                                        const double & dist_chg,
                                        const double & dir_chg )
 {
-    if ( player.getArm().isPointing() )
+    if ( player.arm().isPointing() )
     {
         int point_dir = calcPointDir( player );
         serializer().serializeVisualObject( transport(),
@@ -923,7 +926,7 @@ VisualSenderPlayerV8::serializePlayer( const Player & player,
                                        const double & dist,
                                        const int dir )
 {
-    if ( player.getArm().isPointing() )
+    if ( player.arm().isPointing() )
     {
         int point_dir = calcPointDir( player );
         serializer().serializeVisualObject( transport(),
@@ -1140,11 +1143,11 @@ int
 VisualSenderCoachV8::calcPointDir( const Player & player )
 {
     double arm_dir = 0.0;
-    if ( player.getArm().getRelDir( rcss::geom::Vector2D( player.pos().x,
-                                                          player.pos().y ),
-                                    player.angleBodyCommitted()
-                                    + player.angleNeckCommitted(),
-                                    arm_dir ) )
+    if ( player.arm().getRelDir( rcss::geom::Vector2D( player.pos().x,
+                                                       player.pos().y ),
+                                 player.angleBodyCommitted()
+                                 + player.angleNeckCommitted(),
+                                 arm_dir ) )
     {
         return Rad2IDegRound( normalize_angle( arm_dir
                                                + player.angleNeckCommitted()
@@ -1157,7 +1160,7 @@ VisualSenderCoachV8::calcPointDir( const Player & player )
 void
 VisualSenderCoachV8::serializePlayer( const Player & player )
 {
-    if ( player.getArm().isPointing() )
+    if ( player.arm().isPointing() )
     {
         serializer().serializeVisualObject( transport(),
                                             calcName( player ),

@@ -43,7 +43,7 @@ public:
     void parseMsg( const char * msg,
                    const size_t & len )
       {
-          char* str = (char*)msg;
+          char * str = const_cast< char * >( msg );
           if ( str[ len - 1 ] != 0 )
           {
               if ( version() >= 2.0 )

@@ -256,7 +256,7 @@ void
 BodySenderPlayerV8::sendBodyData()
 {
     BodySenderPlayerV7::sendBodyData();
-    Arm::State state = self().getArm()
+    Arm::State state = self().arm()
         .getState( rcss::geom::Vector2D( self().pos().x,
                                          self().pos().y ),
                    self().angleBodyCommitted()
@@ -279,8 +279,8 @@ BodySenderPlayerV8::sendBodyData()
                                      self().getFocusTarget()->unum(),
                                      self().getFocusCount() );
     serializer().serializeTackle( transport(),
-                                  self().getTackleCycles(),
-                                  self().getTackleCount() );
+                                  self().tackleCycles(),
+                                  self().tackleCount() );
 }
 
 namespace bodysender
