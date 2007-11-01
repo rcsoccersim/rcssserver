@@ -225,9 +225,7 @@ Stadium::~Stadium()
     delete M_team_l; M_team_l = NULL;
     delete M_team_r; M_team_r = NULL;
 
-    //delete [] olcoach; olcoach = NULL;
     delete M_coach; M_coach = NULL;
-    //delete [] player; player = NULL;
     delete M_ball; M_ball = NULL;
 
     M_goals.clear();
@@ -539,7 +537,7 @@ Stadium::playerType( int id ) const
 void
 Stadium::initObjects()
 {
-    M_ball = new Ball( this );
+    M_ball = new Ball( *this );
 
     //M_motable.append( M_ball );
     M_movable_objects.push_back( M_ball );
@@ -564,20 +562,20 @@ Stadium::initObjects()
 
     for ( int i = 0; i < MAX_PLAYER; ++i )
     {
-        Player * p_l = new Player( M_team_l, this, i+1 );
-        Player * p_r = new Player( M_team_r, this, i+1 );
+        Player * p_l = new Player( *this, M_team_l, i+1 );
+        Player * p_r = new Player( *this, M_team_r, i+1 );
         M_team_l->assignPlayer( i, p_l );
         M_team_r->assignPlayer( i, p_r );
         M_players[i] = p_l;
         M_players[i+MAX_PLAYER] = p_r;
     }
 
-    M_coach = new Coach( this );
+    M_coach = new Coach( *this );
 
-    M_olcoaches[0] = new OnlineCoach( this );
+    M_olcoaches[0] = new OnlineCoach( *this );
     M_team_l->assignCoach( M_olcoaches[0] );
 
-    M_olcoaches[1] = new OnlineCoach( this );
+    M_olcoaches[1] = new OnlineCoach( *this );
     M_team_r->assignCoach( M_olcoaches[1] );
 }
 
@@ -1022,7 +1020,7 @@ Stadium::step()
 
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->alive == DISABLE )
+        if ( M_players[i]->alive() == DISABLE )
             continue;
 
         M_players[i]->updateStamina();
@@ -1134,7 +1132,7 @@ Stadium::makeDispInfo()
 
         for ( int i = 0; i < MAX_PLAYER * 2; ++i )
         {
-            M_dinfo.body.show.pos[i+1].enable = htons( M_players[i]->alive );
+            M_dinfo.body.show.pos[i+1].enable = htons( M_players[i]->alive() );
             //M_players[i]->alive &= (STAND | GOALIE | DISCARD);
             M_dinfo.body.show.pos[i+1].x
                 = htons( (Int16)rint( M_players[i]->pos().x * SHOWINFO_SCALE ) );
@@ -1172,7 +1170,7 @@ Stadium::makeDispInfo()
 
         for ( int i = 0; i < MAX_PLAYER * 2; ++i )
         {
-            M_dinfo2.body.show.pos[i].mode = htons( M_players[i]->alive );
+            M_dinfo2.body.show.pos[i].mode = htons( M_players[i]->alive() );
             M_dinfo2.body.show.pos[i].type = htons( M_players[i]->playerTypeId() );
 
             //M_players[i]->alive &= (STAND | GOALIE | DISCARD);
@@ -1228,14 +1226,7 @@ Stadium::resetPlayerFlags()
 {
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->getTackleCycles() > 0 )
-        {
-            M_players[i]->alive &= (STAND | GOALIE | DISCARD | TACKLE | TACKLE_FAULT );
-        }
-        else
-        {
-            M_players[i]->alive &= (STAND | GOALIE | DISCARD);
-        }
+        M_players[i]->resetState();
     }
 }
 
@@ -1334,7 +1325,7 @@ Stadium::recoveryPlayers()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
         {
             continue;
         }
@@ -1384,7 +1375,7 @@ Stadium::placePlayersInField()
 
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->alive == DISABLE )
+        if ( M_players[i]->alive() == DISABLE )
             continue;
 
         if ( ! fld.inArea( M_players[i]->pos() ) )
@@ -1503,18 +1494,7 @@ Stadium::discard_player( const Side side,
 
     if ( i < MAX_PLAYER * 2 )
     {
-        if ( M_players[i]->alive & STAND )
-        {
-            M_players[i]->disable();
-            if ( ! ( M_players[i]->alive & DISCARD ) )
-            {
-                M_players[i]->alive |= DISCARD;
-            }
-            else
-            {
-                M_players[i]->alive &= ~DISCARD;
-            }
-        }
+        M_players[i]->discard();
     }
 }
 
@@ -1555,7 +1535,7 @@ Stadium::get_player_by_name( const char * name )
 {
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->alive == DISABLE )
+        if ( M_players[i]->alive() == DISABLE )
             continue;
 
         if ( M_players[i]->name() == name )
@@ -1612,43 +1592,6 @@ Stadium::movePlayer( const Side side,
                    new_angle,
                    new_vel,
                    new_accel );
-    collisions();
-    return true;
-}
-
-bool
-Stadium::movePlayer( const char * player_name,
-                     const PVector & pos,
-                     const PVector & vel )
-{
-    Player * p = get_player_by_name( player_name );
-    if ( ! p )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "unknown name" << std::endl;
-        return false;
-    }
-
-    p->place( pos, p->angleBodyCommitted(), vel, p->accel() );
-    collisions();
-    return true;
-}
-
-bool
-Stadium::movePlayer( const char * player_name,
-                     const PVector & pos,
-                     const double & ang,
-                     const PVector & vel )
-{
-    Player *p = get_player_by_name( player_name );
-    if ( ! p )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "unknown name" << std::endl;
-        return false;
-    }
-
-    p->place( pos, ang, vel, p->accel() );
     collisions();
     return true;
 }
@@ -2369,7 +2312,7 @@ Stadium::collisions()
                  < M_ball->size() + (*it)->size() )
             {
                 col = true;
-                (*it)->alive |= BALL_TO_PLAYER | BALL_COLLIDE;
+                (*it)->addState( BALL_TO_PLAYER | BALL_COLLIDE );
                 for_each( M_referees.begin(), M_referees.end(),
                           Referee::doBallTouched( **it ) );
                 calcBallCollPos( *it );
@@ -2387,8 +2330,8 @@ Stadium::collisions()
                      < M_players[i]->size() + M_players[j]->size() )
                 {
                     col = true;
-                    M_players[i]->alive |= PLAYER_COLLIDE;
-                    M_players[j]->alive |= PLAYER_COLLIDE;
+                    M_players[i]->addState( PLAYER_COLLIDE );
+                    M_players[j]->addState( PLAYER_COLLIDE );
                     calcCollPos( M_players[i], M_players[j] );
                 }
             }
@@ -2590,9 +2533,9 @@ Stadium::setPlayerState( const Side side,
         return;
     }
 
-    if ( player->alive != DISABLE )
+    if ( player->alive() != DISABLE )
     {
-        player->alive |= state;
+        player->addState( state );
     }
 }
 
@@ -3151,7 +3094,7 @@ Stadium::doSendSenseBody()
           it != end;
           ++it )
     {
-        if ( (*it)->alive != DISABLE
+        if ( (*it)->alive() != DISABLE
              && (*it)->connected() )
         {
             (*it)->sense_body();
@@ -3174,7 +3117,7 @@ Stadium::doSendSenseBody()
           it != end;
           ++it )
     {
-        if ( (*it)->alive != DISABLE
+        if ( (*it)->alive() != DISABLE
              && (*it)->connected() )
         {
             (*it)->sendSynchVisual();
@@ -3209,7 +3152,7 @@ Stadium::doSendVisuals()
           it != end;
           ++it )
     {
-        if ( (*it)->alive != DISABLE
+        if ( (*it)->alive() != DISABLE
              && (*it)->connected() )
         {
             (*it)->send_visual_info();
@@ -3313,7 +3256,7 @@ Stadium::doSendThink()
     bool waitCoach[2];
     for ( int i = 0; i < MAX_PLAYER*2; ++i )
     {
-        wait_players[i] = !(M_players[i]->alive == DISABLE);
+        wait_players[i] = !(M_players[i]->alive() == DISABLE);
     }
     for ( int i = 0; i < 2; ++i )
     {
@@ -3368,7 +3311,7 @@ Stadium::doSendThink()
             if ( wait_players[i]
                  && M_players[i]->connected()
                  && ! M_players[i]->doneReceived()
-                 && M_players[i]->alive != DISABLE )
+                 && M_players[i]->alive() != DISABLE )
             {
                 done = DS_FALSE;
                 break;

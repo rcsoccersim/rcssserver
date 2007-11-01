@@ -119,10 +119,10 @@ NormalizeNeckAngle( const double & p )
 } // end of no-name namespace
 
 
-Player::Player( Team *tm,
-                Stadium *stad,
+Player::Player( Stadium & stadium,
+                Team *tm,
                 int number )
-    : MPObject( stad,
+    : MPObject( stadium,
                 PObject::OT_PLAYER,
                 "", "",
                 O_TYPE_PLAYER_NAME, O_TYPE_PLAYER_NAME_SHORT ),
@@ -134,7 +134,6 @@ Player::Player( Team *tm,
       M_unum( number ),
       M_stamina( ServerParam::instance().staminaMax() ),
       M_recovery( ServerParam::instance().recoverInit() ),
-      //M_effort( 1.0 ),
       M_vis_angle( ServerParam::instance().visAngle() ),
       defangle( ServerParam::instance().visAngle() ),
       vis_distance( ServerParam::instance().visibleDistance() ),
@@ -145,9 +144,8 @@ Player::Player( Team *tm,
       M_angle_neck( 0.0 ),
       M_angle_neck_committed( 0.0 ),
       M_vis_send( 4 ),
-      //sendcnt = 0;
       M_highquality( true ),
-      alive( DISABLE ),
+      M_alive( DISABLE ),
       M_command_done( false ),
       M_turn_neck_done( false ),
       M_done_received( false ),
@@ -166,7 +164,6 @@ Player::Player( Team *tm,
       M_parser( *this )
 {
     assert( tm );
-    assert( stad );
 
     M_enable = false;
 
@@ -269,7 +266,7 @@ Player::init( const double & ver,
 void
 Player::setPlayerType( const int id )
 {
-    const HeteroPlayer * type = M_stadium->playerType( id );
+    const HeteroPlayer * type = M_stadium.playerType( id );
     if ( ! type )
     {
         return;
@@ -305,11 +302,24 @@ Player::substitute( const int& type )
 void
 Player::setEnable()
 {
-    alive = STAND;
+    M_alive = STAND;
     M_enable = true;
     if ( isGoalie() )
     {
-        alive |= GOALIE;
+        M_alive |= GOALIE;
+    }
+}
+
+void
+Player::resetState()
+{
+    if ( getTackleCycles() > 0 )
+    {
+        M_alive &= ( STAND | GOALIE | DISCARD | TACKLE | TACKLE_FAULT );
+    }
+    else
+    {
+        M_alive &= ( STAND | GOALIE | DISCARD );
     }
 }
 
@@ -324,13 +334,13 @@ Player::disable()
     }
 
     if ( isGoalie()
-         && this == M_stadium->ballCatcher() )
+         && this == M_stadium.ballCatcher() )
     {
-        M_stadium->clearBallCatcher();
+        M_stadium.clearBallCatcher();
     }
 
     M_enable = false;
-    alive = DISABLE;
+    M_alive = DISABLE;
     M_pos.x = -( unum() * 3 * team()->side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
     M_vel.x = 0.0;
@@ -341,6 +351,23 @@ Player::disable()
     if ( connected() )
     {
         RemoteClient::close();
+    }
+}
+
+void
+Player::discard()
+{
+    if ( M_alive & STAND )
+    {
+        disable();
+        if ( ! ( M_alive & DISCARD ) )
+        {
+            M_alive |= DISCARD;
+        }
+        else
+        {
+            M_alive &= ~DISCARD;
+        }
     }
 }
 
@@ -421,34 +448,34 @@ Player::kick( double power, double dir )
         double dir_diff;
         double dist_ball;
 
-        alive |= KICK;
+        M_alive |= KICK;
 
-        if ( M_stadium->playmode() == PM_BeforeKickOff ||
-             M_stadium->playmode() == PM_AfterGoal_Left ||
-             M_stadium->playmode() == PM_AfterGoal_Right  ||
-             M_stadium->playmode() == PM_OffSide_Left ||
-             M_stadium->playmode() == PM_OffSide_Right ||
-             M_stadium->playmode() == PM_Back_Pass_Left ||
-             M_stadium->playmode() == PM_Back_Pass_Right ||
-             M_stadium->playmode() == PM_Free_Kick_Fault_Left ||
-             M_stadium->playmode() == PM_Free_Kick_Fault_Right ||
-             M_stadium->playmode() == PM_CatchFault_Left ||
-             M_stadium->playmode() == PM_CatchFault_Right ||
-             M_stadium->playmode() == PM_TimeOver )
+        if ( M_stadium.playmode() == PM_BeforeKickOff ||
+             M_stadium.playmode() == PM_AfterGoal_Left ||
+             M_stadium.playmode() == PM_AfterGoal_Right  ||
+             M_stadium.playmode() == PM_OffSide_Left ||
+             M_stadium.playmode() == PM_OffSide_Right ||
+             M_stadium.playmode() == PM_Back_Pass_Left ||
+             M_stadium.playmode() == PM_Back_Pass_Right ||
+             M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
+             M_stadium.playmode() == PM_Free_Kick_Fault_Right ||
+             M_stadium.playmode() == PM_CatchFault_Left ||
+             M_stadium.playmode() == PM_CatchFault_Right ||
+             M_stadium.playmode() == PM_TimeOver )
         {
             return;
         }
 
-        if ( pos().distance( M_stadium->ball().pos() )
+        if ( pos().distance( M_stadium.ball().pos() )
              > ( M_player_type->playerSize()
-                 + M_stadium->ball().size() + M_player_type->kickableMargin()) )
+                 + M_stadium.ball().size() + M_player_type->kickableMargin()) )
         {
-            alive |= KICK_FAULT;
+            M_alive |= KICK_FAULT;
             return;
         }
 
-        dir_diff = std::fabs( this->vangle( M_stadium->ball() ) );
-        tmp = M_stadium->ball().pos() - this->pos();
+        dir_diff = std::fabs( this->vangle( M_stadium.ball() ) );
+        tmp = M_stadium.ball().pos() - this->pos();
         dist_ball = ( tmp.r() - M_player_type->playerSize()
                       - ServerParam::instance().ballSize() );
 
@@ -465,14 +492,14 @@ Player::kick( double power, double dir )
         // add noise by current ball speed
 #if 0
         maxrnd += M_kick_rand
-            * M_stadium->ball().vel().r()
+            * M_stadium.ball().vel().r()
             / ServerParam::instance().ballDecay()
             / ServerParam::instance().ballSpeedMax();
 #else
         {
             double max_dir_rand = M_PI
                 * M_kick_rand
-                * M_stadium->ball().vel().r()
+                * M_stadium.ball().vel().r()
                 / ServerParam::instance().ballDecay()
                 / ServerParam::instance().ballSpeedMax();
             double dir_noise = drand( -max_dir_rand, max_dir_rand );
@@ -488,7 +515,7 @@ Player::kick( double power, double dir )
 
         accel += kick_noise;
 
-        M_stadium->kickTaken( *this, accel );
+        M_stadium.kickTaken( *this, accel );
 
         ++M_kick_count;
         M_command_done = true;
@@ -505,29 +532,29 @@ Player::goalieCatch( double dir )
 //         static RArea p_r( PVector( +PITCH_LENGTH/2-PENALTY_AREA_LENGTH/2.0, 0.0 ),
 //                           PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH ) ) ;
 
-        alive |= CATCH;
+        M_alive |= CATCH;
 
         //pfr: we should only be able to catch in PlayOn mode
         //tom: actually the goalie can catch the ball in any playmode, but
         //infringements should be awarded.  Maybe later.
         if ( ! this->isGoalie()
              || this->M_goalie_catch_ban > 0
-             || ( M_stadium->playmode() != PM_PlayOn
-                  && ! Referee::isPenaltyShootOut( M_stadium->playmode() ) )
+             || ( M_stadium.playmode() != PM_PlayOn
+                  && ! Referee::isPenaltyShootOut( M_stadium.playmode() ) )
              )
             /*
-              M_stadium->playmode() == PM_BeforeKickOff ||
-              M_stadium->playmode() == PM_AfterGoal_Left ||
-              M_stadium->playmode() == PM_AfterGoal_Right ||
-              M_stadium->playmode() == PM_OffSide_Left ||
-              M_stadium->playmode() == PM_OffSide_Right  ||
-              M_stadium->playmode() == PM_Back_Pass_Left ||
-              M_stadium->playmode() == PM_Back_Pass_Right ||
-              M_stadium->playmode() == PM_Free_Kick_Fault_Left ||
-              M_stadium->playmode() == PM_Free_Kick_Fault_Right )
+              M_stadium.playmode() == PM_BeforeKickOff ||
+              M_stadium.playmode() == PM_AfterGoal_Left ||
+              M_stadium.playmode() == PM_AfterGoal_Right ||
+              M_stadium.playmode() == PM_OffSide_Left ||
+              M_stadium.playmode() == PM_OffSide_Right  ||
+              M_stadium.playmode() == PM_Back_Pass_Left ||
+              M_stadium.playmode() == PM_Back_Pass_Right ||
+              M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
+              M_stadium.playmode() == PM_Free_Kick_Fault_Right )
             */
         {
-            alive |= CATCH_FAULT;
+            M_alive |= CATCH_FAULT;
             return;
         }
 
@@ -553,20 +580,20 @@ Player::goalieCatch( double dir )
                          PVector( ServerParam::instance().catchAreaLength(),
                                   ServerParam::instance().catchAreaWidth() ) );
 
-        PVector	rotated_pos = M_stadium->ball().pos() - this->pos();
+        PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
         rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
 
         if ( ! catchable.inArea( rotated_pos )
              || drand( 0, 1 ) >= ServerParam::instance().catchProb() )
         {
-            alive |= CATCH_FAULT;
+            M_alive |= CATCH_FAULT;
             return;
         }
 
         M_goalie_catch_ban = ServerParam::instance().catchBanCycle();
 
         {
-            PVector new_pos = M_stadium->ball().pos() - this->pos();
+            PVector new_pos = M_stadium.ball().pos() - this->pos();
             double mag = new_pos.r();
             // I would much prefer to cache the message of the catch command
             // to the end of the cycle and then do all the movements and
@@ -581,7 +608,7 @@ Player::goalieCatch( double dir )
 
         M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
 
-        M_stadium->ballCaught( *this );
+        M_stadium.ballCaught( *this );
 
         ++M_catch_count;
         M_command_done = true;
@@ -596,7 +623,7 @@ Player::say( std::string message )
         return;
     }
 
-    M_stadium->sendPlayerAudio( *this, message.c_str() );
+    M_stadium.sendPlayerAudio( *this, message.c_str() );
     ++M_say_count;
 }
 
@@ -617,18 +644,18 @@ Player::move( double x, double y )
 {
     if ( ! M_command_done )
     {
-        if ( M_stadium->playmode() == PM_BeforeKickOff ||
-             M_stadium->playmode() == PM_AfterGoal_Right ||
-             M_stadium->playmode() == PM_AfterGoal_Left
+        if ( M_stadium.playmode() == PM_BeforeKickOff ||
+             M_stadium.playmode() == PM_AfterGoal_Right ||
+             M_stadium.playmode() == PM_AfterGoal_Left
              )
         {
             M_pos.x = x * team()->side();
             M_pos.y = y * team()->side();
-            M_stadium->collisions();
+            M_stadium.collisions();
         }
-        else if ( ( M_stadium->playmode() == PM_FreeKick_Left
-                    || M_stadium->playmode() == PM_FreeKick_Right )
-                  && M_stadium->ballCatcher() == this )
+        else if ( ( M_stadium.playmode() == PM_FreeKick_Left
+                    || M_stadium.playmode() == PM_FreeKick_Right )
+                  && M_stadium.ballCatcher() == this )
         {
             if ( ServerParam::instance().goalieMaxMoves() < 0
                  || M_goalie_moves_since_catch < ServerParam::instance().goalieMaxMoves() )
@@ -799,28 +826,28 @@ Player::attentionto( bool on,
         {
             if ( team()->side() == LEFT )
             {
-                at_team = &( M_stadium->teamRight() );
+                at_team = &( M_stadium.teamRight() );
             }
             else
             {
-                at_team = &( M_stadium->teamLeft() );
+                at_team = &( M_stadium.teamLeft() );
             }
         }
         else if ( team_side == rcss::pcom::LEFT_SIDE )
         {
-            at_team = &( M_stadium->teamLeft() );
+            at_team = &( M_stadium.teamLeft() );
         }
         else if ( team_side == rcss::pcom::RIGHT_SIDE )
         {
-            at_team = &( M_stadium->teamRight() );
+            at_team = &( M_stadium.teamRight() );
         }
-        else if ( team_name == M_stadium->teamLeft().name() )
+        else if ( team_name == M_stadium.teamLeft().name() )
         {
-            at_team = &( M_stadium->teamLeft() );
+            at_team = &( M_stadium.teamLeft() );
         }
-        else if ( team_name == M_stadium->teamRight().name() )
+        else if ( team_name == M_stadium.teamRight().name() )
         {
-            at_team = &( M_stadium->teamRight() );
+            at_team = &( M_stadium.teamRight() );
         }
         else
         {
@@ -866,7 +893,7 @@ Player::tackle( double power )
         M_tackle_cycles = ServerParam::instance().tackleCycles();
         ++M_tackle_count;
 
-        PVector player_2_ball = M_stadium->ball().pos() - pos();
+        PVector player_2_ball = M_stadium.ball().pos() - pos();
         player_2_ball.rotate( - angleBodyCommitted() );
 
         double tackle_dist;
@@ -892,18 +919,18 @@ Player::tackle( double power )
 
             if ( gen() )
             {
-                alive |= TACKLE;
+                M_alive |= TACKLE;
 
-                if ( M_stadium->playmode() == PM_BeforeKickOff ||
-                     M_stadium->playmode() == PM_AfterGoal_Left ||
-                     M_stadium->playmode() == PM_AfterGoal_Right  ||
-                     M_stadium->playmode() == PM_OffSide_Left ||
-                     M_stadium->playmode() == PM_OffSide_Right ||
-                     M_stadium->playmode() == PM_Back_Pass_Left ||
-                     M_stadium->playmode() == PM_Back_Pass_Right ||
-                     M_stadium->playmode() == PM_Free_Kick_Fault_Left ||
-                     M_stadium->playmode() == PM_Free_Kick_Fault_Right ||
-                     M_stadium->playmode() == PM_TimeOver )
+                if ( M_stadium.playmode() == PM_BeforeKickOff ||
+                     M_stadium.playmode() == PM_AfterGoal_Left ||
+                     M_stadium.playmode() == PM_AfterGoal_Right  ||
+                     M_stadium.playmode() == PM_OffSide_Left ||
+                     M_stadium.playmode() == PM_OffSide_Right ||
+                     M_stadium.playmode() == PM_Back_Pass_Left ||
+                     M_stadium.playmode() == PM_Back_Pass_Right ||
+                     M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
+                     M_stadium.playmode() == PM_Free_Kick_Fault_Right ||
+                     M_stadium.playmode() == PM_TimeOver )
                 {
                     return;
                 }
@@ -930,14 +957,14 @@ Player::tackle( double power )
                 // add noise by current ball speed
 #if 0
                 maxrnd += M_kick_rand
-                    * M_stadium->ball().vel().r()
+                    * M_stadium.ball().vel().r()
                     / ServerParam::instance().ballDecay()
                     / ServerParam::instance().ballSpeedMax();
 #else
                 {
                     double max_dir_rand = M_PI
                         * M_kick_rand
-                        * M_stadium->ball().vel().r()
+                        * M_stadium.ball().vel().r()
                         / ServerParam::instance().ballDecay()
                         / ServerParam::instance().ballSpeedMax();
                     double dir_noise = drand( -max_dir_rand, max_dir_rand );
@@ -952,16 +979,16 @@ Player::tackle( double power )
 
                 accel += kick_noise;
 
-                M_stadium->kickTaken( *this, accel );
+                M_stadium.kickTaken( *this, accel );
             }
             else
             {
-                alive |= ( TACKLE | TACKLE_FAULT );
+                M_alive |= ( TACKLE | TACKLE_FAULT );
             }
         }
         else
         {
-            alive |= TACKLE_FAULT;
+            M_alive |= TACKLE_FAULT;
         }
     }
 }
@@ -1012,13 +1039,13 @@ Player::ear( bool on,
     }
     else if ( team_name.length() > 0 )
     {
-        if ( team_name == M_stadium->teamLeft().name() )
+        if ( team_name == M_stadium.teamLeft().name() )
         {
-            side = M_stadium->teamLeft().side();
+            side = M_stadium.teamLeft().side();
         }
-        else if ( team_name == M_stadium->teamRight().name() )
+        else if ( team_name == M_stadium.teamRight().name() )
         {
-            side = M_stadium->teamRight().side();
+            side = M_stadium.teamRight().side();
         }
         else
         {
@@ -1119,8 +1146,8 @@ Player::setSenders()
 
     rcss::VisualSenderPlayer::Params visual_params( getTransport(),
                                                     *this,
-                                                    *M_stadium,
-                                                    *ser );
+                                                    *ser,
+                                                    M_stadium );
     rcss::VisualSenderPlayer::Creator vis_cre;
     if( ! rcss::VisualSenderPlayer::factory().getCreator( vis_cre,
                                                           (int)version() ) )
@@ -1130,8 +1157,8 @@ Player::setSenders()
 
     rcss::InitSenderPlayer::Params init_params( getTransport(),
                                                 *this,
-                                                *M_stadium,
-                                                *ser );
+                                                *ser,
+                                                M_stadium );
 
     rcss::InitSenderPlayer::Creator init_cre;
     if( ! rcss::InitSenderPlayer::factory().getCreator( init_cre,
@@ -1143,8 +1170,8 @@ Player::setSenders()
 
     rcss::FullStateSenderPlayer::Params fs_params( getTransport(),
                                                    *this,
-                                                   *M_stadium,
-                                                   *ser );
+                                                   *ser,
+                                                   M_stadium );
 
     rcss::FullStateSenderPlayer::Creator full_cre;
     if( ! rcss::FullStateSenderPlayer::factory().getCreator( full_cre,
@@ -1153,10 +1180,10 @@ Player::setSenders()
     M_fullstate_observer->setFullStateSender( full_cre( fs_params ) );
 
 
-    rcss::AudioSenderPlayer::Params audio_params( *M_stadium,
-                                                  getTransport(),
+    rcss::AudioSenderPlayer::Params audio_params( getTransport(),
                                                   *this,
-                                                  *ser );
+                                                  *ser,
+                                                  M_stadium );
 
     rcss::AudioSenderPlayer::Creator audio_cre;
     if( ! rcss::AudioSenderPlayer::factory().getCreator( audio_cre,

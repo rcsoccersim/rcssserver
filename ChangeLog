@@ -1,5 +1,28 @@
 2007-11-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/audio.cc:
+	* src/audio.h:
+	* src/bodysender.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/fullstatesender.cc:
+	* src/fullstatesender.h:
+	* src/initsender.h:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/netif.cpp:
+	* src/object.cpp:
+	* src/object.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/referee.cc:
+	* src/visual.cc:
+	* src/visual.h:
+	- cleaned up.
+	- allowed the monitor client to use some coach commands.
+
 	* src/field.cpp:
 	- added a small wait for monitor clients in the synch mode.
 

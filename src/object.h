@@ -400,7 +400,7 @@ private:
     std::string M_close_name;
     std::string M_short_close_name;
 
-    const double M_obj_ver;
+    const double M_object_version;
 
 protected:
     double	M_size; //! object's radiuos value
@@ -467,9 +467,9 @@ public:
       }
 
     const
-    double & objVer() const
+    double & objectVersion() const
       {
-          return M_obj_ver;
+          return M_object_version;
       }
 
     const
@@ -525,7 +525,7 @@ class MPObject
     friend class MPObjectTable;
 
 protected:
-    Stadium	* M_stadium;
+    Stadium	& M_stadium;
 
     PVector	M_vel;
 
@@ -554,7 +554,7 @@ private:
 
 public:
 
-    MPObject( Stadium * stadium,
+    MPObject( Stadium & stadium,
               const PObject::obj_type & object_type,
               const std::string & name,
               const std::string & short_name,
@@ -568,7 +568,7 @@ public:
     const
     Stadium & stadium() const
       {
-          return *M_stadium;
+          return M_stadium;
       }
 
     const
@@ -673,7 +673,7 @@ private:
 public:
 
     explicit
-    Ball( Stadium * stadium );
+    Ball( Stadium & stadium );
 
     virtual
     void turnImpl()

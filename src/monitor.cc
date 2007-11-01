@@ -28,20 +28,60 @@
 
 #include "field.h"
 #include "player.h"
+#include "types.h"
+
+namespace {
+
+PlayMode
+play_mode_id( const char *mode )
+{
+    static char * s_playmode_strings[] = PLAYMODE_STRINGS;
+
+    for ( int n = 0; n < PM_MAX; ++n )
+    {
+        if ( ! std::strcmp( s_playmode_strings[n], mode ) )
+        {
+            return static_cast< PlayMode >( n );
+        }
+    }
+    return PM_Null;
+}
+
+void
+chop_last_parenthesis( char * str,
+                       int max_size )
+{
+    int l = std::strlen( str );
+
+    if ( l > max_size )
+    {
+        str[max_size] = NULLCHAR;
+    }
+    else
+    {
+        --l;
+        if( str[l] == ')' ) str[l] = NULLCHAR;
+    }
+}
+
+}
+
 
 Monitor::Monitor( Stadium & stadium,
                   const double & version )
     : M_stadium( stadium ),
       M_version ( version )
 {
+
 }
 
 Monitor::~Monitor()
 {
+
 }
 
 bool
-Monitor::parseCommand( const char *message )
+Monitor::parseCommand( const char * message )
 {
     if ( ! std::strcmp( message, "(dispbye)" ) )
 	  {
@@ -50,88 +90,53 @@ Monitor::parseCommand( const char *message )
     }
     else if ( ! std::strcmp( message, "(dispstart)" ) )
     {
-        // kick off message
+        // kick off
         Stadium::_Start( M_stadium );
+        return true;
     }
     else if ( ! std::strncmp( message, "(dispplayer", 11 ) )
     {
-        // a player is given new position by the monitor
-        int side, unum;
-        int x, y, a;
-        int n = std::sscanf( message, "(dispplayer %d %d %d %d %d)",
-                             &side, &unum, &x, &y, &a );
-        if ( n == 5 )
-        {
-            double real_x = x / SHOWINFO_SCALE;
-            double real_y = y / SHOWINFO_SCALE;
-            double angle = Deg2Rad( a );
-            PVector vel( 0.0, 0.0 );
-            M_stadium.movePlayer( (Side)side, unum,
-                                  PVector( real_x, real_y ),
-                                  &angle,
-                                  &vel );
-        }
+        return dispplayer( message );
     }
     else if ( ! std::strncmp( message, "(dispdiscard", 12 ) )
     {
-        // a player is discarded by the monitor
-        int side, unum;
-        int n = std::sscanf( message,"(dispdiscard %d %d)", &side, &unum );
-        if ( n == 2 )
-        {
-            M_stadium.discard_player( (Side)side, unum );
-        }
+        return dispdiscard( message );
     }
     else if ( ! std::strncmp( message, "(compression", 12 ) )
     {
-        int level;
-        int n = std::sscanf( message, "(compression %d)", &level );
-        if ( n < 1 )
-        {
-            send( "(error illegal_command_form)" );
-            return false;
-        }
-#ifdef HAVE_LIBZ
-        if ( level > 9 )
-        {
-            send( "(error illegal_command_form)" );
-            return false;
-        }
-
-#ifdef HAVE_SSTREAM
-        std::ostringstream reply;
-        reply << "(ok compression " << level << ")";
-        send( reply.str().c_str() );
-#else
-        std::ostrstream reply;
-        reply << "(ok compression " << level << ")" << std::ends;
-        send( reply.str() );
-        reply.freeze( false );
-#endif
-        setCompressionLevel( level );
-
-#else
-        send( "(warning compression_unsupported)" );
-#endif
+        return compression( message );
     }
-    else
+    else if ( ! std::strncmp( message, "(dispfoul", 9 ) )
     {
-        // foul or drop_ball
-        int x, y, side ;
-        int n = std::sscanf( message, "(dispfoul %d %d %d)", &x, &y, &side );
-
-        if ( n == 3 )
+        return dispfoul( message );
+    }
+    else if ( ServerParam::instance().coachMode() )
+    {
+        if ( ! std::strncmp( message, "(start)", 7 ) )
         {
-            double real_x = x / SHOWINFO_SCALE ;
-            double real_y = y / SHOWINFO_SCALE ;
-            if ( side == NEUTRAL )
-            {
-                M_stadium.referee_drop_ball( real_x, real_y, (Side)side );
-            }
-            else
-            {
-                M_stadium.referee_get_foul( real_x, real_y, (Side)side );
-            }
+            Stadium::_Start( M_stadium );
+            send( "(ok start)" );
+            return true;
+        }
+        else if ( ! std::strncmp( message, "(change_mode", 12 ) )
+        {
+            return coach_change_mode( message );
+        }
+        else if ( ! std::strncmp( message, "(move", 5 ) )
+        {
+            return coach_move( message );
+        }
+        else if ( ! std::strncmp( message, "(recover", 8 ) )
+        {
+            return coach_recover();
+        }
+        else if ( ! std::strcmp( message, "change_player_type" ) )
+        {
+            return coach_change_player_type( message );
+        }
+        else if ( ! std::strncmp( message, "(check_ball", 11 ) )
+        {
+            return coach_check_ball();
         }
         else
         {
@@ -139,5 +144,339 @@ Monitor::parseCommand( const char *message )
             return false;
         }
     }
+    else
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+
+    return true;
+}
+
+bool
+Monitor::dispfoul( const char * command )
+{
+    // foul or drop_ball
+    int x, y, side;
+    if ( std::sscanf( command,
+                      "(dispfoul %d %d %d)",
+                      &x, &y, &side ) != 3 )
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+
+    double real_x = x / SHOWINFO_SCALE;
+    double real_y = y / SHOWINFO_SCALE;
+    if ( static_cast< Side >( side ) == NEUTRAL )
+    {
+        M_stadium.referee_drop_ball( real_x, real_y,
+                                     static_cast< Side >( side ) );
+    }
+    else
+    {
+        M_stadium.referee_get_foul( real_x, real_y,
+                                    static_cast< Side >( side ) );
+    }
+
+    return true;
+}
+
+bool
+Monitor::dispplayer( const char * command )
+{
+    // a player is given new position by the monitor
+    int side, unum;
+    int x, y, a;
+    if ( std::sscanf( command,
+                      "(dispplayer %d %d %d %d %d)",
+                      &side, &unum, &x, &y, &a ) != 5 )
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+
+    double real_x = x / SHOWINFO_SCALE;
+    double real_y = y / SHOWINFO_SCALE;
+    double angle = Deg2Rad( a );
+    PVector vel( 0.0, 0.0 );
+
+    return M_stadium.movePlayer( static_cast< Side >( side ),
+                                 unum,
+                                 PVector( real_x, real_y ),
+                                 &angle,
+                                 &vel );
+}
+
+bool
+Monitor::dispdiscard( const char * command )
+{
+    // a player is discarded by the monitor
+    int side = 0, unum = 0;
+    if ( std::sscanf( command,
+                      "(dispdiscard %d %d)",
+                      &side, &unum ) != 2 )
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+
+    M_stadium.discard_player( static_cast< Side >( side ), unum );
+    return true;
+}
+
+bool
+Monitor::compression( const char * command )
+{
+    int level = 0;
+    if ( std::sscanf( command, "(compression %d)",
+                      &level ) != 1 )
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+#ifdef HAVE_LIBZ
+    if ( level > 9 )
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+
+#ifdef HAVE_SSTREAM
+    std::ostringstream reply;
+    reply << "(ok compression " << level << ")";
+    send( reply.str().c_str() );
+#else
+    std::ostrstream reply;
+    reply << "(ok compression " << level << ")" << std::ends;
+    send( reply.str() );
+    reply.freeze( false );
+#endif
+    setCompressionLevel( level );
+    return true;
+#else
+    send( "(warning compression_unsupported)" );
+    return false;
+#endif
+}
+
+bool
+Monitor::coach_change_mode( const char * command )
+{
+    char new_mode[128];
+    if ( std::sscanf( command,
+                      "(change_mode %127[-0-9a-zA-Z.+*/?<>_])",
+                      new_mode ) != 1 )
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+
+    PlayMode mode_id = play_mode_id( new_mode );
+
+    if ( mode_id == PM_Null )
+    {
+        send( "(error illegal_mode)" );
+        return false;
+    }
+
+    M_stadium.change_play_mode( mode_id );
+    send( "(ok change_mode)" );
+    return true;
+}
+
+bool
+Monitor::coach_move( const char * command )
+{
+    char obj[128];
+    double x = 0.0, y = 0.0, ang = 0.0, velx = 0.0, vely = 0.0;
+
+    int n = std::sscanf( command,
+                         " (move (%127[^)]) %lf %lf %lf %lf %lf ) ",
+                         obj, &x, &y, &ang, &velx, &vely );
+
+    if ( n < 3
+         || std::isnan( x ) != 0
+         || std::isnan( y ) != 0
+         || std::isnan( ang ) != 0
+         || std::isnan( velx ) != 0
+         || std::isnan( vely ) != 0 )
+    {
+        send( "(error illegal_object_form)" );
+        return false;
+    }
+
+    std::string obj_name = "(";
+    obj_name += obj;
+    obj_name += ')';
+
+    if ( obj_name == BALL_NAME )
+    {
+        M_stadium.clearBallCatcher();
+
+        if ( n == 3 || n == 4 )
+        {
+            M_stadium.set_ball( LEFT, PVector( x, y ) );
+        }
+        else if ( n == 6 )
+        {
+            M_stadium.set_ball( NEUTRAL, PVector( x, y ), PVector( velx, vely ) );
+        }
+        else
+        {
+            send( "(error illegal_command_form)" );
+            return false;
+        }
+    }
+    else
+    {
+        char teamname[128];
+        int unum = 0;
+
+        if ( std::sscanf( obj_name.c_str(),
+                          PLAYER_NAME_FORMAT,
+                          teamname, &unum ) != 2
+             || unum < 1
+             || MAX_PLAYER < unum )
+        {
+            send( "(error illegal_object_form)" );
+            return false;
+        }
+
+        Side side = ( M_stadium.teamLeft().name() == teamname
+                      ? LEFT
+                      : M_stadium.teamRight().name() == teamname
+                      ? RIGHT
+                      : NEUTRAL );
+
+        PVector pos( x, y );
+        PVector vel( velx, vely );
+        ang = Deg2Rad( rcss::bound( ServerParam::instance().minMoment(),
+                                    ang,
+                                    ServerParam::instance().maxMoment() ) );
+        if ( n == 3 )
+        {
+            M_stadium.movePlayer( side, unum, pos, NULL, NULL );
+        }
+        else if ( n == 4 )
+        {
+            M_stadium.movePlayer( side, unum, pos, &ang, NULL );
+        }
+        else if ( n == 6 )
+        {
+            M_stadium.movePlayer( side, unum, pos, &ang, &vel );
+        }
+        else
+        {
+            send( "(error illegal_command_form)" );
+            return false;
+        }
+    }
+
+    send( "(ok move)" );
+    return true;
+}
+
+bool
+Monitor::coach_recover()
+{
+    M_stadium.recoveryPlayers();
+
+    send( "(ok recover)" );
+    return true;
+}
+
+bool
+Monitor::coach_check_ball()
+{
+#ifdef HAVE_SSTREAM
+    std::ostringstream ost;
+#else
+    std::ostrstream ost;
+#endif
+
+    static char* s_ball_pos_info_str[] = BALL_POS_INFO_STRINGS;
+    BallPosInfo info = M_stadium.ballPosInfo();
+
+    ost << "(ok check_ball " << M_stadium.time() << " " ;
+
+    ost << s_ball_pos_info_str[info] << ")";
+
+    ost << std::ends;
+
+#ifdef HAVE_SSTREAM
+    send( ost.str().c_str() );
+#else
+    ost << std::ends;
+
+    send( ost.str() );
+    ost.freeze( false );
+#endif
+
+    return true;
+}
+
+bool
+Monitor::coach_change_player_type( const char * command )
+{
+    char teamname[128];
+    int unum, player_type;
+    if ( std::sscanf( command,
+                      "(change_player_type %127s %d %d)",
+                      teamname, &unum, &player_type ) != 3 )
+    {
+        send( "(error illegal_command_form)" );
+        return false;
+    }
+
+    const Team * team = NULL;
+    if ( M_stadium.teamLeft().name() == teamname )
+    {
+        team = &( M_stadium.teamLeft() );
+    }
+    else if ( M_stadium.teamRight().name() == teamname )
+    {
+        team = &( M_stadium.teamRight() );
+    }
+
+    if ( team == NULL )
+    {
+        send( "(warning no_team_found)" );
+        return false;
+    }
+
+    if ( player_type < 0
+         || player_type >= PlayerParam::instance().playerTypes() )
+    {
+        send( "(error out_of_range_player_type)" );
+        return false;
+    }
+
+    const Player * player = NULL;
+    for ( int i = 0; i < team->size(); ++i )
+    {
+        const Player * p = team->player( i );
+        if ( p && p->unum() == unum )
+        {
+            player = p;
+            break;
+        }
+    }
+
+    if ( player == NULL )
+    {
+        send( "(warning no_such_player)" );
+        return false;
+    }
+
+    M_stadium.substitute( player, player_type );
+
+    char buf[64];
+    std::snprintf( buf, 64,
+                   "(ok change_player_type %s %d %d)",
+                   teamname, unum, player_type );
+
+    send( buf );
+
     return true;
 }

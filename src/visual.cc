@@ -151,7 +151,7 @@ VisualSenderPlayerV1::sendFlags()
           it != end;
           ++it )
     {
-        if ( (*it)->objVer() <= self().version() )
+        if ( (*it)->objectVersion() <= self().version() )
         {
             sendFlag( **it );
         }
@@ -161,7 +161,7 @@ VisualSenderPlayerV1::sendFlags()
 void
 VisualSenderPlayerV1::sendBalls()
 {
-    if ( stadium().ball().objVer() <= self().version() )
+    if ( stadium().ball().objectVersion() <= self().version() )
     {
         sendBall( stadium().ball() );
     }
@@ -176,8 +176,8 @@ VisualSenderPlayerV1::sendPlayers()
           ++p )
     {
         if ( *p != &self()
-             && (*p)->alive != DISABLE
-             && (*p)->objVer() <= self().version() )
+             && (*p)->alive() != DISABLE
+             && (*p)->objectVersion() <= self().version() )
         {
             sendPlayer( *(*p) );
         }
@@ -203,25 +203,25 @@ VisualSenderPlayerV1::sendLines()
     }
 
     if ( line_count < max_line_count
-         && stadium().field.line_l.objVer() <= self().version() )
+         && stadium().field.line_l.objectVersion() <= self().version() )
     {
         if ( sendLine( stadium().field.line_l ) )
             ++line_count;
     }
     if ( line_count < max_line_count
-         && stadium().field.line_r.objVer() <= self().version() )
+         && stadium().field.line_r.objectVersion() <= self().version() )
     {
         if( sendLine( stadium().field.line_r ) )
             ++line_count;
     }
     if ( line_count < max_line_count
-         && stadium().field.line_t.objVer() <= self().version() )
+         && stadium().field.line_t.objectVersion() <= self().version() )
     {
         if ( sendLine( stadium().field.line_t ) )
             ++line_count;
     }
     if ( line_count < max_line_count
-         && stadium().field.line_b.objVer() <= self().version() )
+         && stadium().field.line_b.objectVersion() <= self().version() )
     {
         if ( sendLine( stadium().field.line_b ) )
             ++line_count;
@@ -1009,7 +1009,7 @@ VisualSenderCoachV1::sendVisual()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE ) continue;
+        if ( (*p)->alive() == DISABLE ) continue;
 
         serializePlayer( **p );
     }
@@ -1031,7 +1031,7 @@ VisualSenderCoachV1::sendLook()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE ) continue;
+        if ( (*p)->alive() == DISABLE ) continue;
 
         serializePlayerLook( **p );
     }

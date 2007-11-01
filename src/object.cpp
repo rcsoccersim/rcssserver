@@ -379,10 +379,9 @@ PObject::PObject( const  PObject::obj_type& object_type,
       M_short_name( short_name ),
       M_close_name( close_name ),
       M_short_close_name( short_close_name ),
-      M_obj_ver( v ),
+      M_object_version( v ),
       M_size( 1.0 ),
       M_pos( p ),
-      //      M_angle( 0.0 ),
       M_enable( true )
 {
     ++S_object_count;
@@ -408,7 +407,7 @@ PObject::print( std::ostream & o ) const
  */
 
 /* pfr 06/07/200 added short name support */
-MPObject::MPObject( Stadium * stadium,
+MPObject::MPObject( Stadium & stadium,
                     const PObject::obj_type & object_type,
                     const std::string & name,
                     const std::string & short_name,
@@ -416,12 +415,12 @@ MPObject::MPObject( Stadium * stadium,
                     const std::string & short_close_name )
     : PObject( object_type,
                name, short_name,
-               close_name, short_close_name ),
-      M_stadium( stadium ),
-      M_vel( 0.0,0.0 ),
-      M_accel( 0.0,0.0 )
+               close_name, short_close_name )
+    , M_stadium( stadium )
+    , M_vel( 0.0,0.0 )
+    , M_accel( 0.0,0.0 )
 {
-    assert( stadium );
+    //assert( stadium );
     //M_weather = &( stadium->weather() );
 }
 
@@ -480,7 +479,7 @@ MPObject::noise()
 PVector
 MPObject::wind()
 {
-    const Weather & w = M_stadium->weather();
+    const Weather & w = M_stadium.weather();
 
     //if ( ! M_weather
     //|| M_weather->wind_rand < EPS )
@@ -676,7 +675,7 @@ MPObject::moveToCollPos()
 }
 
 
-Ball::Ball( Stadium * stadium )
+Ball::Ball( Stadium & stadium )
     : MPObject( stadium,
                 PObject::OT_BALL,
                 BALL_NAME, BALL_NAME_SHORT,

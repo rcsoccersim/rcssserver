@@ -546,7 +546,7 @@ Referee::placePlayersInTheirField()
           it != end;
           ++it )
     {
-        if ( (*it)->alive == DISABLE ) continue;
+        if ( (*it)->alive() == DISABLE ) continue;
 
         switch ( (*it)->team()->side() ) {
         case LEFT:
@@ -620,7 +620,7 @@ Referee::clearPlayersFromBall( const Side side )
               it != end;
               ++it )
         {
-            if ( (*it)->alive == DISABLE )
+            if ( (*it)->alive() == DISABLE )
             {
                 continue;
             }
@@ -894,7 +894,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive == DISABLE )
+            if ( (*p)->alive() == DISABLE )
             {
                 continue;
             }
@@ -925,7 +925,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive == DISABLE )
+            if ( (*p)->alive() == DISABLE )
             {
                 continue;
             }
@@ -944,7 +944,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive == DISABLE )
+            if ( (*p)->alive() == DISABLE )
             {
                 continue;
             }
@@ -975,7 +975,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive == DISABLE )
+            if ( (*p)->alive() == DISABLE )
                 continue;
             if ( (*p)->team()->side() == RIGHT
                  && (*p)->pos().x < offside_line
@@ -1098,7 +1098,7 @@ OffsideRef::checkPlayerAfterOffside()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
         {
             continue;
         }
@@ -1529,7 +1529,7 @@ FreeKickRef::placePlayersForGoalkick()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
             continue;
         if ( (*p)->team()->side() == oppside )
         {
@@ -1888,7 +1888,7 @@ KeepawayRef::analyse()
                 {
                     PVector ppos = (*p)->pos();
 
-                    if ( (*p)->alive != DISABLE &&
+                    if ( (*p)->alive() != DISABLE &&
                          ppos.distance( M_stadium.ball().pos() )
                          < ServerParam::instance().kickableArea() )
                     {
@@ -1941,7 +1941,7 @@ KeepawayRef::playModeChange( PlayMode pm )
                   p != end;
                   ++p )
             {
-                if ( (*p)->alive != DISABLE )
+                if ( (*p)->alive() != DISABLE )
                 {
                     if ( (*p)->team()->side() == LEFT )
                         M_keepers++;
@@ -2013,7 +2013,7 @@ KeepawayRef::resetField()
           p != end;
           ++p )
     {
-        if( (*p)->alive != DISABLE )
+        if( (*p)->alive() != DISABLE )
         {
             double x, y;
             if ( (*p)->team()->side() == LEFT )
@@ -2372,7 +2372,7 @@ PenaltyRef::analyseImpl()
               p != end;
               ++p )
         {
-            if ( (*p)->alive != DISABLE
+            if ( (*p)->alive() != DISABLE
                  && (*p)->team()->side() == side
                  && (*p)->isGoalie() )
             {
@@ -3002,7 +3002,7 @@ PenaltyRef::penalty_check_players( const Side side )
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
             continue;
         if ( (*p)->team()->side() == side )
         {
@@ -3158,7 +3158,7 @@ PenaltyRef::placeTakerTeamPlayers()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
             continue;
         if ( (*p)->team()->side() != M_cur_pen_taker )
             continue;
@@ -3218,7 +3218,7 @@ PenaltyRef::placeOtherTeamPlayers()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
             continue;
         if ( (*p)->team()->side() == M_cur_pen_taker )
             continue;
@@ -3278,7 +3278,7 @@ PenaltyRef::getCandidateTaker()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
             continue;
         if ( (*p)->team()->side() != M_cur_pen_taker )
             continue;

@@ -225,26 +225,25 @@ protected:
     const SerializerPlayer& M_serializer;
 
 public:
-    class Params
-    {
+    class Params {
     public:
-        Params( const Stadium& stadium,
-                std::ostream& transport,
-                Player& listener,
-                const SerializerPlayer& serializer )
-            : m_stadium( stadium ),
-              m_transport( transport ),
-              m_listener( listener ),
-              m_serializer( serializer )
-          {}
+        std::ostream & m_transport;
+        Player & m_listener;
+        const SerializerPlayer & m_serializer;
+        const Stadium & m_stadium;
 
-        const Stadium& m_stadium;
-        std::ostream& m_transport;
-        Player& m_listener;
-        const SerializerPlayer& m_serializer;
+        Params( std::ostream & transport,
+                Player & listener,
+                const SerializerPlayer & serializer,
+                const Stadium & stadium )
+                : m_transport( transport )
+                , m_listener( listener )
+                , m_serializer( serializer )
+                , m_stadium( stadium )
+          { }
     };
 
-    typedef Ptr(*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params& );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
@@ -599,23 +598,22 @@ protected:
     Coach& M_listener;
     const SerializerCoach& M_serializer;
 public:
-    class Params
-    {
+    class Params {
     public:
-        Params( const Stadium& stadium,
-                std::ostream& transport,
-                Coach& listener,
-                const SerializerCoach& serializer )
-            : m_stadium( stadium ),
-              m_transport( transport ),
-              m_listener( listener ),
-              m_serializer( serializer )
-          {}
+        std::ostream & m_transport;
+        Coach & m_listener;
+        const SerializerCoach & m_serializer;
+        const Stadium & m_stadium;
 
-        const Stadium& m_stadium;
-        std::ostream& m_transport;
-        Coach& m_listener;
-        const SerializerCoach& m_serializer;
+        Params( std::ostream & transport,
+                Coach & listener,
+                const SerializerCoach & serializer,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_listener( listener )
+            , m_serializer( serializer )
+            , m_stadium( stadium )
+          { }
     };
 
 public:
@@ -702,23 +700,22 @@ protected:
     OnlineCoach& M_listener;
     const SerializerOnlineCoach& M_serializer;
 public:
-    class Params
-    {
+    class Params {
     public:
-        Params( const Stadium& stadium,
-                std::ostream& transport,
-                OnlineCoach& listener,
-                const SerializerOnlineCoach& serializer )
-            : m_stadium( stadium ),
-              m_transport( transport ),
-              m_listener( listener ),
-              m_serializer( serializer )
-          {}
+        std::ostream & m_transport;
+        OnlineCoach & m_listener;
+        const SerializerOnlineCoach & m_serializer;
+        const Stadium & m_stadium;
 
-        const Stadium& m_stadium;
-        std::ostream& m_transport;
-        OnlineCoach& m_listener;
-        const SerializerOnlineCoach& m_serializer;
+        Params( std::ostream & transport,
+                OnlineCoach & listener,
+                const SerializerOnlineCoach & serializer,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_listener( listener )
+            , m_serializer( serializer )
+            , m_stadium( stadium )
+          {}
     };
 
 public:

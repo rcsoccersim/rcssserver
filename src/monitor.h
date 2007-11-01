@@ -40,7 +40,8 @@ public:
              const double & version );
     ~Monitor();
 
-    void parseMsg( const char* msg, const size_t& len )
+    void parseMsg( const char * msg,
+                   const size_t & len )
       {
           char* str = (char*)msg;
           if ( str[ len - 1 ] != 0 )
@@ -59,10 +60,10 @@ public:
           RemoteClient::close();
       }
 
-    bool parseCommand( const char* message );
+    bool parseCommand( const char * message );
 
 
-    int send( const char* msg )
+    int send( const char * msg )
       {
           if ( version() >= 2.0 )
           {
@@ -91,6 +92,19 @@ public:
       {
           return M_version;
       }
+
+private:
+
+    bool dispfoul( const char * command );
+    bool dispplayer( const char * command );
+    bool dispdiscard( const char * command );
+    bool compression( const char * command );
+
+    bool coach_change_mode( const char * command );
+    bool coach_move( const char * command );
+    bool coach_recover();
+    bool coach_change_player_type( const char * command );
+    bool coach_check_ball();
 };
 
 

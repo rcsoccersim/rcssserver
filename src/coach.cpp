@@ -79,10 +79,10 @@ chop_last_parenthesis( char *str, int max_size )
 
 }
 
-Coach::Coach( Stadium *stad )
+Coach::Coach( Stadium & stadium )
     : M_init_observer_coach( NULL ),
       M_observer( new rcss::ObserverCoach ),
-      M_stadium( stad ),
+      M_stadium( stadium ),
       M_assigned( false ),
       M_eye( false ),
       M_hear( false ),
@@ -122,8 +122,8 @@ Coach::setSenders( const double & client_version )
     // visual
     rcss::VisualSenderCoach::Params visual_params( getTransport(),
                                                    *this,
-                                                   *M_stadium,
-                                                   *ser );
+                                                   *ser,
+                                                   M_stadium );
     rcss::VisualSenderCoach::Creator visual_cre;
     if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
                                                           (int)client_version ) )
@@ -133,10 +133,10 @@ Coach::setSenders( const double & client_version )
     M_observer->setVisualSender( visual_cre( visual_params ) );
 
     // audio
-    rcss::AudioSenderCoach::Params audio_params( *M_stadium,
-                                                 getTransport(),
+    rcss::AudioSenderCoach::Params audio_params( getTransport(),
                                                  *this,
-                                                 *ser );
+                                                 *ser,
+                                                 M_stadium );
 
     rcss::AudioSenderCoach::Creator audio_cre;
     if( ! rcss::AudioSenderCoach::factory().getCreator( audio_cre,
@@ -149,8 +149,8 @@ Coach::setSenders( const double & client_version )
     // init
     rcss::InitSenderOfflineCoach::Params init_params( getTransport(),
                                                       *this,
-                                                      *M_stadium,
-                                                      *ser );
+                                                      *ser,
+                                                      M_stadium );
     rcss::InitSenderOfflineCoach::Creator init_cre;
     if ( ! rcss::InitSenderOfflineCoach::factory().getCreator( init_cre,
                                                                (int)client_version ) )
@@ -191,158 +191,42 @@ Coach::sendOKEye()
 void
 Coach::parse_command( const char *command )
 {
-    char com[MaxMesg];
+    char com[128];
 
-    if ( std::sscanf( command, "(%[-0-9a-zA-Z.+*/?<>_]", com ) != 1 )
+    if ( std::sscanf( command, "(%127[-0-9a-zA-Z.+*/?<>_]", com ) != 1 )
     {
         send( "(error illegal_command_form)" );
         return;
     }
 
-    if ( ! std::strcmp ( com, "start" ) )
+    if ( ! std::strcmp( com, "start" ) )
     {
-        Stadium::_Start ( *M_stadium );
+        Stadium::_Start ( M_stadium );
         send( "(ok start)" );
     }
-    else if ( ! std::strcmp( com,"change_mode" ) )
+    else if ( ! std::strcmp( com, "change_mode" ) )
     {
-        char new_mode[MaxMesg];
-        if ( std::sscanf( command, "(change_mode %[-0-9a-zA-Z.+*/?<>_])",
-                          new_mode ) != 1 )
-        {
-            send( "(error illegal_command_form)" );
-            return;
-        }
-
-        change_mode( new_mode );
+        parse_change_mode( command );
     }
-    else if ( ! std::strcmp( com,"move" ) )
+    else if ( ! std::strcmp( com, "move" ) )
     {
-        char obj[MaxMesg];
-        double x = 0.0, y = 0.0, ang = 0.0, velx = 0.0, vely = 0.0;
-
-        ++command;
-        while ( *command != '(' )
-        {
-            if ( *command == NULLCHAR )
-            {
-                send( "(error illegal_object_form)" );
-                return;
-            }
-            ++command;
-        }
-
-        int i = 0;
-        while ( *command != ')' )
-        {
-            if ( *command == NULLCHAR )
-            {
-                send( "(error illegal_object_form)" );
-                return;
-            }
-            *(obj+i) = *command;
-            ++i; ++command;
-        }
-        *(obj+i) = *command;
-        ++i; ++command;
-        *(obj+i) = NULLCHAR;
-
-        if ( ! std::strcmp( obj, BALL_NAME ) )
-        {
-            M_stadium->clearBallCatcher();
-        }
-
-        int n = std::sscanf( command," %lf %lf %lf %lf %lf)",
-                             &x,&y,&ang,&velx,&vely );
-        if ( std::isnan( x ) != 0 ||
-             std::isnan( y ) != 0 ||
-             std::isnan( ang ) != 0 ||
-             std::isnan( velx ) != 0 ||
-             std::isnan( vely ) != 0
-             )
-        {
-            send( "(error illegal_command_form)" );
-            return;
-        }
-
-        if ( n == 2 )
-        {
-            if ( ! std::strcmp( obj, BALL_NAME ) )
-            {
-                M_stadium->set_ball( LEFT, PVector( x, y ) );
-            }
-            else if ( M_stadium->movePlayer( obj, PVector( x, y ) ) )
-            {
-
-            }
-            else
-            {
-                send( "(error illegal_object_form)" );
-                return;
-            }
-        }
-        else if ( n == 3 )
-        {
-            if ( ! std::strcmp( obj, BALL_NAME ) )
-            {
-                M_stadium->set_ball( LEFT, PVector( x, y ) );
-            }
-            else if ( M_stadium->movePlayer( obj,
-                                             PVector( x, y ),
-                                             Deg2Rad( std::max( std::min( ang,
-                                                                          ServerParam::instance().maxMoment() ),
-                                                                ServerParam::instance().minMoment() ) ) ) )
-            {
-
-            }
-            else
-            {
-                send( "(error illegal_object_form)" );
-                return;
-            }
-        }
-        else if ( n == 5 )
-        {
-            if ( ! std::strcmp( obj, BALL_NAME ) )
-            {
-                M_stadium->set_ball( NEUTRAL, PVector( x, y ), PVector( velx, vely ) );
-            }
-            else if ( M_stadium->movePlayer( obj, PVector( x, y ),
-                                             Deg2Rad( std::max( std::min( ang,
-                                                                          ServerParam::instance().maxMoment() ),
-                                                                ServerParam::instance().minMoment() ) ),
-                                             PVector( velx, vely ) ) )
-            {
-
-            }
-            else
-            {
-                send( "(error illegal_object_form)" );
-                return;
-            }
-        }
-        else
-        {
-            send( "(error illegal_command_form)" );
-            return;
-        }
-        send( "(ok move)" );
+        parse_move( command );
     }
-    else if ( ! std::strcmp( com,"look" ) )
+    else if ( ! std::strcmp( com, "look" ) )
     {
-        look( *M_stadium ) ;
+        look();
     }
     else if ( ! std::strcmp( com,"team_names" ) )
     {
-        team_names( *M_stadium ) ;
+        team_names();
     }
     else if ( ! std::strcmp( com, "recover" ) )
     {
-        recover( *M_stadium );
+        recover();
     }
     else if ( ! std::strcmp( com, "check_ball" ) )
     {
-        check_ball( *M_stadium ) ;
+        check_ball();
     }
     else if( ! std::strcmp( com, "say" ) )
     {
@@ -353,7 +237,7 @@ Coach::parse_command( const char *command )
             return;
         }
         chop_last_parenthesis( msg, ServerParam::instance().freeformMsgSize() );
-        M_stadium->say( msg, false );
+        M_stadium.say( msg, false );
         send( "(ok say)" );
     }
     else if ( ! std::strcmp( com,"ear" ) )
@@ -426,7 +310,7 @@ Coach::send( const char* msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium->writeTextLog( *this, msg, SEND );
+        M_stadium.writeTextLog( *this, msg, SEND );
     }
 }
 
@@ -485,6 +369,21 @@ Coach::sendExternalMsg()
 }
 
 void
+Coach::parse_change_mode( const char * command )
+{
+    char new_mode[128];
+    if ( std::sscanf( command,
+                      "(change_mode %127[-0-9a-zA-Z.+*/?<>_])",
+                      new_mode ) != 1 )
+    {
+        send( "(error illegal_command_form)" );
+        return;
+    }
+
+    change_mode( new_mode );
+}
+
+void
 Coach::change_mode( std::string mode )
 {
     PlayMode mode_id = PlayModeID( mode.c_str() );
@@ -495,8 +394,99 @@ Coach::change_mode( std::string mode )
         return;
     }
 
-    M_stadium->change_play_mode( mode_id );
+    M_stadium.change_play_mode( mode_id );
     send( "(ok change_mode)" );
+}
+
+void
+Coach::parse_move( const char * command )
+{
+    char obj[128];
+    double x = 0.0, y = 0.0, ang = 0.0, velx = 0.0, vely = 0.0;
+
+    int n = std::sscanf( command,
+                         " (move (%127[^)]) %lf %lf %lf %lf %lf ) ",
+                         obj, &x, &y, &ang, &velx, &vely );
+
+    if ( n < 3
+         || std::isnan( x ) != 0
+         || std::isnan( y ) != 0
+         || std::isnan( ang ) != 0
+         || std::isnan( velx ) != 0
+         || std::isnan( vely ) != 0 )
+    {
+        send( "(error illegal_object_form)" );
+        return;
+    }
+
+    std::string obj_name = "(";
+    obj_name += obj;
+    obj_name += ')';
+
+    if ( obj_name == BALL_NAME )
+    {
+        M_stadium.clearBallCatcher();
+
+        if ( n == 3 || n == 4 )
+        {
+            M_stadium.set_ball( LEFT, PVector( x, y ) );
+        }
+        else if ( n == 6 )
+        {
+            M_stadium.set_ball( NEUTRAL, PVector( x, y ), PVector( velx, vely ) );
+        }
+        else
+        {
+            send( "(error illegal_command_form)" );
+            return;
+        }
+    }
+    else
+    {
+        char teamname[128];
+        int unum = 0;
+
+        if ( std::sscanf( obj_name.c_str(),
+                          PLAYER_NAME_FORMAT,
+                          teamname, &unum ) != 2
+             || unum < 1
+             || MAX_PLAYER < unum )
+        {
+            send( "(error illegal_object_form)" );
+            return;
+        }
+
+        Side side = ( M_stadium.teamLeft().name() == teamname
+                      ? LEFT
+                      : M_stadium.teamRight().name() == teamname
+                      ? RIGHT
+                      : NEUTRAL );
+
+        PVector pos( x, y );
+        PVector vel( velx, vely );
+        ang = Deg2Rad( rcss::bound( ServerParam::instance().minMoment(),
+                                    ang,
+                                    ServerParam::instance().maxMoment() ) );
+        if ( n == 3 )
+        {
+            M_stadium.movePlayer( side, unum, pos, NULL, NULL );
+        }
+        else if ( n == 4 )
+        {
+            M_stadium.movePlayer( side, unum, pos, &ang, NULL );
+        }
+        else if ( n == 6 )
+        {
+            M_stadium.movePlayer( side, unum, pos, &ang, &vel );
+        }
+        else
+        {
+            send( "(error illegal_command_form)" );
+            return;
+        }
+    }
+
+    send( "(ok move)" );
 }
 
 void
@@ -570,7 +560,7 @@ Coach::compression( int level )
 }
 
 void
-Coach::look( Stadium& ) //stad )
+Coach::look()
 {
     if ( M_assigned )
     {
@@ -648,7 +638,7 @@ Coach::look( Stadium& ) //stad )
 }
 
 void
-Coach::team_names( Stadium & stad )
+Coach::team_names()
 {
 #ifdef HAVE_SSTREAM
     std::ostringstream ost;
@@ -658,14 +648,14 @@ Coach::team_names( Stadium & stad )
 
     ost << "(ok team_names";
 
-    if ( ! stad.teamLeft().name().empty() )
+    if ( ! M_stadium.teamLeft().name().empty() )
     {
-        ost << " (team l " << stad.teamLeft().name() << ")";
+        ost << " (team l " << M_stadium.teamLeft().name() << ")";
     }
 
-    if ( ! stad.teamRight().name().empty() )
+    if ( ! M_stadium.teamRight().name().empty() )
     {
-        ost << " (team r " << stad.teamRight().name() << ")";
+        ost << " (team r " << M_stadium.teamRight().name() << ")";
     }
 
     ost << ")" << std::endl;
@@ -679,18 +669,18 @@ Coach::team_names( Stadium & stad )
 }
 
 void
-Coach::recover( Stadium& stad )
+Coach::recover()
 {
-    stad.recoveryPlayers();
+    M_stadium.recoveryPlayers();
 
 #ifdef HAVE_SSTREAM
     std::ostringstream ost;
     ost << "(ok recover)" << std::endl;
-    send(ost.str().c_str());
+    send( ost.str().c_str() );
 #else
     std::ostrstream ost;
     ost << "(ok recover)" << std::endl << std::ends;
-    send(ost.str()) ;
+    send( ost.str() );
     ost.freeze();
 #endif
 }
@@ -699,12 +689,12 @@ Coach::recover( Stadium& stad )
 void
 OnlineCoach::change_player_types( const char * command )
 {
-    if ( M_stadium->time() > 0 )
+    if ( M_stadium.time() > 0 )
     {
         send( "(warning only_before_kick_off)" );
         return;
     }
-    else if ( M_stadium->time() >= ServerParam::instance().halfTime() *
+    else if ( M_stadium.time() >= ServerParam::instance().halfTime() *
               ( ServerParam::instance().nrNormalHalfs() +
                 ServerParam::instance().nrExtraHalfs() ) )
     {
@@ -716,11 +706,11 @@ OnlineCoach::change_player_types( const char * command )
 
     if ( side() == LEFT )
     {
-        team = &( M_stadium->teamLeft() );
+        team = &( M_stadium.teamLeft() );
     }
     if ( side() == RIGHT )
     {
-        team = &( M_stadium->teamRight() );
+        team = &( M_stadium.teamRight() );
     }
 
     if ( team == NULL )
@@ -778,7 +768,7 @@ OnlineCoach::change_player_types( const char * command )
         {
             const Player * p = team->player( i );
             if ( p
-                 && p->alive != DISABLE
+                 && p->alive() != DISABLE
                  && p->unum() == unum )
             {
                 player = p;
@@ -889,7 +879,7 @@ OnlineCoach::change_player_types( const char * command )
                       << std::endl;
         }
 
-        M_stadium->substitute( it->first, it->second );
+        M_stadium.substitute( it->first, it->second );
 
         char buf[64];
         std::snprintf( buf, 64, "(ok change_player_type %d %d)",
@@ -906,14 +896,14 @@ Coach::change_player_type( const std::string & team_name,
 {
 
     const Team* team = NULL;
-    if ( M_stadium->teamLeft().name() == team_name )
+    if ( M_stadium.teamLeft().name() == team_name )
     {
-        team = &( M_stadium->teamLeft() );
+        team = &( M_stadium.teamLeft() );
     }
 
-    if ( M_stadium->teamRight().name() == team_name )
+    if ( M_stadium.teamRight().name() == team_name )
     {
-        team = &( M_stadium->teamRight() );
+        team = &( M_stadium.teamRight() );
     }
 
     if ( team == NULL )
@@ -946,7 +936,7 @@ Coach::change_player_type( const std::string & team_name,
         return;
     }
 
-    M_stadium->substitute( player, player_type );
+    M_stadium.substitute( player, player_type );
 
     char buf[64];
     std::snprintf ( buf, 64, "(ok change_player_type %s %d %d)",
@@ -968,9 +958,9 @@ Coach::send_visual_info()
 // #endif
 
 //     if ( version() >= 7.0 )
-//         ost << "(see_global " << M_stadium->time();
+//         ost << "(see_global " << M_stadium.time();
 //     else
-//         ost << "(see " << M_stadium->time();
+//         ost << "(see " << M_stadium.time();
 
 //     if ( version() >= 7.0 )
 //         ost << " (" << GOAL_L_NAME_SHORT;
@@ -992,14 +982,14 @@ Coach::send_visual_info()
 //         ost << " (" << BALL_NAME_SHORT;
 //     else
 //         ost << " (" << BALL_NAME;
-//     ost << " " << M_stadium->ball().pos().x
-//         << " " << M_stadium->ball().pos().y
-//         << " " << M_stadium->ball().vel().x
-//         << " " << M_stadium->ball().vel().y
+//     ost << " " << M_stadium.ball().pos().x
+//         << " " << M_stadium.ball().pos().y
+//         << " " << M_stadium.ball().vel().x
+//         << " " << M_stadium.ball().vel().y
 //         << ")" ;
 
-//     const Stadium::PlayerCont::const_iterator end = M_stadium->players().end();
-//     for ( Stadium::PlayerCont::const_iterator p = M_stadium->players().begin();
+//     const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+//     for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
 //           p != end;
 //           ++p )
 //     {
@@ -1055,7 +1045,7 @@ Coach::send_visual_info()
 }
 
 void
-Coach::check_ball( Stadium & stad )
+Coach::check_ball()
 {
 #ifdef HAVE_SSTREAM
     std::ostringstream ost;
@@ -1064,9 +1054,9 @@ Coach::check_ball( Stadium & stad )
 #endif
 
     static char* BallPosInfoStr[] = BALL_POS_INFO_STRINGS;
-    BallPosInfo info = stad.ballPosInfo();
+    BallPosInfo info = M_stadium.ballPosInfo();
 
-    ost << "(ok check_ball " << stad.time() << " " ;
+    ost << "(ok check_ball " << M_stadium.time() << " " ;
 
     ost << BallPosInfoStr[info] << ")";
 
@@ -1084,10 +1074,9 @@ Coach::check_ball( Stadium & stad )
 
 
 
-OnlineCoach::OnlineCoach( Stadium *stad )
-    : Coach( stad )
+OnlineCoach::OnlineCoach( Stadium & stadium )
+    : Coach( stadium )
 {
-    //angle = Deg2Rad( 90 );
     M_side = NEUTRAL;
     M_freeform_messages_said = 0;
     M_freeform_messages_allowed = ServerParam::instance().freeformCountMax();
@@ -1113,8 +1102,8 @@ OnlineCoach::disable()
         //std::cout << "An online coach disconnected\n";
         std::cout << "An online coach disconnected : ("
                   << ( side() == LEFT
-                       ? M_stadium->teamLeft().name()
-                       : M_stadium->teamRight().name() );
+                       ? M_stadium.teamLeft().name()
+                       : M_stadium.teamRight().name() );
         if ( ! getName().empty() ) std::cout <<  " " << getName();
         std::cout << ")\n";
     }
@@ -1152,15 +1141,15 @@ OnlineCoach::parse_command( const char *command )
 
     if ( ! std::strcmp( com, "check_ball" ) )
     {
-        check_ball( *M_stadium ) ;
+        check_ball();
     }
     else if ( ! std::strcmp( com, "look" ) )
     {
-        look( *M_stadium ) ;
+        look();
     }
     else if ( ! std::strcmp( com, "team_names" ) )
     {
-        team_names( *M_stadium ) ;
+        team_names();
     }
     else if ( ! std::strcmp( com, "say" ) )
     {
@@ -1179,12 +1168,12 @@ OnlineCoach::parse_command( const char *command )
 
                 rcss::clang::Msg* msg = builder.detatchMsg().release();
 
-                msg->setTimeRecv( M_stadium->time() );
+                msg->setTimeRecv( M_stadium.time() );
 
                 switch( msg->getType() )
                 {
                 case rcss::clang::Msg::META:
-                    if ( M_stadium->playmode() != PM_PlayOn )
+                    if ( M_stadium.playmode() != PM_PlayOn )
                     {
                         should_queue = true;
                     }
@@ -1200,8 +1189,8 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::FREEFORM:
-                    if ( M_stadium->playmode() != PM_PlayOn
-                         || M_stadium->canSendFreeform() )
+                    if ( M_stadium.playmode() != PM_PlayOn
+                         || M_stadium.canSendFreeform() )
                     {
                         if ( M_freeform_messages_said < M_freeform_messages_allowed
                              || M_freeform_messages_allowed < 0 )
@@ -1220,7 +1209,7 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::INFO:
-                    if( M_stadium->playmode() != PM_PlayOn )
+                    if( M_stadium.playmode() != PM_PlayOn )
                     {
                         should_queue = true;
                     }
@@ -1236,7 +1225,7 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::ADVICE:
-                    if( M_stadium->playmode() != PM_PlayOn )
+                    if( M_stadium.playmode() != PM_PlayOn )
                     {
                         should_queue = true;
                     }
@@ -1252,7 +1241,7 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::DEFINE:
-                    if ( M_stadium->playmode() != PM_PlayOn )
+                    if ( M_stadium.playmode() != PM_PlayOn )
                     {
                         should_queue = true;
                     }
@@ -1268,7 +1257,7 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::DEL:
-                    if( M_stadium->playmode() != PM_PlayOn )
+                    if( M_stadium.playmode() != PM_PlayOn )
                     {
                         should_queue = true;
                     }
@@ -1284,7 +1273,7 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::RULE:
-                    if( M_stadium->playmode() != PM_PlayOn )
+                    if( M_stadium.playmode() != PM_PlayOn )
                     {
                         should_queue = true;
                     }
@@ -1323,7 +1312,7 @@ OnlineCoach::parse_command( const char *command )
         else
         {
             //pre v7.0
-            if( M_stadium->playmode() != PM_PlayOn )
+            if( M_stadium.playmode() != PM_PlayOn )
             {
                 if( M_freeform_messages_said < M_freeform_messages_allowed
                     || M_freeform_messages_allowed < 0 )
@@ -1420,8 +1409,8 @@ void
 OnlineCoach::sendPlayerClangVer()
 {
     M_init_observer_olcoach->sendPlayerClangVer();
-//     for ( Stadium::PlayerCont::iterator i = M_stadium->remotePlayers().begin();
-//           i != M_stadium->remotePlayers().end();
+//     for ( Stadium::PlayerCont::iterator i = M_stadium.remotePlayers().begin();
+//           i != M_stadium.remotePlayers().end();
 //           ++i )
 //     {
 //         if ( (*i)->getClangMinVer() != 0
@@ -1471,10 +1460,10 @@ OnlineCoach::check_message_queue( int time )
     {
         rcss::clang::Msg* msg = *( M_message_queue.begin() );
 
-        if ( M_stadium->playmode() != PM_PlayOn ||
+        if ( M_stadium.playmode() != PM_PlayOn ||
              time - msg->getTimeRecv() >= ServerParam::instance().clangMessDelay() )
         {
-            msg->setTimeSend( M_stadium->time() );
+            msg->setTimeSend( M_stadium.time() );
             msg->setSide( side() );
             say( *msg );
 
@@ -1494,28 +1483,28 @@ OnlineCoach::check_message_queue( int time )
 void
 OnlineCoach::say( const rcss::clang::Msg& message )
 {
-    M_stadium->sendCoachStdAudio( *this, message );
+    M_stadium.sendCoachStdAudio( *this, message );
 }
 
 
 void
 OnlineCoach::say( char *message, bool )
 {
-    M_stadium->sendCoachAudio( *this, message );
+    M_stadium.sendCoachAudio( *this, message );
 }
 
 void
 OnlineCoach::change_player_type( int unum,
                                  int player_type )
 {
-    if ( M_stadium->playmode() == PM_PlayOn )
+    if ( M_stadium.playmode() == PM_PlayOn )
     {
         send( "(warning cannot_sub_while_playon)" );
         return;
     }
 
     // when time elapsed, do not allow substitutions anymore (for penalties)
-    else if ( M_stadium->time() >= ServerParam::instance().halfTime() *
+    else if ( M_stadium.time() >= ServerParam::instance().halfTime() *
               ( ServerParam::instance().nrNormalHalfs() +
                 ServerParam::instance().nrExtraHalfs() ) )
     {
@@ -1527,11 +1516,11 @@ OnlineCoach::change_player_type( int unum,
 
     if ( side() == LEFT )
     {
-        team = &( M_stadium->teamLeft() );
+        team = &( M_stadium.teamLeft() );
     }
     if ( side() == RIGHT )
     {
-        team = &( M_stadium->teamRight() );
+        team = &( M_stadium.teamRight() );
     }
 
     if ( team == NULL )
@@ -1600,7 +1589,7 @@ OnlineCoach::change_player_type( int unum,
         return;
     }
 
-    M_stadium->substitute( player, player_type );
+    M_stadium.substitute( player, player_type );
 
     char buf[64];
     std::snprintf( buf, 64, "(ok change_player_type %d %d)",
@@ -1611,7 +1600,7 @@ OnlineCoach::change_player_type( int unum,
 void
 OnlineCoach::team_graphic( const char * command )
 {
-    if ( M_stadium->playmode() != PM_BeforeKickOff )
+    if ( M_stadium.playmode() != PM_BeforeKickOff )
     {
         send( "(warning only_before_kick_off)" );
         return;
@@ -1644,7 +1633,7 @@ OnlineCoach::team_graphic( const char * command )
         return;
     }
 
-    M_stadium->sendGraphic( side(), x, y, holder );
+    M_stadium.sendGraphic( side(), x, y, holder );
 
 #ifdef HAVE_SSTREAM
     std::ostringstream msg;
@@ -1704,8 +1693,8 @@ OnlineCoach::setSenders( const double & client_version )
     // visual
     rcss::VisualSenderCoach::Params visual_params( getTransport(),
                                                    *this,
-                                                   *M_stadium,
-                                                   ser->coachSerializer() );
+                                                   ser->coachSerializer(),
+                                                   M_stadium );
     rcss::VisualSenderCoach::Creator visual_cre;
     if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
                                                           (int)client_version ) )
@@ -1715,10 +1704,10 @@ OnlineCoach::setSenders( const double & client_version )
     M_observer->setVisualSender( visual_cre( visual_params ) );
 
     // audio
-    rcss::AudioSenderOnlineCoach::Params audio_params( *M_stadium,
-                                                       getTransport(),
+    rcss::AudioSenderOnlineCoach::Params audio_params( getTransport(),
                                                        *this,
-                                                       *ser );
+                                                       *ser,
+                                                       M_stadium );
     rcss::AudioSenderOnlineCoach::Creator audio_cre;
     if ( ! rcss::AudioSenderOnlineCoach::factory().getCreator( audio_cre,
                                                                (int)client_version ) )
@@ -1730,8 +1719,8 @@ OnlineCoach::setSenders( const double & client_version )
     // init
     rcss::InitSenderOnlineCoach::Params init_params( getTransport(),
                                                      *this,
-                                                     *M_stadium,
-                                                     *ser );
+                                                     *ser,
+                                                     M_stadium );
     rcss::InitSenderOnlineCoach::Creator init_cre;
     if ( ! rcss::InitSenderOnlineCoach::factory().getCreator( init_cre,
                                                               (int)client_version ) )

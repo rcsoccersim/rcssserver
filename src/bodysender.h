@@ -117,19 +117,18 @@ class BodySenderPlayer
 public:
     typedef BodySenderPlayer Base;
 
-    class Params
-    {
+    class Params {
     public:
-        std::ostream& m_transport;
-        const Player& m_self;
-        const SerializerPlayer& m_ser;
+        std::ostream & m_transport;
+        const Player & m_self;
+        const SerializerPlayer & m_ser;
 
-        Params( std::ostream& transport,
-                const Player& self,
-                const SerializerPlayer& ser )
-            : m_transport( transport ),
-              m_self( self ),
-              m_ser( ser )
+        Params( std::ostream & transport,
+                const Player & self,
+                const SerializerPlayer & ser )
+            : m_transport( transport )
+            , m_self( self )
+            , m_ser( ser )
           {}
     };
 

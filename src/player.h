@@ -97,10 +97,8 @@ private:
     //int sendcnt;
     bool M_highquality;
 
-public:
-    int alive;
+    int M_alive;
 
-private:
     bool M_command_done;
     bool M_turn_neck_done;
     bool M_done_received; //pfr:SYNCH
@@ -146,20 +144,33 @@ private:
     const Player & operator=( const Player & );
 
 public:
-    Player( Team * team,
-            Stadium * stad,
+    Player( Stadium & stadium,
+            Team * team,
             int number );
     ~Player();
 
     bool init( const double & ver,
                const bool goalie );
 
+    void setEnable();
+    void disable();
+    void discard();
+
+    int alive() const
+      {
+          return M_alive;
+      }
+
+    void resetState();
+
+    void addState( const int state )
+      {
+          M_alive |= state;
+      }
+
     /** This function is called in the begin of each cycle
      * and in case a player sends a sense_body command. */
     void sense_body();
-
-    void setEnable();
-    void disable();
 
     void sendInit();
     void sendReconnect();
@@ -473,7 +484,7 @@ Player::parseMsg( const char* msg, const size_t& len )
         }
         command[ len ] = 0;
     }
-    M_stadium->writeTextLog( *this, command, RECV );
+    M_stadium.writeTextLog( *this, command, RECV );
 
     /** Call the PlayerCommandParser */
     if ( M_parser.parse( command ) != 0 ){
@@ -574,14 +585,14 @@ inline
 void
 Player::setBackPasser()
 {
-    alive |= BACK_PASS;
+    M_alive |= BACK_PASS;
 }
 
 inline
 void
 Player::setFreeKickFaulter()
 {
-    alive |= FREE_KICK_FAULT;
+    M_alive |= FREE_KICK_FAULT;
 }
 
 inline
@@ -590,7 +601,7 @@ Player::send( const char* msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium->writeTextLog( *this, msg, SEND );
+        M_stadium.writeTextLog( *this, msg, SEND );
     }
 }
 

@@ -127,18 +127,16 @@ Stadium::udp_recv_message()
     recv( M_remote_players );
     recv( M_monitors );
 
-    //for ( int iMsgLength = MaxMesg; iMsgLength >= 0; )
-    int iMsgLength = MaxMesg;
-    while ( iMsgLength >= 0 )
+    while ( 1 )
     {
         char message[MaxMesg];
-        std::memset( &message, 0, sizeof( char ) * MaxMesg ) ;
+        std::memset( &message, 0, sizeof( char ) * MaxMesg );
 
         rcss::net::Addr cli_addr;
 
-        iMsgLength = M_player_socket.recv( message, MaxMesg, cli_addr );
+        int len = M_player_socket.recv( message, MaxMesg, cli_addr );
 
-        if ( iMsgLength > 0 )
+        if ( len > 0 )
         {
             //              std::cerr << "Got: ";
             //              std::cerr.write( message, iMsgLength );
@@ -151,7 +149,7 @@ Stadium::udp_recv_message()
             {
                 if ( (*i)->getDest() == cli_addr )
                 {
-                    (*i)->undedicatedRecv( message, iMsgLength );
+                    (*i)->undedicatedRecv( message, len );
                     found = true;
                     break;
                 }
@@ -165,7 +163,7 @@ Stadium::udp_recv_message()
                 {
                     if ( (*i)->getDest() == cli_addr )
                     {
-                        (*i)->undedicatedRecv( message, iMsgLength );
+                        (*i)->undedicatedRecv( message, len );
                         found = true;
                         break;
                     }
@@ -175,15 +173,13 @@ Stadium::udp_recv_message()
             if ( ! found )
             {
                 // a new monitor or a new player
-                //                unsigned long host = ntohl ( cli_addr.sin_addr.s_addr );
-                //                int port = ntohs ( cli_addr.sin_port );
 
                 /* chop newline */
-                if ( message[iMsgLength - 1] == '\n' )
+                if ( message[len - 1] == '\n' )
                 {
-                    iMsgLength--;
+                    --len;
                 }
-                message[iMsgLength] = NULLCHAR ;
+                message[len] = NULLCHAR;
 
                 if ( ! parseMonitorInit( message, cli_addr ) )
                 {
@@ -191,11 +187,16 @@ Stadium::udp_recv_message()
                 }
             }
         }
-        else if( errno != EWOULDBLOCK )
+        else if ( errno != EWOULDBLOCK )
         {
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": Error recv'ing from socket: "
                       << std::strerror( errno ) << std::endl;
+        }
+
+        if ( len < 0 )
+        {
+            break;
         }
     }
 }
@@ -346,18 +347,16 @@ Stadium::udp_recv_from_coach()
 {
     recv( M_remote_offline_coaches );
 
-    int iMsgLength = MaxMesg;
-    while ( iMsgLength >= 0 )
+    while ( 1 )
     {
         char message[MaxMesg];
         std::memset( &message, 0, sizeof( char ) * MaxMesg );
 
         rcss::net::Addr cli_addr;
 
-        iMsgLength = M_offline_coach_socket.recv( message, MaxMesg,
-                                                  cli_addr );
+        int len = M_offline_coach_socket.recv( message, MaxMesg,  cli_addr );
 
-        if ( iMsgLength > 0 )
+        if ( len > 0 )
         {
             bool found = false;
             for ( OfflineCoachCont::iterator i = M_remote_offline_coaches.begin();
@@ -366,7 +365,7 @@ Stadium::udp_recv_from_coach()
             {
                 if ( (*i)->getDest() == cli_addr )
                 {
-                    (*i)->undedicatedRecv( message, iMsgLength );
+                    (*i)->undedicatedRecv( message, len );
                     found = true;
                     break;
                 }
@@ -377,11 +376,11 @@ Stadium::udp_recv_from_coach()
                 // a new offline coach
 
                 // chop newline
-                if ( message[iMsgLength - 1] == '\n' )
+                if ( message[len - 1] == '\n' )
                 {
-                    iMsgLength--;
+                    --len;
                 }
-                message[iMsgLength] = NULLCHAR;
+                message[len] = NULLCHAR;
 
                 parseCoachInit( message, cli_addr );
             }
@@ -391,6 +390,11 @@ Stadium::udp_recv_from_coach()
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": Error recv'ing from socket: "
                       << strerror( errno ) << std::endl;
+        }
+
+        if ( len < 0 )
+        {
+            break;
         }
     }
 }
@@ -471,19 +475,16 @@ Stadium::udp_recv_from_online_coach()
 {
     recv( M_remote_online_coaches );
 
-    //for ( int iMsgLength = MaxMesg; iMsgLength >= 0; )
-    int iMsgLength = MaxMesg;
-    while ( iMsgLength >= 0 )
+    while ( 1 )
     {
         char message[MaxMesg];
         std::memset( &message, 0, sizeof ( char ) * MaxMesg );
 
         rcss::net::Addr cli_addr;
 
-        iMsgLength = M_online_coach_socket.recv( message, MaxMesg,
-                                                 cli_addr );
+        int len = M_online_coach_socket.recv( message, MaxMesg, cli_addr );
 
-        if ( iMsgLength > 0 )
+        if ( len > 0 )
         {
             bool found = false;
             for ( OnlineCoachCont::iterator i = M_remote_online_coaches.begin();
@@ -492,7 +493,7 @@ Stadium::udp_recv_from_online_coach()
             {
                 if ( (*i)->getDest() == cli_addr )
                 {
-                    (*i)->undedicatedRecv( message, iMsgLength );
+                    (*i)->undedicatedRecv( message, len );
                     found = true;
                     break;
                 }
@@ -502,11 +503,11 @@ Stadium::udp_recv_from_online_coach()
                 // a new online coach
 
                 /* chop newline */
-                if ( message[iMsgLength - 1] == '\n' )
+                if ( message[len - 1] == '\n' )
                 {
-                    iMsgLength--;
+                    --len;
                 }
-                message[iMsgLength] = NULLCHAR ;
+                message[len] = NULLCHAR ;
 
                 parseOnlineCoachInit( message, cli_addr );
             }
@@ -516,6 +517,11 @@ Stadium::udp_recv_from_online_coach()
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": Error recv'ing from socket: "
                       << strerror( errno ) << std::endl;
+        }
+
+        if ( len < 0 )
+        {
+            break;
         }
     }
 }
@@ -654,8 +660,12 @@ Stadium::broadcastSubstitution( const int side,
     // tell players
     for ( int i = 0 ; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->alive == DISABLE || M_players[i]->version() < 7.0 )
-            continue ;
+        if ( M_players[i]->alive() == DISABLE
+             || M_players[i]->version() < 7.0 )
+        {
+            continue;
+        }
+
         if ( ( side == LEFT && M_players[i]->team() == M_team_l )
              || ( side == RIGHT && M_players[i]->team() == M_team_r ) )
         {

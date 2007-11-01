@@ -142,26 +142,25 @@ protected:
       { return M_stadium; }
 
 public:
-    class Params
-    {
+    class Params {
     public:
-        Params( std::ostream& transport,
-                const Player& self,
-                const Stadium& stadium,
-                const SerializerPlayer& serializer )
-            : m_transport( transport ),
-              m_self( self ),
-              m_stadium( stadium ),
-              m_serializer( serializer )
-          {}
+        std::ostream & m_transport;
+        const Player & m_self;
+        const SerializerPlayer & m_serializer;
+        const Stadium & m_stadium;
 
-        std::ostream& m_transport;
-        const Player& m_self;
-        const Stadium& m_stadium;
-        const SerializerPlayer& m_serializer;
+        Params( std::ostream & transport,
+                const Player & self,
+                const SerializerPlayer & serializer,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_self( self )
+            , m_serializer( serializer )
+            , m_stadium( stadium )
+          { }
     };
 
-    typedef Ptr(*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params& );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static

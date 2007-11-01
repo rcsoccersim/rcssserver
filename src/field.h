@@ -460,15 +460,8 @@ public:
     bool movePlayer( const Side side,
                      const int unum,
                      const PVector & pos,
-                     const double * ang,
-                     const PVector * vel );
-    bool movePlayer( const char * obj_name,
-                     const PVector & pos,
-                     const PVector & vel = PVector( 0.0, 0.0 ) );
-    bool movePlayer( const char * obj_name,
-                     const PVector & pos,
-                     const double & ang,
-                     const PVector & vel = PVector( 0.0, 0.0 ) );
+                     const double * ang = NULL,
+                     const PVector * vel = NULL );
 
     void placePlayersInField();
 

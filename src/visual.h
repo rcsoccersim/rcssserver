@@ -130,23 +130,22 @@ public:
     static const double TEAM_FAR_LENGTH;
     static const double TEAM_TOOFAR_LENGTH;
 
-    class Params
-    {
+    class Params {
     public:
-        std::ostream& m_transport;
-        const Player& m_self;
-        const Stadium& m_stadium;
-        const SerializerPlayer& m_ser;
+        std::ostream & m_transport;
+        const Player & m_self;
+        const SerializerPlayer & m_ser;
+        const Stadium & m_stadium;
 
-        Params( std::ostream& transport,
-                const Player& self,
-                const Stadium& stadium,
-                const SerializerPlayer& ser )
-            : m_transport( transport ),
-              m_self( self ),
-              m_stadium( stadium ),
-              m_ser( ser )
-          {}
+        Params( std::ostream & transport,
+                const Player & self,
+                const SerializerPlayer & ser,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_self( self )
+            , m_ser( ser )
+            , m_stadium( stadium )
+          { }
     };
 
 
@@ -711,17 +710,17 @@ public:
     public:
         std::ostream & M_transport;
         const Coach & M_self;
-        const Stadium & M_stadium;
         const SerializerCoach & M_ser;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Coach & self,
-                const Stadium & stadium,
-                const SerializerCoach & ser )
+                const SerializerCoach & ser,
+                const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
-            , M_stadium( stadium )
             , M_ser( ser )
+            , M_stadium( stadium )
           { }
     };
 

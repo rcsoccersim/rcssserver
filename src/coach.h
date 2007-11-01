@@ -50,7 +50,7 @@ protected:
 
     char M_buffer[ MaxMesg ];
 
-    Stadium * M_stadium;
+    Stadium & M_stadium;
 
     bool M_assigned;
     bool M_eye;
@@ -63,7 +63,7 @@ protected:
 public:
 
     explicit
-    Coach( Stadium *stad );
+    Coach( Stadium & stadim );
 
     bool assigned() const
       {
@@ -99,16 +99,19 @@ public:
     void parse_command( const char *command );
 
 private:
+    void parse_change_mode( const char * command );
+    void parse_move( const char * command );
+
     void change_mode( std::string mode );
 
     void ear( std::string mode );
 public:
     void eye( std::string mode );
     void compression( int level );
-    void look( Stadium& stad );
-    void team_names( Stadium& stad );
-    void recover( Stadium& stad );
-    void check_ball( Stadium& stad );
+    void look();
+    void team_names();
+    void recover();
+    void check_ball();
     void change_player_type( const std::string & team_name,
                              int unum,
                              int player_type );
@@ -128,7 +131,7 @@ public:
                   send( "(warning message_not_null_terminated)" );
               str[ len ] = 0;
           }
-          M_stadium->writeTextLog(  *this, str, RECV );
+          M_stadium.writeTextLog(  *this, str, RECV );
           parse_command( str );
       }
 
@@ -188,7 +191,7 @@ private:
 
 public:
 
-    OnlineCoach( Stadium *stad );
+    OnlineCoach( Stadium & stadium );
     ~OnlineCoach();
 
     void disable();
@@ -227,7 +230,7 @@ public:
       {
           if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
           {
-              M_stadium->writeTextLog( *this, msg, SEND );
+              M_stadium.writeTextLog( *this, msg, SEND );
           }
           else
           {
@@ -250,7 +253,7 @@ public:
                   send( "(warning message_not_null_terminated)" );
               str[ len ] = 0;
           }
-          M_stadium->writeTextLog( *this, str, RECV );
+          M_stadium.writeTextLog( *this, str, RECV );
           parse_command( str );
       }
 

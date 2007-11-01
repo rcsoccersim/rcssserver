@@ -220,7 +220,7 @@ FullStateSenderPlayerV5::sendFullState()
           p != end;
           ++p )
     {
-        if ( (*p)->alive == DISABLE )
+        if ( (*p)->alive() == DISABLE )
             continue;
 
         sendPlayer( *(*p) );

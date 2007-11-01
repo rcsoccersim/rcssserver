@@ -416,20 +416,20 @@ public:
     class Params
     {
     public:
-        std::ostream& m_transport;
-        const Player& m_self;
-        const Stadium& m_stadium;
-        const SerializerPlayer& m_ser;
+        std::ostream & m_transport;
+        const Player & m_self;
+        const SerializerPlayer & m_ser;
+        const Stadium & m_stadium;
 
-        Params( std::ostream& transport,
-                const Player& self,
-                const Stadium& stadium,
-                const SerializerPlayer& ser )
-            : m_transport( transport ),
-              m_self( self ),
-              m_stadium( stadium ),
-              m_ser( ser )
-          {}
+        Params( std::ostream & transport,
+                const Player & self,
+                const SerializerPlayer & ser,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_self( self )
+            , m_ser( ser )
+            , m_stadium( stadium )
+          { }
     };
 
 public:
@@ -668,23 +668,22 @@ class InitSenderOnlineCoach
 public:
     typedef InitSenderOnlineCoach Base;
 
-    class Params
-    {
+    class Params {
     public:
-        std::ostream& m_transport;
-        const OnlineCoach& m_self;
-        const Stadium& m_stadium;
-        const SerializerOnlineCoach& m_ser;
+        std::ostream & m_transport;
+        const OnlineCoach & m_self;
+        const SerializerOnlineCoach & m_ser;
+        const Stadium & m_stadium;
 
-        Params( std::ostream& transport,
-                const OnlineCoach& self,
-                const Stadium& stadium,
-                const SerializerOnlineCoach& ser )
-            : m_transport( transport ),
-              m_self( self ),
-              m_stadium( stadium ),
-              m_ser( ser )
-          {}
+        Params( std::ostream & transport,
+                const OnlineCoach & self,
+                const SerializerOnlineCoach & ser,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_self( self )
+            , m_ser( ser )
+            , m_stadium( stadium )
+          { }
     };
 
 public:
@@ -984,23 +983,22 @@ class InitSenderOfflineCoach
 public:
     typedef InitSenderOfflineCoach Base;
 
-    class Params
-    {
+    class Params {
     public:
-        std::ostream& m_transport;
-        const Coach& m_self;
-        const Stadium& m_stadium;
-        const SerializerCoach& m_ser;
+        std::ostream & m_transport;
+        const Coach & m_self;
+        const SerializerCoach & m_ser;
+        const Stadium & m_stadium;
 
-        Params( std::ostream& transport,
-                const Coach& self,
-                const Stadium& stadium,
-                const SerializerCoach& ser )
-            : m_transport( transport ),
-              m_self( self ),
-              m_stadium( stadium ),
-              m_ser( ser )
-          {}
+        Params( std::ostream & transport,
+                const Coach & self,
+                const SerializerCoach & ser,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_self( self )
+            , m_ser( ser )
+            , m_stadium( stadium )
+          { }
     };
 
     typedef std::auto_ptr< rcss::InitSenderOfflineCoach > Ptr;
