@@ -244,6 +244,12 @@ public:
                      const int cycles,
                      const int count ) const;
 
+    virtual
+    void serializeCollision( std::ostream & strm,
+                             const bool ball_collide,
+                             const bool player_collide,
+                             const bool post_collide ) const;
+
 
     virtual
     void

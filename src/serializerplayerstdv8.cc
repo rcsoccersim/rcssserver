@@ -106,10 +106,16 @@ SerializerPlayerStdv8::serializeFSPlayerBegin( std::ostream& strm,
 {
     strm << " ((p " << side
          << " " << unum;
-    if( goalie )
+
+    if ( goalie )
+    {
         strm << " g";
+    }
     else
+    {
         strm << " " << type; // hetro player type
+    }
+
     strm << ") " << x
          << " " << y
          << " " << vel_x

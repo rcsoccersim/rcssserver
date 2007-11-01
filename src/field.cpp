@@ -1028,7 +1028,7 @@ Stadium::step()
     }
 
     makeDispInfo();
-    resetPlayerFlags();
+    //resetPlayerFlags();
 
     // send to displays
     for ( MonitorCont::iterator i = M_monitors.begin();
@@ -3108,6 +3108,8 @@ Stadium::doSendSenseBody()
             }
         }
     }
+
+    resetPlayerFlags();
 
     std::for_each( M_listeners.begin(), M_listeners.end(),
                    rcss::Listener::NewCycle() );

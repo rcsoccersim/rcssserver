@@ -283,6 +283,39 @@ BodySenderPlayerV8::sendBodyData()
                                   self().tackleCount() );
 }
 
+
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV12
+//
+//  DESC: version 12 of the sense body protocol. Added collision info.
+//
+//===================================================================
+*/
+
+BodySenderPlayerV12::BodySenderPlayerV12( const Params& params )
+    : BodySenderPlayerV8( params )
+{
+
+}
+
+BodySenderPlayerV12::~BodySenderPlayerV12()
+{
+
+}
+
+void
+BodySenderPlayerV12::sendBodyData()
+{
+    BodySenderPlayerV8::sendBodyData();
+
+    serializer().serializeCollision( transport(),
+                                     self().alive() & BALL_COLLIDE,
+                                     self().alive() & PLAYER_COLLIDE,
+                                     self().alive() & POST_COLLIDE );
+}
+
 namespace bodysender
 {
 template< typename Sender >
@@ -301,6 +334,6 @@ lib::RegHolder vp8 = BodySenderPlayer::factory().autoReg( &create< BodySenderPla
 lib::RegHolder vp9 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 9 );
 lib::RegHolder vp10 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 10 );
 lib::RegHolder vp11 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 11 );
-lib::RegHolder vp12 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 12 );
+lib::RegHolder vp12 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV12 >, 12 );
 }
 }

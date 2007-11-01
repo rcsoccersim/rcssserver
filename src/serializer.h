@@ -621,6 +621,13 @@ public:
 
 
     virtual
+    void serializeCollision( std::ostream &,
+                             const bool,
+                             const bool,
+                             const bool ) const
+      { }
+
+    virtual
     void
     serializeFSBegin( std::ostream &,
                       const int ) const

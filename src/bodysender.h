@@ -133,7 +133,7 @@ public:
     };
 
     typedef std::auto_ptr< BodySenderPlayer > Ptr;
-    typedef Ptr(*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params& );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
@@ -168,7 +168,7 @@ private:
 /*!
 //===================================================================
 //
-//  CLASS: BodyObserver
+//  CLASS: BodyObserverPlayer
 //
 //  DESC: Interface for an object that receives sense body information.
 //
@@ -367,6 +367,33 @@ protected:
     sendBodyData();
 
 };
+
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV12
+//
+//  DESC: version 12 of the sense body protocol. Added collision info.
+//
+//===================================================================
+*/
+
+class BodySenderPlayerV12
+    : public BodySenderPlayerV8
+{
+public:
+    BodySenderPlayerV12( const Params & params );
+
+    virtual
+    ~BodySenderPlayerV12();
+
+protected:
+    virtual
+    void
+    sendBodyData();
+
+};
+
 }
 
 #endif

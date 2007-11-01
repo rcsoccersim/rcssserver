@@ -353,6 +353,41 @@ SerializerPlayerStdv1::serializeTackle( std::ostream& strm,
     strm << ")";
 }
 
+void
+SerializerPlayerStdv1::serializeCollision( std::ostream & strm,
+                                           const bool ball_collide,
+                                           const bool player_collide,
+                                           const bool post_collide ) const
+{
+    bool collide = false;
+
+    strm << " (collision";
+
+    if ( ball_collide )
+    {
+        collide = true;
+        strm << " (ball)";
+    }
+
+    if ( player_collide )
+    {
+        collide = true;
+        strm<< " (player)";
+    }
+
+    if ( post_collide )
+    {
+        collide = true;
+        strm<< " (post)";
+    }
+
+    if ( ! collide )
+    {
+        strm << " none";
+    }
+
+    strm << ")";
+}
 
 void
 SerializerPlayerStdv1::serializeFSBegin( std::ostream& strm,
