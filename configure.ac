@@ -281,5 +281,7 @@ AX_DIST_DMG
 
 
 AC_CONFIG_FILES([Makefile
-		 src/Makefile])
+                src/Makefile
+                src/rcsoccersim],
+                [test -f src/rcsoccersim && chmod +x src/rcsoccersim])
 AC_OUTPUT

@@ -324,13 +324,10 @@ private:
 		double prand; /* player rand */
 		double pweight; /* player weight */
 		double pspeed_max; /* player speed max */
-    // 12.0.0
-		double M_player_speed_max_min; // minumum value of player speed max
 		// th 6.3.00
 		double paccel_max; /* player acceleration max */
 		//
 		double stamina_max; /* player stamina max */
-		double M_extra_stamina;
 		double stamina_inc; /* player stamina inc */
 		double recover_init; /* player recovery init */
 		double recover_dthr; /* player recovery decriment threshold */
@@ -528,8 +525,6 @@ private:
     double M_tackle_exponent;
     int M_tackle_cycles;
     double M_tackle_power_rate;
-    double M_min_tackle_power;
-    double M_max_tackle_power;
 
     int M_freeform_wait_period;
     int M_freeform_send_period;
@@ -552,11 +547,16 @@ private:
     std::string M_team_l_start;
     std::string M_team_r_start;
 
+    // 11.0.0
     double M_ball_stuck_area; /* threshold distance checked by BallStuckRef */
-
     std::string M_coach_msg_file; /* file name that contains the messages sent to coaches */
 
-    int M_max_monitors; //!< The maximum number of monitor clients.
+    // 12.0.0
+    double M_min_tackle_power;
+    double M_max_tackle_power;
+		double M_player_speed_max_min; // minumum value of player speed max
+		double M_extra_stamina;
+    int M_max_monitors; //!< The maximum number of monitor client connection.
 
 private:
 

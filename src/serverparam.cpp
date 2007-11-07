@@ -112,14 +112,12 @@ const double ServerParam::PLAYER_DECAY = 0.4;
 const double ServerParam::PLAYER_RAND = 0.1;
 const double ServerParam::PLAYER_WEIGHT = 60.0;
 const double ServerParam::PLAYER_SPEED_MAX = 1.2;
-const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.8;
 // th 6.3.00
 const double ServerParam::PLAYER_ACCEL_MAX = 1.0;
 //
 const double ServerParam::IMPARAM = 5.0;
 
 const double ServerParam::STAMINA_MAX = 4000.0;
-const double ServerParam::EXTRA_STAMINA = 0.0;
 const double ServerParam::STAMINA_INC_MAX = 45.0;
 const double ServerParam::RECOVERY_DEC_THR = 0.3;
 const double ServerParam::RECOVERY_DEC = 0.002;
@@ -230,8 +228,6 @@ const double ServerParam::TACKLE_WIDTH = 1.0;
 const double ServerParam::TACKLE_EXPONENT = 6.0;
 const unsigned int ServerParam::TACKLE_CYCLES = 10;
 const double ServerParam::TACKLE_POWER_RATE = 0.0135; // [12.0.0] 0.027 -> 0.0135
-const double ServerParam::MIN_TACKLE_POWER = 0.0;
-const double ServerParam::MAX_TACKLE_POWER = 100.0;
 
 const int ServerParam::NR_NORMAL_HALFS = 2;
 const int ServerParam::NR_EXTRA_HALFS = 2;
@@ -277,7 +273,15 @@ const char ServerParam::S_MODULE_DIR[] = MODULEDIR;
 const char ServerParam::S_MODULE_DIR[] = "/usr/local/lib/rcssserver/modules";
 #endif
 
+// 11.0.0
 const double ServerParam::BALL_STUCK_AREA = 3.0;
+
+// 12.0.0
+const double ServerParam::MIN_TACKLE_POWER = 0.0;
+const double ServerParam::MAX_TACKLE_POWER = 100.0;
+const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.8;
+const double ServerParam::EXTRA_STAMINA = 0.0;
+
 
 ServerParam &
 ServerParam::instance()
@@ -456,13 +460,10 @@ ServerParam::addParams()
     addParam( "player_rand", prand, "Player random movement factor", 7 );
     addParam( "player_weight", pweight, "The weight of the player", 7 );
     addParam( "player_speed_max", pspeed_max, "The max speed of players", 7 );
-    addParam( "player_speed_max_min", M_player_speed_max_min,
-              "The minumum value of the max speed of players", 12 );
     // th 6.3.00
     addParam( "player_accel_max", paccel_max, "The max acceleration of players", 7 );
     //
     addParam( "stamina_max", stamina_max, "The maximum stamina of players", 7 );
-    addParam( "extra_stamina", M_extra_stamina, "", 12 );
     addParam( "stamina_inc_max", stamina_inc, "The maximum player stamina increament", 7 );
     addParam( "recover_init", recover_init, "The intial recovery value for players", 9 );
     addParam( "recover_dec_thr", recover_dthr, "", 7 );
@@ -646,8 +647,6 @@ ServerParam::addParams()
     addParam( "tackle_exponent", M_tackle_exponent, "", 8 );
     addParam( "tackle_cycles", M_tackle_cycles, "", 8 );
     addParam( "tackle_power_rate", M_tackle_power_rate, "", 8 );
-    addParam( "min_tackle_power", M_min_tackle_power, "", 12 );
-    addParam( "max_tackle_power", M_max_tackle_power, "", 12 );
 
     addParam( "freeform_wait_period", M_freeform_wait_period, "", 8 );
     addParam( "freeform_send_period", M_freeform_send_period, "", 8 );
@@ -712,9 +711,14 @@ ServerParam::addParams()
     addParam( "coach_msg_file",
               rcss::conf::makeSetter( this, &ServerParam::setCoachMsgFile ),
               rcss::conf::makeGetter( M_coach_msg_file ),
-              "", 11 );
+              "", 999 );
 
-    addParam( "max_monitors", M_max_monitors, "", 12 );
+    addParam( "min_tackle_power", M_min_tackle_power, "", 12 );
+    addParam( "max_tackle_power", M_max_tackle_power, "", 12 );
+    addParam( "player_speed_max_min", M_player_speed_max_min,
+              "The minumum value of the max speed of players", 12 );
+    addParam( "extra_stamina", M_extra_stamina, "", 12 );
+    addParam( "max_monitors", M_max_monitors, "", 999 );
 }
 
 
@@ -794,11 +798,9 @@ ServerParam::setDefaults()
     prand = PLAYER_RAND;
     pweight = PLAYER_WEIGHT;
     pspeed_max = PLAYER_SPEED_MAX;
-    M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
     paccel_max = PLAYER_ACCEL_MAX ;
 
     stamina_max = STAMINA_MAX;
-    M_extra_stamina = EXTRA_STAMINA;
     stamina_inc = STAMINA_INC_MAX;
     recover_init = 1.0;
     recover_dthr = RECOVERY_DEC_THR;
@@ -994,8 +996,6 @@ ServerParam::setDefaults()
     M_tackle_exponent = TACKLE_EXPONENT;
     M_tackle_cycles = TACKLE_CYCLES;
     M_tackle_power_rate = TACKLE_POWER_RATE;
-    M_min_tackle_power = MIN_TACKLE_POWER;
-    M_max_tackle_power = MAX_TACKLE_POWER;
 
     M_freeform_wait_period = FREEFORM_WAIT_PERIOD;
     M_freeform_send_period = FREEFORM_SEND_PERIOD;
@@ -1018,10 +1018,16 @@ ServerParam::setDefaults()
     M_team_l_start = S_TEAM_L_START;
     M_team_r_start = S_TEAM_R_START;
 
+    // 11.0.0
     M_ball_stuck_area = BALL_STUCK_AREA;
 
     M_coach_msg_file = "";
 
+    // 12.0.0
+    M_min_tackle_power = MIN_TACKLE_POWER;
+    M_max_tackle_power = MAX_TACKLE_POWER;
+    M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
+    M_extra_stamina = EXTRA_STAMINA;
     M_max_monitors = -1;
 
     setHalfTime( HALF_TIME );
@@ -1181,6 +1187,9 @@ ServerParam::convertToStruct ()
 
     tmp.ball_stuck_area = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_ball_stuck_area ) );
 
+    // 12.0.0
+    tmp.min_tackle_power = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_min_tackle_power ) );
+    tmp.max_tackle_power = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_max_tackle_power ) );
     tmp.player_speed_max_min = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_player_speed_max_min ) );
     tmp.extra_stamina = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_extra_stamina ) );
 

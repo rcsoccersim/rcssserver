@@ -498,11 +498,14 @@ typedef struct
   Int32 slowness_on_top_for_right_team;
   Int32 ka_length;                    /* keepaway region length */
   Int32 ka_width;                     /* keepaway region width */
+    // 11.0.0
     Int32 ball_stuck_area; // automatic drop ball threshold while play_on
+    // 12.0.0
+    Int32 min_tackle_power;
+    Int32 max_tackle_power;
     Int32 player_speed_max_min;
     Int32 extra_stamina;
-  Int32 sparelong8;
-  Int32 sparelong9;
+
   Int32 sparelong10;
 
   Int16 start_goal_l;

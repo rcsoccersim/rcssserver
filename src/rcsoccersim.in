@@ -1,5 +1,15 @@
 #! /bin/sh
 
+BASEPATH=@RCSSBASE@
+if [ x"$BASEPATH" != x ] ; then
+    if [ x"$LD_LIBRARY_PATH" = x ] ; then
+        LD_LIBRARY_PATH=$BASEPATH/lib
+    else
+        LD_LIBRARY_PATH=$BASEPATH/lib:$LD_LIBRARY_PATH
+    fi
+    export LD_LIBRARY_PATH
+fi
+
 #--------------------------------------------------
 # option
 #
@@ -58,7 +68,7 @@ else
     echo "Usage: $0 [(-frameview)|(-classic)]"
     echo ""
 fi
-    
+
 
 
 

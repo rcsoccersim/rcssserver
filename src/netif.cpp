@@ -710,6 +710,8 @@ Stadium::broadcastSubstitution( const int side,
         }
     }
 
+    // TODO: send to offline coach
+
     char buffer[64];
     std::snprintf( buffer, 64,
                    "(change_player_type %s %d %d)",

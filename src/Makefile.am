@@ -20,6 +20,9 @@ core \
 libimports.cpp \
 moduletest.sh
 
+DISTCLEANILES = \
+rcsoccersim
+
 lib_LTLIBRARIES = \
 librcssutil.la \
 librcsstimer.la \
@@ -285,7 +288,7 @@ player_command_parser.h
 EXTRA_DIST = \
 coach_lang_tok.ll \
 player_command_tok.ll \
-rcsoccersim \
+rcsoccersim.in \
 ac_lib_rcssclangparser.m4
 
 nodist_rcssserver_SOURCES = libimports.cpp

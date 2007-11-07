@@ -1,3 +1,17 @@
+2007-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	* src/rcsoccersim.in:
+	* src/rcsoccersim:
+	* src/Makefile.am:
+	* src/netif.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/types.h:
+	- added rcsoccersim.in to configure the environment variables in
+	the start script.
+	- added new parameters to monitor protocol definitions.
+
 2007-11-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/bodysender.cc:
