@@ -1,3 +1,40 @@
+[12.0.0a]
+  * Supported a protocl version 12. Now, player and coach can connect
+	as the version 12 clients. In the version 12 protocol,
+    - collision information is added to sense_body. The following
+		format message is added to the end of sense_body:
+
+      (collision {none|[(ball)][ (player)][ (post)]})
+
+    For example, the following message may be received.
+
+      (sense_body 0 (view_mode high normal) (stamina 4000 1)
+        (speed 0 0) (head_angle 0) (kick 0) (dash 0) (turn 0) (say 0)
+        (turn_neck 0) (catch 0) (move 0) (change_view 0)
+        (arm (movable 0) (expires 0) (target 0 0) (count 0))
+        (focus (target none) (count 0)) (tackle (expires 0) (count 0))
+        (collision (ball) (player)))
+
+  * Changed the number of player types to 18.
+
+  * Moved allow_mult_default_type parameter from ServerParam to
+    PlayerParam.
+
+  * Changed the policy of an automatic player type assignment. Now,
+    if allow_mult_default_type parameter is false, rcssserver may
+    change player types just before the playmode is changed to
+    kick-off.
+
+  * Changed default parameter values.
+    - ball_speed_max: 2.7 -> 3.0
+    - catch_area_l: 1.2 -> 1.35
+
+  * Now, goalie cannot catch the ball just after his kick. In such a
+    case, back_pass_? is taken.
+
+  * Now, rcssserver accepts some coach commands from monitor clients
+    if coach mode is enabled.
+
 [12.0.0-pre-20071025]
   * Changed default parameter values.
     - player_decay_delta_min: 0 -> -0.05.
