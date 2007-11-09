@@ -252,6 +252,10 @@ Player::init( const double & ver,
     dir_qstep_player  = team->dirQstepTeam();
 #endif
 
+    if ( ver >= 12.0 )
+    {
+        M_vis_send = 1;
+    }
 
     if ( ! setSenders() )
     {

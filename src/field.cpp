@@ -3089,6 +3089,9 @@ Stadium::doSendSenseBody()
     std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
                          irand ); //rcss::random::UniformRNG::instance() );
 
+    //
+    // send sense_body & fullstate
+    //
     const PlayerCont::iterator end = M_remote_players.end();
     for ( PlayerCont::iterator it = M_remote_players.begin();
           it != end;
@@ -3109,13 +3112,21 @@ Stadium::doSendSenseBody()
         }
     }
 
+    //
+    // reset player state flag
+    //
     resetPlayerFlags();
 
+    //
+    // send audio message
+    //
     std::for_each( M_listeners.begin(), M_listeners.end(),
                    rcss::Listener::NewCycle() );
 
-
-    for (  PlayerCont::iterator it = M_remote_players.begin();
+    //
+    // send visual
+    //
+    for ( PlayerCont::iterator it = M_remote_players.begin();
           it != end;
           ++it )
     {
@@ -3126,7 +3137,9 @@ Stadium::doSendSenseBody()
         }
     }
 
-
+    //
+    // write profile
+    //
     if ( text_log_open()
          && ServerParam::instance().profile() )
     {
