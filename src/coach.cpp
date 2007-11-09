@@ -201,7 +201,7 @@ Coach::parse_command( const char *command )
 
     if ( ! std::strcmp( com, "start" ) )
     {
-        Stadium::_Start ( M_stadium );
+        Stadium::_Start( M_stadium );
         send( "(ok start)" );
     }
     else if ( ! std::strcmp( com, "change_mode" ) )

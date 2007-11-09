@@ -27,6 +27,7 @@
 #include "field.h"
 #include "heteroplayer.h"
 #include "object.h"
+#include "team.h"
 #include "pcombuilder.h"
 #include "pcomparser.h"
 #include "playerparam.h"

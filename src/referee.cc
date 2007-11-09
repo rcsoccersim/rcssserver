@@ -23,6 +23,7 @@
 
 #include "field.h"
 #include "player.h"
+#include "team.h"
 
 #include <limits>
 

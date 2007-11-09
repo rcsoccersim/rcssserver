@@ -32,6 +32,7 @@
 
 class Stadium;
 class Player;
+class Team;
 
 class Referee
 {

@@ -1611,6 +1611,11 @@ Stadium::_Start( Stadium& stad )
                 stad.recoveryPlayers();
             }
             stad.set_ball( LEFT, PVector( 0.0, 0.0 ) );
+            if ( stad.time() == 0
+                 && ! PlayerParam::instance().allowMultDefaultType() )
+            {
+                stad.assignPlayerTypes();
+            }
             stad.change_play_mode( PM_KickOff_Left );
             std::cout << "Kick_off_left" << std::endl;
         }
@@ -2263,6 +2268,20 @@ Stadium::closeLogs()
     M_kaway_log.close();
     M_gz_text_log.close();
     M_gz_game_log.close();
+}
+
+void
+Stadium::assignPlayerTypes()
+{
+    if ( M_team_l->enabled() )
+    {
+        M_team_l->assignPlayerTypes();
+    }
+
+    if ( M_team_r->enabled() )
+    {
+        M_team_r->assignPlayerTypes();
+    }
 }
 
 void

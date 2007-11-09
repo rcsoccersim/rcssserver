@@ -1,14 +1,27 @@
 2007-11-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
-	* src/playerparam.cpp:
-	- changed the default number of player types to 18.
+	* src/Makefile.am:
+	* src/coach.cpp:
+	* src/field.cpp:
+	* src/field.h:
+	* src/object.cpp:
+	* src/object.h:
+	* src/player.h:
+	* src/referee.cc:
+	* src/referee.h:
+	* src/team.cpp:
+	* src/team.h:
+	- sepalated the definition of class Team.
 
+	* src/heteroplayer.cpp:
+	* src/player.cc:
+	* src/player.h:
+	* src/playerparam.cpp:
 	* src/serverparam.cpp:
+	* src/visual.cc:
+	- changed the default number of player types to 18.
 	- changed the default catchable_area_length value to 1.5.
 	- changed the default ball_speed_max value to 1.5.
-
-	* src/player.cc:
-	* src/visual.cc:
 	- fixed a problem in the variable initialization for version 12
 	protocol.
 	- fixed a bug in the check of effort inc threshold.

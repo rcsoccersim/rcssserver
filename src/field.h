@@ -59,8 +59,10 @@
 class HeteroPlayer;
 
 class Monitor;
+class Player;
 class Coach;
 class OnlineCoach;
+class Team;
 
 class Referee;
 
@@ -514,6 +516,7 @@ private:
     void write_times( timeval, timeval );
     void write_profile( timeval, timeval, char* );
 
+    void assignPlayerTypes();
 public:
     void substitute( const Player * player,
                      const int player_type_id );

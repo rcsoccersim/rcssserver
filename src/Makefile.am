@@ -295,7 +295,6 @@ nodist_rcssserver_SOURCES = libimports.cpp
 
 rcssserver_SOURCES = \
 heteroplayer.cpp \
-object.h \
 heteroplayer.h \
 param.h \
 main.cpp \
@@ -306,7 +305,10 @@ field.h \
 netif.cpp \
 netif.h \
 version.h \
+object.h \
 object.cpp \
+team.h \
+team.cpp \
 xmlreader.h \
 xmlreader.cpp \
 landmarkreader.h \
