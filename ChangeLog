@@ -1,8 +1,18 @@
 2007-11-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/playerparam.cpp:
+	- changed the default number of player types to 18.
+
+	* src/serverparam.cpp:
+	- changed the default catchable_area_length value to 1.5.
+	- changed the default ball_speed_max value to 1.5.
+
 	* src/player.cc:
+	* src/visual.cc:
 	- fixed a problem in the variable initialization for version 12
 	protocol.
+	- fixed a bug in the check of effort inc threshold.
+	- introduced distance variables related to the vision sensor accuracy.
 
 2007-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

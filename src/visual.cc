@@ -61,10 +61,10 @@ VisualSender::~VisualSender()
 //===================================================================
 */
 
-const double VisualSenderPlayer::UNUM_FAR_LENGTH = 20.0;
-const double VisualSenderPlayer::UNUM_TOOFAR_LENGTH = 40.0;
-const double VisualSenderPlayer::TEAM_FAR_LENGTH = 40.0;
-const double VisualSenderPlayer::TEAM_TOOFAR_LENGTH = 60.0;
+// const double VisualSenderPlayer::UNUM_FAR_LENGTH = 20.0;
+// const double VisualSenderPlayer::UNUM_TOOFAR_LENGTH = 40.0;
+// const double VisualSenderPlayer::TEAM_FAR_LENGTH = 40.0;
+// const double VisualSenderPlayer::TEAM_TOOFAR_LENGTH = 60.0;
 
 VisualSenderPlayer::Factory&
 VisualSenderPlayer::factory()
@@ -266,8 +266,10 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
         const double quant_dist
             = calcQuantDist( un_quant_dist, self().landDistQStep() );
 
-        const double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
-                              / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+        //const double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
+        //                      / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+        const double prob = ( ( quant_dist - self().unumFarLength() )
+                              / ( self().unumTooFarLength() - self().unumFarLength() ) );
 
         if ( decide( prob ) )
         {
@@ -334,8 +336,10 @@ VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
         const double quant_dist = calcQuantDist( un_quant_dist,
                                                  self().distQStep() );
 
-        const double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
-                              / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+        //double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
+        //                / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+        double prob = ( ( quant_dist - self().unumFarLength() )
+                        / ( self().unumTooFarLength() - self().unumFarLength() ) );
 
         if ( decide( prob ) )
         {
@@ -381,10 +385,10 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
                                                  self().distQStep() );
 
         //double prob = ( ( quant_dist - TEAM_FAR_LENGTH )
-        /// ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
-
-        //if ( decide( prob ) )
-        if ( quant_dist >= TEAM_TOOFAR_LENGTH )
+        //              / ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
+        double prob = ( ( quant_dist - self().teamFarLength() )
+                        / ( self().teamTooFarLength() - self().teamFarLength() ) );
+        if ( decide( prob ) )
         {
             serializer().serializeVisualObject( transport(),
                                                 calcTFarName( player ),
@@ -392,8 +396,10 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
         }
         else
         {
-            const double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
-                                  / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+            //prob = ( ( quant_dist - UNUM_FAR_LENGTH )
+            //         / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+            prob = ( ( quant_dist - self().unumFarLength() )
+                     / ( self().unumTooFarLength() - self().unumFarLength() ) );
             if ( decide( prob ) )
             {
                 serializer().serializeVisualObject( transport(),
@@ -430,10 +436,11 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
         const double quant_dist = calcQuantDist( un_quant_dist,
                                                  self().distQStep() );
         //double prob = ( ( quant_dist - TEAM_FAR_LENGTH )
-        /// ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
+        //              / ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
+        double prob = ( ( quant_dist - self().teamFarLength() )
+                        / ( self().teamTooFarLength() - self().teamFarLength() ) );
 
-        //if ( decide( prob ) )
-        if ( quant_dist >= TEAM_TOOFAR_LENGTH )
+        if ( decide( prob ) )
         {
             serializer().serializeVisualObject( transport(),
                                                 calcTFarName( player ),
@@ -442,8 +449,10 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
         }
         else
         {
-            const double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
-                                  / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+            //prob = ( ( quant_dist - UNUM_FAR_LENGTH )
+            //         / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
+            prob = ( ( quant_dist - self().unumFarLength() )
+                     / ( self().unumTooFarLength() - self().unumFarLength() ) );
 
             if ( decide( prob ) )
             {

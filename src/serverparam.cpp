@@ -103,7 +103,7 @@ const double ServerParam::BALL_DECAY = 0.94;
 const double ServerParam::BALL_RAND = 0.05;
 const double ServerParam::BALL_WEIGHT = 0.2;
 const double ServerParam::BALL_T_VEL = 0.001;
-const double ServerParam::BALL_SPEED_MAX = 2.7;
+const double ServerParam::BALL_SPEED_MAX = 3.0; // [12.0.0] 2.7 -> 3.0;
 const double ServerParam::BALL_ACCEL_MAX = 2.7;
 
 const double ServerParam::PLAYER_SIZE = 0.3;
@@ -136,7 +136,7 @@ const double ServerParam::KICK_RAND_FACTOR_R = 1.0;
 
 
 const double ServerParam::GOALIE_CATCHABLE_POSSIBILITY = 1.0;
-const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 1.2; // [12.0.0] 2.0 -> 1.2
+const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 1.5; // [12.0.0] 2.0 -> 1.5
 const double ServerParam::GOALIE_CATCHABLE_AREA_WIDTH = 1.0;
 const int ServerParam::GOALIE_CATCH_BAN_CYCLE = 5;
 const int ServerParam::GOALIE_MAX_MOVES = 2;

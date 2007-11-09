@@ -139,6 +139,10 @@ Player::Player( Stadium & stadium,
       vis_distance( ServerParam::instance().visibleDistance() ),
       vis_distance2( vis_distance * vis_distance ),
       M_version( 3.0 ),
+      M_unum_far_length( 20.0 ),
+      M_unum_too_far_length( 40.0 ),
+      M_team_far_length( 40.0 ),
+      M_team_too_far_length( 60.0 ),
       M_angle_body( 0.0 ),
       M_angle_body_committed( 0.0 ),
       M_angle_neck( 0.0 ),
@@ -255,6 +259,11 @@ Player::init( const double & ver,
     if ( ver >= 12.0 )
     {
         M_vis_send = 1;
+
+        //M_unum_far_length = 30.0;
+        //M_unum_too_far_length = 60.0;
+        //M_team_far_length = 60.0;
+        //M_team_too_far_length = 100.0;
     }
 
     if ( ! setSenders() )
@@ -493,14 +502,15 @@ Player::kick( double power, double dir )
         // add noise to kick
         double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
 
-        // add noise by current ball speed
-#if 0
-        maxrnd += M_kick_rand
-            * M_stadium.ball().vel().r()
-            / ServerParam::instance().ballDecay()
-            / ServerParam::instance().ballSpeedMax();
-#else
+        // akiyama 2007-10-24
+        // add dir noise affected by current ball speed
         {
+#if 0
+            maxrnd += M_kick_rand
+                * M_stadium.ball().vel().r()
+                / ServerParam::instance().ballDecay()
+                / ServerParam::instance().ballSpeedMax();
+#else
             double max_dir_rand = M_PI
                 * M_kick_rand
                 * M_stadium.ball().vel().r()
@@ -511,8 +521,9 @@ Player::kick( double power, double dir )
             //          << "  dir_noise = " << dir_noise * 180 / M_PI
             //          << std::endl;
             accel.rotate( dir_noise );
-        }
 #endif
+        }
+
         PVector kick_noise( drand( -maxrnd, maxrnd ),
                             drand( -maxrnd, maxrnd ) );
         //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
@@ -960,14 +971,15 @@ Player::tackle( double power )
                 double maxrnd = ( M_kick_rand * power * ( 1 - prob )
                                   / ServerParam::instance().maxPower() );
 
-                // add noise by current ball speed
-#if 0
-                maxrnd += M_kick_rand
-                    * M_stadium.ball().vel().r()
-                    / ServerParam::instance().ballDecay()
-                    / ServerParam::instance().ballSpeedMax();
-#else
+                // akiyama 2007-10-24
+                // add dir noise affected by current ball speed
                 {
+#if 0
+                    maxrnd += M_kick_rand
+                        * M_stadium.ball().vel().r()
+                        / ServerParam::instance().ballDecay()
+                        / ServerParam::instance().ballSpeedMax();
+#else
                     double max_dir_rand = M_PI
                         * M_kick_rand
                         * M_stadium.ball().vel().r()
@@ -978,8 +990,9 @@ Player::tackle( double power )
                     //          << "  dir_noise = " << dir_noise * 180 / M_PI
                     //          << std::endl;
                     accel.rotate( dir_noise );
-                }
 #endif
+                }
+
                 PVector kick_noise( drand( -maxrnd, maxrnd ),
                                     drand( -maxrnd, maxrnd ) );
 
@@ -1231,7 +1244,7 @@ Player::updateStamina()
             M_effort = M_player_type->effortMin();
     }
 
-    if ( M_stamina >= ( ServerParam::instance().effortDecThr()
+    if ( M_stamina >= ( ServerParam::instance().effortIncThr()
                         * ServerParam::instance().staminaMax() ) )
     {
         if ( M_effort < M_player_type->effortMax() )

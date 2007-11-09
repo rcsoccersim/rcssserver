@@ -100,45 +100,58 @@ HeteroPlayer::HeteroPlayer()
     int trial = 0;
     while ( ++trial <= MAX_TRIAL )
     {
+        //
         double tmp_delta = HeteroPlayer::delta( PlayerParam::instance().playerSpeedMaxDeltaMin(),
                                                 PlayerParam::instance().playerSpeedMaxDeltaMax() );
         player_speed_max = ServerParam::instance().playerSpeedMax() + tmp_delta;
+        if ( player_speed_max <= 0.0 ) continue;
         stamina_inc_max = ServerParam::instance().staminaInc()
             + tmp_delta * PlayerParam::instance().staminaIncMaxDeltaFactor();
-
+        if ( stamina_inc_max <= 0.0 ) continue;
+        //
         tmp_delta = HeteroPlayer::delta( PlayerParam::instance().playerDecayDeltaMin(),
                                          PlayerParam::instance().playerDecayDeltaMax() );
         player_decay = ServerParam::instance().playerDecay() + tmp_delta;
+        if ( player_decay <= 0.0 ) continue;
         inertia_moment = ServerParam::instance().inertiaMoment()
             + tmp_delta * PlayerParam::instance().inertiaMomentDeltaFactor();
-
+        if ( inertia_moment < 0.0 ) continue;
+        //
         tmp_delta = HeteroPlayer::delta( PlayerParam::instance().dashPowerRateDeltaMin(),
                                          PlayerParam::instance().dashPowerRateDeltaMax() );
         dash_power_rate = ServerParam::instance().dashPowerRate() + tmp_delta;
+        if ( dash_power_rate <= 0.0 ) continue;
         player_size = ServerParam::instance().playerSize()
             + tmp_delta * PlayerParam::instance().playerSizeDeltaFactor();
+        if ( player_size <= 0.0 ) continue;
 
         // trade-off stamina_inc_max with dash_power_rate
         tmp_delta = HeteroPlayer::delta( PlayerParam::instance().newDashPowerRateDeltaMin(),
                                          PlayerParam::instance().newDashPowerRateDeltaMax() );
         dash_power_rate = ServerParam::instance().dashPowerRate() + tmp_delta;
+        if ( dash_power_rate <= 0.0 ) continue;
         stamina_inc_max = ServerParam::instance().staminaInc()
             + tmp_delta * PlayerParam::instance().newStaminaIncMaxDeltaFactor();
-
+        if ( stamina_inc_max <= 0.0 ) continue;
+        //
         tmp_delta = HeteroPlayer::delta( PlayerParam::instance().kickableMarginDeltaMin(),
                                          PlayerParam::instance().kickableMarginDeltaMax() );
         kickable_margin = ServerParam::instance().kickableMargin() + tmp_delta;
+        if ( kickable_margin <= 0.0 ) continue;
         kick_rand = ServerParam::instance().kickRand()
             + tmp_delta * PlayerParam::instance().kickRandDeltaFactor();
-
+        if ( kick_rand < 0.0 ) continue;
+        //
         tmp_delta = HeteroPlayer::delta( PlayerParam::instance().extraStaminaDeltaMin(),
                                          PlayerParam::instance().extraStaminaDeltaMax() );
         extra_stamina = ServerParam::instance().extraStamina() + tmp_delta;
+        if ( extra_stamina < 0.0 ) continue;
         effort_max = ServerParam::instance().effortInit()
             + tmp_delta * PlayerParam::instance().effortMaxDeltaFactor();
         effort_min = ServerParam::instance().effortMin()
             + tmp_delta * PlayerParam::instance().effortMinDeltaFactor();
-
+        if ( effort_max <= 0.0 ) continue;
+        if ( effort_min <= 0.0 ) continue;
 
         double real_speed_max
             = ( ServerParam::instance().maxPower()

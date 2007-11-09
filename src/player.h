@@ -79,6 +79,12 @@ private:
     double M_inertia_moment;
 
     double M_version; //!< client protocol version
+
+    double M_unum_far_length;
+    double M_unum_too_far_length;
+    double M_team_far_length;
+    double M_team_too_far_length;
+
 #ifdef NEW_QSTEP
     double dist_qstep_player; /* each Player quantize step of distance */
     double land_qstep_player; /* each Player quantize step of distance for landmark */
@@ -275,6 +281,30 @@ public:
     double & version() const
       {
           return M_version;
+      }
+
+    const
+    double & unumFarLength() const
+      {
+          return M_unum_far_length;
+      }
+
+    const
+    double & unumTooFarLength() const
+      {
+          return M_unum_too_far_length;
+      }
+
+    const
+    double & teamFarLength() const
+      {
+          return M_team_far_length;
+      }
+
+    const
+    double & teamTooFarLength() const
+      {
+          return M_team_too_far_length;
       }
 
     double distQStep() const

@@ -75,7 +75,7 @@ const char PlayerParam::OLD_PLAYER_CONF[] = "~/.rcssserver-player.conf";
 const char PlayerParam::PLAYER_CONF[] = "~/.rcssserver/player12.conf";
 #endif
 
-const int PlayerParam::DEFAULT_PLAYER_TYPES = 14; // [12.0.0] 7 -> 14
+const int PlayerParam::DEFAULT_PLAYER_TYPES = 18; // [12.0.0] 7 -> 18
 const int PlayerParam::DEFAULT_SUBS_MAX = 3;
 const int PlayerParam::DEFAULT_PT_MAX = 1; // [12.0.0] 3 -> 1
 
