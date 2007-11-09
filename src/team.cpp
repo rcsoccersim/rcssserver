@@ -102,6 +102,10 @@ Team::newPlayer( const double & version,
 
     ++M_size;
 
+#if 1
+    ++M_ptype_count[ 0 ];
+    ++M_ptype_used_count[ 0 ];
+#else
     if ( goalie_flag
          || PlayerParam::instance().allowMultDefaultType() )
     {
@@ -133,6 +137,7 @@ Team::newPlayer( const double & version,
             ++M_ptype_used_count[ 0 ];
         }
     }
+#endif
 
     return p;
 }
@@ -157,7 +162,50 @@ Team::assignCoach( OnlineCoach * coach )
 void
 Team::assignPlayerTypes()
 {
-    std::cerr << "assign player types " << SideStr( side() ) << std::endl;
+    if ( PlayerParam::instance().allowMultDefaultType() )
+    {
+        return;
+    }
+
+    for ( int i = 0; i < size(); ++i )
+    {
+        Player * p = M_players[i];
+
+        if ( p->isGoalie() )
+        {
+            continue;
+        }
+
+        int old_type = p->playerTypeId();
+
+        if ( M_ptype_used_count[ old_type ] <= PlayerParam::instance().ptMax() )
+        {
+            continue;
+        }
+
+        for ( int type = 0; type < PlayerParam::instance().playerTypes(); ++type )
+        {
+            if ( M_ptype_used_count[ type ] >= PlayerParam::instance().ptMax() )
+            {
+                continue;
+            }
+
+            p->substitute( type );
+
+            M_ptype_count[ type ] += 1;
+            M_ptype_used_count[ type ] += 1;
+
+            M_ptype_count[ old_type ] -= 1;
+            M_ptype_used_count[ old_type ] -= 1;
+
+            std::cout << "rcssserver changes player "
+                      << M_name << " " << p->unum()
+                      << " to type " << type << std::endl;
+
+            M_stadium->broadcastSubstitution( M_side, p->unum(), type );
+            break;
+        }
+    }
 }
 
 int

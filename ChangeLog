@@ -1,5 +1,8 @@
 2007-11-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/team.cpp:
+	- implemented a automatic player type assignment.
+
 	* src/Makefile.am:
 	* src/coach.cpp:
 	* src/field.cpp:
@@ -20,7 +23,7 @@
 	* src/serverparam.cpp:
 	* src/visual.cc:
 	- changed the default number of player types to 18.
-	- changed the default catchable_area_length value to 1.5.
+	- changed the default catchable_area_length value to 1.35.
 	- changed the default ball_speed_max value to 1.5.
 	- fixed a problem in the variable initialization for version 12
 	protocol.
