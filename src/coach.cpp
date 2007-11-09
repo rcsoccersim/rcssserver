@@ -768,7 +768,7 @@ OnlineCoach::change_player_types( const char * command )
         {
             const Player * p = team->player( i );
             if ( p
-                 && p->alive() != DISABLE
+                 && p->state() != DISABLE
                  && p->unum() == unum )
             {
                 player = p;

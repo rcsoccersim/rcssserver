@@ -660,7 +660,7 @@ Stadium::broadcastSubstitution( const int side,
     // tell players
     for ( int i = 0 ; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->alive() == DISABLE
+        if ( M_players[i]->state() == DISABLE
              || M_players[i]->version() < 7.0 )
         {
             continue;

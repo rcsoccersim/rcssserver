@@ -176,7 +176,7 @@ VisualSenderPlayerV1::sendPlayers()
           ++p )
     {
         if ( *p != &self()
-             && (*p)->alive() != DISABLE
+             && (*p)->state() != DISABLE
              && (*p)->objectVersion() <= self().version() )
         {
             sendPlayer( *(*p) );
@@ -1021,7 +1021,7 @@ VisualSenderCoachV1::sendVisual()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE ) continue;
+        if ( (*p)->state() == DISABLE ) continue;
 
         serializePlayer( **p );
     }
@@ -1043,7 +1043,7 @@ VisualSenderCoachV1::sendLook()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE ) continue;
+        if ( (*p)->state() == DISABLE ) continue;
 
         serializePlayerLook( **p );
     }

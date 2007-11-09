@@ -510,8 +510,11 @@ TimeRef::analyse()
                   )
         {
             ++s_half_time_count;
+            Side kick_off_side = ( s_half_time_count % 2 == 0
+                                   ? LEFT
+                                   : RIGHT );
             M_stadium.say( "half_time" );
-            M_stadium.setHalfTime( RIGHT, s_half_time_count );
+            M_stadium.setHalfTime( kick_off_side, s_half_time_count );
             placePlayersInTheirField();
             return;
         }
@@ -547,7 +550,7 @@ Referee::placePlayersInTheirField()
           it != end;
           ++it )
     {
-        if ( (*it)->alive() == DISABLE ) continue;
+        if ( (*it)->state() == DISABLE ) continue;
 
         switch ( (*it)->team()->side() ) {
         case LEFT:
@@ -621,7 +624,7 @@ Referee::clearPlayersFromBall( const Side side )
               it != end;
               ++it )
         {
-            if ( (*it)->alive() == DISABLE )
+            if ( (*it)->state() == DISABLE )
             {
                 continue;
             }
@@ -895,7 +898,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive() == DISABLE )
+            if ( (*p)->state() == DISABLE )
             {
                 continue;
             }
@@ -926,7 +929,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive() == DISABLE )
+            if ( (*p)->state() == DISABLE )
             {
                 continue;
             }
@@ -945,7 +948,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive() == DISABLE )
+            if ( (*p)->state() == DISABLE )
             {
                 continue;
             }
@@ -976,7 +979,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
               p != end;
               ++p )
         {
-            if ( (*p)->alive() == DISABLE )
+            if ( (*p)->state() == DISABLE )
                 continue;
             if ( (*p)->team()->side() == RIGHT
                  && (*p)->pos().x < offside_line
@@ -1099,7 +1102,7 @@ OffsideRef::checkPlayerAfterOffside()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE )
+        if ( (*p)->state() == DISABLE )
         {
             continue;
         }
@@ -1530,8 +1533,8 @@ FreeKickRef::placePlayersForGoalkick()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE )
-            continue;
+        if ( (*p)->state() == DISABLE ) continue;
+
         if ( (*p)->team()->side() == oppside )
         {
             const double size = (*p)->size();
@@ -1889,8 +1892,8 @@ KeepawayRef::analyse()
                 {
                     PVector ppos = (*p)->pos();
 
-                    if ( (*p)->alive() != DISABLE &&
-                         ppos.distance( M_stadium.ball().pos() )
+                    if ( (*p)->state() != DISABLE
+                         && ppos.distance( M_stadium.ball().pos() )
                          < ServerParam::instance().kickableArea() )
                     {
                         if ( (*p)->team()->side() == LEFT )
@@ -1942,7 +1945,7 @@ KeepawayRef::playModeChange( PlayMode pm )
                   p != end;
                   ++p )
             {
-                if ( (*p)->alive() != DISABLE )
+                if ( (*p)->state() != DISABLE )
                 {
                     if ( (*p)->team()->side() == LEFT )
                         M_keepers++;
@@ -2014,7 +2017,7 @@ KeepawayRef::resetField()
           p != end;
           ++p )
     {
-        if( (*p)->alive() != DISABLE )
+        if( (*p)->state() != DISABLE )
         {
             double x, y;
             if ( (*p)->team()->side() == LEFT )
@@ -2373,7 +2376,7 @@ PenaltyRef::analyseImpl()
               p != end;
               ++p )
         {
-            if ( (*p)->alive() != DISABLE
+            if ( (*p)->state() != DISABLE
                  && (*p)->team()->side() == side
                  && (*p)->isGoalie() )
             {
@@ -3003,8 +3006,8 @@ PenaltyRef::penalty_check_players( const Side side )
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE )
-            continue;
+        if ( (*p)->state() == DISABLE ) continue;
+
         if ( (*p)->team()->side() == side )
         {
             if ( (*p)->isGoalie() )
@@ -3159,10 +3162,9 @@ PenaltyRef::placeTakerTeamPlayers()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE )
-            continue;
-        if ( (*p)->team()->side() != M_cur_pen_taker )
-            continue;
+        if ( (*p)->state() == DISABLE ) continue;
+
+        if ( (*p)->team()->side() != M_cur_pen_taker ) continue;
 
         if ( (*p) == taker )
         {
@@ -3219,10 +3221,9 @@ PenaltyRef::placeOtherTeamPlayers()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE )
-            continue;
-        if ( (*p)->team()->side() == M_cur_pen_taker )
-            continue;
+        if ( (*p)->state() == DISABLE ) continue;
+
+        if ( (*p)->team()->side() == M_cur_pen_taker ) continue;
 
         // only move goalie in case the penalty has not been started yet.
         if ( (*p)->isGoalie() )
@@ -3279,10 +3280,9 @@ PenaltyRef::getCandidateTaker()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE )
-            continue;
-        if ( (*p)->team()->side() != M_cur_pen_taker )
-            continue;
+        if ( (*p)->state() == DISABLE ) continue;
+
+        if ( (*p)->team()->side() != M_cur_pen_taker ) continue;
 
         if ( sPenTaken.find( (*p)->unum() )
              != sPenTaken.end() )

@@ -422,13 +422,15 @@ private:
 
     Player * get_player_by_name( const char * name );
 
+    void stepBegin();
     void step();
+
     void turnMovableObjects();
     void incMovableObjects();
 
     void makeDispInfo();
-    void resetCommandFlags();
-    void resetPlayerFlags();
+    void sendToMonitors();
+    void writeCurrentGameLog();
 
     void move_caught_ball(); // [2000.07.21: I.Noda]
 

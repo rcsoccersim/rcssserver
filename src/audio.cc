@@ -122,7 +122,7 @@ AudioSenderPlayer::sendPlayerAudio( const Player& player,
 bool
 AudioSenderPlayer::generalPredicate() const
 {
-    return M_listener.alive() != DISABLE;
+    return M_listener.state() != DISABLE;
 }
 
 bool

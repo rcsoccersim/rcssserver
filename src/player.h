@@ -104,7 +104,11 @@ private:
     //int sendcnt;
     bool M_highquality;
 
-    Int32 M_alive;
+    Int32 M_state;
+
+    bool M_ball_collide;
+    bool M_player_collide;
+    bool M_post_collide;
 
     bool M_command_done;
     bool M_turn_neck_done;
@@ -160,17 +164,15 @@ public:
     void disable();
     void discard();
 
-    Int32 alive() const
+    Int32 state() const
       {
-          return M_alive;
+          return M_state;
       }
-
-    void resetState();
-
     void addState( const Int32 state )
       {
-          M_alive |= state;
+          M_state |= state;
       }
+    void resetState();
 
     void sendInit();
     void sendReconnect();
@@ -190,7 +192,7 @@ public:
 
     void incArmAge()
       {
-          return M_arm.incAge();
+          M_arm.incAge();
       }
     const
     Arm & arm() const
@@ -205,8 +207,8 @@ public:
     int clangMinVer() const { return M_clang_min_ver; }
     int clangMaxVer() const { return M_clang_max_ver; }
 
-    void setBackPasser() { M_alive |= BACK_PASS; }
-    void setFreeKickFaulter() { M_alive |= FREE_KICK_FAULT; }
+    //void setBackPasser() { M_alive |= BACK_PASS; }
+    //void setFreeKickFaulter() { M_alive |= FREE_KICK_FAULT; }
 
     inline void send( const char* msg );
 
@@ -419,6 +421,30 @@ public:
     void updateStamina();
     void updateCapacity();
 
+    bool ballCollide() const
+      {
+          return M_ball_collide;
+      }
+    bool playerCollide() const
+      {
+          return M_player_collide;
+      }
+    bool postCollide() const
+      {
+          return M_post_collide;
+      }
+    void collidedWithBall()
+      {
+          addState( BALL_TO_PLAYER | BALL_COLLIDE );
+          M_ball_collide = true;
+      }
+    void collidedWithPlayer()
+      {
+          addState( PLAYER_COLLIDE );
+          M_player_collide = true;
+      }
+    void resetCollisionFlags();
+
     void resetCommandFlags();
 
     void clearOffsideMark();
@@ -456,6 +482,7 @@ protected:
     void collidedWithPost()
       {
           addState( POST_COLLIDE );
+          M_post_collide = true;
       }
 
     virtual

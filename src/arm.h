@@ -58,9 +58,9 @@ public:
           return M_timer < M_max_point_duration;
       }
 
-    void incAge ()
+    void incAge()
       {
-          M_timer++;
+          ++M_timer;
       }
 
     bool pointTo ( const rcss::geom::Vector2D& origin,

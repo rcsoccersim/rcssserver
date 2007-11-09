@@ -149,7 +149,10 @@ Player::Player( Stadium & stadium,
       M_angle_neck_committed( 0.0 ),
       M_vis_send( 4 ),
       M_highquality( true ),
-      M_alive( DISABLE ),
+      M_state( DISABLE ),
+      M_ball_collide( false ),
+      M_player_collide( false ),
+      M_post_collide( false ),
       M_command_done( false ),
       M_turn_neck_done( false ),
       M_done_received( false ),
@@ -315,24 +318,25 @@ Player::substitute( const int type )
 void
 Player::setEnable()
 {
-    M_alive = STAND;
+    M_state = STAND;
     M_enable = true;
     if ( isGoalie() )
     {
-        M_alive |= GOALIE;
+        M_state |= GOALIE;
     }
 }
+
 
 void
 Player::resetState()
 {
     if ( tackleCycles() > 0 )
     {
-        M_alive &= ( STAND | GOALIE | DISCARD | TACKLE | TACKLE_FAULT );
+        M_state &= ( STAND | GOALIE | DISCARD | TACKLE | TACKLE_FAULT );
     }
     else
     {
-        M_alive &= ( STAND | GOALIE | DISCARD );
+        M_state &= ( STAND | GOALIE | DISCARD );
     }
 }
 
@@ -353,7 +357,7 @@ Player::disable()
     }
 
     M_enable = false;
-    M_alive = DISABLE;
+    M_state = DISABLE;
     M_pos.x = -( unum() * 3 * team()->side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
     M_vel.x = 0.0;
@@ -370,16 +374,16 @@ Player::disable()
 void
 Player::discard()
 {
-    if ( M_alive & STAND )
+    if ( M_state & STAND )
     {
         disable();
-        if ( ! ( M_alive & DISCARD ) )
+        if ( ! ( M_state & DISCARD ) )
         {
-            M_alive |= DISCARD;
+            M_state |= DISCARD;
         }
         else
         {
-            M_alive &= ~DISCARD;
+            M_state &= ~DISCARD;
         }
     }
 }
@@ -461,7 +465,7 @@ Player::kick( double power, double dir )
         double dir_diff;
         double dist_ball;
 
-        M_alive |= KICK;
+        M_state |= KICK;
 
         if ( M_stadium.playmode() == PM_BeforeKickOff ||
              M_stadium.playmode() == PM_AfterGoal_Left ||
@@ -483,7 +487,7 @@ Player::kick( double power, double dir )
              > ( M_player_type->playerSize()
                  + M_stadium.ball().size() + M_player_type->kickableMargin()) )
         {
-            M_alive |= KICK_FAULT;
+            M_state |= KICK_FAULT;
             return;
         }
 
@@ -547,7 +551,7 @@ Player::goalieCatch( double dir )
 //         static RArea p_r( PVector( +PITCH_LENGTH/2-PENALTY_AREA_LENGTH/2.0, 0.0 ),
 //                           PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH ) ) ;
 
-        M_alive |= CATCH;
+        M_state |= CATCH;
 
         //pfr: we should only be able to catch in PlayOn mode
         //tom: actually the goalie can catch the ball in any playmode, but
@@ -569,7 +573,7 @@ Player::goalieCatch( double dir )
               M_stadium.playmode() == PM_Free_Kick_Fault_Right )
             */
         {
-            M_alive |= CATCH_FAULT;
+            M_state |= CATCH_FAULT;
             return;
         }
 
@@ -601,7 +605,7 @@ Player::goalieCatch( double dir )
         if ( ! catchable.inArea( rotated_pos )
              || drand( 0, 1 ) >= ServerParam::instance().catchProb() )
         {
-            M_alive |= CATCH_FAULT;
+            M_state |= CATCH_FAULT;
             return;
         }
 
@@ -936,7 +940,7 @@ Player::tackle( double power )
 
             if ( gen() )
             {
-                M_alive |= TACKLE;
+                M_state |= TACKLE;
 
                 if ( M_stadium.playmode() == PM_BeforeKickOff ||
                      M_stadium.playmode() == PM_AfterGoal_Left ||
@@ -1002,12 +1006,12 @@ Player::tackle( double power )
             }
             else
             {
-                M_alive |= ( TACKLE | TACKLE_FAULT );
+                M_state |= ( TACKLE | TACKLE_FAULT );
             }
         }
         else
         {
-            M_alive |= TACKLE_FAULT;
+            M_state |= TACKLE_FAULT;
         }
     }
 }
@@ -1273,6 +1277,14 @@ Player::updateCapacity()
 
     if ( M_goalie_catch_ban > 0 )
         --M_goalie_catch_ban;
+}
+
+void
+Player::resetCollisionFlags()
+{
+    M_ball_collide = false;
+    M_player_collide = false;
+    M_post_collide = false;
 }
 
 void

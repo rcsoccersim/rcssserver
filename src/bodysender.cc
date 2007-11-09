@@ -311,9 +311,9 @@ BodySenderPlayerV12::sendBodyData()
     BodySenderPlayerV8::sendBodyData();
 
     serializer().serializeCollision( transport(),
-                                     self().alive() & BALL_COLLIDE,
-                                     self().alive() & PLAYER_COLLIDE,
-                                     self().alive() & POST_COLLIDE );
+                                     self().ballCollide(),
+                                     self().playerCollide(),
+                                     self().postCollide() );
 }
 
 namespace bodysender

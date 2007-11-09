@@ -394,24 +394,6 @@ Stadium::init()
 }
 
 void
-Stadium::resetCommandFlags()
-{
-    const PlayerCont::iterator end = M_players.end();
-    for ( PlayerCont::iterator p = M_players.begin();
-          p != end;
-          ++p )
-    {
-        (*p)->resetCommandFlags();
-    }
-
-    for ( int i = 0; i < 2; ++i )
-    {
-        M_olcoaches[i]->resetCommandFlags();
-    }
-    M_coach->resetCommandFlags();
-}
-
-void
 Stadium::startTeams()
 {
     if ( playmode() != PM_PlayOn )
@@ -958,23 +940,31 @@ Stadium::newOnlineCoach( const char * init_message,
 }
 
 void
-Stadium::step()
+Stadium::stepBegin()
 {
-    for ( int i = 0; i < 2; ++i )
+    const PlayerCont::iterator end = M_players.end();
+    for ( PlayerCont::iterator p = M_players.begin();
+          p != end;
+          ++p )
     {
-        if ( M_olcoaches[i] )
-        {
-            M_olcoaches[i]->check_message_queue( time() );
-            M_olcoaches[i]->update_messages_left( time() );
-        }
+        (*p)->resetCommandFlags();
+        (*p)->incArmAge();
     }
 
-    for ( PlayerCont::iterator i = M_remote_players.begin();
-          i != M_remote_players.end();
-          ++i )
+    for ( int i = 0; i < 2; ++i )
     {
-        (*i)->incArmAge();
+        M_olcoaches[i]->resetCommandFlags();
+        M_olcoaches[i]->check_message_queue( time() );
+        M_olcoaches[i]->update_messages_left( time() );
     }
+
+    M_coach->resetCommandFlags();
+}
+
+void
+Stadium::step()
+{
+    stepBegin();
 
     if ( playmode() == PM_BeforeKickOff )
     {
@@ -1008,8 +998,8 @@ Stadium::step()
 
         if ( time() > 0
              && ServerParam::instance().nrNormalHalfs() > 0
-             && time() % (ServerParam::instance().nrNormalHalfs()
-                          * ServerParam::instance().halfTime() ) == 0 )
+             && time() % ( ServerParam::instance().nrNormalHalfs()
+                           * ServerParam::instance().halfTime() ) == 0 )
         {
             //every game time cycles, give the online coach more messages
             M_olcoaches[0]->awardFreeformMessageCount();
@@ -1018,66 +1008,23 @@ Stadium::step()
 
     }
 
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    //
+    // update stamina
+    //
+    const PlayerCont::iterator end = M_players.end();
+    for ( PlayerCont::iterator p = M_players.begin();
+          p != end;
+          ++p )
     {
-        if ( M_players[i]->alive() == DISABLE )
-            continue;
+        if ( (*p)->state() == DISABLE ) continue;
 
-        M_players[i]->updateStamina();
-        M_players[i]->updateCapacity();
+        (*p)->updateStamina();
+        (*p)->updateCapacity();
     }
 
     makeDispInfo();
-    //resetPlayerFlags();
-
-    // send to displays
-    for ( MonitorCont::iterator i = M_monitors.begin();
-          i != M_monitors.end();
-          ++i )
-    {
-        if ( (*i)->version() >= 2.0 )
-        {
-            (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_dinfo2 ),
-                                      sizeof( dispinfo_t2 ) );
-        }
-        else if ( (*i)->version() >= 1.0 )
-        {
-            (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_dinfo ),
-                                      sizeof( dispinfo_t ) );
-        }
-    }
-
-    /* TH - 2-NOV-2000 */
-    static bool wrote_final_cycle = false;
-
-    if ( game_log_open() )
-	  {
-        if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
-        {
-            if ( ServerParam::instance().gameLogVersion() == REC_OLD_VERSION
-                 || ServerParam::instance().gameLogVersion() == REC_VERSION_2 )
-            {
-                writeGameLog( &M_dinfo );
-            }
-            else
-            {
-                writeGameLog( &M_dinfo2 );
-            }
-        }
-        else if ( playmode() == PM_TimeOver && ! wrote_final_cycle )
-        {
-            if ( ServerParam::instance().gameLogVersion() == REC_OLD_VERSION
-                 || ServerParam::instance().gameLogVersion() == REC_VERSION_2 )
-            {
-                writeGameLog( &M_dinfo );
-            }
-            else
-            {
-                writeGameLog( &M_dinfo2 );
-            }
-            wrote_final_cycle = true;
-        }
-	  }
+    sendToMonitors();
+    writeCurrentGameLog();
 }
 
 void
@@ -1132,7 +1079,7 @@ Stadium::makeDispInfo()
 
         for ( int i = 0; i < MAX_PLAYER * 2; ++i )
         {
-            M_dinfo.body.show.pos[i+1].enable = htons( M_players[i]->alive() );
+            M_dinfo.body.show.pos[i+1].enable = htons( M_players[i]->state() );
             //M_players[i]->alive &= (STAND | GOALIE | DISCARD);
             M_dinfo.body.show.pos[i+1].x
                 = htons( (Int16)rint( M_players[i]->pos().x * SHOWINFO_SCALE ) );
@@ -1170,7 +1117,7 @@ Stadium::makeDispInfo()
 
         for ( int i = 0; i < MAX_PLAYER * 2; ++i )
         {
-            M_dinfo2.body.show.pos[i].mode = htons( M_players[i]->alive() );
+            M_dinfo2.body.show.pos[i].mode = htons( M_players[i]->state() );
             M_dinfo2.body.show.pos[i].type = htons( M_players[i]->playerTypeId() );
 
             //M_players[i]->alive &= (STAND | GOALIE | DISCARD);
@@ -1219,15 +1166,69 @@ Stadium::makeDispInfo()
             M_dinfo2.body.show.team[1].score = htons( 0 );
         }
     }
-}
 
-void
-Stadium::resetPlayerFlags()
-{
+
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
         M_players[i]->resetState();
     }
+}
+
+void
+Stadium::sendToMonitors()
+{
+    // send to displays
+    for ( MonitorCont::iterator i = M_monitors.begin();
+          i != M_monitors.end();
+          ++i )
+    {
+        if ( (*i)->version() >= 2.0 )
+        {
+            (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_dinfo2 ),
+                                      sizeof( dispinfo_t2 ) );
+        }
+        else if ( (*i)->version() >= 1.0 )
+        {
+            (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_dinfo ),
+                                      sizeof( dispinfo_t ) );
+        }
+    }
+}
+
+void
+Stadium::writeCurrentGameLog()
+{
+    /* TH - 2-NOV-2000 */
+    static bool wrote_final_cycle = false;
+
+    if ( game_log_open() )
+	  {
+        if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
+        {
+            if ( ServerParam::instance().gameLogVersion() == REC_OLD_VERSION
+                 || ServerParam::instance().gameLogVersion() == REC_VERSION_2 )
+            {
+                writeGameLog( &M_dinfo );
+            }
+            else
+            {
+                writeGameLog( &M_dinfo2 );
+            }
+        }
+        else if ( playmode() == PM_TimeOver && ! wrote_final_cycle )
+        {
+            if ( ServerParam::instance().gameLogVersion() == REC_OLD_VERSION
+                 || ServerParam::instance().gameLogVersion() == REC_VERSION_2 )
+            {
+                writeGameLog( &M_dinfo );
+            }
+            else
+            {
+                writeGameLog( &M_dinfo2 );
+            }
+            wrote_final_cycle = true;
+        }
+	  }
 }
 
 void
@@ -1310,7 +1311,6 @@ Stadium::setHalfTime( const Side kick_off_side,
 {
     M_ball_catcher = NULL;
     set_ball( kick_off_side, PVector( 0.0, 0.0 ) );
-    //placePlayersInTheirField();
     change_play_mode( PM_BeforeKickOff );
     M_time = ServerParam::instance().halfTime() * half_time_count;
     M_weather.wind_vector.x *= -1;
@@ -1325,7 +1325,7 @@ Stadium::recoveryPlayers()
           p != end;
           ++p )
     {
-        if ( (*p)->alive() == DISABLE )
+        if ( (*p)->state() == DISABLE )
         {
             continue;
         }
@@ -1375,8 +1375,7 @@ Stadium::placePlayersInField()
 
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->alive() == DISABLE )
-            continue;
+        if ( M_players[i]->state() == DISABLE ) continue;
 
         if ( ! fld.inArea( M_players[i]->pos() ) )
         {
@@ -1535,8 +1534,7 @@ Stadium::get_player_by_name( const char * name )
 {
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->alive() == DISABLE )
-            continue;
+        if ( M_players[i]->state() == DISABLE ) continue;
 
         if ( M_players[i]->name() == name )
         {
@@ -2331,7 +2329,7 @@ Stadium::collisions()
                  < M_ball->size() + (*it)->size() )
             {
                 col = true;
-                (*it)->addState( BALL_TO_PLAYER | BALL_COLLIDE );
+                (*it)->collidedWithBall();
                 for_each( M_referees.begin(), M_referees.end(),
                           Referee::doBallTouched( **it ) );
                 calcBallCollPos( *it );
@@ -2349,8 +2347,8 @@ Stadium::collisions()
                      < M_players[i]->size() + M_players[j]->size() )
                 {
                     col = true;
-                    M_players[i]->addState( PLAYER_COLLIDE );
-                    M_players[j]->addState( PLAYER_COLLIDE );
+                    M_players[i]->collidedWithPlayer();
+                    M_players[j]->collidedWithPlayer();
                     calcCollPos( M_players[i], M_players[j] );
                 }
             }
@@ -2552,7 +2550,7 @@ Stadium::setPlayerState( const Side side,
         return;
     }
 
-    if ( player->alive() != DISABLE )
+    if ( player->state() != DISABLE )
     {
         player->addState( state );
     }
@@ -3056,11 +3054,15 @@ Stadium::doNewSimulatorStep()
         }
     }
 
-    resetCommandFlags();
-
+    //
+    // step
+    //
     step();
     startTeams();
 
+    //
+    // check time over for the auto mode
+    //
     if ( ServerParam::instance().autoMode() )
     {
         if ( playmode() == PM_TimeOver )
@@ -3116,7 +3118,7 @@ Stadium::doSendSenseBody()
           it != end;
           ++it )
     {
-        if ( (*it)->alive() != DISABLE
+        if ( (*it)->state() != DISABLE
              && (*it)->connected() )
         {
             (*it)->sense_body();
@@ -3129,12 +3131,11 @@ Stadium::doSendSenseBody()
                 (*it)->send_fullstate_information();
             }
         }
+
+        // reset collision flags
+        (*it)->resetCollisionFlags();
     }
 
-    //
-    // reset player state flag
-    //
-    resetPlayerFlags();
 
     //
     // send audio message
@@ -3149,7 +3150,7 @@ Stadium::doSendSenseBody()
           it != end;
           ++it )
     {
-        if ( (*it)->alive() != DISABLE
+        if ( (*it)->state() != DISABLE
              && (*it)->connected() )
         {
             (*it)->sendSynchVisual();
@@ -3186,7 +3187,7 @@ Stadium::doSendVisuals()
           it != end;
           ++it )
     {
-        if ( (*it)->alive() != DISABLE
+        if ( (*it)->state() != DISABLE
              && (*it)->connected() )
         {
             (*it)->sendVisual();
@@ -3289,7 +3290,7 @@ Stadium::doSendThink()
     bool waitCoach[2];
     for ( int i = 0; i < MAX_PLAYER*2; ++i )
     {
-        wait_players[i] = !(M_players[i]->alive() == DISABLE);
+        wait_players[i] = ! ( M_players[i]->state() == DISABLE );
     }
     for ( int i = 0; i < 2; ++i )
     {
@@ -3344,7 +3345,7 @@ Stadium::doSendThink()
             if ( wait_players[i]
                  && M_players[i]->connected()
                  && ! M_players[i]->doneReceived()
-                 && M_players[i]->alive() != DISABLE )
+                 && M_players[i]->state() != DISABLE )
             {
                 done = DS_FALSE;
                 break;
