@@ -91,6 +91,7 @@ public:
     virtual void score() = 0;
     virtual void move( double x, double y ) = 0;
     virtual void change_view( VIEW_WIDTH viewWidth, VIEW_QUALITY viewQuality ) = 0;
+    virtual void change_view( VIEW_WIDTH viewWidth ) = 0;
     virtual void compression( int level ) = 0;
     virtual void bye() = 0;
     virtual void done() = 0;

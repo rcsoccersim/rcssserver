@@ -25,8 +25,7 @@ rcsoccersim
 
 lib_LTLIBRARIES = \
 librcssresultsaver.la \
-librcssclangparser.la \
-librcsspcomparser.la
+librcssclangparser.la
 
 module_LTLIBRARIES = \
 libstdoutsaver.la \
@@ -67,9 +66,6 @@ libcsvsaver_la_LIBADD = -lrcssconfparser librcssresultsaver.la
 
 
 pkginclude_HEADERS = \
-pcombuilder.h \
-pcomparser.h \
-player_command_tok.h \
 clangparser.h \
 coach_lang_tok.h \
 clangbuilder.h \
@@ -147,13 +143,6 @@ compop.cc \
 arithop.cc \
 rule.cc
 
-librcsspcomparser_la_SOURCES = \
-player_command_parser.yy \
-player_command_tok.cc
-
-
-
-
 
 bin_PROGRAMS = \
 rcssserver @RCSSCLIENT@
@@ -200,6 +189,11 @@ coach.cpp \
 coach.h \
 compress.h \
 remoteclient.h \
+pcombuilder.h \
+pcomparser.h \
+player_command_parser.yy \
+player_command_tok.h \
+player_command_tok.cc \
 player.h \
 player.cc \
 monitor.h \
@@ -265,7 +259,6 @@ sender.h
 
 rcssserver_LDADD = $(LLLIBS) $(PRELOAD_MODULES) \
 -lrcssclangparser \
--lrcsspcomparser \
 -lrcssresultsaver \
 -lrcssconfparser \
 -lrcsslib \

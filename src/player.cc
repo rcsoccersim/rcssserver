@@ -770,6 +770,58 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
     ++M_change_view_count;
 }
 
+
+void
+Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
+{
+    if ( viewWidth == rcss::pcom::NARROW )
+    {
+        if ( version() < 12.0 )
+        {
+            M_vis_angle = defangle / 2.0;
+            M_vis_send = 2;
+        }
+        else
+        {
+            return;
+        }
+    }
+    else if ( viewWidth == rcss::pcom::NORMAL )
+    {
+        if ( version() < 12.0 )
+        {
+            M_vis_angle = defangle;
+            M_vis_send = 4;
+        }
+        else
+        {
+            M_vis_angle = defangle;
+            M_vis_send = 1;
+        }
+    }
+    else if ( viewWidth == rcss::pcom::WIDE )
+    {
+        if ( version() < 12.0 )
+        {
+            M_vis_angle = defangle * 2.0;
+            M_vis_send = 8;
+        }
+        else
+        {
+            M_vis_angle = defangle * 2.0;
+            M_vis_send = 2;
+        }
+    }
+    else
+    {
+        return;
+    }
+
+    M_highquality = true;
+
+    ++M_change_view_count;
+}
+
 void
 Player::compression( int level )
 {

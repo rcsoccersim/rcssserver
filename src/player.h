@@ -520,6 +520,7 @@ private:
     void score();
     void move( double x, double y );
     void change_view( rcss::pcom::VIEW_WIDTH viewWidth, rcss::pcom::VIEW_QUALITY viewQuality );
+    void change_view( rcss::pcom::VIEW_WIDTH viewWidth );
     void compression( int level );
     void bye();
     void done();

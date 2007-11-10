@@ -198,7 +198,12 @@ move_com : RCSS_PCOM_LP RCSS_PCOM_MOVE floating_point_number floating_point_numb
 change_view_com : RCSS_PCOM_LP RCSS_PCOM_CHANGE_VIEW view_width view_quality RCSS_PCOM_RP
                  {
                    BUILDER.change_view( $3.m_view_w, $4.m_view_q );
-                 } ;
+                 }
+                 | RCSS_PCOM_LP RCSS_PCOM_CHANGE_VIEW view_width RCSS_PCOM_RP
+                 {
+                   BUILDER.change_view( $3.m_view_w );
+                 }
+                 ;
 
 view_width : RCSS_PCOM_VIEW_WIDTH_NARROW
              {
