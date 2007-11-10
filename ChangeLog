@@ -1,3 +1,23 @@
+2007-11-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* Makefile.am:
+	* configure.ac:
+	* src/Makefile.am:
+	* src/csvsaver.cpp:
+	* src/main.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/stdtimer.cc:
+	* src/stdtimer.h:
+	* src/synctimer.cc:
+	* src/synctimer.h:
+	* src/timer.cpp:
+	* src/timer.h:
+	* src/utility.cpp:
+	- disabled a moduled timer library.
+	- embedded librcssplayerparam, librcssserverparam and librcssutil.
+	- disabled unused autoconf macros.
+
 2007-11-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/arm.h:

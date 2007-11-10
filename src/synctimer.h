@@ -38,13 +38,13 @@ public:
     void
     run();
 
-    static
-    void
-    destroy( SyncTimer* c );
+//     static
+//     void
+//     destroy( SyncTimer* c );
 
-    static
-    Ptr
-    create( Timeable& t );
+//     static
+//     Ptr
+//     create( Timeable& t );
 };
 
 #endif

@@ -1,4 +1,6 @@
-/* -*- Mode: C -*-
+// -*-c++-*-
+
+/*
  *Header:
  *File: utility.C
  *Author: Noda Itsuki
@@ -9,27 +11,27 @@
 /*
  *Copyright:
 
-    Copyright (C) 1996-2000 Electrotechnical Laboratory.
-      Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
-    Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
-      Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
-  Mikhail Prokopenko, Jan Wendler
+ Copyright (C) 1996-2000 Electrotechnical Laboratory.
+ Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
+ Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
+ Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
+ Mikhail Prokopenko, Jan Wendler
 
-    This file is a part of SoccerServer.
+ This file is a part of SoccerServer.
 
-    This code is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+ This code is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  *EndCopyright:
  */
@@ -86,14 +88,15 @@
  *Part:     Lowest Common Multiple
  *==================================================================
  */
-int lcm (int a, int b)
+int
+lcm( int a, int b )
 {
-  int tmp = 0, idx = 0, larger = std::max(a, b);
-  do {
-    idx++;
-    tmp = larger * idx;
-  } while (tmp % a != 0 || tmp % b != 0);
-  return tmp;
+    int tmp = 0, idx = 0, larger = std::max( a, b );
+    do {
+        ++idx;
+        tmp = larger * idx;
+    } while (tmp % a != 0 || tmp % b != 0);
+    return tmp;
 }
 
 
@@ -123,81 +126,82 @@ int lcm (int a, int b)
 #endif
 
 
-std::string tildeExpand( const std::string& path_name )
+std::string
+tildeExpand( const std::string& path_name )
 {
-  // There must be a ~ at the start of the path for a valid
-  // expansioin.
-  if (path_name.length() == 0 || path_name[0] != '~')
-  {
-    return path_name;
-  }
-
-  std::string newPath;    // Used to store the new ~ expanded path.
-  std::string username;  // Used to store user name of interest.
-
-  if (path_name.length() == 1
-#ifdef WIN32
-      || path_name[1] == '\\'
-#else
-      || path_name[1] == '/'
-#endif
-      )
-  {
-#ifdef WIN32
-      char szpath[MAX_PATH];
-      FILE* fp;
-      if(SHGetSpecialFolderPath(NULL, szpath, CSIDL_PERSONAL, TRUE))
-      {
-          return szpath + path_name.substr( 1, path_name.length() );
-      }
-      else
-      {
-          return path_name;
-      }
-#else
-
-      // Get the current user.
-      char* err = getenv("USER");
-      if( err == NULL )
-      {
-          // On Windows USERNAME is used instead
-          err = getenv( "USERNAME" );
-          if( err == 0 )
-              return path_name;
-      }
-
-      username = err;
-#endif
-      // if succeeded, remove the tilde
-      newPath = path_name.substr( 1, path_name.length() );
-  }
-  else
-  {
-#ifdef WIN32
-      return path_name;
-  }
-#else
-
-    // Fish out the user name from path_name and remove it
-    // from newPath.
-    std::string::size_type userEnd = path_name.find('/');
-    if (userEnd == std::string::npos)
+    // There must be a ~ at the start of the path for a valid
+    // expansioin.
+    if (path_name.length() == 0 || path_name[0] != '~')
     {
-      // No / so whole path must be the username.
-      userEnd = path_name.length();
+        return path_name;
     }
-    username = path_name.substr(1, userEnd - 1);
-    newPath = path_name.substr(userEnd, path_name.length());
-  }
 
-  // Get the passwd file entry for the user and place their home
-  // directory path at the start of newPath.
-  struct passwd *pwdEntry = getpwnam(username.c_str());
-  if (pwdEntry == NULL)
-    return path_name;
+    std::string newPath;    // Used to store the new ~ expanded path.
+    std::string username;  // Used to store user name of interest.
 
-  newPath.insert(0, pwdEntry->pw_dir);
+    if ( path_name.length() == 1
+#ifdef WIN32
+         || path_name[1] == '\\'
+#else
+         || path_name[1] == '/'
+#endif
+        )
+    {
+#ifdef WIN32
+        char szpath[MAX_PATH];
+        FILE* fp;
+        if(SHGetSpecialFolderPath(NULL, szpath, CSIDL_PERSONAL, TRUE))
+        {
+            return szpath + path_name.substr( 1, path_name.length() );
+        }
+        else
+        {
+            return path_name;
+        }
+#else
 
-  return newPath;
+        // Get the current user.
+        char* err = getenv("USER");
+        if( err == NULL )
+        {
+            // On Windows USERNAME is used instead
+            err = getenv( "USERNAME" );
+            if( err == 0 )
+                return path_name;
+        }
+
+        username = err;
+#endif
+        // if succeeded, remove the tilde
+        newPath = path_name.substr( 1, path_name.length() );
+    }
+    else
+#ifdef WIN32
+    {
+        return path_name;
+    }
+#else
+    {
+        // Fish out the user name from path_name and remove it
+        // from newPath.
+        std::string::size_type userEnd = path_name.find( '/' );
+        if (userEnd == std::string::npos)
+        {
+            // No / so whole path must be the username.
+            userEnd = path_name.length();
+        }
+        username = path_name.substr(1, userEnd - 1);
+        newPath = path_name.substr(userEnd, path_name.length());
+    }
+
+    // Get the passwd file entry for the user and place their home
+    // directory path at the start of newPath.
+    struct passwd *pwdEntry = getpwnam(username.c_str());
+    if (pwdEntry == NULL)
+        return path_name;
+
+    newPath.insert(0, pwdEntry->pw_dir);
+
+    return newPath;
 #endif
 }

@@ -8,7 +8,7 @@
     copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -34,6 +34,10 @@
 StandardTimer* StandardTimer::s_instance = NULL;
 unsigned int StandardTimer::s_ref_count = 0;
 
+bool StandardTimer::gotsig = false;
+int StandardTimer::timedelta = 0;
+bool StandardTimer::lock_timedelta = false;
+
 StandardTimer::StandardTimer( Timeable &timeable )
     : Timer( timeable )
 {
@@ -49,69 +53,75 @@ CALLBACK
 StandardTimer::check(PVOID ptr, BOOL)
 {
     static int td_mult = 1;
-    if( StandardTimer::instance().lock_timedelta )
+    //if( StandardTimer::instance().lock_timedelta )
+    if( lock_timedelta )
     {
         td_mult += 1;
     }
     else
     {
-        StandardTimer::instance().timedelta += td_mult * TIMEDELTA;
+        //StandardTimer::instance().timedelta += td_mult * TIMEDELTA;
+        timedelta += td_mult * TIMEDELTA;
         td_mult = 1;
     }
-    StandardTimer::instance().gotsig = true;
-	SetEvent((HANDLE)ptr);
+    //StandardTimer::instance().gotsig = true;
+    gotsig = true;
+    SetEvent((HANDLE)ptr);
 }
 #else
 void
 StandardTimer::check( void )
 {
     static int td_mult = 1;
-    if( StandardTimer::instance().lock_timedelta )
+    //if( StandardTimer::instance().lock_timedelta )
+    if( lock_timedelta )
     {
         td_mult += 1;
     }
     else
     {
-        StandardTimer::instance().timedelta += td_mult * TIMEDELTA;
+        //StandardTimer::instance().timedelta += td_mult * TIMEDELTA;
+        timedelta += td_mult * TIMEDELTA;
         td_mult = 1;
     }
-    StandardTimer::instance().gotsig = true;
+    //StandardTimer::instance().gotsig = true;
+    gotsig = true;
 }
 #endif
 
-StandardTimer&
-StandardTimer::instance( Timeable& timeable )
-{
-    if( s_instance == NULL )
-    {
-        s_instance = new StandardTimer( timeable );
-        //s_ref_count = 1;
-        s_ref_count = 0;
-    }
-    ++s_ref_count;
-    return *s_instance;
-}
+// StandardTimer&
+// StandardTimer::instance( Timeable& timeable )
+// {
+//     if( s_instance == NULL )
+//     {
+//         s_instance = new StandardTimer( timeable );
+//         //s_ref_count = 1;
+//         s_ref_count = 0;
+//     }
+//     ++s_ref_count;
+//     return *s_instance;
+// }
 
-StandardTimer&
-StandardTimer::instance() throw( rcss::util::NullErr )
-{
-    if( s_instance == NULL )
-        throw rcss::util::NullErr( __FILE__, __LINE__,
-                                   "StandardTimer method instance is called before it was created" );
-    //++s_ref_count;
-    return *s_instance;
-}
+// StandardTimer&
+// StandardTimer::instance() throw( rcss::util::NullErr )
+// {
+//     if( s_instance == NULL )
+//         throw rcss::util::NullErr( __FILE__, __LINE__,
+//                                    "StandardTimer method instance is called before it was created" );
+//     //++s_ref_count;
+//     return *s_instance;
+// }
 
-void
-StandardTimer::destroy( StandardTimer* )
-{
-    if ( --s_ref_count <= 0 )
-    {
-        delete s_instance;
-        s_instance = NULL;
-        s_ref_count = 0;
-    }
-}
+// void
+// StandardTimer::destroy( StandardTimer* )
+// {
+//     if ( --s_ref_count <= 0 )
+//     {
+//         delete s_instance;
+//         s_instance = NULL;
+//         s_ref_count = 0;
+//     }
+// }
 
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
 static
@@ -127,7 +137,7 @@ initTimer( HANDLE gDoneEvent )
     if (!gDoneEvent)
     {
         printf("CreateEvent failed (%d)\n", GetLastError());
-//         return 1;
+        //         return 1;
     }
 
     // Create the timer queue.
@@ -135,37 +145,37 @@ initTimer( HANDLE gDoneEvent )
     if (!hTimerQueue)
     {
         printf("CreateTimerQueue failed (%d)\n", GetLastError());
-//         return 2;
+        //         return 2;
     }
 
     // Set a timer to call the timer routine in 10 seconds.
     if (!CreateTimerQueueTimer( &hTimer, hTimerQueue,
-								(WAITORTIMERCALLBACK)&StandardTimer::check,
-								&gDoneEvent , TIMEDELTA, TIMEDELTA, 0 ) )
+                                (WAITORTIMERCALLBACK)&StandardTimer::check,
+                                &gDoneEvent , TIMEDELTA, TIMEDELTA, 0 ) )
     {
         printf("CreateTimerQueueTimer failed (%d)\n", GetLastError());
-//         return 3;
+        //         return 3;
     }
 
     // TODO: Do other useful work here
 
     printf("Call timer routine in 10 seconds...\n");
 
-//     // Wait for the timer-queue thread to complete using an event
-//     // object. The thread will signal the event at that time.
+    //     // Wait for the timer-queue thread to complete using an event
+    //     // object. The thread will signal the event at that time.
 
-//     if (WaitForSingleObject(gDoneEvent, INFINITE) != WAIT_OBJECT_0)
-//         printf("WaitForSingleObject failed (%d)\n", GetLastError());
+    //     if (WaitForSingleObject(gDoneEvent, INFINITE) != WAIT_OBJECT_0)
+    //         printf("WaitForSingleObject failed (%d)\n", GetLastError());
 
-//     // Delete all timers in the timer queue.
-//     if (!DeleteTimerQueue(hTimerQueue))
-//         printf("DeleteTimerQueue failed (%d)\n", GetLastError());
+    //     // Delete all timers in the timer queue.
+    //     if (!DeleteTimerQueue(hTimerQueue))
+    //         printf("DeleteTimerQueue failed (%d)\n", GetLastError());
 }
 #else
 static
 void
 initTimer( struct itimerval& itv_prev,
-		   struct sigaction& alarm_prev )
+           struct sigaction& alarm_prev )
 {
     struct itimerval itv;
     struct sigaction alarm_action;
@@ -187,7 +197,7 @@ initTimer( struct itimerval& itv_prev,
 static
 void
 restoreTimer( struct itimerval& itv_prev,
-	      struct sigaction& alarm_prev )
+              struct sigaction& alarm_prev )
 {
     setitimer(ITIMER_REAL, &itv_prev, NULL) ;   // restore the old timer
     sigaction(SIGALRM, &alarm_prev, NULL) ;     // restore the old alaram handler
@@ -227,8 +237,8 @@ StandardTimer::run( )
     // should be processed according to the part of the sequence we are in
 
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
-	HANDLE gDoneEvent = NULL;
-	initTimer(gDoneEvent);
+    HANDLE gDoneEvent = NULL;
+    initTimer(gDoneEvent);
 #else
     struct itimerval itv_prev;
     struct sigaction alarm_prev;
@@ -325,24 +335,24 @@ StandardTimer::run( )
 }
 
 
-StandardTimer::Ptr
-StandardTimer::create( Timeable& t)
-{
-    return Ptr( &instance( t ),
-                &destroy,
-                rcss::lib::Loader::loadFromCache( "librcssstdtimer" ) );
-}
+// StandardTimer::Ptr
+// StandardTimer::create( Timeable& t)
+// {
+//     return Ptr( &instance( t ),
+//                 &destroy,
+//                 rcss::lib::Loader::loadFromCache( "librcssstdtimer" ) );
+// }
 
-RCSSLIB_INIT( librcssstdtimer )
-{
-    //printf("reg stdtimer\n");
-    Timer::factory().reg( &StandardTimer::create, "std" );
-    return true;
-}
+// RCSSLIB_INIT( librcssstdtimer )
+// {
+//     //printf("reg stdtimer\n");
+//     Timer::factory().reg( &StandardTimer::create, "std" );
+//     return true;
+// }
 
 
-RCSSLIB_FIN( librcssstdtimer )
-{
-    //printf("dereg stdtimer\n");
-    Timer::factory().dereg( "std" );
-}
+// RCSSLIB_FIN( librcssstdtimer )
+// {
+//     //printf("dereg stdtimer\n");
+//     Timer::factory().dereg( "std" );
+// }

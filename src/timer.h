@@ -33,28 +33,28 @@
     timeable instance are called. */
 class Timer {
 public:
-    typedef rcss::lib::shared_ptr< Timer > Ptr;
-    typedef Ptr (*Creator)( Timeable& );
-    typedef rcss::lib::Factory< Creator > Factory;
+//     typedef rcss::lib::shared_ptr< Timer > Ptr;
+//     typedef Ptr (*Creator)( Timeable& );
+//     typedef rcss::lib::Factory< Creator > Factory;
 
     virtual
     ~Timer()
       { }
 
-    RCSSSERVER_API
-    static
-    Factory & factory();
+//     RCSSSERVER_API
+//     static
+//     Factory & factory();
 
     virtual
     void run() = 0;
 
 protected:
-    RCSSSERVER_API
+    //    RCSSSERVER_API
     Timer( Timeable & timeable )
         : M_timeable ( timeable )
       {}
 
-    RCSSSERVER_API
+    //    RCSSSERVER_API
     Timeable &
     getTimeableRef()
       {

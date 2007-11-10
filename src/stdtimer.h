@@ -47,37 +47,39 @@ private:
     static StandardTimer* s_instance;
     static unsigned int s_ref_count;
 
-    bool                   gotsig;            // variables needed to keep track
-    int                    timedelta;         // of amount of arrived signals
-    bool                   lock_timedelta;
+    static bool                   gotsig;            // variables needed to keep track
+    static int                    timedelta;         // of amount of arrived signals
+    static bool                   lock_timedelta;
 
-    StandardTimer( Timeable &timeable );
     StandardTimer( const StandardTimer& t );
 public:
-    static
-    StandardTimer&
-    instance( Timeable& timeable );
 
-    static
-    StandardTimer&
-    instance() throw( rcss::util::NullErr );
+    StandardTimer( Timeable &timeable );
 
-    static
-    Ptr
-    create( Timeable& t);
+//     static
+//     StandardTimer&
+//     instance( Timeable& timeable );
 
-    static
-    void
-    destroy( StandardTimer* timer );
+//     static
+//     StandardTimer&
+//     instance() throw( rcss::util::NullErr );
+
+//     static
+//     Ptr
+//     create( Timeable& t);
+
+//     static
+//     void
+//     destroy( StandardTimer* timer );
 
     void
     run();
 
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
-	static
-	VOID
-	CALLBACK
-	check(PVOID lpParam, BOOL TimerOrWaitFired);
+    static
+    VOID
+    CALLBACK
+    check(PVOID lpParam, BOOL TimerOrWaitFired);
 #else
     static
     void

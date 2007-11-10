@@ -261,22 +261,22 @@ if ! test -z "$RCSSCLIENT"; then
 fi
 
 
-AX_EXTRA_DIST
-AX_UPLOAD([ncftpput -v upload.sourceforge.net /incoming %%s])
-AX_RPM_GEN_SPEC([spec.tmpl],
-	    [The RoboCup Soccer Simulator Server],
-            [LGPL],
-	    [Applications/Engineering],
-	    [http://sserver.sf.net],
-	    [http://prdownloads.sourceforge.net/sserver/],
-[The RoboCup Soccer Simulator Server (rcssserver) is a research and\neducational tool for mutli-agent systems and artificial\nintelligence. It allows 11 simulated autonomous robotic players to\nplay soccer (football).])
-AX_DIST_RPM
-#AX_DIST_MSI([$srcdir/Setup/Release/${PACKAGE_NAME}Setup.msi])
-AX_CVS([:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver])
-
-AX_PKG_GEN_PLIST([Info.plist], [Description.plist],
-	         [RoboCup], [com.robocup.${PACKAGE}])
-AX_DIST_DMG
+#AX_EXTRA_DIST
+#AX_UPLOAD([ncftpput -v upload.sourceforge.net /incoming %%s])
+#AX_RPM_GEN_SPEC([spec.tmpl],
+#	    [The RoboCup Soccer Simulator Server],
+#            [LGPL],
+#	    [Applications/Engineering],
+#	    [http://sserver.sf.net],
+#	    [http://prdownloads.sourceforge.net/sserver/],
+#[The RoboCup Soccer Simulator Server (rcssserver) is a research and\neducational tool for mutli-agent systems and artificial\nintelligence. It allows 11 simulated autonomous robotic players to\nplay soccer (football).])
+#AX_DIST_RPM
+##AX_DIST_MSI([$srcdir/Setup/Release/${PACKAGE_NAME}Setup.msi])
+#AX_CVS([:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver])
+#
+#AX_PKG_GEN_PLIST([Info.plist], [Description.plist],
+#	         [RoboCup], [com.robocup.${PACKAGE}])
+#AX_DIST_DMG
 
 
 

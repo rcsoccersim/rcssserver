@@ -467,10 +467,10 @@ private:
 		bool old_hear; /* old format for hear command (coach) */
 
 		bool synch_mode; /* pfr:SYNCH whether to run in synchronized mode */
-    bool timer_loaded;
-    //private:
+    //bool timer_loaded;
+
 		int synch_offset; /* pfr:SYNCH the offset from the start of the cycle to tell players to run */
-    //public:
+
 		int synch_micro_sleep; /* pfr:SYNCH the # of microseconds to sleep while waiting for players */
 
 		int start_goal_l; /* The starting score of the left team */

@@ -114,30 +114,30 @@ SyncTimer::run()
     getTimeableRef().quit();
 }
 
-void
-SyncTimer::destroy( SyncTimer* c )
-{
-    delete c;
-}
+// void
+// SyncTimer::destroy( SyncTimer* c )
+// {
+//     delete c;
+// }
 
-SyncTimer::Ptr
-SyncTimer::create( Timeable& t )
-{
-     return Ptr( new SyncTimer( t ),
-                 &SyncTimer::destroy,
-                 rcss::lib::Loader::loadFromCache( "librcsssynctimer" ) );
-}
+// SyncTimer::Ptr
+// SyncTimer::create( Timeable& t )
+// {
+//      return Ptr( new SyncTimer( t ),
+//                  &SyncTimer::destroy,
+//                  rcss::lib::Loader::loadFromCache( "librcsssynctimer" ) );
+// }
 
 
-RCSSLIB_INIT( librcsssynctimer )
-{
-    //printf("reg synctimer\n");
-    SyncTimer::factory().reg( &SyncTimer::create, "sync" );
-    return true;
-}
+// RCSSLIB_INIT( librcsssynctimer )
+// {
+//     //printf("reg synctimer\n");
+//     SyncTimer::factory().reg( &SyncTimer::create, "sync" );
+//     return true;
+// }
 
-RCSSLIB_FIN( librcsssynctimer )
-{
-    //printf("dereg synctimer\n");
-    SyncTimer::factory().dereg( "sync" );
-}
+// RCSSLIB_FIN( librcsssynctimer )
+// {
+//     //printf("dereg synctimer\n");
+//     SyncTimer::factory().dereg( "sync" );
+// }

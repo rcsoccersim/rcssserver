@@ -23,9 +23,9 @@
 #include "timer.h"
 
 
-Timer::Factory &
-Timer::factory()
-{
-    static Factory rval;
-    return rval;
-}
+// Timer::Factory &
+// Timer::factory()
+// {
+//     static Factory rval;
+//     return rval;
+// }

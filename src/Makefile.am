@@ -24,23 +24,15 @@ DISTCLEANILES = \
 rcsoccersim
 
 lib_LTLIBRARIES = \
-librcssutil.la \
-librcsstimer.la \
 librcssresultsaver.la \
-librcssplayerparam.la \
-librcssserverparam.la \
 librcssclangparser.la \
 librcsspcomparser.la
 
 module_LTLIBRARIES = \
-librcssstdtimer.la \
-librcsssynctimer.la \
 libstdoutsaver.la \
 libcsvsaver.la
 
 DYNAMIC_MODULES += \
-librcssstdtimer.la \
-librcsssynctimer.la \
 libstdoutsaver.la \
 libcsvsaver.la
 
@@ -56,24 +48,6 @@ libcsvsaver.la
 # libmysqlsaver_la_LIBADD = @MYSQLLIB@ librcssresultsaver.la
 
 # endif
-
-librcsstimer_la_SOURCES = \
-timer.cpp timer.h
-
-librcssstdtimer_la_SOURCES = \
-stdtimer.h \
-stdtimer.cc
-librcssstdtimer_la_LDFLAGS = -module
-
-librcssstdtimer_la_LIBADD = librcsstimer.la librcssserverparam.la
-
-librcsssynctimer_la_SOURCES = \
-synctimer.h \
-synctimer.cc
-
-librcsssynctimer_la_LIBADD = librcsstimer.la librcssserverparam.la
-
-librcsssynctimer_la_LDFLAGS = -module
 
 
 librcssresultsaver_la_SOURCES = resultsaver.cpp resultsaver.hpp
@@ -111,12 +85,10 @@ clangadvicemsg.h \
 clangdefmsg.h \
 clangaction.h \
 coach_lang_comp.h \
-serverparam.h \
 region.h \
 coach_lang_par.h \
 vector.h \
 visitor.h \
-utility.h \
 clangutil.h \
 tuple.h \
 cond.h \
@@ -127,94 +99,6 @@ rule.h \
 rcssexceptions.h \
 rcssserverconfig.hpp \
 resultsaver.hpp
-
-
-librcssutil_la_LDFLAGS = -version-info 0:0:0
-#    1. Start with version information of `0:0:0' for each libtool library.
-#
-#    2. Update the version information only immediately before a public
-#       release of your software.  More frequent updates are unnecessary,
-#       and only guarantee that the current interface number gets larger
-#       faster.
-#
-#    3. If the library source code has changed at all since the last
-#       update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
-#
-#    4. If any interfaces have been added, removed, or changed since the
-#       last update, increment CURRENT, and set REVISION to 0.
-#
-#    5. If any interfaces have been added since the last public release,
-#       then increment AGE.
-#
-#    6. If any interfaces have been removed since the last public release,
-#       then set AGE to 0.
-
-
-librcssutil_la_SOURCES = \
-utility.cpp
-
-
-librcssserverparam_la_LDFLAGS = -version-info 3:0:1
-#    Changed from 2.0.0 to 3.0.1 at 9.3.5 for addition of buildCondList
-#
-#    1. Start with version information of `0:0:0' for each libtool library.
-#
-#    2. Update the version information only immediately before a public
-#       release of your software.  More frequent updates are unnecessary,
-#       and only guarantee that the current interface number gets larger
-#       faster.
-#
-#    3. If the library source code has changed at all since the last
-#       update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
-#
-#    4. If any interfaces have been added, removed, or changed since the
-#       last update, increment CURRENT, and set REVISION to 0.
-#
-#    5. If any interfaces have been added since the last public release,
-#       then increment AGE.
-#
-#    6. If any interfaces have been removed since the last public release,
-#       then set AGE to 0.
-
-
-librcssserverparam_la_SOURCES = \
-serverparam.cpp \
-serverparam.h
-
-
-##librcssserverparam_la_LIBADD = -lrcssconfparser -lrcsslib librcssplayerparam.la librcssutil.la
-
-
-librcssplayerparam_la_LDFLAGS = -version-info 3:0:1
-#    Changed from 2.0.0 to 3.0.1 at 9.3.5 for addition of buildCondList
-#
-#    1. Start with version information of `0:0:0' for each libtool library.
-#
-#    2. Update the version information only immediately before a public
-#       release of your software.  More frequent updates are unnecessary,
-#       and only guarantee that the current interface number gets larger
-#       faster.
-#
-#    3. If the library source code has changed at all since the last
-#       update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
-#
-#    4. If any interfaces have been added, removed, or changed since the
-#       last update, increment CURRENT, and set REVISION to 0.
-#
-#    5. If any interfaces have been added since the last public release,
-#       then increment AGE.
-#
-#    6. If any interfaces have been removed since the last public release,
-#       then set AGE to 0.
-
-
-librcssplayerparam_la_SOURCES = \
-playerparam.cpp \
-playerparam.h
-
-##librcssplayerparam_la_LIBADD = -lrcssconfparser -lrcsslib \
-##librcssutil.la
-
 
 librcssclangparser_la_LDFLAGS = -version-info 3:0:1
 #    Changed from 2.0.0 to 3.0.1 at 9.3.5 for addition of buildCondList
@@ -263,8 +147,6 @@ compop.cc \
 arithop.cc \
 rule.cc
 
-##librcssclangparser_la_LIBADD = -lrcssconfparser -lrcsslib librcssresultsaver.la librcssserverparam.la
-
 librcsspcomparser_la_SOURCES = \
 player_command_parser.yy \
 player_command_tok.cc
@@ -301,6 +183,7 @@ main.cpp \
 types.h \
 field.cpp \
 playerparam.h \
+playerparam.cpp \
 field.h \
 netif.cpp \
 netif.h \
@@ -353,6 +236,8 @@ serializercommonstdv7.h \
 serializercommonstdv7.cc \
 serializercommonstdv8.h \
 serializercommonstdv8.cc \
+serverparam.h \
+serverparam.cpp \
 referee.h \
 referee.cc \
 xpmholder.h \
@@ -360,7 +245,14 @@ visual.h \
 visual.cc \
 xpmholder.h \
 timer.h \
+timer.cpp \
+stdtimer.h \
+stdtimer.cc \
+synctimer.h \
+synctimer.cc \
 timeable.h \
+utility.h \
+utility.cpp \
 bodysender.h \
 bodysender.cc \
 fullstatesender.h \
@@ -372,13 +264,9 @@ sender.h
 
 
 rcssserver_LDADD = $(LLLIBS) $(PRELOAD_MODULES) \
--lrcsstimer \
 -lrcssclangparser \
 -lrcsspcomparser \
 -lrcssresultsaver \
--lrcssplayerparam \
--lrcssserverparam \
--lrcssutil \
 -lrcssconfparser \
 -lrcsslib \
 -lrcsserror \
@@ -440,14 +328,8 @@ $(BOOST_FILESYSTEM_LIB)
 check_SCRIPTS = \
 moduletest.sh
 
-check_PROGRAMS = \
-playerparamtest \
-serverparamtest
-
 TESTS = \
-moduletest.sh \
-playerparamtest \
-serverparamtest
+moduletest.sh
 
 moduletest.sh: Makefile.am
 	echo "#! /bin/sh" > $@
@@ -458,20 +340,4 @@ moduletest.sh: Makefile.am
 	done
 	chmod +x $@
 
-playerparamtest_SOURCES = \
-playerparamtest.cpp
-
-playerparamtest_LDADD = librcssplayerparam.la \
--lrcssconfparser \
--lrcsslib
-
-serverparamtest_SOURCES = \
-serverparamtest.cpp
-
-serverparamtest_LDADD = librcssserverparam.la \
--lrcssplayerparam \
--lrcssconfparser \
--lrcsslib
-
-
-@INCLUDE_MK@
+#@INCLUDE_MK@

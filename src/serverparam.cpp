@@ -360,29 +360,32 @@ ServerParam::init( const int & argc,
             instance().clear();
             std::exit( EXIT_FAILURE );
         }
+
         if ( ! instance().m_conf_parser->parse( argc, argv ) )
         {
             instance().m_builder->displayHelp();
             instance().clear();
             std::exit( EXIT_FAILURE );
         }
-        if ( ! instance().timer_loaded )
-        {
-            instance().setSynchMode( false );
-        }
-        if ( ! instance().timer_loaded )
-        {
-            std::cerr << "Could not load timer\n";
-            std::cerr << "timer library not found in:\n";
-            for ( std::vector< boost::filesystem::path >::const_iterator i = rcss::lib::Loader::getPath().begin();
-                 i != rcss::lib::Loader::getPath().end();
-                 ++i )
-            {
-                std::cerr << "\t - " << i->native_directory_string() << "\n";
-            }
-            instance().clear();
-            std::exit( EXIT_FAILURE );
-        }
+
+//         if ( ! instance().timer_loaded )
+//         {
+//             instance().setSynchMode( false );
+//         }
+
+//         if ( ! instance().timer_loaded )
+//         {
+//             std::cerr << "Could not load timer\n";
+//             std::cerr << "timer library not found in:\n";
+//             for ( std::vector< boost::filesystem::path >::const_iterator i = rcss::lib::Loader::getPath().begin();
+//                  i != rcss::lib::Loader::getPath().end();
+//                  ++i )
+//             {
+//                 std::cerr << "\t - " << i->native_directory_string() << "\n";
+//             }
+//             instance().clear();
+//             std::exit( EXIT_FAILURE );
+//         }
 
         if ( instance().m_builder->genericHelpRequested() )
         {
@@ -725,35 +728,37 @@ ServerParam::addParams()
 void
 ServerParam::setSynchMode( bool value )
 {
-    if ( synch_mode != value || !timer_loaded )
+    if ( synch_mode != value
+         // || !timer_loaded
+         )
     {
-        if ( value )
-        {
-            rcss::lib::Loader module;
-            if ( module.open( "librcsssynctimer" ) )
-            {
-                m_builder->manageModule( module );
-                timer_loaded = true;
-            }
-            else
-            {
-                std::cerr << "Could not load synctimer" << std::endl;
-            }
-        }
-        else
-        {
-            rcss::lib::Loader module;
-            if ( module.open( "librcssstdtimer" ) )
-            {
-                m_builder->manageModule( module );
-                timer_loaded = true;
-            }
-            else
-            {
-                std::cerr << "Could not load stdtimer" << std::endl;
-            }
-        }
-        synch_mode = value ;
+//         if ( value )
+//         {
+//             rcss::lib::Loader module;
+//             if ( module.open( "librcsssynctimer" ) )
+//             {
+//                 m_builder->manageModule( module );
+//                 timer_loaded = true;
+//             }
+//             else
+//             {
+//                 std::cerr << "Could not load synctimer" << std::endl;
+//             }
+//         }
+//         else
+//         {
+//             rcss::lib::Loader module;
+//             if ( module.open( "librcssstdtimer" ) )
+//             {
+//                 m_builder->manageModule( module );
+//                 timer_loaded = true;
+//             }
+//             else
+//             {
+//                 std::cerr << "Could not load stdtimer" << std::endl;
+//             }
+//         }
+        synch_mode = value;
         lcm_st = lcm( sim_st,
                       lcm( send_st,
                            lcm( recv_st,
@@ -940,7 +945,7 @@ ServerParam::setDefaults()
     old_hear = false;
 
     synch_mode = false;
-    timer_loaded = false;
+    //    timer_loaded = false;
     synch_offset = 60;
     synch_micro_sleep = 1;
 

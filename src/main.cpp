@@ -37,9 +37,12 @@
 #include "version.h"
 
 #include "timer.h"
-#include <rcssbase/lib/loader.hpp>
+#include "stdtimer.h"
+#include "synctimer.h"
+//#include <rcssbase/lib/loader.hpp>
 #include <rcssbase/version.hpp>
 
+#include <boost/shared_ptr.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 //#include <dirent.h>
@@ -117,27 +120,19 @@ main( int argc, char *argv[] )
         return 1;
     }
 
-    std::string timername;
+    boost::shared_ptr< Timer > timer;
     if ( ServerParam::instance().synchMode() )
     {
-        timername = "sync";
+        timer = boost::shared_ptr< Timer >( new SyncTimer( Std ) );
     }
     else
     {
-        timername = "std";
+        timer = boost::shared_ptr< Timer >( new StandardTimer( Std ) );
     }
 
-    Timer::Creator creator;
-    if ( Timer::factory().getCreator( creator, timername.c_str() ) )
-    {
-        Timer::Ptr timer = creator( Std );
-        std::cout << "\nHit CTRL-C to exit\n";
-        timer->run();
-    }
-    else
-    {
-        std::cerr << "Error: Could not find \"" << timername << "\" timer\n";
-    }
+    std::cout << "\nHit CTRL-C to exit\n";
+
+    timer->run();
 
     ServerParam::instance().clear();
 

@@ -19,21 +19,128 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "resultsaver.hpp"
-#include <fstream>
+
+//#include "utility.h"
+
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
+
 #include <rcssbase/lib/loader.hpp>
 #include <rcssbase/conf/builder.hpp>
 #include <rcssbase/conf/parser.hpp>
-#include <errno.h>
-#include "utility.h"
-#include <time.h>
+
+#include <string>
+#include <fstream>
+#include <cerrno>
+#include <ctime>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
+
+#ifndef _WIN32_IE
+#define _WIN32_IE 0x0400
+#endif
+#ifndef _WIN32_WINDOWS
+#define _WIN32_WINDOWS 0x0490
+#endif
+#  include <windows.h>
+#  include <shlobj.h>
+#  include <stdio.h>
+
 #  ifndef WIN32
 #    define WIN32
 #  endif
 #endif
+
+namespace {
+
+std::string
+tilde_expand( const std::string & path_name )
+{
+    // There must be a ~ at the start of the path for a valid
+    // expansioin.
+    if (path_name.length() == 0 || path_name[0] != '~')
+    {
+        return path_name;
+    }
+
+    std::string newPath;    // Used to store the new ~ expanded path.
+    std::string username;  // Used to store user name of interest.
+
+    if ( path_name.length() == 1
+#ifdef WIN32
+         || path_name[1] == '\\'
+#else
+         || path_name[1] == '/'
+#endif
+        )
+    {
+#ifdef WIN32
+        char szpath[MAX_PATH];
+        FILE* fp;
+        if(SHGetSpecialFolderPath(NULL, szpath, CSIDL_PERSONAL, TRUE))
+        {
+            return szpath + path_name.substr( 1, path_name.length() );
+        }
+        else
+        {
+            return path_name;
+        }
+#else
+
+        // Get the current user.
+        char* err = getenv("USER");
+        if( err == NULL )
+        {
+            // On Windows USERNAME is used instead
+            err = getenv( "USERNAME" );
+            if( err == 0 )
+                return path_name;
+        }
+
+        username = err;
+#endif
+        // if succeeded, remove the tilde
+        newPath = path_name.substr( 1, path_name.length() );
+    }
+    else
+#ifdef WIN32
+    {
+        return path_name;
+    }
+#else
+    {
+        // Fish out the user name from path_name and remove it
+        // from newPath.
+        std::string::size_type userEnd = path_name.find( '/' );
+        if (userEnd == std::string::npos)
+        {
+            // No / so whole path must be the username.
+            userEnd = path_name.length();
+        }
+        username = path_name.substr(1, userEnd - 1);
+        newPath = path_name.substr(userEnd, path_name.length());
+    }
+
+    // Get the passwd file entry for the user and place their home
+    // directory path at the start of newPath.
+    struct passwd *pwdEntry = getpwnam(username.c_str());
+    if (pwdEntry == NULL)
+        return path_name;
+
+    newPath.insert(0, pwdEntry->pw_dir);
+
+    return newPath;
+#endif
+}
+
+}
+
 
 class CSVSaverParams
     : public rcss::conf::Builder
@@ -48,13 +155,13 @@ public:
           addParams();
 
 #ifdef WIN32
-          std::string user_dir = tildeExpand( "~\\.rcssserver\\" );
+          std::string user_conf_name = "~\\.rcssserver\\";
 #else
-          std::string user_dir = tildeExpand( "~/.rcssserver/" );
+          std::string user_conf_name = "~/.rcssserver/";
 #endif
-          std::string user_conf_name = user_dir + getModuleName() + ".conf";
+          user_conf_name += getModuleName() + ".conf";
 
-          boost::filesystem::path conf_path( tildeExpand( user_conf_name ),
+          boost::filesystem::path conf_path( tilde_expand( user_conf_name ),
                                              boost::filesystem::portable_posix_name );
           parser()->parseCreateConf( conf_path, getModuleName() );
       }

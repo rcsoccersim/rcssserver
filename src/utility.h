@@ -35,8 +35,8 @@
  *EndCopyright:
  */
 
-#ifndef _UTILITY_H_
-#define _UTILITY_H_
+#ifndef RCSS_UTILITY_H
+#define RCSS_UTILITY_H
 
 #include "rcssserverconfig.hpp"
 
@@ -103,7 +103,7 @@ double
 Quantize( const double & v,
           const double & q )
 {
-    return rint( v / q  ) * q;
+    return rint( v / q ) * q;
 }
 
 inline
@@ -145,7 +145,7 @@ extern "C" {
     //RCSSSERVER_API
     //extern double normalize_angle(double ang) ;
 
-RCSSSERVER_API
+    //RCSSSERVER_API
 extern int lcm(int a, int b);
 
 #ifdef __cplusplus
@@ -162,8 +162,8 @@ extern int lcm(int a, int b);
 #define nltons(x) htons((Int16)(((double)(Int32)ntohl(x) / SHOWINFO_SCALE2) * SHOWINFO_SCALE))
 
 
-RCSSSERVER_API
+//RCSSSERVER_API
 std::string
-tildeExpand( const std::string& path_name );
+tildeExpand( const std::string & path_name );
 
 #endif
