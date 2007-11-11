@@ -703,6 +703,14 @@ void
 Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
                      rcss::pcom::VIEW_QUALITY viewQuality )
 {
+    if ( version() >= 12.0
+         && ( viewWidth == rcss::pcom::NARROW
+              || viewQuality != rcss::pcom::HIGH  )
+         )
+    {
+        return;
+    }
+
     if ( viewWidth == rcss::pcom::NARROW )
     {
         if ( version() < 12.0 )
