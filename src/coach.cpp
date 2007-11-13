@@ -1553,7 +1553,7 @@ OnlineCoach::change_player_type( int unum,
         }
         else if ( used_count->second >= PlayerParam::instance().ptMax() )
         {
-            send( "(warning no_subs_left)" );
+            send( "(warning no_left_of_that_type)" );
             return;
         }
     }
