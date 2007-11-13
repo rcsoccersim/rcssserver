@@ -128,7 +128,7 @@ const double ServerParam::EFFORT_MIN = 0.6;
 const double ServerParam::EFFORT_INC_THR = 0.6;
 const double ServerParam::EFFORT_INC = 0.01;
 
-const double ServerParam::KICK_RAND = 0.05; // [12.0.0] 0.0 -> 0.5
+const double ServerParam::KICK_RAND = 0.05; // [12.0.0] 0.0 -> 0.05
 const double ServerParam::PRAND_FACTOR_L = 1.0;
 const double ServerParam::PRAND_FACTOR_R = 1.0;
 const double ServerParam::KICK_RAND_FACTOR_L = 1.0;

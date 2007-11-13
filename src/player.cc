@@ -521,7 +521,8 @@ Player::kick( double power, double dir )
                                   * M_stadium.ball().vel().r()
                                   / ServerParam::instance().ballDecay()
                                   / ServerParam::instance().ballSpeedMax() );
-            double dir_rand = M_PI * ( power_rand + speed_rand );
+            //double dir_rand = M_PI * ( power_rand + speed_rand );
+            double dir_rand = M_PI * speed_rand;
 
             double power_noise = drand( -power_rand, power_rand );
             double dir_noise = drand( -dir_rand, dir_rand );
@@ -1055,7 +1056,8 @@ Player::tackle( double power )
                                           * M_stadium.ball().vel().r()
                                           / ServerParam::instance().ballDecay()
                                           / ServerParam::instance().ballSpeedMax() );
-                    double dir_rand = M_PI * ( power_rand + speed_rand );
+                    //double dir_rand = M_PI * ( power_rand + speed_rand );
+                    double dir_rand = M_PI * speed_rand;
 
                     double power_noise = drand( -power_rand, power_rand );
                     double dir_noise = drand( -dir_rand, dir_rand );

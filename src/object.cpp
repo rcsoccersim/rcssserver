@@ -457,6 +457,8 @@ PVector
 MPObject::noise()
 {
     double maxrnd = M_randp * vel().r();
+    //return PVector::fromPolar( drand( 0.0, maxrnd ),
+    //                           drand( -M_PI, M_PI ) );
     return PVector( drand( -maxrnd, maxrnd ),
                     drand( -maxrnd, maxrnd ) );
 }
