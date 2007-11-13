@@ -512,7 +512,7 @@ Player::kick( double power, double dir )
 
             accel += kick_noise;
         }
-#else
+#elif 0
         // akiyama 2007-10-24, 2007-11-13
         // new kick noise
         {
@@ -521,8 +521,8 @@ Player::kick( double power, double dir )
                                   * M_stadium.ball().vel().r()
                                   / ServerParam::instance().ballDecay()
                                   / ServerParam::instance().ballSpeedMax() );
-            //double dir_rand = M_PI * ( power_rand + speed_rand );
-            double dir_rand = M_PI * speed_rand;
+            double dir_rand = M_PI * ( power_rand + speed_rand );
+            //double dir_rand = M_PI * speed_rand;
 
             double power_noise = drand( -power_rand, power_rand );
             double dir_noise = drand( -dir_rand, dir_rand );
@@ -530,14 +530,59 @@ Player::kick( double power, double dir )
             accel *= ( 1.0 + power_noise );
             accel.rotate( dir_noise );
 
-//             std::cout << "Kick:"
-//                       << " power = " << power
-//                       << " power_rand = " << power_rand
-//                       << " power_noise = " << power_noise
-//                       << " speed_rand = " << speed_rand
-//                       << " dir_rand = " << dir_rand * 180 / M_PI
-//                       << " dir_noise = " << dir_noise * 180 / M_PI
-//                       << std::endl;
+            std::cout << M_stadium.time()
+                      << " Kick:"
+                      << " power = " << power
+                      << " power_rand = " << power_rand
+                      << " speed_rand = " << speed_rand
+                      << " dir_rand = " << dir_rand * 180 / M_PI
+                      << " power_noise = " << power_noise * eff_power
+                      << " dir_noise = " << dir_noise * 180 / M_PI
+                      << std::endl;
+        }
+#elif 1
+        {
+            double power_rand = M_kick_rand * eff_power * power / ServerParam::instance().maxPower();
+            double speed_rand = M_kick_rand * M_stadium.ball().vel().r();
+            double max_rand = power_rand + speed_rand;
+            PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
+                                                     drand( -M_PI, M_PI ) );
+
+            accel += kick_noise;
+
+            std::cout << M_stadium.time()
+                      << " Kick:"
+                      << " power = " << power
+                      << " power_rand = " << power_rand
+                      << " speed_rand = " << speed_rand
+                      << " max_rand = " << max_rand
+                      << " kick_noise = " << kick_noise
+                      << " mag = " << kick_noise.r()
+                      << std::endl;
+
+        }
+#else
+        {
+            double power_rand = M_kick_rand * power / ServerParam::instance().maxPower();
+            double speed_rand = ( M_kick_rand
+                                  * M_stadium.ball().vel().r()
+                                  / ServerParam::instance().ballDecay()
+                                  / ServerParam::instance().ballSpeedMax() );
+            double max_rand = ( power_rand + speed_rand ) * eff_power;
+            PVector kick_noise = PVector::fromPolar( drand( -max_rand, max_rand ),
+                                                     drand( -M_PI, M_PI ) );
+
+            accel += kick_noise;
+
+            std::cout << M_stadium.time()
+                      << " Kick:"
+                      << " power = " << power
+                      << " power_rand = " << power_rand
+                      << " speed_rand = " << speed_rand
+                      << " max_rand = " << max_rand
+                      << " kick_noise = " << kick_noise
+                      << std::endl;
+
         }
 #endif
 
@@ -1047,7 +1092,7 @@ Player::tackle( double power )
 
                     accel += kick_noise;
                 }
-#else
+#elif 0
                 // akiyama 2007-10-24, 2007-11-13
                 // new kick noise
                 {
@@ -1071,6 +1116,50 @@ Player::tackle( double power )
 //                               << " dir_rand = " << dir_rand * 180 / M_PI
 //                               << " dir_noise = " << dir_noise * 180 / M_PI
 //                               << std::endl;
+                }
+#elif 1
+                {
+                    double power_rand = M_kick_rand * eff_power * power / ServerParam::instance().maxPower();
+                    double speed_rand = M_kick_rand * M_stadium.ball().vel().r();
+                    double max_rand = power_rand + speed_rand;
+                    PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
+                                                             drand( -M_PI, M_PI ) );
+
+                    accel += kick_noise;
+
+                    std::cout << M_stadium.time()
+                              << " Kick:"
+                              << " power = " << power
+                              << " power_rand = " << power_rand
+                              << " speed_rand = " << speed_rand
+                              << " max_rand = " << max_rand
+                              << " kick_noise = " << kick_noise
+                              << " mag = " << kick_noise.r()
+                              << std::endl;
+
+                }
+#else
+                {
+                    double power_rand = M_kick_rand * power / ServerParam::instance().maxPower();
+                    double speed_rand = ( M_kick_rand
+                                          * M_stadium.ball().vel().r()
+                                          / ServerParam::instance().ballDecay()
+                                          / ServerParam::instance().ballSpeedMax() );
+                    double max_rand = ( power_rand + speed_rand ) * eff_power;
+                    PVector kick_noise = PVector::fromPolar( drand( -max_rand, max_rand ),
+                                                             drand( -M_PI, M_PI ) );
+
+                    accel += kick_noise;
+
+                    std::cout << M_stadium.time()
+                              << " Kick:"
+                              << " power = " << power
+                      << " power_rand = " << power_rand
+                              << " speed_rand = " << speed_rand
+                              << " max_rand = " << max_rand
+                              << " kick_noise = " << kick_noise
+                              << std::endl;
+
                 }
 #endif
 
