@@ -1,3 +1,13 @@
+2007-11-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/player.cc:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	- changed a kick noise model.
+	- changed the default value of server::kick_rand to 0.05.
+	- changed the default value of player::kick_rand_delta_factor to
+	0.5.
+
 2007-11-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/Makefile.am:

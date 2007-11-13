@@ -93,7 +93,7 @@ const double PlayerParam::DEFAULT_PLAYER_SIZE_DELTA_FACTOR = -100.0;
 
 const double PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MIN = -0.1; // [12.0.0] 0.0 -> -0.1
 const double PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MAX = 0.1; // [12.0.0] 0.2 -> 0.1
-const double PlayerParam::DEFAULT_KICK_RAND_DELTA_FACTOR = 1.0; // [12.0.0] 0.5 -> 1.0
+const double PlayerParam::DEFAULT_KICK_RAND_DELTA_FACTOR = 0.5;
 
 const double PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MIN = 0.0;
 const double PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MAX = 100.0;

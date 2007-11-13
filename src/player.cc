@@ -501,38 +501,44 @@ Player::kick( double power, double dir )
 
         PVector accel = PVector::fromPolar( eff_power,
                                             dir + angleBodyCommitted() );
-
+#if 0
         // pfr 8/14/00: for RC2000 evaluation
         // add noise to kick
-        double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
-
-        // akiyama 2007-10-24
-        // add dir noise affected by current ball speed
         {
-#if 0
-            maxrnd += M_kick_rand
-                * M_stadium.ball().vel().r()
-                / ServerParam::instance().ballDecay()
-                / ServerParam::instance().ballSpeedMax();
-#else
-            double max_dir_rand = M_PI
-                * M_kick_rand
-                * M_stadium.ball().vel().r()
-                / ServerParam::instance().ballDecay()
-                / ServerParam::instance().ballSpeedMax();
-            double dir_noise = drand( -max_dir_rand, max_dir_rand );
-            //std::cout << "Kick: max_dir_rand = " << max_dir_rand * 180 / M_PI
-            //          << "  dir_noise = " << dir_noise * 180 / M_PI
-            //          << std::endl;
-            accel.rotate( dir_noise );
-#endif
+            double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
+            PVector kick_noise( drand( -maxrnd, maxrnd ),
+                                drand( -maxrnd, maxrnd ) );
+            //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
+
+            accel += kick_noise;
         }
+#else
+        // akiyama 2007-10-24, 2007-11-13
+        // new kick noise
+        {
+            double power_rand = M_kick_rand * power / ServerParam::instance().maxPower();
+            double speed_rand = ( M_kick_rand
+                                  * M_stadium.ball().vel().r()
+                                  / ServerParam::instance().ballDecay()
+                                  / ServerParam::instance().ballSpeedMax() );
+            double dir_rand = M_PI * ( power_rand + speed_rand );
 
-        PVector kick_noise( drand( -maxrnd, maxrnd ),
-                            drand( -maxrnd, maxrnd ) );
-        //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
+            double power_noise = drand( -power_rand, power_rand );
+            double dir_noise = drand( -dir_rand, dir_rand );
 
-        accel += kick_noise;
+            accel *= ( 1.0 + power_noise );
+            accel.rotate( dir_noise );
+
+//             std::cout << "Kick:"
+//                       << " power = " << power
+//                       << " power_rand = " << power_rand
+//                       << " power_noise = " << power_noise
+//                       << " speed_rand = " << speed_rand
+//                       << " dir_rand = " << dir_rand * 180 / M_PI
+//                       << " dir_noise = " << dir_noise * 180 / M_PI
+//                       << std::endl;
+        }
+#endif
 
         M_stadium.kickTaken( *this, accel );
 
@@ -1029,38 +1035,42 @@ Player::tackle( double power )
 
                 PVector accel = PVector::fromPolar( eff_power,
                                                     angleBodyCommitted() );
-
+#if 0
                 // pfr 8/14/00: for RC2000 evaluation
                 // add noise to kick
-                double maxrnd = ( M_kick_rand * power * ( 1 - prob )
-                                  / ServerParam::instance().maxPower() );
-
-                // akiyama 2007-10-24
-                // add dir noise affected by current ball speed
                 {
-#if 0
-                    maxrnd += M_kick_rand
-                        * M_stadium.ball().vel().r()
-                        / ServerParam::instance().ballDecay()
-                        / ServerParam::instance().ballSpeedMax();
-#else
-                    double max_dir_rand = M_PI
-                        * M_kick_rand
-                        * M_stadium.ball().vel().r()
-                        / ServerParam::instance().ballDecay()
-                        / ServerParam::instance().ballSpeedMax();
-                    double dir_noise = drand( -max_dir_rand, max_dir_rand );
-                    //std::cout << "Tackle: max_dir_rand = " << max_dir_rand * 180 / M_PI
-                    //          << "  dir_noise = " << dir_noise * 180 / M_PI
-                    //          << std::endl;
-                    accel.rotate( dir_noise );
-#endif
+                    double maxrnd = ( M_kick_rand * power * ( 1 - prob )
+                                      / ServerParam::instance().maxPower() );
+                    PVector kick_noise( drand( -maxrnd, maxrnd ),
+                                        drand( -maxrnd, maxrnd ) );
+
+                    accel += kick_noise;
                 }
+#else
+                // akiyama 2007-10-24, 2007-11-13
+                // new kick noise
+                {
+                    double power_rand = M_kick_rand * power / ServerParam::instance().maxPower();
+                    double speed_rand = ( M_kick_rand
+                                          * M_stadium.ball().vel().r()
+                                          / ServerParam::instance().ballDecay()
+                                          / ServerParam::instance().ballSpeedMax() );
+                    double dir_rand = M_PI * ( power_rand + speed_rand );
 
-                PVector kick_noise( drand( -maxrnd, maxrnd ),
-                                    drand( -maxrnd, maxrnd ) );
+                    double power_noise = drand( -power_rand, power_rand );
+                    double dir_noise = drand( -dir_rand, dir_rand );
 
-                accel += kick_noise;
+                    accel *= ( 1.0 + power_noise );
+                    accel.rotate( dir_noise );
+
+//                     std::cout << "Tackle:"
+//                               << " power_rand = " << power_rand
+//                               << " power_noise = " << power_noise
+//                               << " dir_rand = " << dir_rand * 180 / M_PI
+//                               << " dir_noise = " << dir_noise * 180 / M_PI
+//                               << std::endl;
+                }
+#endif
 
                 M_stadium.kickTaken( *this, accel );
             }
