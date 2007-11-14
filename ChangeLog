@@ -1,5 +1,11 @@
 2007-11-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	- changed the default value of server::kick_rand from 0.05 to 0.1.
+	- changed the default value of player::kick_rand_delta_factor from
+	0.5 to 1.0.
+
 	* src/visual.cc:
 	- parameterized the sigma value in
 	VisualSenderPlayerV8calcPointDir().
@@ -11,8 +17,6 @@
 	- removed unused code.
 	- added Player::M_consumed_stamina variable to measure the total
 	consumed stamina.
-	- changed the default value of
-	player::new_stamina_inc_max_delta_factor from -10000 to -5000.
 	- changed the default value of server::recover_dec_thr from 0.3 to
 	0.1.
 
