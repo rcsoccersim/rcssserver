@@ -104,7 +104,7 @@ const int    PlayerParam::DEFAULT_RANDOM_SEED = -1; //negative means generate a 
 
 const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MIN = -0.0005; // [12.0.0] 0 -> -0.0005
 const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX = 0.0015; // [12.0.0] 0.002 -> 0.0015
-const double PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR = -10000.0;
+const double PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR = -5000.0; // [12.0.0] -10000 -> -5000
 
 
 

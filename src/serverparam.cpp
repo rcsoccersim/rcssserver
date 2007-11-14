@@ -136,7 +136,7 @@ const double ServerParam::KICK_RAND_FACTOR_R = 1.0;
 
 
 const double ServerParam::GOALIE_CATCHABLE_POSSIBILITY = 1.0;
-const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 1.35; // [12.0.0] 2.0 -> 1.35
+const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 1.2; // [12.0.0] 2.0 -> 1.2
 const double ServerParam::GOALIE_CATCHABLE_AREA_WIDTH = 1.0;
 const int ServerParam::GOALIE_CATCH_BAN_CYCLE = 5;
 const int ServerParam::GOALIE_MAX_MOVES = 2;

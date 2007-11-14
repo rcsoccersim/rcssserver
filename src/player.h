@@ -71,6 +71,8 @@ private:
     double M_recovery;
     double M_effort;
 
+    double M_consumed_stamina;
+
     double M_vis_angle;
 public:
     const double defangle;

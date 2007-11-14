@@ -1,5 +1,15 @@
 2007-11-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/player.cc:
+	* src/player.h:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	- removed unused code.
+	- added Player::M_consumed_stamina variable to measure the total
+	consumed stamina.
+	- changed the default value of
+	player::new_stamina_inc_max_delta_factor from -10000 to -5000.
+
 	* src/object.cpp:
 	- changed a noise algorithm.
 
