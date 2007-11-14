@@ -119,7 +119,7 @@ const double ServerParam::IMPARAM = 5.0;
 
 const double ServerParam::STAMINA_MAX = 4000.0;
 const double ServerParam::STAMINA_INC_MAX = 45.0;
-const double ServerParam::RECOVERY_DEC_THR = 0.3;
+const double ServerParam::RECOVERY_DEC_THR = 0.1; // [12.0.0] 0.3 -> 0.1
 const double ServerParam::RECOVERY_DEC = 0.002;
 const double ServerParam::RECOVERY_MIN = 0.5;
 const double ServerParam::EFFORT_DEC_THR = 0.3;
