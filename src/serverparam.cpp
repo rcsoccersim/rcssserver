@@ -117,12 +117,12 @@ const double ServerParam::PLAYER_ACCEL_MAX = 1.0;
 //
 const double ServerParam::IMPARAM = 5.0;
 
-const double ServerParam::STAMINA_MAX = 4000.0;
+const double ServerParam::STAMINA_MAX = 6000.0; // [12.0.0] 4000.0 -> 6000.0
 const double ServerParam::STAMINA_INC_MAX = 45.0;
-const double ServerParam::RECOVERY_DEC_THR = 0.3;
+const double ServerParam::RECOVERY_DEC_THR = 0.2; // [12.0.0] 0.3 -> 0.2
 const double ServerParam::RECOVERY_DEC = 0.002;
 const double ServerParam::RECOVERY_MIN = 0.5;
-const double ServerParam::EFFORT_DEC_THR = 0.3;
+const double ServerParam::EFFORT_DEC_THR = 0.2; // [12.0.0] 0.3 -> 0.2
 const double ServerParam::EFFORT_DEC = 0.005;
 const double ServerParam::EFFORT_MIN = 0.6;
 const double ServerParam::EFFORT_INC_THR = 0.6;

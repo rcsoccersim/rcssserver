@@ -201,9 +201,13 @@ Player::Player( Stadium & stadium,
 
 Player::~Player()
 {
-    //std::cerr << shortName() << " consumed stamina = "
-    //          << M_consumed_stamina << std::endl;
-
+#if 0
+    std::cerr << shortName() << " consumed stamina = "
+              << M_consumed_stamina
+              << " dash_count = " << M_dash_count
+              << " ave stam =  " << M_consumed_stamina / M_dash_count
+              << std::endl;
+#endif
     delete M_init_observer;
     M_init_observer = NULL;
     delete M_observer;
