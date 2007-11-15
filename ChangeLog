@@ -1,15 +1,7 @@
 2007-11-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
-	* src/playerparam.cpp:
 	* src/serverparam.cpp:
-	- changed the default value of
-	player::new_stamina_inc_max_delta_factor from -10000 to -6000.
-	- changed the default value of server::recover_dec_thr from 0.3 to
-	0.2.
-	- changed the default value of server::effort_dec_thr from 0.3 to
-	0.2.
-	- changed the default value of server::stamina_max from 4000 to
-	6000.
+	- reverted the default value of server::recover_dec_thr 0.1 to 0.3.
 
 2007-11-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
