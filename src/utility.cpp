@@ -149,7 +149,6 @@ tildeExpand( const std::string& path_name )
     {
 #ifdef WIN32
         char szpath[MAX_PATH];
-        FILE* fp;
         if(SHGetSpecialFolderPath(NULL, szpath, CSIDL_PERSONAL, TRUE))
         {
             return szpath + path_name.substr( 1, path_name.length() );
@@ -161,12 +160,12 @@ tildeExpand( const std::string& path_name )
 #else
 
         // Get the current user.
-        char* err = getenv("USER");
-        if( err == NULL )
+        char * err = getenv( "USER" );
+        if ( err == NULL )
         {
             // On Windows USERNAME is used instead
             err = getenv( "USERNAME" );
-            if( err == 0 )
+            if ( err == 0 )
                 return path_name;
         }
 
@@ -185,7 +184,7 @@ tildeExpand( const std::string& path_name )
         // Fish out the user name from path_name and remove it
         // from newPath.
         std::string::size_type userEnd = path_name.find( '/' );
-        if (userEnd == std::string::npos)
+        if ( userEnd == std::string::npos )
         {
             // No / so whole path must be the username.
             userEnd = path_name.length();
@@ -196,11 +195,11 @@ tildeExpand( const std::string& path_name )
 
     // Get the passwd file entry for the user and place their home
     // directory path at the start of newPath.
-    struct passwd *pwdEntry = getpwnam(username.c_str());
-    if (pwdEntry == NULL)
+    struct passwd * pwdEntry = getpwnam( username.c_str() );
+    if ( pwdEntry == NULL )
         return path_name;
 
-    newPath.insert(0, pwdEntry->pw_dir);
+    newPath.insert( 0, pwdEntry->pw_dir );
 
     return newPath;
 #endif
