@@ -286,37 +286,7 @@ Stadium::parseMonitorInit( const char * message,
         if ( ver >= 2.0 )
         {
             ++M_nr_monitor_v2;
-
             mon->sendInit();
-#if 0
-            dispinfo_t2 di;
-
-            di.mode = htons( PARAM_MODE );
-            di.body.sparams = ServerParam::instance().convertToStruct();
-            mon->RemoteClient::send( reinterpret_cast< const char* >( &di ),
-                                     sizeof( dispinfo_t2 ) );
-
-            di.mode = htons( PPARAM_MODE );
-            di.body.pparams = PlayerParam::instance().convertToStruct();
-            mon->RemoteClient::send( reinterpret_cast< const  char* >( &di ),
-                                     sizeof( dispinfo_t2 ) );
-
-            di.mode = htons ( PT_MODE );
-            for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
-            {
-                try
-                {
-                    di.body.ptinfo = M_player_types.at( i )->convertToStruct( i );
-                    mon->RemoteClient::send( reinterpret_cast< const char* >( &di ),
-                                             sizeof( dispinfo_t2 ) );
-                }
-                catch ( std::exception & e )
-                {
-                    std::cerr << __FILE__ << ':' << __LINE__
-                              << " Exception caught! " << e.what() << std::endl;
-                }
-            }
-#endif
         }
         else if ( ver >= 1.0 )
         {
@@ -410,8 +380,8 @@ Stadium::parseCoachInit( const char * message,
         Coach * coach = initCoach( message, cli_addr );
         if ( coach )
         {
-            std::cout << "a new offline coach(v" << coach->version()
-                      << ") connected" << std::endl;
+            std::cout << "a new (v" << coach->version()
+                      << ") offline coach connected" << std::endl;
             writeTextLog( *M_coach, message, RECV );
         }
     }
