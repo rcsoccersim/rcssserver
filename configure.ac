@@ -39,6 +39,7 @@ AC_CHECK_HEADERS(pwd.h)
 AC_CHECK_HEADERS(sys/time.h)
 AC_CHECK_HEADERS(sys/types.h)
 AC_CHECK_HEADERS(netinet/in.h)
+AC_CHECK_HEADERS(winsock2.h)
 AC_HEADER_TIME
 
 AC_CHECK_FUNCS([memset], [], [
