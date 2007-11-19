@@ -60,7 +60,7 @@ public:
 
     std::ostream & print( std::ostream & o ) const;
 
-    player_type_t convertToStruct ( int id );
+    player_type_t convertToStruct ( int id ) const;
 
 private:
 

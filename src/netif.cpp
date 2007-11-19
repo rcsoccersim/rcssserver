@@ -50,22 +50,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-
-//#if defined(HAVE_SYS_FILIO_H)
-//#include <sys/filio.h>
-//#elif defined(HAVE_SYS_IOCTL_H)
-//#include <sys/ioctl.h>
-//#endif
-
-//#include <netinet/in.h>
-//#include <arpa/inet.h>
-//#include <netdb.h>
 #include <cerrno>
-#include <cmath>
-//#include <fcntl.h>
 
 #ifdef __APPLE__
 extern "C" {
@@ -220,7 +205,6 @@ Stadium::parsePlayerInit( const char * message,
             Player * p = reconnectPlayer( message, cli_addr );
             if ( p )
             {
-                p->sendReconnect();
                 writeTextLog( *p, message, RECV );
             }
 				}
@@ -228,10 +212,9 @@ Stadium::parsePlayerInit( const char * message,
 		else if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
     {
         // a new player connects to the server
-        Player * p = newPlayer( message, cli_addr );
+        Player * p = initPlayer( message, cli_addr );
         if ( p )
         {
-            p->sendInit();
             writeTextLog( *p, message, RECV );
         }
     }
@@ -304,6 +287,8 @@ Stadium::parseMonitorInit( const char * message,
         {
             ++M_nr_monitor_v2;
 
+            mon->sendInit();
+#if 0
             dispinfo_t2 di;
 
             di.mode = htons( PARAM_MODE );
@@ -331,6 +316,7 @@ Stadium::parseMonitorInit( const char * message,
                               << " Exception caught! " << e.what() << std::endl;
                 }
             }
+#endif
         }
         else if ( ver >= 1.0 )
         {
@@ -419,45 +405,15 @@ Stadium::parseCoachInit( const char * message,
 
     // (init[ (version <Ver>)])
 
-    if ( ! std::strcmp ( command, "init" ) )
+    if ( ! std::strcmp( command, "init" ) )
     {
-        double ver = 3.0;
-        n = std::sscanf( message, "(init (version %lf))", &ver );
-        if ( ( n != 0 && n != 1 )
-             || ver < 1.0 )
+        Coach * coach = initCoach( message, cli_addr );
+        if ( coach )
         {
-            sendToCoach( "(error illegal_command_form)", cli_addr );
-            return false;
+            std::cout << "a new offline coach(v" << coach->version()
+                      << ") connected" << std::endl;
+            writeTextLog( *M_coach, message, RECV );
         }
-
-        if ( M_coach->open() != 0 )
-        {
-            sendToCoach( "(error socket_open_failed)", cli_addr );
-            return false;
-        }
-
-        if ( ! M_coach->connect( cli_addr ) )
-        {
-            sendToCoach( "(error connection_failed)", cli_addr );
-            return false;
-        }
-
-        if ( ! M_coach->setSenders( ver ) )
-        {
-            std::cerr << "Error: Could not find serializer or sender for version"
-                      << ver << std::endl;
-            sendToCoach( "(error illegal_client_version)", cli_addr );
-            return false;
-        }
-
-        M_coach->setEnforceDedicatedPort( ver >= 8.0 );
-        addOfflineCoach( M_coach );
-        addListener( M_coach );
-        M_coach->sendInit();
-
-        std::cout << "a new offline coach connected" << std::endl;
-
-        writeTextLog( *M_coach, message, RECV );
     }
     else
     {
@@ -532,7 +488,7 @@ Stadium::parseOnlineCoachInit( const char * message,
 {
     if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
     {
-        OnlineCoach * olc = newOnlineCoach( message, addr );
+        OnlineCoach * olc = initOnlineCoach( message, addr );
         if ( olc )
         {
             writeTextLog( *olc, message, RECV );

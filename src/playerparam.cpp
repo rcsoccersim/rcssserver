@@ -299,7 +299,7 @@ PlayerParam::setDefaults()
     new_stamina_inc_max_delta_factor = PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR;
 }
 
-player_params_t PlayerParam::convertToStruct()
+player_params_t PlayerParam::convertToStruct() const
 {
     player_params_t tmp;
 

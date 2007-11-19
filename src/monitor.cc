@@ -80,6 +80,39 @@ Monitor::~Monitor()
 
 }
 
+void
+Monitor::sendInit()
+{
+    if ( version() < 2.0 )
+    {
+        return;
+    }
+
+    dispinfo_t2 di;
+
+    di.mode = htons( PARAM_MODE );
+    di.body.sparams = ServerParam::instance().convertToStruct();
+    RemoteClient::send( reinterpret_cast< const char* >( &di ),
+                        sizeof( dispinfo_t2 ) );
+
+    di.mode = htons( PPARAM_MODE );
+    di.body.pparams = PlayerParam::instance().convertToStruct();
+    RemoteClient::send( reinterpret_cast< const  char* >( &di ),
+                        sizeof( dispinfo_t2 ) );
+
+    di.mode = htons ( PT_MODE );
+    for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
+    {
+        const HeteroPlayer * p = M_stadium.playerType( i );
+        if ( p )
+        {
+            di.body.ptinfo = p->convertToStruct( i );
+            RemoteClient::send( reinterpret_cast< const char* >( &di ),
+                                sizeof( dispinfo_t2 ) );
+        }
+    }
+}
+
 bool
 Monitor::parseCommand( const char * message )
 {

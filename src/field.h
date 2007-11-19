@@ -414,17 +414,18 @@ private:
     void parseOnlineCoachInit( const char * message,
                                const rcss::net::Addr & cli_addr );
 
-    Player * newPlayer( const char * init_message,
-                        const rcss::net::Addr & );
+    Player * initPlayer( const char * init_message,
+                         const rcss::net::Addr & );
     Player * newPlayer( const char * teamname,
                         const double & version,
                         const bool goalie_flag,
                         const rcss::net::Addr & );
     Player * reconnectPlayer( const char * init_message,
                               const rcss::net::Addr & );
-
-    OnlineCoach * newOnlineCoach( const char * init_message,
-                                  const rcss::net::Addr & );
+    Coach * initCoach( const char * init_message,
+                       const rcss::net::Addr & );
+    OnlineCoach * initOnlineCoach( const char * init_message,
+                                   const rcss::net::Addr & );
 
 
     void removeDisconnectedClients();

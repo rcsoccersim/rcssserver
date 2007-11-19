@@ -109,7 +109,7 @@ protected:
 
 public:
 
-    player_params_t convertToStruct();
+    player_params_t convertToStruct() const;
 
 
     int playerTypes() const { return player_types; }

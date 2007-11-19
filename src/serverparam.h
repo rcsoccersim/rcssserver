@@ -726,7 +726,7 @@ public:
           return m_ver_map;
       }
 
-    server_params_t convertToStruct();
+    server_params_t convertToStruct() const;
 
     bool getInt( const std::string & param, int & value ) const;
     bool getBool( const std::string & param, bool & value ) const;

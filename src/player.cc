@@ -278,6 +278,7 @@ Player::init( const double & ver,
 
     if ( ! setSenders() )
     {
+        disable();
         std::cerr << "Error: Could not find serializer or sender for version "
                   << version() << std::endl;
         return false;

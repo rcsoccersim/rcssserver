@@ -565,8 +565,8 @@ Stadium::initObjects()
 }
 
 Player *
-Stadium::newPlayer( const char * init_message,
-                    const rcss::net::Addr & addr )
+Stadium::initPlayer( const char * init_message,
+                     const rcss::net::Addr & addr )
 
 {
     // (init <TeamName> [(version <Ver>)][ (goalie)])
@@ -651,7 +651,7 @@ Stadium::newPlayer( const char * init_message,
         while ( *msg != '\0' && std::isspace( *msg ) ) ++msg;
     }
 
-    return newPlayer( teamname, (double)version, goalie, addr );
+    return newPlayer( teamname, version, goalie, addr );
 }
 
 
@@ -659,7 +659,7 @@ Player*
 Stadium::newPlayer( const char * teamname,
                     const double & version,
                     const bool goalie_flag,
-                    const rcss::net::Addr& addr )
+                    const rcss::net::Addr & addr )
 {
     Team *tm;
 
@@ -690,7 +690,7 @@ Stadium::newPlayer( const char * teamname,
         return NULL;
     }
 
-    Player *p = tm->newPlayer( version, goalie_flag );
+    Player * p = tm->newPlayer( version, goalie_flag );
 
     if ( p == NULL )
     {
@@ -705,28 +705,30 @@ Stadium::newPlayer( const char * teamname,
         return NULL;
     }
 
-    p->setEnforceDedicatedPort( version >= 8.0 );
-
-    M_remote_players.push_back( p );
     addListener( p );
-    //M_motable.append( p );
+    M_remote_players.push_back( p );
     M_movable_objects.push_back( p );
+
+    p->setEnforceDedicatedPort( version >= 8.0 );
+    p->sendInit();
 
     return p;
 }
 
 Player*
-Stadium::reconnectPlayer( const char* reconnect_message,
+Stadium::reconnectPlayer( const char * reconnect_message,
                           const rcss::net::Addr & addr )
 
 {
     char teamname[128];
     int rnum;
 
-    if ( std::sscanf( reconnect_message, "(reconnect %s %d)", teamname, &rnum ) < 2 )
+    if ( std::sscanf( reconnect_message,
+                      "(reconnect %127s %d)",
+                      teamname, &rnum ) < 2 )
     {
         if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning:Illegal initialize message.\n"
+            std::cerr << "Warning:Illegal reconnect message.\n"
                       << "   message = " << reconnect_message << std::endl;
         sendToPlayer( "(error illegal_command_form)", addr );
         return NULL;
@@ -765,10 +767,11 @@ Stadium::reconnectPlayer( const char* reconnect_message,
         }
 
         addListener( M_players[r] );
-
-        M_players[r]->setEnforceDedicatedPort ( M_players[r]->version() >= 8.0 );
         M_remote_players.push_back( M_players[r] );
+
+        M_players[r]->setEnforceDedicatedPort( M_players[r]->version() >= 8.0 );
         M_players[r]->setEnable();
+        M_players[r]->sendReconnect();
         return M_players[r];
     }
     else
@@ -778,9 +781,59 @@ Stadium::reconnectPlayer( const char* reconnect_message,
     }
 }
 
+Coach *
+Stadium::initCoach( const char * init_message,
+                    const rcss::net::Addr & addr )
+{
+    if ( std::strncmp( init_message, "(init ", std::strlen( "(init " ) ) != 0 )
+    {
+        if ( ServerParam::instance().verboseMode() )
+            std::cerr << "Warning:Illegal initialize message." << std::endl
+                      << "   message = " << init_message << std::endl;
+        sendToCoach( "(error unknown_command)", addr );
+        return NULL;
+    }
+
+    double ver = 3.0;
+    int n = std::sscanf( init_message, "(init (version %lf))", &ver );
+    if ( ( n != 0 && n != 1 )
+         || ver < 1.0 )
+    {
+        sendToCoach( "(error illegal_command_form)", addr );
+        return NULL;
+    }
+
+    if ( M_coach->open() != 0 )
+    {
+        sendToCoach( "(error socket_open_failed)", addr );
+        return NULL;
+    }
+
+    if ( ! M_coach->connect( addr ) )
+    {
+        sendToCoach( "(error connection_failed)", addr );
+        return NULL;
+    }
+
+    if ( ! M_coach->setSenders( ver ) )
+    {
+        std::cerr << "Error: Could not find serializer or sender for version"
+                  << ver << std::endl;
+        sendToCoach( "(error illegal_client_version)", addr );
+        return NULL;
+    }
+
+    addOfflineCoach( M_coach );
+    addListener( M_coach );
+    M_coach->setEnforceDedicatedPort( ver >= 8.0 );
+    M_coach->sendInit();
+
+    return M_coach;
+}
+
 OnlineCoach *
-Stadium::newOnlineCoach( const char * init_message,
-                         const rcss::net::Addr & addr )
+Stadium::initOnlineCoach( const char * init_message,
+                          const rcss::net::Addr & addr )
 
 {
     // (init <TeamName>[ <CoachName>][ (version <Ver>)])

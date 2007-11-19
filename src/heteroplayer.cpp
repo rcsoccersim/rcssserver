@@ -241,7 +241,7 @@ HeteroPlayer::print( std::ostream & o ) const
 }
 
 player_type_t
-HeteroPlayer::convertToStruct( int id )
+HeteroPlayer::convertToStruct( int id ) const
 {
     player_type_t tmp;
 

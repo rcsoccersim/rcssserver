@@ -60,6 +60,8 @@ public:
           RemoteClient::close();
       }
 
+    void sendInit();
+
     bool parseCommand( const char * message );
 
 

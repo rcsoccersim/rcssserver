@@ -1059,7 +1059,7 @@ ServerParam::setDefaults()
 }
 
 server_params_t
-ServerParam::convertToStruct ()
+ServerParam::convertToStruct () const
 {
     server_params_t tmp;
 

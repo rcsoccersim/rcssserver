@@ -2,6 +2,20 @@
 
 	* src/field.cpp:
 	* src/field.h:
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/netif.cpp:
+	* src/player.cc:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- cleaned up the procedure of the init message parsing.
+
+	* src/field.cpp:
+	* src/field.h:
 	* src/landmarkreader.cpp:
 	* src/landmarkreader.h:
 	* src/visual.cc:
