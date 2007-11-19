@@ -1,3 +1,17 @@
+2007-11-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/landmarkreader.cpp:
+	* src/object.cpp:
+	* src/object.h:
+	* src/player.cc:
+	* src/referee.cc:
+	* src/visual.cc:
+	- cleaned up.
+
 2007-11-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/serverparam.cpp:

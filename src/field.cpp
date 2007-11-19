@@ -100,13 +100,13 @@ const std::string Stadium::DEF_KAWAY_SUFFIX = ".kwy";
  *===================================================================
  */
 Field::Field()
-    : line_l( PObject::OT_LINE, LINE_L_NAME, LINE_L_NAME_SHORT, "(Line)", "(L)",
+    : line_l( LINE_L_NAME, LINE_L_NAME_SHORT, "(Line)", "(L)",
               PVector( - ServerParam::PITCH_LENGTH / 2.0, 0.0 ) ),
-      line_r( PObject::OT_LINE, LINE_R_NAME, LINE_R_NAME_SHORT, "(Line)", "(L)",
+      line_r( LINE_R_NAME, LINE_R_NAME_SHORT, "(Line)", "(L)",
               PVector( + ServerParam::PITCH_LENGTH / 2.0, 0.0 ) ),
-      line_t( PObject::OT_LINE, LINE_T_NAME, LINE_T_NAME_SHORT, "(Line)", "(L)",
+      line_t( LINE_T_NAME, LINE_T_NAME_SHORT, "(Line)", "(L)",
               PVector( - ServerParam::PITCH_WIDTH / 2.0, 0.0 ) ),
-      line_b( PObject::OT_LINE, LINE_B_NAME, LINE_B_NAME_SHORT, "(Line)", "(L)",
+      line_b( LINE_B_NAME, LINE_B_NAME_SHORT, "(Line)", "(L)",
               PVector( + ServerParam::PITCH_WIDTH / 2.0, 0.0 ) )
 
 {
@@ -491,7 +491,7 @@ Stadium::addLandmark( PObject * new_obj )
 {
     if ( new_obj )
     {
-        if ( new_obj->getObjectType() == PObject::OT_GOAL )
+        if ( new_obj->closeName() == O_TYPE_GOAL_NAME )
         {
             M_goals.push_back( new_obj );
         }
@@ -1008,6 +1008,12 @@ Stadium::step()
 
     }
 
+    stepEnd();
+}
+
+void
+Stadium::stepEnd()
+{
     //
     // update stamina
     //
@@ -1022,7 +1028,7 @@ Stadium::step()
         (*p)->updateCapacity();
     }
 
-    makeDispInfo();
+    makeMonitorMessage();
     sendToMonitors();
     writeCurrentGameLog();
 }
@@ -1063,7 +1069,7 @@ Stadium::incMovableObjects()
 }
 
 void
-Stadium::makeDispInfo()
+Stadium::makeMonitorMessage()
 {
     if ( M_nr_monitor_v1 > 0
          || ( game_log_open()
@@ -1528,22 +1534,6 @@ void Weather::init()
 
 }
 
-
-Player*
-Stadium::get_player_by_name( const char * name )
-{
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        if ( M_players[i]->state() == DISABLE ) continue;
-
-        if ( M_players[i]->name() == name )
-        {
-            return M_players[i];
-        }
-    }
-
-    return NULL;
-}
 
 bool
 Stadium::movePlayer( const Side side,
@@ -2028,7 +2018,9 @@ Stadium::writeTextLog( const char *message, int flag )
 
 
 void
-Stadium::writeTextLog( Player& p, const char *message, int flag )
+Stadium::writeTextLog( const Player & p,
+                       const char * message,
+                       const int flag )
 {
     if ( text_log_open()
          || ( game_log_open() && flag == RECV )
@@ -2044,7 +2036,9 @@ Stadium::writeTextLog( Player& p, const char *message, int flag )
 }
 
 void
-Stadium::writeTextLog( Coach&, const char *message, int flag )
+Stadium::writeTextLog( const Coach &,
+                       const char * message,
+                       const int flag )
 {
     if ( text_log_open()
          || ( game_log_open() && flag == RECV )
@@ -2060,7 +2054,9 @@ Stadium::writeTextLog( Coach&, const char *message, int flag )
 }
 
 void
-Stadium::writeTextLog( OnlineCoach& p, const char *message, int flag )
+Stadium::writeTextLog( const OnlineCoach & p,
+                       const char * message,
+                       const int flag )
 {
     if ( text_log_open()
          || ( game_log_open() && flag == RECV )
@@ -2479,21 +2475,6 @@ Stadium::calcCollPos( MPObject * a,
     a->collide( apos );
     b->collide( bpos );
 }
-
-
-
-bool
-Stadium::canSendFreeform()
-{
-    int playon_period = time() - M_last_playon_start;
-    if ( playon_period > (int)ServerParam::instance().freeformWaitPeriod() )
-    {
-        playon_period %= ServerParam::instance().freeformWaitPeriod();
-        return playon_period < (int)ServerParam::instance().freeformSendPeriod();
-    }
-    return false;
-}
-
 
 void
 Stadium::placeBall( const PlayMode pm,

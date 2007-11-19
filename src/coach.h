@@ -199,6 +199,7 @@ public:
       }
 
     void awardFreeformMessageCount();
+    bool canSendFreeform() const;
 
     virtual
     void parse_command( const char *command );

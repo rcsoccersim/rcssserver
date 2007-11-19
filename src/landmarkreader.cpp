@@ -763,10 +763,9 @@ void  LandmarkReader::addFlag( const LandmarkReader::flag_t& flag,
     std::string lname;
     if ( goal )
     {
-        sname = std::string ( "(g " ) + flag.name + ")";
-        lname = std::string ( "(goal " ) + flag.name + ")";
-        stad->addLandmark( new PObject( PObject::OT_GOAL,
-                                        lname, sname,
+        sname = std::string( "(g " ) + flag.name + ")";
+        lname = std::string( "(goal " ) + flag.name + ")";
+        stad->addLandmark( new PObject( lname, sname,
                                         O_TYPE_GOAL_NAME,
                                         O_TYPE_GOAL_NAME_SHORT,
                                         PVector( flag.x, flag.y ),
@@ -774,10 +773,9 @@ void  LandmarkReader::addFlag( const LandmarkReader::flag_t& flag,
     }
     else
     {
-        sname = std::string ( "(f " ) + flag.name + ")";
-        lname = std::string ( "(flag " ) + flag.name + ")";
-        stad->addLandmark( new PObject( PObject::OT_FLAG,
-                                        lname, sname,
+        sname = std::string( "(f " ) + flag.name + ")";
+        lname = std::string( "(flag " ) + flag.name + ")";
+        stad->addLandmark( new PObject( lname, sname,
                                         O_TYPE_FLAG_NAME,
                                         O_TYPE_FLAG_NAME_SHORT,
                                         PVector( flag.x, flag.y ),

@@ -123,7 +123,6 @@ Player::Player( Stadium & stadium,
                 Team * team,
                 int number )
     : MPObject( stadium,
-                PObject::OT_PLAYER,
                 "", "",
                 O_TYPE_PLAYER_NAME, O_TYPE_PLAYER_NAME_SHORT ),
       M_init_observer( new rcss::InitObserverPlayer ),

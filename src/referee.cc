@@ -1175,6 +1175,9 @@ FreeKickRef::kickTaken( const Player & kicker )
             {
                 if ( ServerParam::instance().freeKickFaults() )
                 {
+                    M_stadium.setPlayerState( M_kick_taker->team()->side(),
+                                              M_kick_taker->unum(),
+                                              FREE_KICK_FAULT );
                     callFreeKickFault( kicker.team()->side(),
                                        M_stadium.ball().pos() );
                 }
@@ -1209,6 +1212,9 @@ FreeKickRef::kickTaken( const Player & kicker )
             {
                 if ( M_kick_taker->dashCount() > M_kick_taker_dashes )
                 {
+                    M_stadium.setPlayerState( M_kick_taker->team()->side(),
+                                              M_kick_taker->unum(),
+                                              FREE_KICK_FAULT );
                     callFreeKickFault( M_kick_taker->team()->side(),
                                        M_stadium.ball().pos() );
                 }
@@ -1244,6 +1250,9 @@ FreeKickRef::ballTouched( const Player & player )
         {
             if ( M_kick_taker->dashCount() > M_kick_taker_dashes )
             {
+                M_stadium.setPlayerState( M_kick_taker->team()->side(),
+                                          M_kick_taker->unum(),
+                                          FREE_KICK_FAULT );
                 callFreeKickFault( M_kick_taker->team()->side(),
                                    M_stadium.ball().pos() );
             }
@@ -2181,7 +2190,7 @@ CatchRef::analyse()
     if ( M_stadium.playmode() == PM_Back_Pass_Left )
     {
         clearPlayersFromBall( LEFT );
-        if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT)
+        if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT )
         {
             //M_stadium.change_play_mode( PM_FreeKick_Right );
             M_stadium.change_play_mode( PM_IndFreeKick_Right );

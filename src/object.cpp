@@ -351,15 +351,13 @@ nearestPost( const PVector & pos,
 int PObject::S_object_count = 0;
 
 /* pfr 06/07/200 added short name support */
-PObject::PObject( const  PObject::obj_type& object_type,
-                  const std::string & name,
+PObject::PObject( const std::string & name,
                   const std::string & short_name,
                   const std::string & close_name,
                   const std::string & short_close_name,
                   const PVector & p,
                   const double & v )
-    : M_object_type ( object_type ),
-      M_id( S_object_count ),
+    : M_id( S_object_count ),
       M_name( name ),
       M_short_name( short_name ),
       M_close_name( close_name ),
@@ -393,13 +391,11 @@ PObject::print( std::ostream & o ) const
 
 /* pfr 06/07/200 added short name support */
 MPObject::MPObject( Stadium & stadium,
-                    const PObject::obj_type & object_type,
                     const std::string & name,
                     const std::string & short_name,
                     const std::string & close_name,
                     const std::string & short_close_name )
-    : PObject( object_type,
-               name, short_name,
+    : PObject( name, short_name,
                close_name, short_close_name )
     , M_stadium( stadium )
     , M_vel( 0.0,0.0 )
@@ -668,7 +664,6 @@ MPObject::moveToCollPos()
 
 Ball::Ball( Stadium & stadium )
     : MPObject( stadium,
-                PObject::OT_BALL,
                 BALL_NAME, BALL_NAME_SHORT,
                 O_TYPE_BALL_NAME, O_TYPE_BALL_NAME_SHORT )
 {

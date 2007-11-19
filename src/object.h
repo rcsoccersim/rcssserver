@@ -377,22 +377,10 @@ operator!=( const CArea & lhs,
  *===================================================================
  */
 class PObject {
-public:
-    enum obj_type
-        {
-            OT_BALL,
-            OT_PLAYER,
-            OT_FLAG,
-            OT_GOAL,
-            OT_LINE
-        };
-
-
 private:
 
     static int S_object_count;
 
-    const PObject::obj_type M_object_type;
     const int M_id;
 
     std::string M_name;
@@ -404,10 +392,7 @@ private:
 
 protected:
     double	M_size; //! object's radiuos value
-
     PVector M_pos;
-    //Angle M_angle;
-
     bool M_enable;
 
 private:
@@ -418,8 +403,7 @@ private:
 
 public:
 
-    PObject( const PObject::obj_type & object_type,
-             const std::string & name,
+    PObject( const std::string & name,
              const std::string & short_name,
              const std::string & close_name,
              const std::string & short_close_name,
@@ -479,11 +463,6 @@ public:
     bool isEnable() const
       {
           return M_enable;
-      }
-
-    PObject::obj_type getObjectType() const
-      {
-          return M_object_type;
       }
 
     std::ostream & print( std::ostream & o ) const;
@@ -546,7 +525,6 @@ private:
 public:
 
     MPObject( Stadium & stadium,
-              const PObject::obj_type & object_type,
               const std::string & name,
               const std::string & short_name,
               const std::string & close_name,

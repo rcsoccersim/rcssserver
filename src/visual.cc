@@ -203,27 +203,27 @@ VisualSenderPlayerV1::sendLines()
     }
 
     if ( line_count < max_line_count
-         && stadium().field.line_l.objectVersion() <= self().version() )
+         && stadium().field().line_l.objectVersion() <= self().version() )
     {
-        if ( sendLine( stadium().field.line_l ) )
+        if ( sendLine( stadium().field().line_l ) )
             ++line_count;
     }
     if ( line_count < max_line_count
-         && stadium().field.line_r.objectVersion() <= self().version() )
+         && stadium().field().line_r.objectVersion() <= self().version() )
     {
-        if( sendLine( stadium().field.line_r ) )
+        if( sendLine( stadium().field().line_r ) )
             ++line_count;
     }
     if ( line_count < max_line_count
-         && stadium().field.line_t.objectVersion() <= self().version() )
+         && stadium().field().line_t.objectVersion() <= self().version() )
     {
-        if ( sendLine( stadium().field.line_t ) )
+        if ( sendLine( stadium().field().line_t ) )
             ++line_count;
     }
     if ( line_count < max_line_count
-         && stadium().field.line_b.objectVersion() <= self().version() )
+         && stadium().field().line_b.objectVersion() <= self().version() )
     {
-        if ( sendLine( stadium().field.line_b ) )
+        if ( sendLine( stadium().field().line_b ) )
             ++line_count;
     }
     if ( line_count < min_line_count )

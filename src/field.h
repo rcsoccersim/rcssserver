@@ -108,12 +108,11 @@ class Stadium
     : public virtual Timeable {
 public:
     // These are vectors and not lists, because we need to shuffle them
-    typedef std::vector< OnlineCoach * > OnlineCoachCont;
     typedef std::vector< Player * >  PlayerCont;
-    typedef std::vector< Monitor * > MonitorCont;
     typedef std::vector< Coach * >  OfflineCoachCont;
+    typedef std::vector< OnlineCoach * > OnlineCoachCont;
+    typedef std::vector< Monitor * > MonitorCont;
     typedef std::vector< rcss::Listener * > ListenerCont;
-
     typedef std::vector< MPObject * > MPObjectCont;
 protected:
     // definitions of different timeable methods
@@ -142,18 +141,16 @@ protected:
     rcss::net::UDPSocket M_offline_coach_socket;
     rcss::net::UDPSocket M_online_coach_socket;
 
-    OnlineCoachCont M_remote_online_coaches;
-    PlayerCont  M_remote_players; //!< connected player container
-    MonitorCont M_monitors;
-    OfflineCoachCont M_remote_offline_coaches;
+    PlayerCont  M_remote_players; //!< connected players
+    OfflineCoachCont M_remote_offline_coaches; //!< connected trainers
+    OnlineCoachCont M_remote_online_coaches; //!< connected coaches
+    MonitorCont M_monitors; //!< connected monitors
+
     ListenerCont M_listeners;
 
     MPObjectCont M_movable_objects;
-public:
 
-    const Field field;
-
-private:
+    const Field M_field;
 
     Ball * M_ball;
     PlayerCont M_players; //!< player instance container
@@ -194,7 +191,7 @@ private:
 
     std::list< Referee * > M_referees;
 
-    unsigned int M_last_playon_start;
+    int M_last_playon_start;
 
     int M_kick_off_wait;
     int M_connect_wait;
@@ -273,6 +270,13 @@ public:
           M_kaway_log.flush();
           M_gz_text_log.flush();
           M_gz_game_log.flush();
+      }
+
+
+    const
+    Field & field() const
+      {
+          return M_field;
       }
 
     const
@@ -382,6 +386,11 @@ public:
           return M_kick_off_side;
       }
 
+    int lastPlayOnStart() const
+      {
+          return M_last_playon_start;
+      }
+
 private:
     void initObjects();
 
@@ -420,15 +429,15 @@ private:
 
     void removeDisconnectedClients();
 
-    Player * get_player_by_name( const char * name );
 
     void stepBegin();
     void step();
+    void stepEnd();
 
     void turnMovableObjects();
     void incMovableObjects();
 
-    void makeDispInfo();
+    void makeMonitorMessage();
     void sendToMonitors();
     void writeCurrentGameLog();
 
@@ -504,9 +513,9 @@ public:
     BallPosInfo ballPosInfo();
 
     void writeTextLog( const char *message, int flag );
-    void writeTextLog( Player & p, const char *message, int flag );
-    void writeTextLog( Coach &, const char *message, int flag );
-    void writeTextLog( OnlineCoach & p, const char *message, int flag );
+    void writeTextLog( const Player & p, const char * message, const int flag );
+    void writeTextLog( const Coach &, const char * message, const int flag );
+    void writeTextLog( const OnlineCoach & p, const char * message, const int flag );
 
 private:
     std::ostream & writeGameLog( const char * str,
@@ -527,10 +536,6 @@ public:
                                 const int unum,
                                 const int player_type );
 
-    void collisions();
-
-    bool canSendFreeform();
-
     void setPlayerState( const Side side,
                          const int unum,
                          const int state );
@@ -539,6 +544,8 @@ public:
                     const PVector & accel );
 
     void ballCaught( const Player & catcher );
+
+    void collisions();
 
 private:
 

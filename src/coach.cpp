@@ -1125,6 +1125,22 @@ OnlineCoach::awardFreeformMessageCount()
     }
 }
 
+bool
+OnlineCoach::canSendFreeform() const
+{
+    if ( M_stadium.playmode() != PM_PlayOn )
+    {
+        return true;
+    }
+
+    int playon_period = M_stadium.time() - M_stadium.lastPlayOnStart();
+    if ( playon_period > (int)ServerParam::instance().freeformWaitPeriod() )
+    {
+        playon_period %= ServerParam::instance().freeformWaitPeriod();
+        return playon_period < (int)ServerParam::instance().freeformSendPeriod();
+    }
+    return false;
+}
 
 void
 OnlineCoach::parse_command( const char *command )
@@ -1189,8 +1205,9 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::FREEFORM:
-                    if ( M_stadium.playmode() != PM_PlayOn
-                         || M_stadium.canSendFreeform() )
+                    //if ( M_stadium.playmode() != PM_PlayOn
+                    //     || M_stadium.canSendFreeform() )
+                    if ( canSendFreeform() )
                     {
                         if ( M_freeform_messages_said < M_freeform_messages_allowed
                              || M_freeform_messages_allowed < 0 )
