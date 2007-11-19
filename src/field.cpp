@@ -113,6 +113,33 @@ Field::Field()
 
 }
 
+Field::~Field()
+{
+    M_goals.clear();
+
+    for ( std::vector< PObject * >::iterator i = M_landmarks.begin();
+          i != M_landmarks.end();
+          ++i )
+    {
+        delete *i;
+        *i = static_cast< PObject * >( 0 );
+    }
+    M_landmarks.clear();
+}
+
+void
+Field::addLandmark( PObject * new_obj )
+{
+    if ( new_obj )
+    {
+        if ( new_obj->closeName() == O_TYPE_GOAL_NAME )
+        {
+            M_goals.push_back( new_obj );
+        }
+        M_landmarks.push_back( new_obj );
+    }
+}
+
 
 Stadium::Stadium()
     : M_alive( true ),
@@ -228,17 +255,6 @@ Stadium::~Stadium()
     delete M_coach; M_coach = NULL;
     delete M_ball; M_ball = NULL;
 
-    M_goals.clear();
-
-    for ( std::vector< PObject * >::iterator i = M_landmarks.begin();
-          i != M_landmarks.end();
-          ++i )
-    {
-        delete *i;
-        *i = static_cast< PObject * >( 0 );
-    }
-    M_landmarks.clear();
-
     //std::cout << "\nDestructed Stadium" << std::endl;
 }
 
@@ -290,7 +306,7 @@ Stadium::init()
 
     {
         LandmarkReader * reader
-            = new LandmarkReader( this, ServerParam::instance().landmarkFile() );
+            = new LandmarkReader( M_field, ServerParam::instance().landmarkFile() );
         if ( ! reader )
         {
             perror( "Can not create landmark reader" );
@@ -483,19 +499,6 @@ Stadium::killTeams()
         kill( M_right_child, SIGINT );
         std::cout << "Killing " << M_right_child << std::endl;
         sleep( 1 );
-    }
-}
-
-void
-Stadium::addLandmark( PObject * new_obj )
-{
-    if ( new_obj )
-    {
-        if ( new_obj->closeName() == O_TYPE_GOAL_NAME )
-        {
-            M_goals.push_back( new_obj );
-        }
-        M_landmarks.push_back( new_obj );
     }
 }
 

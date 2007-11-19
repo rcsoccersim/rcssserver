@@ -1,5 +1,12 @@
 2007-11-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/field.cpp:
+	* src/field.h:
+	* src/landmarkreader.cpp:
+	* src/landmarkreader.h:
+	* src/visual.cc:
+	- moved landmark objects from Stadium to Field.
+
 	* src/coach.cpp:
 	* src/coach.h:
 	* src/field.cpp:

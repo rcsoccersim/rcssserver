@@ -146,8 +146,8 @@ VisualSenderPlayerV1::sendVisual()
 void
 VisualSenderPlayerV1::sendFlags()
 {
-    const std::vector< PObject * >::const_iterator end = stadium().landmarks().end();
-    for ( std::vector< PObject * >::const_iterator it = stadium().landmarks().begin();
+    const std::vector< PObject * >::const_iterator end = stadium().field().landmarks().end();
+    for ( std::vector< PObject * >::const_iterator it = stadium().field().landmarks().begin();
           it != end;
           ++it )
     {
@@ -1063,8 +1063,8 @@ VisualSenderCoachV1::sendOKEye()
 void
 VisualSenderCoachV1::sendGoals()
 {
-    const std::vector< const PObject * >::const_iterator end = stadium().goals().end();
-    for ( std::vector< const PObject * >::const_iterator it = stadium().goals().begin();
+    const std::vector< const PObject * >::const_iterator end = stadium().field().goals().end();
+    for ( std::vector< const PObject * >::const_iterator it = stadium().field().goals().begin();
           it != end;
           ++it )
     {

@@ -78,6 +78,9 @@ class Msg;
 class Field {
 private:
     const Field & operator=( const Field & );
+
+    std::vector< const PObject * > M_goals;
+    std::vector< PObject * > M_landmarks;
 public:
     const PObject line_l;
     const PObject line_r;
@@ -85,8 +88,22 @@ public:
     const PObject line_b;
 
     Field();
-    ~Field() {}
-} ;
+    ~Field();
+
+    const
+    std::vector< const PObject * > & goals() const
+      {
+          return M_goals;
+      }
+
+    const
+    std::vector< PObject * > & landmarks() const
+      {
+          return M_landmarks;
+      }
+
+    void addLandmark( PObject * new_obj );
+};
 
 class Weather {
 private:
@@ -134,12 +151,11 @@ protected:
 protected:
     bool M_alive;
 
-    std::vector< const PObject * > M_goals;
-    std::vector< PObject * > M_landmarks;
-
     rcss::net::UDPSocket M_player_socket;
     rcss::net::UDPSocket M_offline_coach_socket;
     rcss::net::UDPSocket M_online_coach_socket;
+
+    Field M_field;
 
     PlayerCont  M_remote_players; //!< connected players
     OfflineCoachCont M_remote_offline_coaches; //!< connected trainers
@@ -149,8 +165,6 @@ protected:
     ListenerCont M_listeners;
 
     MPObjectCont M_movable_objects;
-
-    const Field M_field;
 
     Ball * M_ball;
     PlayerCont M_players; //!< player instance container
@@ -297,18 +311,6 @@ public:
           return *M_team_r;
       }
 
-    const
-    std::vector< const PObject * > & goals() const
-      {
-          return M_goals;
-      }
-
-    const
-    std::vector< PObject * > & landmarks() const
-      {
-          return M_landmarks;
-      }
-
     OnlineCoachCont & onlineCoaches()
       {
           return  M_remote_online_coaches;
@@ -363,8 +365,6 @@ public:
       {
           M_remote_offline_coaches.push_back( coach );
       }
-
-    void addLandmark( PObject * new_obj );
 
     const
     HeteroPlayer * playerType( int id ) const;

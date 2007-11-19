@@ -3,11 +3,11 @@
 /*
  *Copyright:
 
-    Copyright (C) 1996-2000 Electrotechnical Laboratory. 
+    Copyright (C) 1996-2000 Electrotechnical Laboratory.
     	Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
     Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
     	Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
-	Mikhail Prokopenko, Jan Wendler 
+	Mikhail Prokopenko, Jan Wendler
 
     This file is a part of SoccerServer.
 
@@ -45,9 +45,7 @@
 #include <stack>
 
 class LandmarkReader;
-class Stadium;
-
-//#include "field.h"
+class Field;
 
 class LandmarkReader
 #ifdef HAVE_LIBEXPAT
@@ -55,7 +53,8 @@ class LandmarkReader
 #endif //HAVE_LIBEXPAT
 {
 public:
-  LandmarkReader( Stadium* s, const std::string& path_name = "" );
+  LandmarkReader( Field & field,
+                  const std::string & path_name = "" );
   ~LandmarkReader() {}
 
   std::ostream& print ( std::ostream& o ) const;
@@ -70,33 +69,33 @@ private:
 
     LandmarkReader::rect_t percentify ( const LandmarkReader::rect_t& rect,
 					const bool& dostartx,
-					const bool& dostarty, 
-					const bool& doendx, 
+					const bool& dostarty,
+					const bool& doendx,
 					const bool& doendy ) const
       {
 	LandmarkReader::rect_t dest = *this;
 	if ( dostartx )
 	  {
 	    dest.startx *= 0.01;
-	    dest.startx = ( rect.startx * ( 1 - dest.startx ) 
+	    dest.startx = ( rect.startx * ( 1 - dest.startx )
 			    + rect.endx * ( 1 + dest.startx ) ) * 0.5;
 	  }
 	if ( dostarty )
 	  {
 	    dest.starty *= 0.01;
-	    dest.starty = ( rect.starty * ( 1 - dest.starty ) 
+	    dest.starty = ( rect.starty * ( 1 - dest.starty )
 			    + rect.endy * ( 1 + dest.starty ) ) * 0.5;
 	  }
 	if ( doendx )
 	  {
 	    dest.endx *= 0.01;
-	    dest.endx = ( rect.startx * ( 1 - dest.endx ) 
+	    dest.endx = ( rect.startx * ( 1 - dest.endx )
 			  + rect.endx * ( 1 + dest.endx ) ) * 0.5;
 	  }
 	if ( doendy )
 	  {
 	    dest.endy *= 0.01;
-	    dest.endy = ( rect.starty * ( 1 - dest.endy ) 
+	    dest.endy = ( rect.starty * ( 1 - dest.endy )
 		     + rect.endy * ( 1 + dest.endy ) ) * 0.5;
 	  }
 	return dest;
@@ -125,8 +124,8 @@ private:
     {
       return o << "<flag x=\"" << x << ( x_per ? "%" : "" )
 	       << "\" y=\"" << y << ( y_per ? "%" : "" )
-	       << "\" name=\"" << name 
-	       << "\" ver=\"" << ver 
+	       << "\" name=\"" << name
+	       << "\" ver=\"" << ver
 	       << "\"/>";
     }
 
@@ -138,19 +137,19 @@ private:
         if ( dox )
           {
             dest.x *= 0.01;
-            dest.x = ( rect.startx * ( 1 - dest.x ) 
+            dest.x = ( rect.startx * ( 1 - dest.x )
                        + rect.endx * ( 1 + dest.x ) ) * 0.5;
           }
         if ( doy )
           {
             dest.y *= 0.01;
-            dest.y = ( rect.starty * ( 1 - dest.y ) 
+            dest.y = ( rect.starty * ( 1 - dest.y )
                        + rect.endy * ( 1 + dest.y ) ) * 0.5;
           }
         return dest;
       }
   };
-  
+
   struct goal_mouth_t
   {
     char side;
@@ -158,9 +157,9 @@ private:
     double endy;
     std::ostream& toXml ( std::ostream& o ) const
     {
-      return o << "<goalMouth side=\"" << side 
-	       << "\" starty=\"" << starty 
-	       << "\" endy=\"" << endy 
+      return o << "<goalMouth side=\"" << side
+	       << "\" starty=\"" << starty
+	       << "\" endy=\"" << endy
 	       << "\">";
     }
     LandmarkReader::rect_t toRect ( const LandmarkReader::rect_t& rect ) const
@@ -217,15 +216,15 @@ private:
   static const LandmarkReader::flag_t FLAG_G_L_B;
   static const LandmarkReader::flag_t GOAL_L;
   static const LandmarkReader::flag_t FLAG_G_L_T;
-  static const LandmarkReader::rect_t PEN_R; 
+  static const LandmarkReader::rect_t PEN_R;
   static const LandmarkReader::flag_t FLAG_P_R_B;
   static const LandmarkReader::flag_t FLAG_P_R_C;
   static const LandmarkReader::flag_t FLAG_P_R_T;
-  static const LandmarkReader::rect_t PEN_L; 
+  static const LandmarkReader::rect_t PEN_L;
   static const LandmarkReader::flag_t FLAG_P_L_B;
   static const LandmarkReader::flag_t FLAG_P_L_C;
   static const LandmarkReader::flag_t FLAG_P_L_T;
-  static const LandmarkReader::rect_t OUTER_PITCH; 
+  static const LandmarkReader::rect_t OUTER_PITCH;
   static const LandmarkReader::flag_t FLAG_T_0;
   static const LandmarkReader::flag_t FLAG_T_R_10;
   static const LandmarkReader::flag_t FLAG_T_R_20;
@@ -266,8 +265,8 @@ private:
 
   void loadDefaults ();
 
-  void addFlag ( const LandmarkReader::flag_t& flag, 
-		 const bool& goal = false);
+  void addFlag( const LandmarkReader::flag_t& flag,
+                const bool goal = false );
 
 #ifdef HAVE_LIBEXPAT
   void start ( const char *el, const char **attr );
@@ -276,15 +275,15 @@ private:
   bool processFlag ( const char **attr, bool goal = false );
   bool processPitch ( const char **attr, bool main = true );
   bool processGoalMouth ( const char **attr );
- 
+
 #endif //HAVE_LIBEXPAT
+
+    Field & M_field;
 
   std::stack < LandmarkReader::rect_t > rect_stack;
   LandmarkReader::rect_t pitch;
   double goal_width_l;
   double goal_width_r;
-
-  Stadium* stad;
 };
 
 

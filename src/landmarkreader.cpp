@@ -217,12 +217,13 @@ LandmarkReader::FLAG_L_B_20( -100.0, 20.0, "l b 20", 4.0 );
 const LandmarkReader::flag_t
 LandmarkReader::FLAG_L_B_30( -100.0, 30.0, "l b 30", 4.0 );
 
-LandmarkReader::LandmarkReader( Stadium* s, const std::string&
+LandmarkReader::LandmarkReader( Field & field,
+                                const std::string &
 #ifdef HAVE_LIBEXPAT
                                 path_name
 #endif
                                 )
-    : stad ( s )
+    : M_field( field )
 {
 #ifdef HAVE_LIBEXPAT
     if ( !readXml ( path_name ) )
@@ -755,8 +756,8 @@ void LandmarkReader::loadDefaults ()
 }
 
 
-void  LandmarkReader::addFlag( const LandmarkReader::flag_t& flag,
-                               const bool& goal )
+void  LandmarkReader::addFlag( const LandmarkReader::flag_t & flag,
+                               const bool goal )
 {
     // add goal to stadium
     std::string sname;
@@ -765,20 +766,20 @@ void  LandmarkReader::addFlag( const LandmarkReader::flag_t& flag,
     {
         sname = std::string( "(g " ) + flag.name + ")";
         lname = std::string( "(goal " ) + flag.name + ")";
-        stad->addLandmark( new PObject( lname, sname,
-                                        O_TYPE_GOAL_NAME,
-                                        O_TYPE_GOAL_NAME_SHORT,
-                                        PVector( flag.x, flag.y ),
-                                        flag.ver ) ) ;
+        M_field.addLandmark( new PObject( lname, sname,
+                                          O_TYPE_GOAL_NAME,
+                                          O_TYPE_GOAL_NAME_SHORT,
+                                          PVector( flag.x, flag.y ),
+                                          flag.ver ) ) ;
     }
     else
     {
         sname = std::string( "(f " ) + flag.name + ")";
         lname = std::string( "(flag " ) + flag.name + ")";
-        stad->addLandmark( new PObject( lname, sname,
-                                        O_TYPE_FLAG_NAME,
-                                        O_TYPE_FLAG_NAME_SHORT,
-                                        PVector( flag.x, flag.y ),
-                                        flag.ver ) ) ;
+        M_field.addLandmark( new PObject( lname, sname,
+                                          O_TYPE_FLAG_NAME,
+                                          O_TYPE_FLAG_NAME_SHORT,
+                                          PVector( flag.x, flag.y ),
+                                          flag.ver ) ) ;
     }
 }
