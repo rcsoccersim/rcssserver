@@ -134,6 +134,8 @@ private:
 
     Arm M_arm;
 
+    int M_attentionto_count;
+
     int M_tackle_cycles;
     int M_tackle_count;
 
@@ -201,6 +203,8 @@ public:
       {
           return M_arm;
       }
+
+    int attentiontoCount() const { return M_attentionto_count; }
 
     int tackleCycles() const { return M_tackle_cycles; }
     bool isTackling() const { return M_tackle_cycles > 0; }

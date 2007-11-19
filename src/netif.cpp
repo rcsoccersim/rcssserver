@@ -262,7 +262,8 @@ Stadium::parseMonitorInit( const char * message,
             return true;
         }
 
-        if ( ver < 1.0 || 3.0 <= ver )
+        //if ( ver < 1.0 || 3.0 <= ver )
+        if ( ver < 1.0 || 4.0 <= ver )
         {
             std::cout << "Unsupported monitor protocol version. " << ver
                       << std::endl;
@@ -283,7 +284,11 @@ Stadium::parseMonitorInit( const char * message,
         M_monitors.push_back( mon );
 
         // send server parameter information to monitor
-        if ( ver >= 2.0 )
+        if ( ver >= 3.0 )
+        {
+
+        }
+        else if ( ver >= 2.0 )
         {
             ++M_nr_monitor_v2;
             mon->sendInit();

@@ -1,6 +1,14 @@
 2007-11-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/netif.cpp:
+	* src/player.cc:
+	* src/player.h:
+	- implemented the test version of monitor protocol v3.
+
+	* src/field.cpp:
 	* src/field.h:
 	* src/heteroplayer.cpp:
 	* src/heteroplayer.h:

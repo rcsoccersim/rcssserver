@@ -80,37 +80,161 @@ Monitor::~Monitor()
 
 }
 
+
+int
+Monitor::send( const char * msg )
+{
+    if ( version() >= 3.0 )
+    {
+        return RemoteClient::send( msg, std::strlen( msg ) + 1 );
+    }
+    else if ( version() >= 2.0 )
+    {
+        dispinfo_t2 minfo;
+        minfo.mode = htons( MSG_MODE );
+        minfo.body.msg.board = htons( MSG_BOARD );
+        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+        return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
+                                   sizeof( dispinfo_t2 ) );
+    }
+    else if ( version() >= 1.0 )
+    {
+        dispinfo_t minfo;
+        minfo.mode = htons( MSG_MODE );
+        minfo.body.msg.board = htons(MSG_BOARD);
+        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+        return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
+                                   sizeof( dispinfo_t ) );
+    }
+
+    return 0;
+}
+
+
 void
 Monitor::sendInit()
 {
-    if ( version() < 2.0 )
+    if ( version() >= 3.0 )
+    {
+
+
+    }
+    else if ( version() >= 2.0 )
+    {
+        dispinfo_t2 di;
+
+        di.mode = htons( PARAM_MODE );
+        di.body.sparams = ServerParam::instance().convertToStruct();
+        RemoteClient::send( reinterpret_cast< const char* >( &di ),
+                            sizeof( dispinfo_t2 ) );
+
+        di.mode = htons( PPARAM_MODE );
+        di.body.pparams = PlayerParam::instance().convertToStruct();
+        RemoteClient::send( reinterpret_cast< const  char* >( &di ),
+                            sizeof( dispinfo_t2 ) );
+
+        di.mode = htons ( PT_MODE );
+        for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
+        {
+            const HeteroPlayer * p = M_stadium.playerType( i );
+            if ( p )
+            {
+                di.body.ptinfo = p->convertToStruct( i );
+                RemoteClient::send( reinterpret_cast< const char* >( &di ),
+                                    sizeof( dispinfo_t2 ) );
+            }
+        }
+    }
+    else
+    {
+        // no message
+    }
+}
+
+void
+Monitor::sendShow()
+{
+    if ( version() < 3.0 )
     {
         return;
     }
 
-    dispinfo_t2 di;
+#ifdef HAVE_SSTREAM
+    std::ostringstream os;
+#else
+    std::ostrstream os;
+#endif
 
-    di.mode = htons( PARAM_MODE );
-    di.body.sparams = ServerParam::instance().convertToStruct();
-    RemoteClient::send( reinterpret_cast< const char* >( &di ),
-                        sizeof( dispinfo_t2 ) );
+    os << "(show " << M_stadium.time();
+    os << " (" << BALL_NAME_SHORT << ' '
+       << M_stadium.ball().pos().x << ' '
+       << M_stadium.ball().pos().y << ' '
+       << M_stadium.ball().vel().x << ' '
+       << M_stadium.ball().vel().y << ')';
 
-    di.mode = htons( PPARAM_MODE );
-    di.body.pparams = PlayerParam::instance().convertToStruct();
-    RemoteClient::send( reinterpret_cast< const  char* >( &di ),
-                        sizeof( dispinfo_t2 ) );
-
-    di.mode = htons ( PT_MODE );
-    for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
+    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+          p != end;
+          ++p )
     {
-        const HeteroPlayer * p = M_stadium.playerType( i );
-        if ( p )
+        os << " (";
+        os << "(p " << SideStr( (*p)->team()->side() )
+           << ' ' << (*p)->unum()
+           << ' ' << (*p)->playerTypeId()
+           << ')';
+        os << " (state " << (*p)->state() << ')'; // include goalie flag
+        os << " (pos "
+           << (*p)->pos().x << ' '
+           << (*p)->pos().y << ' '
+           << (*p)->vel().x << ' '
+           << (*p)->vel().y << ' '
+           << (*p)->angleBodyCommitted() << ' '
+           << (*p)->angleNeckCommitted();
+        rcss::geom::Vector2D arm_dest;
+        if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
+                                                           (*p)->pos().y ),
+                                     (*p)->angleBodyCommitted()
+                                     + (*p)->angleNeckCommitted(),
+                                     arm_dest ) )
         {
-            di.body.ptinfo = p->convertToStruct( i );
-            RemoteClient::send( reinterpret_cast< const char* >( &di ),
-                                sizeof( dispinfo_t2 ) );
+            os << ' ' << arm_dest.getMag()
+               << ' ' << arm_dest.getHead();
         }
+        os << ')';
+        os << " (view "
+           << (*p)->visibleAngle()
+           << ( (*p)->highquality() ? " high" : " low" )
+           << ')';
+        os << " (stamina "
+           << (*p)->stamina() << ' '
+           << (*p)->effort() << ' '
+           << (*p)->recovery() << ')';
+#if 0
+        os << " (count (k "
+           << (*p)->kickCount()
+           << ") (d " << (*p)->dashCount()
+           << ") (t " << (*p)->turnCount()
+           << ") (s " << (*p)->sayCount()
+           << ") (tn " << (*p)->turnNeckCount()
+           << ") (c " << (*p)->catchCount()
+           << ") (m " << (*p)->moveCount()
+           << ") (cv " << (*p)->changeViewCount()
+           << ") (ta " << (*p)->tackleCount()
+           << ") (p " << (*p)->arm().getCounter()
+           << ") (a " << (*p)->attentiontoCount()
+           << "))";
+#endif
+        os << ')'; // end of player
     }
+
+    os << ')';
+#ifdef HAVE_SSTREAM
+    send( os.str().c_str() );
+#else
+    os << std::ends;
+    send( os.str() );
+    os.freeze( false );
+#endif
 }
 
 bool

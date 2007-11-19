@@ -163,6 +163,7 @@ Player::Player( Stadium & stadium,
       M_goalie_moves_since_catch( 0 ),
       M_arm( ServerParam::instance().pointToBan (),
              ServerParam::instance().pointToDuration () ),
+      M_attentionto_count( 0 ),
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_clang_min_ver( 0 ),
@@ -908,6 +909,7 @@ Player::attentionto( bool on,
     {
         // turn attention to off
         focusOff();
+        ++M_attentionto_count;
     }
     else
     {
@@ -971,8 +973,8 @@ Player::attentionto( bool on,
             if ( p && at_unum == p->unum() )
             {
                 // turn attention to on
-                //focusOn( *( at_team->M_player[ at_unum - 1 ] ) );
                 focusOn( *( at_team->player( at_unum - 1  ) ) );
+                ++M_attentionto_count;
                 break;
             }
         }

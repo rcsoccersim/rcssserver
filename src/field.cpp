@@ -1244,7 +1244,11 @@ Stadium::sendToMonitors()
           i != M_monitors.end();
           ++i )
     {
-        if ( (*i)->version() >= 2.0 )
+        if ( (*i)->version() >= 3.0 )
+        {
+            (*i)->sendShow();
+        }
+        else if ( (*i)->version() >= 2.0 )
         {
             (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_dinfo2 ),
                                       sizeof( dispinfo_t2 ) );

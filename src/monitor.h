@@ -60,34 +60,17 @@ public:
           RemoteClient::close();
       }
 
+    int send( const char * msg );
+
     void sendInit();
 
+    // void sendPlayMode();
+    // void sendTeams();
+    void sendShow();
+    // void sendDispMsg();
+    // void sendDraw();
+
     bool parseCommand( const char * message );
-
-
-    int send( const char * msg )
-      {
-          if ( version() >= 2.0 )
-          {
-              dispinfo_t2 minfo;
-              minfo.mode = htons( MSG_MODE );
-              minfo.body.msg.board = htons( MSG_BOARD );
-              std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-              return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
-                                         sizeof( dispinfo_t2 ) );
-          }
-          else if ( version() >= 1.0 )
-          {
-              dispinfo_t minfo;
-              minfo.mode = htons( MSG_MODE );
-              minfo.body.msg.board = htons(MSG_BOARD);
-              std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-              return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
-                                         sizeof( dispinfo_t ) );
-          }
-
-          return 0;
-      }
 
     const
     double & version() const
