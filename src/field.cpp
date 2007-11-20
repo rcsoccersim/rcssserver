@@ -1317,7 +1317,7 @@ Stadium::writeCurrentGameLogV4()
     std::ostream & os = gameLogStream();
 
     static PlayMode pm = PM_Null;
-    static std::string team_l_name = "null", team_r_name = "null";
+    static std::string team_l_name, team_r_name;
     static int team_l_score = 0, team_r_score = 0;
     static int team_l_pen_score = 0, team_r_pen_score = 0;
 
@@ -1345,8 +1345,8 @@ Stadium::writeCurrentGameLogV4()
         team_l_pen_score = M_team_l->penaltyPoint();
         team_r_pen_score = M_team_r->penaltyPoint();
 
-        os << "(team " << team_l_name
-           << ' ' << team_r_name
+        os << "(team " << ( team_l_name.empty() ? "null" : team_l_name.c_str() )
+           << ' ' << ( team_r_name.empty() ? "null" : team_r_name.c_str() )
            << ' ' << team_l_score
            << ' ' << team_r_score;
         if ( M_team_l->penaltyTaken() > 0 )
