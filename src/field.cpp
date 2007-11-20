@@ -58,6 +58,9 @@
 #include "utility.h"
 #include "xpmholder.h"
 
+#include "initsender.h"
+#include "serializercommonstdv8.h"
+
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -390,8 +393,6 @@ Stadium::init()
     std::memset( &M_dinfo.body.show.team[0].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
     std::memset( &M_dinfo.body.show.team[1].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
     M_dinfo.body.show.time = htons((unsigned short)-1);
-
-    M_minfo.mode = htons( MSG_MODE );
 
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
@@ -1271,30 +1272,162 @@ Stadium::writeCurrentGameLog()
 	  {
         if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
         {
-            if ( ServerParam::instance().gameLogVersion() == REC_OLD_VERSION
-                 || ServerParam::instance().gameLogVersion() == REC_VERSION_2 )
+            if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
             {
-                writeGameLog( &M_dinfo );
+                writeCurrentGameLogV4();
             }
-            else
+            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
             {
                 writeGameLog( &M_dinfo2 );
+            }
+            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_2
+                      || ServerParam::instance().gameLogVersion() == REC_OLD_VERSION )
+            {
+                writeGameLog( &M_dinfo );
             }
         }
         else if ( playmode() == PM_TimeOver && ! wrote_final_cycle )
         {
-            if ( ServerParam::instance().gameLogVersion() == REC_OLD_VERSION
-                 || ServerParam::instance().gameLogVersion() == REC_VERSION_2 )
+            if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
             {
-                writeGameLog( &M_dinfo );
+                writeCurrentGameLogV4();
             }
-            else
+            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
             {
                 writeGameLog( &M_dinfo2 );
+            }
+            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_2
+                      || ServerParam::instance().gameLogVersion() == REC_OLD_VERSION )
+            {
+                writeGameLog( &M_dinfo );
             }
             wrote_final_cycle = true;
         }
 	  }
+}
+
+void
+Stadium::writeCurrentGameLogV4()
+{
+    static char * playmode_strings[] = PLAYMODE_STRINGS;
+
+    const double prec = 0.0001;
+    const double dprec = 0.001;
+
+    std::ostream & os = gameLogStream();
+
+    static PlayMode pm = PM_Null;
+    static std::string team_l_name = "null", team_r_name = "null";
+    static int team_l_score = 0, team_r_score = 0;
+    static int team_l_pen_score = 0, team_r_pen_score = 0;
+
+    // if playmode has changed wirte playmode
+    if ( pm != playmode() )
+    {
+        pm = playmode();
+
+        os << "(playmode " << playmode_strings[pm] << ")\n";
+    }
+
+    // if teams or score has changed, write teams and score
+    if ( team_l_score != M_team_l->point()
+         || team_l_pen_score != M_team_l->penaltyPoint()
+         || team_r_score != M_team_r->point()
+         || team_r_pen_score != M_team_r->penaltyPoint()
+         || M_team_l->name() != team_l_name
+         || M_team_r->name() != team_r_name
+         )
+    {
+        team_l_name = M_team_l->name();
+        team_r_name = M_team_r->name();
+        team_l_score = M_team_l->point();
+        team_r_score = M_team_r->point();
+        team_l_pen_score = M_team_l->penaltyPoint();
+        team_r_pen_score = M_team_r->penaltyPoint();
+
+        os << "(team " << team_l_name
+           << ' ' << team_r_name
+           << ' ' << team_l_score
+           << ' ' << team_r_score;
+        if ( M_team_l->penaltyTaken() > 0 )
+        {
+            os << ' ' << team_l_pen_score
+                << ' ' << team_r_pen_score;
+        }
+        os << ")\n";
+    }
+
+    os << "(show " << time();
+    os << " (" << BALL_NAME_SHORT
+       << ' ' << Quantize( ball().pos().x, prec )
+       << ' ' << Quantize( ball().pos().y, prec )
+       << ' ' << Quantize( ball().vel().x, prec )
+       << ' ' << Quantize( ball().vel().y, prec )
+       << ')';
+
+    const Stadium::PlayerCont::const_iterator end = players().end();
+    for ( Stadium::PlayerCont::const_iterator p = players().begin();
+          p != end;
+          ++p )
+    {
+        os << " (";
+        os << "(" << SideStr( (*p)->team()->side() )
+           << ' ' << (*p)->unum()
+           << ')';
+        os << ' ' << (*p)->playerTypeId()
+           << ' ' << (*p)->state(); // include goalie flag
+        os << ' ' << Quantize( (*p)->pos().x, prec )
+           << ' ' << Quantize( (*p)->pos().y, prec )
+           << ' ' << Quantize( (*p)->vel().x, prec )
+           << ' ' << Quantize( (*p)->vel().y, prec )
+           << ' ' << Quantize( Rad2Deg( (*p)->angleBodyCommitted() ), dprec )
+           << ' ' << Quantize( Rad2Deg( (*p)->angleNeckCommitted() ), dprec );
+        if ( (*p)->arm().isPointing() )
+        {
+            rcss::geom::Vector2D arm_dest;
+            if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
+                                                               (*p)->pos().y ),
+                                         (*p)->angleBodyCommitted()
+                                         + (*p)->angleNeckCommitted(),
+                                         arm_dest ) )
+            {
+                os << ' ' << Quantize( arm_dest.getMag(), prec )
+                   << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), dprec );
+            }
+        }
+
+        os << " (v "
+           << ( (*p)->highquality() ? "h " : "l " )
+           << Quantize( Rad2Deg( (*p)->visibleAngle() ), dprec )
+           << ')';
+        os << " (s "
+           << (*p)->stamina() << ' '
+           << (*p)->effort() << ' '
+           << (*p)->recovery() << ')';
+        if ( (*p)->state() != DISABLE
+             && (*p)->getFocusTarget() != NULL )
+        {
+            os << " (f " << SideStr( (*p)->getFocusTarget()->team()->side() )
+               << ' ' << (*p)->getFocusTarget()->unum()
+               << ')';
+        }
+        os << " (c "
+           << (*p)->kickCount()
+           << ' ' << (*p)->dashCount()
+           << ' ' << (*p)->turnCount()
+           << ' ' << (*p)->catchCount()
+           << ' ' << (*p)->moveCount()
+           << ' ' << (*p)->turnNeckCount()
+           << ' ' << (*p)->changeViewCount()
+           << ' ' << (*p)->sayCount()
+           << ' ' << (*p)->tackleCount()
+           << ' ' << (*p)->arm().getCounter()
+           << ' ' << (*p)->attentiontoCount()
+           << ')';
+        os << ')'; // end of player
+    }
+
+    os << ')' << std::endl; // new line & flush
 }
 
 void
@@ -1803,15 +1936,34 @@ Stadium::openGameLog()
     if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
     {
         // write version information
-        char buf[5];
+        char buf[6];
         buf[0] = 'U';
         buf[1] = 'L';
         buf[2] = 'G';
-        buf[3] = ServerParam::instance().gameLogVersion();
+        if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
+        {
+            buf[3] = '4';
+            buf[4] = '\n';
+            writeGameLog( buf, 5 );
+        }
+        else
+        {
+            buf[3] = ServerParam::instance().gameLogVersion();
+            writeGameLog( buf, 4 );
+        }
 
-        writeGameLog( buf, 4 );
-
-        if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_3 )
+        if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
+        {
+            rcss::InitSenderCommonV8 init_sender( gameLogStream(),
+                                                  rcss::SerializerCommonStdv8::instance(),
+                                                  *this,
+                                                  999, // version number
+                                                  true ); // new line
+            init_sender.sendServerParams();
+            init_sender.sendPlayerParams();
+            init_sender.sendPlayerTypes();
+        }
+        else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
         {
             Int16 mode = htons( PARAM_MODE );
             server_params_t stmp = ServerParam::instance().convertToStruct();
@@ -1913,10 +2065,17 @@ Stadium::writeGameLog( const char* str, std::streamsize n )
 void
 Stadium::writeGameLog( const dispinfo_t * msg )
 {
-    if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
+    if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_4 )
+    {
+        std::cerr << __FILE__ << " " << __LINE__
+                  << ": dispinfo_t cannot be recorded for rcg version "
+                  << ServerParam::instance().gameLogVersion()
+                  << std::endl;
+    }
+    else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
     {
         // write the type of next msg
-        if ( ntohs ( msg->mode ) != MSG_MODE
+        if ( ntohs( msg->mode ) != MSG_MODE
              || ServerParam::instance().recordMessages() )
         {
             switch ( ntohs( msg->mode ) ) {
@@ -2023,8 +2182,59 @@ Stadium::writeGameLog( const dispinfo_t2 * msg )
                   sizeof( pos_data ) );
 }
 
+
 void
-Stadium::writeTextLog( const char *message, int flag )
+Stadium::writeMsgToGameLog( const BoardType board_type,
+                            const char * msg )
+{
+    if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
+    {
+        if ( ServerParam::instance().recordMessages() )
+        {
+            gameLogStream() << "(msg " << board_type << ' ' << msg << ")\n";
+        }
+    }
+    else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
+    {
+        if ( ServerParam::instance().recordMessages() )
+        {
+            Int16 mode = htons( MSG_MODE );
+            writeGameLog( reinterpret_cast< const char* >( &mode ),
+                          sizeof( mode ) );
+            Int16 board = htons( board_type );
+            writeGameLog( reinterpret_cast< const char* >( &board ),
+                          sizeof( board ) );
+            // calculate the string length and write it
+            Int16 len = 1;
+            while ( (msg[len-1] != '\0') && (len < 2048) )
+            {
+                ++len;
+            }
+            /* pfr 1/7/00 Need to put length in network byte order */
+            Int16 nlen = htons( len );
+            writeGameLog( reinterpret_cast< const char* >( &nlen ),
+                          sizeof( nlen ) );
+            // write the message
+            writeGameLog( msg, len );
+        }
+    }
+    else
+    {
+        dispinfo_t disp;
+        disp.mode = htons( MSG_MODE );
+        disp.body.msg.board = htons( board_type );
+        std::strncpy( disp.body.msg.message,
+                      msg,
+                      std::min( sizeof( disp.body.msg.message ),
+                                std::strlen( msg ) ) );
+        writeGameLog( reinterpret_cast< const char * >( &disp ),
+                      sizeof( dispinfo_t ) );
+    }
+
+}
+
+void
+Stadium::writeTextLog( const char * message, int flag )
 {
     if ( flag == RECV )
     {
@@ -2040,8 +2250,9 @@ Stadium::writeTextLog( const char *message, int flag )
               || ServerParam::instance().sendComms() )
          )
     {
-        M_minfo.body.msg.board = htons( LOG_BOARD );
-        std::strncpy( M_minfo.body.msg.message, message, 128 );
+        char buf[max_message_length_for_display];
+        std::strncpy( buf, message, std::min( max_message_length_for_display,
+                                              (int)std::strlen( message ) ) );
 
         if ( ServerParam::instance().sendComms() )
         {
@@ -2049,28 +2260,15 @@ Stadium::writeTextLog( const char *message, int flag )
                   i != monitors().end();
                   ++i )
             {
-                if ( (*i)->version() >= 2.0 )
-                {
-                    dispinfo_t2 minfo2;
-                    minfo2.mode = M_minfo.mode;
-                    minfo2.body.msg = M_minfo.body.msg;
-                    (*i)->RemoteClient::send( reinterpret_cast< const char* >( &minfo2 ),
-                                              sizeof( dispinfo_t2 ) );
-                }
-                else if ( (*i)->version() >= 1.0 )
-                {
-                    (*i)->RemoteClient::send( reinterpret_cast< const char* >( &M_minfo ),
-                                              sizeof( dispinfo_t ) );
-                }
+                (*i)->sendMsg( LOG_BOARD, buf );
             }
         }
 
-        if ( game_log_open() )
+        if ( game_log_open()
+             && ServerParam::instance().recordMessages()
+             && playmode() != PM_TimeOver )
         {
-            if ( playmode() != PM_TimeOver )
-            {
-                writeGameLog( &M_minfo );
-            }
+            writeMsgToGameLog( LOG_BOARD, buf );
         }
     }
 }
@@ -2659,9 +2857,9 @@ Stadium::sendGraphic( Side side,
           i != M_monitors.end(); ++i )
     {
 #ifdef HAVE_SSTREAM
-        (*i)->send( data.str().c_str() );
+        (*i)->sendMsg( MSG_BOARD, data.str().c_str() );
 #else
-        (*i)->send( data.str() );
+        (*i)->sendMsg( MSG_BOARD, data.str() );
 #endif
     }
 #ifndef HAVE_SSTREAM
@@ -2740,7 +2938,11 @@ Stadium::removeDisconnectedClients()
     {
         if ( ! (*i)->connected() )
         {
-            if ( (*i)->version() >= 2.0 )
+            if ( (*i)->version() >= 3.0 )
+            {
+
+            }
+            else if ( (*i)->version() >= 2.0 )
             {
                 --M_nr_monitor_v2;
             }
@@ -2799,12 +3001,12 @@ Stadium::sendCoachAudio( const Coach & coach,
            && ServerParam::instance().recordMessages() )
          || ServerParam::instance().sendComms() )
 	  {
-        M_minfo.body.msg.board = htons( MSG_BOARD );
+        char buf[max_message_length_for_display];
         char format[40];
         std::snprintf( format, 40, "(%%s %%.%ds)\n",
                        max_message_length_for_display - (MaxMesg - MaxCoachMesg) );
-        std::snprintf( M_minfo.body.msg.message,
-                       sizeof( M_minfo.body.msg.message ),
+        std::snprintf( buf,
+                       max_message_length_for_display,
                        format,
                        (coach.side() == RIGHT) ? OLCOACH_NAME_R : OLCOACH_NAME_L,
                        msg.c_str() );
@@ -2815,19 +3017,7 @@ Stadium::sendCoachAudio( const Coach & coach,
                   i != monitors().end();
                   ++i )
             {
-                if ( (*i)->version() >= 2.0 )
-                {
-                    dispinfo_t2 minfo2;
-                    minfo2.mode = M_minfo.mode;
-                    minfo2.body.msg = M_minfo.body.msg;
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &minfo2 ),
-                                              sizeof( dispinfo_t2 ) );
-                }
-                else if ( (*i)->version() >= 1.0 )
-                {
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_minfo ),
-                                              sizeof( dispinfo_t ) );
-                }
+                (*i)->sendMsg( MSG_BOARD, buf );
             }
         }
 
@@ -2836,7 +3026,7 @@ Stadium::sendCoachAudio( const Coach & coach,
         {
             if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
             {
-                writeGameLog( &M_minfo );
+                writeMsgToGameLog( MSG_BOARD, buf );
             }
         }
     }
@@ -2874,12 +3064,12 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
         coach_mess << std::ends; //null-terminate
 #endif
 
-        M_minfo.body.msg.board = htons( MSG_BOARD );
+        char buf[max_message_length_for_display];
         char format[40];
         std::snprintf( format, 40, "(%%s %%.%ds)\n",
                        max_message_length_for_display - (MaxMesg - MaxCoachMesg));
-        std::snprintf( M_minfo.body.msg.message,
-                       sizeof( M_minfo.body.msg.message ),
+        std::snprintf( buf,
+                       max_message_length_for_display,
                        format,
                        (coach.side() == RIGHT) ? OLCOACH_NAME_R : OLCOACH_NAME_L,
 #ifdef HAVE_SSTREAM
@@ -2898,19 +3088,7 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
                   i != monitors().end();
                   ++i )
             {
-                if ( (*i)->version() >= 2.0 )
-                {
-                    dispinfo_t2 minfo2;
-                    minfo2.mode = M_minfo.mode;
-                    minfo2.body.msg = M_minfo.body.msg;
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &minfo2 ),
-                                              sizeof( dispinfo_t2 ) );
-                }
-                else if ( (*i)->version() >= 1.0 )
-                {
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_minfo ),
-                                              sizeof( dispinfo_t ) );
-                }
+                (*i)->sendMsg( MSG_BOARD, buf );
             }
         }
 
@@ -2920,7 +3098,7 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
             if ( playmode() != PM_BeforeKickOff
                  && playmode() != PM_TimeOver )
             {
-                writeGameLog( &M_minfo );
+                writeMsgToGameLog( MSG_BOARD, buf );
             }
         }
     }
@@ -2947,9 +3125,9 @@ Stadium::sendPlayerAudio( const Player & player,
            && ServerParam::instance().recordMessages() )
          || ServerParam::instance().sendComms() )
     {
-        M_minfo.body.msg.board = htons( MSG_BOARD );
-        std::snprintf( M_minfo.body.msg.message,
-                       sizeof( M_minfo.body.msg.message ),
+        char buf[max_message_length_for_display];
+        std::snprintf( buf,
+                       max_message_length_for_display,
                        "(%s %s)\n",
                        player.name().c_str(), msg.c_str() );
 
@@ -2960,19 +3138,7 @@ Stadium::sendPlayerAudio( const Player & player,
                   i != monitors().end();
                   ++i )
             {
-                if ( (*i)->version() >= 2.0 )
-                {
-                    dispinfo_t2 minfo2;
-                    minfo2.mode = M_minfo.mode;
-                    minfo2.body.msg = M_minfo.body.msg;
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &minfo2 ),
-                                              sizeof( dispinfo_t2 ) );
-                }
-                else if ( (*i)->version() >= 1.0 )
-                {
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_minfo ),
-                                              sizeof( dispinfo_t ) );
-                }
+                (*i)->sendMsg( MSG_BOARD, buf );
             }
         }
 
@@ -2981,7 +3147,7 @@ Stadium::sendPlayerAudio( const Player & player,
         {
             if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
             {
-                writeGameLog( &M_minfo );
+                writeMsgToGameLog( MSG_BOARD, buf );
             }
         }
     }

@@ -30,16 +30,19 @@
 #include "player.h"
 #include "types.h"
 
+#include "initsender.h"
+#include "serializercommonstdv8.h"
+
 namespace {
 
 PlayMode
 play_mode_id( const char *mode )
 {
-    static char * s_playmode_strings[] = PLAYMODE_STRINGS;
+    static char * playmode_strings[] = PLAYMODE_STRINGS;
 
     for ( int n = 0; n < PM_MAX; ++n )
     {
-        if ( ! std::strcmp( s_playmode_strings[n], mode ) )
+        if ( ! std::strcmp( playmode_strings[n], mode ) )
         {
             return static_cast< PlayMode >( n );
         }
@@ -70,7 +73,14 @@ chop_last_parenthesis( char * str,
 Monitor::Monitor( Stadium & stadium,
                   const double & version )
     : M_stadium( stadium ),
-      M_version ( version )
+      M_version ( version ),
+      M_playmode( PM_Null ),
+      M_team_l_name( "" ),
+      M_team_r_name( "" ),
+      M_team_l_score( 0 ),
+      M_team_r_score( 0 ),
+      M_team_l_pen_score( 0 ),
+      M_team_r_pen_score( 0 )
 {
 
 }
@@ -80,44 +90,18 @@ Monitor::~Monitor()
 
 }
 
-
-int
-Monitor::send( const char * msg )
-{
-    if ( version() >= 3.0 )
-    {
-        return RemoteClient::send( msg, std::strlen( msg ) + 1 );
-    }
-    else if ( version() >= 2.0 )
-    {
-        dispinfo_t2 minfo;
-        minfo.mode = htons( MSG_MODE );
-        minfo.body.msg.board = htons( MSG_BOARD );
-        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-        return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
-                                   sizeof( dispinfo_t2 ) );
-    }
-    else if ( version() >= 1.0 )
-    {
-        dispinfo_t minfo;
-        minfo.mode = htons( MSG_MODE );
-        minfo.body.msg.board = htons(MSG_BOARD);
-        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-        return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
-                                   sizeof( dispinfo_t ) );
-    }
-
-    return 0;
-}
-
-
 void
 Monitor::sendInit()
 {
     if ( version() >= 3.0 )
     {
-
-
+        rcss::InitSenderCommonV8 init_sender( getTransport(),
+                                              rcss::SerializerCommonStdv8::instance(),
+                                              M_stadium,
+                                              12 ); // version number
+        init_sender.sendServerParams();
+        init_sender.sendPlayerParams();
+        init_sender.sendPlayerTypes();
     }
     else if ( version() >= 2.0 )
     {
@@ -151,6 +135,59 @@ Monitor::sendInit()
     }
 }
 
+
+void
+Monitor::sendPlayMode()
+{
+    static char * playmode_strings[] = PLAYMODE_STRINGS;
+
+    if ( M_playmode == M_stadium.playmode() )
+    {
+        return;
+    }
+
+    M_playmode = M_stadium.playmode();
+
+    getTransport() << "(playmode "
+                   << playmode_strings[M_playmode]
+                   << ")"
+                   << std::ends << std::flush;
+}
+
+void
+Monitor::sendTeam()
+{
+    if ( M_team_l_score != M_stadium.teamLeft().point()
+         || M_team_l_pen_score != M_stadium.teamLeft().penaltyPoint()
+         || M_team_r_score != M_stadium.teamRight().point()
+         || M_team_r_pen_score != M_stadium.teamRight().penaltyPoint()
+         || M_team_l_name != M_stadium.teamLeft().name()
+         || M_team_r_name != M_stadium.teamRight().name()
+         )
+    {
+        M_team_l_name = M_stadium.teamLeft().name();
+        M_team_r_name = M_stadium.teamRight().name();
+        M_team_l_score = M_stadium.teamLeft().point();
+        M_team_r_score = M_stadium.teamRight().point();
+        M_team_l_pen_score = M_stadium.teamLeft().penaltyPoint();
+        M_team_r_pen_score = M_stadium.teamRight().penaltyPoint();
+
+        std::ostream & os = getTransport();
+
+        os << "(team " << ( M_team_l_name.empty() ? "null" : M_team_l_name.c_str() )
+           << ' ' << ( M_team_r_name.empty() ? "null" : M_team_r_name.c_str() )
+           << ' ' << M_team_l_score
+           << ' ' << M_team_r_score;
+
+        if ( M_stadium.teamLeft().penaltyTaken() > 0 )
+        {
+            os << ' ' << M_team_l_pen_score
+               << ' ' << M_team_r_pen_score;
+        }
+        os << ')' << std::ends << std::flush;
+    }
+}
+
 void
 Monitor::sendShow()
 {
@@ -159,18 +196,21 @@ Monitor::sendShow()
         return;
     }
 
-#ifdef HAVE_SSTREAM
-    std::ostringstream os;
-#else
-    std::ostrstream os;
-#endif
+    sendPlayMode();
+    sendTeam();
+
+    const double prec = 0.0001;
+    const double dprec = 0.001;
+
+    std::ostream & os = getTransport();
 
     os << "(show " << M_stadium.time();
-    os << " (" << BALL_NAME_SHORT << ' '
-       << M_stadium.ball().pos().x << ' '
-       << M_stadium.ball().pos().y << ' '
-       << M_stadium.ball().vel().x << ' '
-       << M_stadium.ball().vel().y << ')';
+    os << " (" << BALL_NAME_SHORT
+       << ' ' << Quantize( M_stadium.ball().pos().x, prec )
+       << ' ' << Quantize( M_stadium.ball().pos().y, prec )
+       << ' ' << Quantize( M_stadium.ball().vel().x, prec )
+       << ' ' << Quantize( M_stadium.ball().vel().y, prec )
+       << ')';
 
     const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
     for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
@@ -178,63 +218,95 @@ Monitor::sendShow()
           ++p )
     {
         os << " (";
-        os << "(p " << SideStr( (*p)->team()->side() )
+        os << "(" << SideStr( (*p)->team()->side() )
            << ' ' << (*p)->unum()
-           << ' ' << (*p)->playerTypeId()
            << ')';
-        os << " (state " << (*p)->state() << ')'; // include goalie flag
-        os << " (pos "
-           << (*p)->pos().x << ' '
-           << (*p)->pos().y << ' '
-           << (*p)->vel().x << ' '
-           << (*p)->vel().y << ' '
-           << (*p)->angleBodyCommitted() << ' '
-           << (*p)->angleNeckCommitted();
-        rcss::geom::Vector2D arm_dest;
-        if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
-                                                           (*p)->pos().y ),
-                                     (*p)->angleBodyCommitted()
-                                     + (*p)->angleNeckCommitted(),
-                                     arm_dest ) )
+        os << ' ' << (*p)->playerTypeId()
+           << ' ' << (*p)->state(); // include goalie flag
+        os << ' ' << Quantize( (*p)->pos().x, prec )
+           << ' ' << Quantize( (*p)->pos().y, prec )
+           << ' ' << Quantize( (*p)->vel().x, prec )
+           << ' ' << Quantize( (*p)->vel().y, prec )
+           << ' ' << Quantize( Rad2Deg( (*p)->angleBodyCommitted() ), dprec )
+           << ' ' << Quantize( Rad2Deg( (*p)->angleNeckCommitted() ), dprec );
+        if ( (*p)->arm().isPointing() )
         {
-            os << ' ' << arm_dest.getMag()
-               << ' ' << arm_dest.getHead();
+            rcss::geom::Vector2D arm_dest;
+            if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
+                                                               (*p)->pos().y ),
+                                         (*p)->angleBodyCommitted()
+                                         + (*p)->angleNeckCommitted(),
+                                         arm_dest ) )
+            {
+                os << ' ' << Quantize( arm_dest.getMag(), prec )
+                   << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), dprec );
+            }
         }
-        os << ')';
-        os << " (view "
-           << (*p)->visibleAngle()
-           << ( (*p)->highquality() ? " high" : " low" )
+
+        os << " (v "
+           << ( (*p)->highquality() ? "h " : "l " )
+           << Quantize( Rad2Deg( (*p)->visibleAngle() ), dprec )
            << ')';
-        os << " (stamina "
+        os << " (s "
            << (*p)->stamina() << ' '
            << (*p)->effort() << ' '
            << (*p)->recovery() << ')';
-#if 0
-        os << " (count (k "
+        if ( (*p)->state() != DISABLE
+             && (*p)->getFocusTarget() != NULL )
+        {
+            os << " (f " << SideStr( (*p)->getFocusTarget()->team()->side() )
+               << ' ' << (*p)->getFocusTarget()->unum()
+               << ')';
+        }
+        os << " (c "
            << (*p)->kickCount()
-           << ") (d " << (*p)->dashCount()
-           << ") (t " << (*p)->turnCount()
-           << ") (s " << (*p)->sayCount()
-           << ") (tn " << (*p)->turnNeckCount()
-           << ") (c " << (*p)->catchCount()
-           << ") (m " << (*p)->moveCount()
-           << ") (cv " << (*p)->changeViewCount()
-           << ") (ta " << (*p)->tackleCount()
-           << ") (p " << (*p)->arm().getCounter()
-           << ") (a " << (*p)->attentiontoCount()
-           << "))";
-#endif
+           << ' ' << (*p)->dashCount()
+           << ' ' << (*p)->turnCount()
+           << ' ' << (*p)->catchCount()
+           << ' ' << (*p)->moveCount()
+           << ' ' << (*p)->turnNeckCount()
+           << ' ' << (*p)->changeViewCount()
+           << ' ' << (*p)->sayCount()
+           << ' ' << (*p)->tackleCount()
+           << ' ' << (*p)->arm().getCounter()
+           << ' ' << (*p)->attentiontoCount()
+           << ')';
         os << ')'; // end of player
     }
 
-    os << ')';
-#ifdef HAVE_SSTREAM
-    send( os.str().c_str() );
-#else
-    os << std::ends;
-    send( os.str() );
-    os.freeze( false );
-#endif
+    os << ')' << std::ends << std::flush;
+}
+
+int
+Monitor::sendMsg( const BoardType board,
+                  const char * msg )
+{
+    if ( version() >= 3.0 )
+    {
+        char buf[MaxMesg];
+        std::snprintf( buf, MaxMesg, "(msg %d %s)", board, msg );
+        return RemoteClient::send( buf, std::strlen( buf ) + 1 );
+    }
+    else if ( version() >= 2.0 )
+    {
+        dispinfo_t2 minfo;
+        minfo.mode = htons( MSG_MODE );
+        minfo.body.msg.board = htons( board );
+        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+        return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
+                                   sizeof( dispinfo_t2 ) );
+    }
+    else if ( version() >= 1.0 )
+    {
+        dispinfo_t minfo;
+        minfo.mode = htons( MSG_MODE );
+        minfo.body.msg.board = htons( board );
+        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+        return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
+                                   sizeof( dispinfo_t ) );
+    }
+
+    return 0;
 }
 
 bool
@@ -272,7 +344,7 @@ Monitor::parseCommand( const char * message )
         if ( ! std::strncmp( message, "(start)", 7 ) )
         {
             Stadium::_Start( M_stadium );
-            send( "(ok start)" );
+            sendMsg( MSG_BOARD, "(ok start)" );
             return true;
         }
         else if ( ! std::strncmp( message, "(change_mode", 12 ) )
@@ -297,13 +369,13 @@ Monitor::parseCommand( const char * message )
         }
         else
         {
-            send( "(error illegal_command_form)" );
+            sendMsg( MSG_BOARD, "(error illegal_command_form)" );
             return false;
         }
     }
     else
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 
@@ -319,7 +391,7 @@ Monitor::dispfoul( const char * command )
                       "(dispfoul %d %d %d)",
                       &x, &y, &side ) != 3 )
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 
@@ -349,7 +421,7 @@ Monitor::dispplayer( const char * command )
                       "(dispplayer %d %d %d %d %d)",
                       &side, &unum, &x, &y, &a ) != 5 )
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 
@@ -374,7 +446,7 @@ Monitor::dispdiscard( const char * command )
                       "(dispdiscard %d %d)",
                       &side, &unum ) != 2 )
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 
@@ -389,30 +461,30 @@ Monitor::compression( const char * command )
     if ( std::sscanf( command, "(compression %d)",
                       &level ) != 1 )
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 #ifdef HAVE_LIBZ
     if ( level > 9 )
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 
 #ifdef HAVE_SSTREAM
     std::ostringstream reply;
     reply << "(ok compression " << level << ")";
-    send( reply.str().c_str() );
+    sendMsg( MSG_BOARD, reply.str().c_str() );
 #else
     std::ostrstream reply;
     reply << "(ok compression " << level << ")" << std::ends;
-    send( reply.str() );
+    sendMsg( MSG_BOARD, reply.str() );
     reply.freeze( false );
 #endif
     setCompressionLevel( level );
     return true;
 #else
-    send( "(warning compression_unsupported)" );
+    sendMsg( MSG_BOARD, "(warning compression_unsupported)" );
     return false;
 #endif
 }
@@ -425,7 +497,7 @@ Monitor::coach_change_mode( const char * command )
                       "(change_mode %127[-0-9a-zA-Z.+*/?<>_])",
                       new_mode ) != 1 )
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 
@@ -433,12 +505,12 @@ Monitor::coach_change_mode( const char * command )
 
     if ( mode_id == PM_Null )
     {
-        send( "(error illegal_mode)" );
+        sendMsg( MSG_BOARD, "(error illegal_mode)" );
         return false;
     }
 
     M_stadium.change_play_mode( mode_id );
-    send( "(ok change_mode)" );
+    sendMsg( MSG_BOARD, "(ok change_mode)" );
     return true;
 }
 
@@ -459,7 +531,7 @@ Monitor::coach_move( const char * command )
          || std::isnan( velx ) != 0
          || std::isnan( vely ) != 0 )
     {
-        send( "(error illegal_object_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_object_form)" );
         return false;
     }
 
@@ -481,7 +553,7 @@ Monitor::coach_move( const char * command )
         }
         else
         {
-            send( "(error illegal_command_form)" );
+            sendMsg( MSG_BOARD, "(error illegal_command_form)" );
             return false;
         }
     }
@@ -496,7 +568,7 @@ Monitor::coach_move( const char * command )
              || unum < 1
              || MAX_PLAYER < unum )
         {
-            send( "(error illegal_object_form)" );
+            sendMsg( MSG_BOARD, "(error illegal_object_form)" );
             return false;
         }
 
@@ -525,12 +597,12 @@ Monitor::coach_move( const char * command )
         }
         else
         {
-            send( "(error illegal_command_form)" );
+            sendMsg( MSG_BOARD, "(error illegal_command_form)" );
             return false;
         }
     }
 
-    send( "(ok move)" );
+    sendMsg( MSG_BOARD, "(ok move)" );
     return true;
 }
 
@@ -539,7 +611,7 @@ Monitor::coach_recover()
 {
     M_stadium.recoveryPlayers();
 
-    send( "(ok recover)" );
+    sendMsg( MSG_BOARD, "(ok recover)" );
     return true;
 }
 
@@ -562,11 +634,10 @@ Monitor::coach_check_ball()
     ost << std::ends;
 
 #ifdef HAVE_SSTREAM
-    send( ost.str().c_str() );
+    sendMsg( MSG_BOARD, ost.str().c_str() );
 #else
     ost << std::ends;
-
-    send( ost.str() );
+    sendMsg( MSG_BOARD, ost.str() );
     ost.freeze( false );
 #endif
 
@@ -582,7 +653,7 @@ Monitor::coach_change_player_type( const char * command )
                       "(change_player_type %127s %d %d)",
                       teamname, &unum, &player_type ) != 3 )
     {
-        send( "(error illegal_command_form)" );
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
 
@@ -598,14 +669,14 @@ Monitor::coach_change_player_type( const char * command )
 
     if ( team == NULL )
     {
-        send( "(warning no_team_found)" );
+        sendMsg( MSG_BOARD, "(warning no_team_found)" );
         return false;
     }
 
     if ( player_type < 0
          || player_type >= PlayerParam::instance().playerTypes() )
     {
-        send( "(error out_of_range_player_type)" );
+        sendMsg( MSG_BOARD, "(error out_of_range_player_type)" );
         return false;
     }
 
@@ -622,7 +693,7 @@ Monitor::coach_change_player_type( const char * command )
 
     if ( player == NULL )
     {
-        send( "(warning no_such_player)" );
+        sendMsg( MSG_BOARD, "(warning no_such_player)" );
         return false;
     }
 
@@ -633,7 +704,7 @@ Monitor::coach_change_player_type( const char * command )
                    "(ok change_player_type %s %d %d)",
                    teamname, unum, player_type );
 
-    send( buf );
+    sendMsg( MSG_BOARD, buf );
 
     return true;
 }

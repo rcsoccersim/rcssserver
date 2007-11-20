@@ -286,7 +286,7 @@ Stadium::parseMonitorInit( const char * message,
         // send server parameter information to monitor
         if ( ver >= 3.0 )
         {
-
+            mon->sendInit();
         }
         else if ( ver >= 2.0 )
         {
@@ -494,15 +494,15 @@ Stadium::say( const char *message, bool ref )
          || game_log_open()
          || ServerParam::instance().sendComms() )
 	  {
-        M_minfo.body.msg.board = htons( MSG_BOARD );
-        std::snprintf( M_minfo.body.msg.message,
-                       sizeof( M_minfo.body.msg.message ),
+        char buf[max_message_length_for_display];
+        std::snprintf( buf,
+                       max_message_length_for_display,
                        "(%s %s)",
                        REFEREE_NAME, message );
         // write to text log
         if ( text_log_open() )
 	      {
-            text_log_stream() << time() << "\t" << M_minfo.body.msg.message << '\n';
+            text_log_stream() << time() << "\t" << buf << '\n';
 	      }
 
         // send to monitors
@@ -512,19 +512,7 @@ Stadium::say( const char *message, bool ref )
                   i != M_monitors.end();
                   ++i )
             {
-                if ( (*i)->version() >= 2.0 )
-                {
-                    dispinfo_t2 minfo2;
-                    minfo2.mode = M_minfo.mode;
-                    minfo2.body.msg = M_minfo.body.msg;
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &minfo2 ),
-                                              sizeof( dispinfo_t2 ) );
-                }
-                else if ( (*i)->version() >= 1.0 )
-                {
-                    (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_minfo ),
-                                              sizeof( dispinfo_t ) );
-                }
+                (*i)->sendMsg( MSG_BOARD, buf );
             }
         }
 
@@ -534,7 +522,7 @@ Stadium::say( const char *message, bool ref )
             if ( playmode() != PM_BeforeKickOff
                  && playmode() != PM_TimeOver )
             {
-                writeGameLog( &M_minfo );
+                writeMsgToGameLog( MSG_BOARD, buf );
             }
         }
 	  }
@@ -651,7 +639,7 @@ Stadium::broadcastSubstitution( const int side,
     for ( MonitorCont::iterator i = M_monitors.begin();
           i != M_monitors.end(); ++i )
     {
-        (*i)->send( buffer );
+        (*i)->sendMsg( MSG_BOARD, buffer );
     }
 
     std::strcat( buffer, "\n" );

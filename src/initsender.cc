@@ -282,7 +282,14 @@ InitSenderCommonV7::sendServerParams()
     serializer().serializeParam( transport(),
                                  ServerParam::instance().dropTime() );
     serializer().serializeServerParamEnd( transport() );
-    transport() << std::ends << std::flush;
+    if ( newLine() )
+    {
+        transport() << std::endl;
+    }
+    else
+    {
+        transport() << std::ends << std::flush;
+    }
 }
 
 void
@@ -333,7 +340,14 @@ InitSenderCommonV7::sendPlayerParams()
     serializer().serializeParam( transport(),
                                  PlayerParam::instance().effortMinDeltaFactor() );
     serializer().serializePlayerParamEnd( transport() );
-    transport() << std::ends << std::flush;
+    if ( newLine() )
+    {
+        transport() << std::endl;
+    }
+    else
+    {
+        transport() << std::ends << std::flush;
+    }
 }
 
 void
@@ -370,7 +384,14 @@ InitSenderCommonV7::sendPlayerTypes()
             serializer().serializeParam( transport(),
                                          type->effortMin() );
             serializer().serializePlayerTypeEnd( transport() );
-            transport() << std::ends << std::flush;
+            if ( newLine() )
+            {
+                transport() << std::endl;
+            }
+            else
+            {
+                transport() << std::ends << std::flush;
+            }
         }
     }
 }
@@ -388,7 +409,14 @@ InitSenderCommonV8::sendServerParams()
                    std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendServerParam ),
                                  this ) );
     serializer().serializeServerParamEnd( transport() );
-    transport() << std::ends << std::flush;
+    if ( newLine() )
+    {
+        transport() << std::endl;
+    }
+    else
+    {
+        transport() << std::ends << std::flush;
+    }
 }
 
 void
@@ -444,7 +472,14 @@ InitSenderCommonV8::sendPlayerParams()
                    std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendPlayerParam ),
                                  this ) );
     serializer().serializePlayerParamEnd( transport() );
-    transport() << std::ends << std::flush;
+    if ( newLine() )
+    {
+        transport() << std::endl;
+    }
+    else
+    {
+        transport() << std::ends << std::flush;
+    }
 }
 
 
@@ -537,7 +572,14 @@ InitSenderCommonV8::sendPlayerTypes()
                                          "effort_min",
                                          type->effortMin () );
             serializer().serializePlayerTypeEnd( transport() );
-            transport() << std::ends << std::flush;
+            if ( newLine() )
+            {
+                transport() << std::endl;
+            }
+            else
+            {
+                transport() << std::ends << std::flush;
+            }
         }
     }
 }

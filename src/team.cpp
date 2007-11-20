@@ -12,6 +12,7 @@
 
 Team::Team( Stadium * stad, const Side s )
     : M_stadium( stad ),
+      M_name( "" ),
       M_side( s ),
       M_size( 0 ),
       M_point( 0 ),
@@ -198,9 +199,9 @@ Team::assignPlayerTypes()
             M_ptype_count[ old_type ] -= 1;
             M_ptype_used_count[ old_type ] -= 1;
 
-            std::cout << "rcssserver changes player "
+            std::cout << "rcssserver changes (player "
                       << M_name << " " << p->unum()
-                      << " to type " << type << std::endl;
+                      << ") to type " << type << std::endl;
 
             M_stadium->broadcastSubstitution( M_side, p->unum(), type );
             break;

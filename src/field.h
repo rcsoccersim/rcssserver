@@ -191,7 +191,6 @@ protected:
 
     dispinfo_t M_dinfo;
     dispinfo_t2 M_dinfo2;
-    dispinfo_t M_minfo;
 
     std::string M_text_log_name;
     std::string M_game_log_name;
@@ -263,6 +262,18 @@ public:
               return M_gz_text_log;
           else
               return M_text_log;
+      }
+
+    std::ostream & gameLogStream()
+      {
+          if ( ServerParam::instance().textLogCompression() > 0 )
+          {
+              return M_gz_game_log;
+          }
+          else
+          {
+              return M_game_log;
+          }
       }
 
     std::ostream & kawayLog()
@@ -442,6 +453,8 @@ private:
     void sendToMonitors();
     void writeCurrentGameLog();
 
+    void writeCurrentGameLogV4();
+
     void move_caught_ball(); // [2000.07.21: I.Noda]
 
 public:
@@ -524,6 +537,9 @@ private:
 
     void writeGameLog( const dispinfo_t * msg );
     void writeGameLog( const dispinfo_t2 * msg );
+    void writeMsgToGameLog( const BoardType board_type,
+                            const char * msg );
+
 
     void write_times( timeval, timeval );
     void write_profile( timeval, timeval, char* );

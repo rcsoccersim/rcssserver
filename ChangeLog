@@ -1,3 +1,18 @@
+2007-11-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/field.h:
+	* src/initsender.cc:
+	* src/initsender.h:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/netif.cpp:
+	* src/serializercommonstdv8.cc:
+	* src/team.cpp:
+	* src/types.h:
+	- implemented a monitor protocol version 3.
+	- implemented a game log format version 4.
+
 2007-11-19  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:

@@ -60,11 +60,13 @@ public:
     InitSenderCommon( std::ostream& transport,
                       const Serializer& serializer,
                       const Stadium& stad,
-                      unsigned int version )
+                      unsigned int version,
+                      const bool new_line = false )
         : m_transport( transport ),
           m_serializer( serializer ),
           m_stad( stad ),
-          m_ver( version )
+          m_ver( version ),
+          M_new_line( new_line )
       {}
 
     virtual
@@ -99,11 +101,17 @@ public:
     version()
       { return m_ver; }
 
+    bool newLine() const
+      {
+          return M_new_line;
+      }
+
 private:
     std::ostream& m_transport;
     const Serializer& m_serializer;
     const Stadium& m_stad;
     unsigned int m_ver;
+    const bool M_new_line;
 };
 
 /*!
@@ -258,9 +266,11 @@ public:
     InitSenderCommonV1( std::ostream& transport,
                         const Serializer& serializer,
                         const Stadium& stad,
-                        unsigned int version )
+                        unsigned int version,
+                        const bool new_line = false )
         : InitSenderCommon( transport, serializer, stad,
-                            version )
+                            version,
+                            new_line )
       {}
 
     virtual
@@ -298,8 +308,11 @@ public:
     InitSenderCommonV7( std::ostream& transport,
                         const Serializer& serializer,
                         const Stadium& stad,
-                        unsigned int version )
-        : InitSenderCommonV1( transport, serializer, stad, version )
+                        unsigned int version,
+                        const bool new_line = false )
+        : InitSenderCommonV1( transport, serializer, stad,
+                              version,
+                              new_line )
       {}
 
     virtual
@@ -354,8 +367,11 @@ public:
     InitSenderCommonV8( std::ostream& transport,
                         const Serializer& serializer,
                         const Stadium& stad,
-                        unsigned int version )
-        : InitSenderCommonV7( transport, serializer, stad, version )
+                        unsigned int version,
+                        const bool new_line = false )
+        : InitSenderCommonV7( transport, serializer, stad,
+                              version,
+                              new_line )
       {}
 
     virtual

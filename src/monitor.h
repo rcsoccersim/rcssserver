@@ -20,11 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _MONITOR_H_
-#define _MONITOR_H_
+#ifndef MONITOR_H
+#define MONITOR_H
 
 #include "remoteclient.h"
 #include "types.h"
+
+#include <string>
 #include <netinet/in.h>
 
 class Stadium;
@@ -35,6 +37,15 @@ class Monitor
 protected:
     Stadium & M_stadium;
     double M_version;
+
+    PlayMode M_playmode;
+    std::string M_team_l_name;
+    std::string M_team_r_name;
+    int M_team_l_score;
+    int M_team_r_score;
+    int M_team_l_pen_score;
+    int M_team_r_pen_score;
+
 public:
     Monitor( Stadium & stadium,
              const double & version );
@@ -48,7 +59,8 @@ public:
           {
               if ( version() >= 2.0 )
               {
-                  send( "(warning message_not_null_terminated)" );
+                  sendMsg( MSG_BOARD,
+                           "(warning message_not_null_terminated)" );
               }
               str[ len ] = 0;
           }
@@ -60,15 +72,12 @@ public:
           RemoteClient::close();
       }
 
-    int send( const char * msg );
-
     void sendInit();
-
-    // void sendPlayMode();
-    // void sendTeams();
+    void sendPlayMode();
+    void sendTeam();
     void sendShow();
-    // void sendDispMsg();
-    // void sendDraw();
+    int sendMsg( const BoardType board,
+                 const char * msg );
 
     bool parseCommand( const char * message );
 
