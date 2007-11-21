@@ -427,8 +427,6 @@ class InitSenderPlayer
     : public InitSender
 {
 public:
-    typedef InitSenderPlayer Base;
-
     class Params
     {
     public:
@@ -450,23 +448,25 @@ public:
 
 public:
     typedef std::auto_ptr< InitSenderPlayer > Ptr;
-    typedef Ptr(*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
     virtual
     ~InitSenderPlayer();
 
 protected:
-    InitSenderPlayer( const Params& params,
+    InitSenderPlayer( const Params & params,
                       const boost::shared_ptr< InitSenderCommon > common );
 
-    const SerializerPlayer&
+    const
+    SerializerPlayer &
     serializer() const
-      { return M_serializer; }
+      {
+          return M_serializer;
+      }
 
     const Player&
     self() const
@@ -682,8 +682,6 @@ class InitSenderOnlineCoach
     : public InitSender
 {
 public:
-    typedef InitSenderOnlineCoach Base;
-
     class Params {
     public:
         std::ostream & m_transport;
@@ -704,20 +702,20 @@ public:
 
 public:
     typedef std::auto_ptr< rcss::InitSenderOnlineCoach > Ptr;
-    typedef Ptr(*Creator)( const rcss::InitSenderOnlineCoach::Params& );
+    typedef Ptr (*Creator)( const Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
     Factory&
     factory();
 
-    InitSenderOnlineCoach( const Params& params,
-                           const boost::shared_ptr< InitSenderCommon > common );
-
     virtual
     ~InitSenderOnlineCoach();
 
 protected:
+    InitSenderOnlineCoach( const Params& params,
+                           const boost::shared_ptr< InitSenderCommon > common );
+
     const
     SerializerOnlineCoach & serializer() const
       {
@@ -749,8 +747,8 @@ private:
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
       stuff like velocity, stamina, etc */
-    const OnlineCoach& M_self;
-    const Stadium& M_stadium;
+    const OnlineCoach & M_self;
+    const Stadium & M_stadium;
 };
 
 
@@ -863,10 +861,10 @@ class InitSenderOnlineCoachV1
     : public InitSenderOnlineCoach
 {
 public:
-    InitSenderOnlineCoachV1( const Params& params );
+    InitSenderOnlineCoachV1( const Params & params );
 
 protected:
-    InitSenderOnlineCoachV1( const Params& params,
+    InitSenderOnlineCoachV1( const Params & params,
                              const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -997,8 +995,6 @@ class InitSenderOfflineCoach
     : public InitSender
 {
 public:
-    typedef InitSenderOfflineCoach Base;
-
     class Params {
     public:
         std::ostream & m_transport;
@@ -1018,35 +1014,41 @@ public:
     };
 
     typedef std::auto_ptr< rcss::InitSenderOfflineCoach > Ptr;
-    typedef Ptr(*Creator)( const rcss::InitSenderOfflineCoach::Params& );
+    typedef Ptr (*Creator)( const Params& );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
     Factory&
     factory();
 
-public:
-    InitSenderOfflineCoach( const Params& params,
-                            const boost::shared_ptr< InitSenderCommon > common );
-public:
     virtual
     ~InitSenderOfflineCoach();
 
 protected:
-    const SerializerCoach&
+    InitSenderOfflineCoach( const Params& params,
+                            const boost::shared_ptr< InitSenderCommon > common );
+
+    const
+    SerializerCoach &
     serializer() const
-      { return M_serializer; }
+      {
+          return M_serializer;
+      }
 
-    const Coach&
-    self() const
-      { return M_self; }
+    const
+    Coach & self() const
+      {
+          return M_self;
+      }
 
-    const Stadium&
-    stadium() const
-      { return M_stadium; }
+    const
+    Stadium & stadium() const
+      {
+          return M_stadium;
+      }
 
 private:
-    const SerializerCoach& M_serializer;
+    const SerializerCoach & M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for

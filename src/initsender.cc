@@ -690,7 +690,9 @@ InitSenderPlayerV1::sendScore()
 
 void
 InitSenderPlayerV1::sendChangedPlayers()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -709,15 +711,21 @@ InitSenderPlayerV7::InitSenderPlayerV7( const Params& params )
                                                                                                params.m_ser,
                                                                                                params.m_stadium,
                                                                                                (unsigned int)params.m_self.version() ) ) )
-{}
+{
+
+}
 
 InitSenderPlayerV7::InitSenderPlayerV7( const Params& params,
                                         const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderPlayerV1( params, common )
-{}
+{
+
+}
 
 InitSenderPlayerV7::~InitSenderPlayerV7()
-{}
+{
+
+}
 
 void
 InitSenderPlayerV7::sendChangedPlayers()
@@ -832,7 +840,7 @@ InitSenderOnlineCoach::sendPlayerClangVer()
 */
 
 
-InitSenderOnlineCoachV1::InitSenderOnlineCoachV1( const Params& params )
+InitSenderOnlineCoachV1::InitSenderOnlineCoachV1( const Params & params )
     : InitSenderOnlineCoach( params,
                              boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV1( params.m_transport,
                                                                                                   params.m_ser,
@@ -857,15 +865,21 @@ InitSenderOnlineCoachV1::sendInit()
 
 void
 InitSenderOnlineCoachV1::sendReconnect()
-{}
+{
+
+}
 
 void
 InitSenderOnlineCoachV1::sendChangedPlayers()
-{}
+{
+
+}
 
 void
 InitSenderOnlineCoachV1::sendScore()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -1007,22 +1021,28 @@ InitSenderOnlineCoachV8::sendPlayerClangVer( const Player & player )
 //===================================================================
 */
 
-InitSenderOfflineCoach::Factory&
+InitSenderOfflineCoach::Factory &
 InitSenderOfflineCoach::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 
-InitSenderOfflineCoach::InitSenderOfflineCoach( const Params& params,
+InitSenderOfflineCoach::InitSenderOfflineCoach( const Params & params,
                                                 const boost::shared_ptr< InitSenderCommon > common )
     : InitSender( params.m_transport, common ),
       M_serializer( params.m_ser ),
       M_self( params.m_self ),
       M_stadium( params.m_stadium )
-{}
+{
+
+}
 
 InitSenderOfflineCoach::~InitSenderOfflineCoach()
-{}
+{
 
+}
 
 
 /*!
@@ -1038,19 +1058,25 @@ InitSenderOfflineCoach::~InitSenderOfflineCoach()
 
 InitSenderOfflineCoachV1::InitSenderOfflineCoachV1( const Params& params )
     : InitSenderOfflineCoach( params,
-                              boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV1( params.m_transport,
-                                                                                                   params.m_ser,
-                                                                                                   params.m_stadium,
-                                                                                                   (unsigned int)params.m_self.version() ) ) )
-{}
+                              boost::shared_ptr< InitSenderCommon >( new InitSenderCommonV1( params.m_transport,
+                                                                                             params.m_ser,
+                                                                                             params.m_stadium,
+                                                                                             (unsigned int)params.m_self.version() ) ) )
+{
+
+}
 
 InitSenderOfflineCoachV1::InitSenderOfflineCoachV1( const Params& params,
                                                     const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderOfflineCoach( params, common )
-{}
+{
+
+}
 
 InitSenderOfflineCoachV1::~InitSenderOfflineCoachV1()
-{}
+{
+
+}
 
 void
 InitSenderOfflineCoachV1::sendInit()
@@ -1061,15 +1087,21 @@ InitSenderOfflineCoachV1::sendInit()
 
 void
 InitSenderOfflineCoachV1::sendReconnect()
-{}
+{
+
+}
 
 void
 InitSenderOfflineCoachV1::sendChangedPlayers()
-{}
+{
+
+}
 
 void
 InitSenderOfflineCoachV1::sendScore()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -1138,19 +1170,10 @@ namespace initsender
 {
 template< typename Sender >
 InitSenderPlayer::Ptr
-create( const InitSenderPlayer::Params& params )
-{ return InitSenderPlayer::Ptr( new Sender( params ) ); }
-
-template< typename Sender >
-InitSenderOnlineCoach::Ptr
-create( const InitSenderOnlineCoach::Params& params )
-{ return InitSenderOnlineCoach::Ptr( new Sender( params ) ); }
-
-template< typename Sender >
-InitSenderOfflineCoach::Ptr
-create( const InitSenderOfflineCoach::Params& params )
-{ return InitSenderOfflineCoach::Ptr( new Sender( params ) ); }
-
+create( const InitSenderPlayer::Params & params )
+{
+    return InitSenderPlayer::Ptr( new Sender( params ) );
+}
 
 lib::RegHolder vp1 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 1 );
 lib::RegHolder vp2 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 2 );
@@ -1165,6 +1188,13 @@ lib::RegHolder vp10 = InitSenderPlayer::factory().autoReg( &create< InitSenderPl
 lib::RegHolder vp11 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 11 );
 lib::RegHolder vp12 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 12 );
 
+template< typename Sender >
+InitSenderOnlineCoach::Ptr
+create( const InitSenderOnlineCoach::Params & params )
+{
+    return InitSenderOnlineCoach::Ptr( new Sender( params ) );
+}
+
 lib::RegHolder voc1 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 1 );
 lib::RegHolder voc2 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 2 );
 lib::RegHolder voc3 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 3 );
@@ -1177,6 +1207,13 @@ lib::RegHolder voc9 = InitSenderOnlineCoach::factory().autoReg( &create< InitSen
 lib::RegHolder voc10 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 10 );
 lib::RegHolder voc11 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 11 );
 lib::RegHolder voc12 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 12 );
+
+template< typename Sender >
+InitSenderOfflineCoach::Ptr
+create( const InitSenderOfflineCoach::Params & params )
+{
+    return InitSenderOfflineCoach::Ptr( new Sender( params ) );
+}
 
 lib::RegHolder vc1 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 1 );
 lib::RegHolder vc2 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 2 );

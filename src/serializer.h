@@ -22,11 +22,11 @@
 #ifndef _SERIALIZER_H_
 #define _SERIALIZER_H_
 
-#include <string>
-#include <iostream>
-#include <map>
 #include "types.h"
+
 #include <rcssbase/lib/factory.hpp>
+
+#include <iostream>
 
 class PVector;
 
@@ -130,15 +130,17 @@ public:
 class Serializer
 {
 public:
-    Serializer( const SerializerCommon& common )
+    Serializer( const SerializerCommon & common )
         : m_common( common )
-      {}
+      { }
 
 
 protected:
-    const SerializerCommon&
-    commonSerializer() const
-      { return m_common; }
+    const
+    SerializerCommon & commonSerializer() const
+      {
+          return m_common;
+      }
 
 public:
 
@@ -229,7 +231,7 @@ public:
       }
 
 private:
-    const SerializerCommon& m_common;
+    const SerializerCommon & m_common;
 };
 
 
@@ -245,7 +247,7 @@ public:
     factory();
 
 protected:
-    SerializerPlayer( const SerializerCommon& common );
+    SerializerPlayer( const SerializerCommon & common );
 
     virtual
     ~SerializerPlayer();
@@ -253,43 +255,43 @@ public:
 
     virtual
     void serializeRefAudio( std::ostream & strm,
-                            const int& time,
-                            const char* msg ) const = 0;
+                            const int & time,
+                            const char * msg ) const = 0;
     virtual
     void serializeCoachAudio( std::ostream & strm,
-                              const int& time,
+                              const int & time,
                               const std::string & name,
-                              const char* msg ) const = 0;
+                              const char * msg ) const = 0;
     virtual
     void serializeCoachStdAudio( std::ostream & strm,
-                                 const int& time,
+                                 const int & time,
                                  const std::string & name,
-                                 const clang::Msg& msg ) const = 0;
+                                 const clang::Msg & msg ) const = 0;
 
     virtual
     void serializeSelfAudio( std::ostream & strm,
-                             const int& time,
-                             const char* msg ) const = 0;
+                             const int & time,
+                             const char * msg ) const = 0;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
-                               const int& time,
+                               const int & time,
                                const double& dir,
-                               const char* msg ) const = 0;
+                               const char * msg ) const = 0;
 
     virtual
     void serializeAllyAudioFull( std::ostream &,
                                  const int,
                                  const double &,
                                  const int,
-                                 const char* ) const
+                                 const char * ) const
       {}
 
     virtual
     void serializeOppAudioFull( std::ostream &,
                                 const int,
                                 const double &,
-                                const char* ) const
+                                const char * ) const
       {}
 
     virtual
@@ -533,8 +535,8 @@ public:
     virtual
     void
     serializeBodyViewMode( std::ostream &,
-                           const char*,
-                           const char* ) const
+                           const char *,
+                           const char * ) const
       {}
 
     virtual
@@ -599,14 +601,14 @@ public:
     virtual
     void
     serializeFocus( std::ostream &,
-                    const char*,
+                    const char *,
                     const int ) const
       {}
 
     virtual
     void
     serializeFocus( std::ostream &,
-                    const char*,
+                    const char *,
                     const int,
                     const int ) const
       {}
@@ -641,14 +643,14 @@ public:
     virtual
     void
     serializeFSPlayMode( std::ostream &,
-                         const char* ) const
+                         const char * ) const
       {}
 
     virtual
     void
     serializeFSViewMode( std::ostream &,
-                         const char*,
-                         const char* ) const
+                         const char *,
+                         const char * ) const
       {}
 
     virtual
@@ -713,7 +715,7 @@ public:
     virtual
     void
     serializeInit( std::ostream &,
-                   const char*,
+                   const char *,
                    const int,
                    const PlayMode& ) const
       {}
@@ -721,7 +723,7 @@ public:
     virtual
     void
     serializeReconnect( std::ostream &,
-                        const char*,
+                        const char *,
                         const PlayMode& ) const
       {}
 
@@ -784,29 +786,29 @@ public:
     virtual
     void
     serializeRefAudio( std::ostream &,
-                       const int&,
-                       const char* ) const = 0;
+                       const int &,
+                       const char * ) const = 0;
 
     virtual
     void
     serializeCoachAudio( std::ostream &,
-                         const int&,
+                         const int &,
                          const std::string &,
-                         const char* ) const = 0;
+                         const char * ) const = 0;
 
     virtual
     void
     serializeCoachStdAudio( std::ostream &,
-                            const int&,
+                            const int &,
                             const std::string &,
                             const clang::Msg& ) const = 0;
 
     virtual
     void
     serializePlayerAudio( std::ostream &,
-                          const int&,
+                          const int &,
                           const std::string &,
-                          const char* ) const = 0;
+                          const char * ) const = 0;
 
 
     virtual
@@ -898,13 +900,12 @@ private:
 public:
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
 protected:
 
     SerializerOnlineCoach( const SerializerCommon & common,
-                           const SerializerCoach & cosch);
+                           const SerializerCoach & cosch );
 
     virtual
     ~SerializerOnlineCoach();
@@ -920,23 +921,23 @@ public:
     virtual
     void
     serializeRefAudio( std::ostream &,
-                       const int&,
+                       const int &,
                        const std::string &,
-                       const char* ) const = 0;
+                       const char * ) const = 0;
 
     virtual
     void
     serializePlayerAudio( std::ostream &,
-                          const int&,
+                          const int &,
                           const std::string &,
-                          const char* ) const = 0;
+                          const char * ) const = 0;
 
     virtual
     void
     serializePlayerClangVer( std::ostream &,
                              const std::string &,
-                             const unsigned int&,
-                             const unsigned int& ) const = 0;
+                             const unsigned int &,
+                             const unsigned int & ) const = 0;
 
     virtual
     void

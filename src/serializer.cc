@@ -21,11 +21,14 @@
 
 #include "serializer.h"
 
-namespace rcss
-{
-SerializerCommon::Factory&
+namespace rcss {
+
+SerializerCommon::Factory &
 SerializerCommon::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 SerializerCommon::SerializerCommon()
 {}
@@ -34,40 +37,58 @@ SerializerCommon::~SerializerCommon()
 {}
 
 
-SerializerPlayer::Factory&
+SerializerPlayer::Factory &
 SerializerPlayer::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
-SerializerPlayer::SerializerPlayer( const SerializerCommon& common )
+SerializerPlayer::SerializerPlayer( const SerializerCommon & common )
     : Serializer( common )
-{}
+{
+
+}
 
 SerializerPlayer::~SerializerPlayer()
-{}
+{
+
+}
 
 
-SerializerCoach::Factory&
+SerializerCoach::Factory &
 SerializerCoach::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
-SerializerCoach::SerializerCoach( const SerializerCommon& common )
+SerializerCoach::SerializerCoach( const SerializerCommon & common )
     : Serializer( common )
 {}
 
 SerializerCoach::~SerializerCoach()
 {}
 
-SerializerOnlineCoach::Factory&
+SerializerOnlineCoach::Factory &
 SerializerOnlineCoach::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 
 SerializerOnlineCoach::SerializerOnlineCoach( const SerializerCommon & common,
                                               const SerializerCoach & coach )
     : Serializer( common )
     , M_coach( coach )
-{}
+{
+
+}
 
 SerializerOnlineCoach::~SerializerOnlineCoach()
-{}
+{
+
+}
+
 }

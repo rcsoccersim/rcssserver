@@ -58,18 +58,25 @@ BodySender::~BodySender()
 //===================================================================
 */
 
-BodySenderPlayer::Factory&
+BodySenderPlayer::Factory &
 BodySenderPlayer::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 BodySenderPlayer::BodySenderPlayer( const Params& params )
     : BodySender( params.m_transport ),
       M_serializer( params.m_ser ),
       M_self( params.m_self )
-{}
+{
+
+}
 
 BodySenderPlayer::~BodySenderPlayer()
-{}
+{
+
+}
 
 
 /*!
@@ -83,12 +90,16 @@ BodySenderPlayer::~BodySenderPlayer()
 */
 
 
-BodySenderPlayerV1::BodySenderPlayerV1( const Params& params )
+BodySenderPlayerV1::BodySenderPlayerV1( const Params & params )
     : BodySenderPlayer( params )
-{}
+{
+
+}
 
 BodySenderPlayerV1::~BodySenderPlayerV1()
-{}
+{
+
+}
 
 void
 BodySenderPlayerV1::sendBody()
@@ -155,12 +166,16 @@ BodySenderPlayerV1::sendCounts()
 //===================================================================
 */
 
-BodySenderPlayerV5::BodySenderPlayerV5( const Params& params )
+BodySenderPlayerV5::BodySenderPlayerV5( const Params & params )
     : BodySenderPlayerV1( params )
-{}
+{
+
+}
 
 BodySenderPlayerV5::~BodySenderPlayerV5()
-{}
+{
+
+}
 
 void
 BodySenderPlayerV5::sendNeck()
@@ -189,12 +204,16 @@ BodySenderPlayerV5::sendCounts()
 //===================================================================
 */
 
-BodySenderPlayerV6::BodySenderPlayerV6( const Params& params )
+BodySenderPlayerV6::BodySenderPlayerV6( const Params & params )
     : BodySenderPlayerV5( params )
-{}
+{
+
+}
 
 BodySenderPlayerV6::~BodySenderPlayerV6()
-{}
+{
+
+}
 
 void
 BodySenderPlayerV6::sendVelocity()
@@ -267,17 +286,21 @@ BodySenderPlayerV8::sendBodyData()
                                state.dist(),
                                (int)state.head(),
                                state.count() );
-    if( self().getFocusTarget() == NULL )
+    if ( self().getFocusTarget() == NULL )
+    {
         serializer().serializeFocus( transport(),
                                      "none",
                                      self().getFocusCount() );
+    }
     else
+    {
         serializer().serializeFocus( transport(),
                                      ( self().getFocusTarget()->team()->side()
                                        == LEFT
                                        ? "l" : "r" ),
                                      self().getFocusTarget()->unum(),
                                      self().getFocusCount() );
+    }
     serializer().serializeTackle( transport(),
                                   self().tackleCycles(),
                                   self().tackleCount() );
@@ -316,12 +339,14 @@ BodySenderPlayerV12::sendBodyData()
                                      self().postCollide() );
 }
 
-namespace bodysender
-{
+namespace bodysender {
+
 template< typename Sender >
 std::auto_ptr< BodySenderPlayer >
 create( const BodySenderPlayer::Params& params )
-{ return std::auto_ptr< BodySenderPlayer >( new Sender( params ) ); }
+{
+    return std::auto_ptr< BodySenderPlayer >( new Sender( params ) );
+}
 
 lib::RegHolder vp1 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 1 );
 lib::RegHolder vp2 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 2 );

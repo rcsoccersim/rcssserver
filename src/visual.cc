@@ -1207,12 +1207,14 @@ VisualSenderCoachV8::serializePlayerLook( const Player & player )
 //===================================================================
 */
 
-namespace visual
-{
+namespace visual {
+
 template< typename Sender >
 std::auto_ptr< VisualSenderPlayer >
-create( const VisualSenderPlayer::Params& params )
-{ return std::auto_ptr< VisualSenderPlayer >( new Sender( params ) ); }
+create( const VisualSenderPlayer::Params & params )
+{
+    return std::auto_ptr< VisualSenderPlayer >( new Sender( params ) );
+}
 
 lib::RegHolder vp1 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 1 );
 lib::RegHolder vp2 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 2 );
