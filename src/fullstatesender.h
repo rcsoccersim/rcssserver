@@ -31,8 +31,8 @@
 class Stadium;
 class Player;
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerPlayer;
 
 /*!
@@ -45,27 +45,26 @@ class SerializerPlayer;
 //===================================================================
 */
 
-class FullStateSender
-{
+class FullStateSender {
 private:
-    std::ostream& M_transport;
+    std::ostream & M_transport;
 
 protected:
-    std::ostream&
-    transport()
-      { return M_transport; }
+    std::ostream & transport()
+      {
+          return M_transport;
+      }
 
 public:
     typedef std::auto_ptr< FullStateSender > Ptr;
 
-    FullStateSender( std::ostream& transport );
+    FullStateSender( std::ostream & transport );
 
     virtual
     ~FullStateSender();
 
     virtual
-    void
-    sendFullState() = 0;
+    void sendFullState() = 0;
 };
 
 /*!
@@ -79,31 +78,26 @@ public:
 */
 
 
-class FullStateObserver
-{
+class FullStateObserver {
 private:
-    FullStateSender* M_sender;
+    FullStateSender * M_sender;
     bool M_owns_sender;
 
 public:
     FullStateObserver();
-    FullStateObserver( FullStateSender& sender );
+    FullStateObserver( FullStateSender & sender );
     FullStateObserver( std::auto_ptr< FullStateSender > sender );
 
     ~FullStateObserver();
 
-    void
-    setFullStateSender( FullStateSender& sender );
+    void setFullStateSender( FullStateSender & sender );
 
-    void
-    setFullStateSender( std::auto_ptr< FullStateSender > sender );
+    void setFullStateSender( std::auto_ptr< FullStateSender > sender );
 
-    void
-    sendFullState();
+    void sendFullState();
 
 private:
-    void
-    clear();
+    void clear();
 };
 
 /*!
@@ -117,29 +111,34 @@ private:
 */
 
 class FullStateSenderPlayer
-    : public FullStateSender
-{
+    : public FullStateSender {
 private:
-    const SerializerPlayer& M_serializer;
+    const SerializerPlayer & M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       FullStateObserver and FullStateObserver should have virtual functions for
       stuff like velocity, stamina, etc */
-    const Player& M_self;
-    const Stadium& M_stadium;
+    const Player & M_self;
+    const Stadium & M_stadium;
 
 protected:
-    const SerializerPlayer&
-    serializer() const
-      { return M_serializer; }
+    const
+    SerializerPlayer & serializer() const
+      {
+          return M_serializer;
+      }
 
-    const Player&
-    self() const
-      { return M_self; }
+    const
+    Player & self() const
+      {
+          return M_self;
+      }
 
-    const Stadium&
-    stadium() const
-      { return M_stadium; }
+    const
+    Stadium & stadium() const
+      {
+          return M_stadium;
+      }
 
 public:
     class Params {
@@ -160,14 +159,13 @@ public:
           { }
     };
 
-    typedef Ptr (*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
-    FullStateSenderPlayer( const Params& params );
+    FullStateSenderPlayer( const Params & params );
 
     virtual
     ~FullStateSenderPlayer();
@@ -186,17 +184,15 @@ public:
 */
 
 class FullStateSenderPlayerV1
-    : public FullStateSenderPlayer
-{
+    : public FullStateSenderPlayer {
 public:
-    FullStateSenderPlayerV1( const Params& );
+    FullStateSenderPlayerV1( const Params & );
 
     virtual
     ~FullStateSenderPlayerV1();
 
     virtual
-    void
-    sendFullState();
+    void sendFullState();
 };
 
 /*!
@@ -212,34 +208,28 @@ public:
 */
 
 class FullStateSenderPlayerV5
-    : public FullStateSenderPlayerV1
-{
+    : public FullStateSenderPlayerV1 {
 public:
-    FullStateSenderPlayerV5( const Params& );
+    FullStateSenderPlayerV5( const Params & );
 
     virtual
     ~FullStateSenderPlayerV5();
 
     virtual
-    void
-    sendFullState();
+    void sendFullState();
 
 protected:
     virtual
-    void
-    sendSelf();
+    void sendSelf();
 
     virtual
-    void
-    sendScore();
+    void sendScore();
 
     virtual
-    void
-    sendBall();
+    void sendBall();
 
     virtual
-    void
-    sendPlayer( const Player& p );
+    void sendPlayer( const Player & p );
 };
 
 /*!
@@ -256,27 +246,23 @@ class FullStateSenderPlayerV8
     : public FullStateSenderPlayerV5
 {
 public:
-    FullStateSenderPlayerV8( const Params& );
+    FullStateSenderPlayerV8( const Params & );
 
     virtual
     ~FullStateSenderPlayerV8();
 
 protected:
     virtual
-    void
-    sendSelf();
+    void sendSelf();
 
     virtual
-    void
-    sendScore();
+    void sendScore();
 
     virtual
-    void
-    sendBall();
+    void sendBall();
 
     virtual
-    void
-    sendPlayer( const Player& p );
+    void sendPlayer( const Player & p );
 };
 }
 

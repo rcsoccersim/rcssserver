@@ -404,8 +404,6 @@ InitSenderCommonV7::sendPlayerTypes()
 void
 InitSenderCommonV8::sendServerParams()
 {
-    //         LocalSerializer ser( serializer(), transport(), version() );
-
     serializer().serializeServerParamBegin( transport() );
     std::for_each( ServerParam::instance().verMap().begin(),
                    ServerParam::instance().verMap().end(),

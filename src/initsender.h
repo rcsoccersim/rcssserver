@@ -53,8 +53,7 @@ class SerializerCoach;
 //===================================================================
 */
 
-class InitSenderCommon
-{
+class InitSenderCommon {
 public:
     InitSenderCommon( std::ostream& transport,
                       const Serializer& serializer,
@@ -73,16 +72,13 @@ public:
       {}
 
     virtual
-    void
-    sendServerParams() = 0;
+    void sendServerParams() = 0;
 
     virtual
-    void
-    sendPlayerParams() = 0;
+    void sendPlayerParams() = 0;
 
     virtual
-    void
-    sendPlayerTypes() = 0;
+    void sendPlayerTypes() = 0;
 
     std::ostream & transport()
       {
@@ -112,9 +108,9 @@ public:
       }
 
 private:
-    std::ostream& m_transport;
-    const Serializer& m_serializer;
-    const Stadium& m_stad;
+    std::ostream & m_transport;
+    const Serializer & m_serializer;
+    const Stadium & m_stad;
     unsigned int m_ver;
     const bool M_new_line;
 };
@@ -130,8 +126,7 @@ private:
 */
 
 class InitSender
-    : protected Sender
-{
+    : protected Sender {
 protected:
 
     InitSender( std::ostream& transport,
@@ -142,39 +137,39 @@ public:
     ~InitSender();
 
     virtual
-    void
-    sendInit() = 0;
+    void sendInit() = 0;
 
     virtual
-    void
-    sendReconnect() = 0;
+    void sendReconnect() = 0;
 
     virtual
-    void
-    sendServerParams()
-      { commonSender().sendServerParams(); }
+    void sendServerParams()
+      {
+          commonSender().sendServerParams();
+      }
 
     virtual
-    void
-    sendPlayerParams()
-      { commonSender().sendPlayerParams(); }
+    void sendPlayerParams()
+      {
+          commonSender().sendPlayerParams();
+      }
 
     virtual
-    void
-    sendPlayerTypes()
-      { commonSender().sendPlayerTypes(); }
+    void sendPlayerTypes()
+      {
+          commonSender().sendPlayerTypes();
+      }
 
     virtual
-    void
-    sendChangedPlayers() = 0;
+    void sendChangedPlayers() = 0;
 
     virtual
-    void
-    sendScore() = 0;
+    void sendScore() = 0;
 
-    InitSenderCommon&
-    commonSender()
-      { return *m_common_sender; }
+    InitSenderCommon & commonSender()
+      {
+          return *m_common_sender;
+      }
 
 private:
     boost::shared_ptr< InitSenderCommon > m_common_sender;
@@ -268,9 +263,9 @@ class InitSenderCommonV1
     : public InitSenderCommon
 {
 public:
-    InitSenderCommonV1( std::ostream& transport,
-                        const Serializer& serializer,
-                        const Stadium& stad,
+    InitSenderCommonV1( std::ostream & transport,
+                        const Serializer & serializer,
+                        const Stadium & stad,
                         unsigned int version,
                         const bool new_line = false )
         : InitSenderCommon( transport, serializer, stad,
@@ -280,19 +275,19 @@ public:
 
     virtual
     ~InitSenderCommonV1()
-      {}
+      { }
 
     virtual
-    void
-    sendServerParams() {}
+    void sendServerParams()
+      { }
 
     virtual
-    void
-    sendPlayerParams() {}
+    void sendPlayerParams()
+      { }
 
     virtual
-    void
-    sendPlayerTypes() {}
+    void sendPlayerTypes()
+      { }
 };
 
 
@@ -307,12 +302,11 @@ public:
 */
 
 class InitSenderCommonV7
-    : public InitSenderCommonV1
-{
+    : public InitSenderCommonV1 {
 public:
-    InitSenderCommonV7( std::ostream& transport,
-                        const Serializer& serializer,
-                        const Stadium& stad,
+    InitSenderCommonV7( std::ostream & transport,
+                        const Serializer & serializer,
+                        const Stadium & stad,
                         unsigned int version,
                         const bool new_line = false )
         : InitSenderCommonV1( transport, serializer, stad,
@@ -322,19 +316,16 @@ public:
 
     virtual
     ~InitSenderCommonV7()
-      {}
+      { }
 
     virtual
-    void
-    sendServerParams();
+    void sendServerParams();
 
     virtual
-    void
-    sendPlayerParams();
+    void sendPlayerParams();
 
     virtual
-    void
-    sendPlayerTypes();
+    void sendPlayerTypes();
 };
 
 /*!
@@ -348,72 +339,46 @@ public:
 */
 
 class InitSenderCommonV8
-    : public InitSenderCommonV7
-{
-protected:
-    class LocalSerializer
-    {
-    private:
-        const Serializer& M_ser;
-        std::ostream& M_out;
-        unsigned int M_version;
-    public:
-        LocalSerializer( const Serializer& ser,
-                         std::ostream& out,
-                         unsigned int version )
-            : M_ser( ser ),
-              M_out( out ),
-              M_version( version )
-          {}
-
-    };
-
+    : public InitSenderCommonV7 {
 public:
-    InitSenderCommonV8( std::ostream& transport,
-                        const Serializer& serializer,
-                        const Stadium& stad,
+    InitSenderCommonV8( std::ostream & transport,
+                        const Serializer & serializer,
+                        const Stadium & stad,
                         unsigned int version,
                         const bool new_line = false )
         : InitSenderCommonV7( transport, serializer, stad,
                               version,
                               new_line )
-      {}
+      { }
 
     virtual
     ~InitSenderCommonV8()
-      {}
+      { }
 
     virtual
-    void
-    sendServerParams();
+    void sendServerParams();
 
-    void
-    sendServerParam( ServerParam::VerMap::value_type param )
+    void sendServerParam( ServerParam::VerMap::value_type param )
       {
           doSendServerParam( param );
       }
 
     virtual
-    void
-    doSendServerParam( ServerParam::VerMap::value_type param );
+    void doSendServerParam( ServerParam::VerMap::value_type param );
 
-    void
-    sendPlayerParam( PlayerParam::VerMap::value_type param )
+    void sendPlayerParam( PlayerParam::VerMap::value_type param )
       {
           doSendPlayerParam( param );
       }
 
     virtual
-    void
-    doSendPlayerParam( PlayerParam::VerMap::value_type param );
+    void doSendPlayerParam( PlayerParam::VerMap::value_type param );
 
     virtual
-    void
-    sendPlayerParams();
+    void sendPlayerParams();
 
     virtual
-    void
-    sendPlayerTypes();
+    void sendPlayerTypes();
 
 };
 
@@ -432,8 +397,7 @@ class InitSenderPlayer
     : public InitSender
 {
 public:
-    class Params
-    {
+    class Params {
     public:
         std::ostream & m_transport;
         const Player & m_self;
@@ -467,28 +431,31 @@ protected:
                       const boost::shared_ptr< InitSenderCommon > common );
 
     const
-    SerializerPlayer &
-    serializer() const
+    SerializerPlayer & serializer() const
       {
           return M_serializer;
       }
 
-    const Player&
-    self() const
-      { return M_self; }
+    const
+    Player & self() const
+      {
+          return M_self;
+      }
 
-    const Stadium&
-    stadium() const
-      { return M_stadium; }
+    const
+    Stadium & stadium() const
+      {
+          return M_stadium;
+      }
 
 private:
-    const SerializerPlayer& M_serializer;
+    const SerializerPlayer & M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
       stuff like velocity, stamina, etc */
-    const Player& M_self;
-    const Stadium& M_stadium;
+    const Player & M_self;
+    const Stadium & M_stadium;
 };
 
 /*!
@@ -502,74 +469,64 @@ private:
 */
 
 class InitObserverPlayer
-    : protected BaseObserver< InitSenderPlayer >
-{
+    : protected BaseObserver< InitSenderPlayer > {
 public:
 
     InitObserverPlayer()
-      {}
+      { }
 
     InitObserverPlayer( InitSenderPlayer & sender )
         : BaseObserver< InitSenderPlayer >( sender )
-      {}
+      { }
 
     InitObserverPlayer( std::auto_ptr< InitSenderPlayer > sender )
         : BaseObserver< InitSenderPlayer >( sender )
-      {}
+      { }
 
     ~InitObserverPlayer()
-      {}
+      { }
 
-    void
-    setInitSender( InitSenderPlayer & sender )
+    void setInitSender( InitSenderPlayer & sender )
       {
           BaseObserver< InitSenderPlayer >::setSender( sender );
       }
 
-    void
-    setInitSender( std::auto_ptr< InitSenderPlayer > sender )
+    void setInitSender( std::auto_ptr< InitSenderPlayer > sender )
       {
           BaseObserver< InitSenderPlayer >::setSender( sender );
       }
 
-    void
-    sendInit()
+    void sendInit()
       {
           BaseObserver< InitSenderPlayer >::sender().sendInit();
       }
 
-    void
-    sendReconnect()
+    void sendReconnect()
       {
           BaseObserver< InitSenderPlayer >::sender().sendReconnect();
       }
 
-    void
-    sendServerParams()
+    void sendServerParams()
       {
           BaseObserver< InitSenderPlayer >::sender().sendServerParams();
       }
 
-    void
-    sendPlayerParams()
+    void sendPlayerParams()
       {
           BaseObserver< InitSenderPlayer >::sender().sendPlayerParams();
       }
 
-    void
-    sendPlayerTypes()
+    void sendPlayerTypes()
       {
           BaseObserver< InitSenderPlayer >::sender().sendPlayerTypes();
       }
 
-    void
-    sendChangedPlayers()
+    void sendChangedPlayers()
       {
           BaseObserver< InitSenderPlayer >::sender().sendChangedPlayers();
       }
 
-    void
-    sendScore()
+    void sendScore()
       {
           BaseObserver< InitSenderPlayer >::sender().sendScore();
       }
@@ -587,13 +544,12 @@ public:
 */
 
 class InitSenderPlayerV1
-    : public InitSenderPlayer
-{
+    : public InitSenderPlayer {
 public:
-    InitSenderPlayerV1( const Params& params );
+    InitSenderPlayerV1( const Params & params );
 
 protected:
-    InitSenderPlayerV1( const Params& params,
+    InitSenderPlayerV1( const Params & params,
                         const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -601,20 +557,16 @@ public:
     ~InitSenderPlayerV1();
 
     virtual
-    void
-    sendInit();
+    void sendInit();
 
     virtual
-    void
-    sendReconnect();
+    void sendReconnect();
 
     virtual
-    void
-    sendScore();
+    void sendScore();
 
     virtual
-    void
-    sendChangedPlayers();
+    void sendChangedPlayers();
 };
 
 /*!
@@ -628,13 +580,12 @@ public:
 */
 
 class InitSenderPlayerV7
-    : public InitSenderPlayerV1
-{
+    : public InitSenderPlayerV1 {
 public:
-    InitSenderPlayerV7( const Params& params );
+    InitSenderPlayerV7( const Params & params );
 
 protected:
-    InitSenderPlayerV7( const Params& params,
+    InitSenderPlayerV7( const Params & params,
                         const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -642,8 +593,7 @@ public:
     ~InitSenderPlayerV7();
 
     virtual
-    void
-    sendChangedPlayers();
+    void sendChangedPlayers();
 };
 
 /*!
@@ -657,13 +607,12 @@ public:
 */
 
 class InitSenderPlayerV8
-    : public InitSenderPlayerV7
-{
+    : public InitSenderPlayerV7 {
 public:
-    InitSenderPlayerV8( const Params& params );
+    InitSenderPlayerV8( const Params & params );
 
 protected:
-    InitSenderPlayerV8( const Params& params,
+    InitSenderPlayerV8( const Params & params,
                         const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -684,8 +633,7 @@ public:
 */
 
 class InitSenderOnlineCoach
-    : public InitSender
-{
+    : public InitSender {
 public:
     class Params {
     public:
@@ -711,14 +659,13 @@ public:
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
     virtual
     ~InitSenderOnlineCoach();
 
 protected:
-    InitSenderOnlineCoach( const Params& params,
+    InitSenderOnlineCoach( const Params & params,
                            const boost::shared_ptr< InitSenderCommon > common );
 
     const
@@ -768,74 +715,64 @@ private:
 */
 
 class InitObserverOnlineCoach
-    : protected BaseObserver< InitSenderOnlineCoach >
-{
+    : protected BaseObserver< InitSenderOnlineCoach > {
 public:
 
     InitObserverOnlineCoach()
-      {}
+      { }
 
     InitObserverOnlineCoach( InitSenderOnlineCoach & sender )
         : BaseObserver< InitSenderOnlineCoach >( sender )
-      {}
+      { }
 
     InitObserverOnlineCoach( std::auto_ptr< InitSenderOnlineCoach > sender )
         : BaseObserver< InitSenderOnlineCoach >( sender )
-      {}
+      { }
 
     ~InitObserverOnlineCoach()
-      {}
+      { }
 
-    void
-    setInitSender( InitSenderOnlineCoach & sender )
+    void setInitSender( InitSenderOnlineCoach & sender )
       {
           BaseObserver< InitSenderOnlineCoach >::setSender( sender );
       }
 
-    void
-    setInitSender( std::auto_ptr< InitSenderOnlineCoach > sender )
+    void setInitSender( std::auto_ptr< InitSenderOnlineCoach > sender )
       {
           BaseObserver< InitSenderOnlineCoach >::setSender( sender );
       }
 
-    void
-    sendInit()
+    void sendInit()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendInit();
       }
 
-    void
-    sendReconnect()
+    void sendReconnect()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendReconnect();
       }
 
-    void
-    sendServerParams()
+    void sendServerParams()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendServerParams();
       }
 
-    void
-    sendPlayerParams()
+    void sendPlayerParams()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendPlayerParams();
       }
 
-    void
-    sendPlayerTypes()
+    void sendPlayerTypes()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendPlayerTypes();
       }
 
-    void
-    sendChangedPlayers()
+    void sendChangedPlayers()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendChangedPlayers();
       }
 
-    void
-    sendScore()
+    void sendScore()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendScore();
       }
@@ -863,8 +800,7 @@ public:
 */
 
 class InitSenderOnlineCoachV1
-    : public InitSenderOnlineCoach
-{
+    : public InitSenderOnlineCoach {
 public:
     InitSenderOnlineCoachV1( const Params & params );
 
@@ -877,20 +813,16 @@ public:
     ~InitSenderOnlineCoachV1();
 
     virtual
-    void
-    sendInit();
+    void sendInit();
 
     virtual
-    void
-    sendReconnect();
+    void sendReconnect();
 
     virtual
-    void
-    sendScore();
+    void sendScore();
 
     virtual
-    void
-    sendChangedPlayers();
+    void sendChangedPlayers();
 
     virtual
     void sendPlayerClangVer( const Player & )
@@ -909,13 +841,12 @@ public:
 */
 
 class InitSenderOnlineCoachV6
-    : public InitSenderOnlineCoachV1
-{
+    : public InitSenderOnlineCoachV1 {
 public:
-    InitSenderOnlineCoachV6( const Params& params );
+    InitSenderOnlineCoachV6( const Params & params );
 
 protected:
-    InitSenderOnlineCoachV6( const Params& params,
+    InitSenderOnlineCoachV6( const Params & params,
                              const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -923,8 +854,7 @@ public:
     ~InitSenderOnlineCoachV6();
 
     virtual
-    void
-    sendInit();
+    void sendInit();
 };
 
 
@@ -939,13 +869,12 @@ public:
 */
 
 class InitSenderOnlineCoachV7
-    : public InitSenderOnlineCoachV6
-{
+    : public InitSenderOnlineCoachV6 {
 public:
-    InitSenderOnlineCoachV7( const Params& params );
+    InitSenderOnlineCoachV7( const Params & params );
 
 protected:
-    InitSenderOnlineCoachV7( const Params& params,
+    InitSenderOnlineCoachV7( const Params & params,
                              const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -953,8 +882,7 @@ public:
     ~InitSenderOnlineCoachV7();
 
     virtual
-    void
-    sendChangedPlayers();
+    void sendChangedPlayers();
 };
 
 /*!
@@ -968,13 +896,12 @@ public:
 */
 
 class InitSenderOnlineCoachV8
-    : public InitSenderOnlineCoachV7
-{
+    : public InitSenderOnlineCoachV7 {
 public:
-    InitSenderOnlineCoachV8( const Params& params );
+    InitSenderOnlineCoachV8( const Params & params );
 
 protected:
-    InitSenderOnlineCoachV8( const Params& params,
+    InitSenderOnlineCoachV8( const Params & params,
                              const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -997,8 +924,7 @@ public:
 */
 
 class InitSenderOfflineCoach
-    : public InitSender
-{
+    : public InitSender {
 public:
     class Params {
     public:
@@ -1030,12 +956,11 @@ public:
     ~InitSenderOfflineCoach();
 
 protected:
-    InitSenderOfflineCoach( const Params& params,
+    InitSenderOfflineCoach( const Params & params,
                             const boost::shared_ptr< InitSenderCommon > common );
 
     const
-    SerializerCoach &
-    serializer() const
+    SerializerCoach & serializer() const
       {
           return M_serializer;
       }
@@ -1058,8 +983,8 @@ private:
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
       stuff like velocity, stamina, etc */
-    const Coach& M_self;
-    const Stadium& M_stadium;
+    const Coach & M_self;
+    const Stadium & M_stadium;
 };
 
 
@@ -1075,74 +1000,64 @@ private:
 */
 
 class InitObserverOfflineCoach
-    : protected BaseObserver< InitSenderOfflineCoach >
-{
+    : protected BaseObserver< InitSenderOfflineCoach > {
 public:
 
     InitObserverOfflineCoach()
-      {}
+      { }
 
     InitObserverOfflineCoach( InitSenderOfflineCoach & sender )
         : BaseObserver< InitSenderOfflineCoach >( sender )
-      {}
+      { }
 
     InitObserverOfflineCoach( std::auto_ptr< InitSenderOfflineCoach > sender )
         : BaseObserver< InitSenderOfflineCoach >( sender )
-      {}
+      { }
 
     ~InitObserverOfflineCoach()
-      {}
+      { }
 
-    void
-    setInitSender( InitSenderOfflineCoach & sender )
+    void setInitSender( InitSenderOfflineCoach & sender )
       {
           BaseObserver< InitSenderOfflineCoach >::setSender( sender );
       }
 
-    void
-    setInitSender( std::auto_ptr< InitSenderOfflineCoach > sender )
+    void setInitSender( std::auto_ptr< InitSenderOfflineCoach > sender )
       {
           BaseObserver< InitSenderOfflineCoach >::setSender( sender );
       }
 
-    void
-    sendInit()
+    void sendInit()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendInit();
       }
 
-    void
-    sendReconnect()
+    void sendReconnect()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendReconnect();
       }
 
-    void
-    sendServerParams()
+    void sendServerParams()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendServerParams();
       }
 
-    void
-    sendPlayerParams()
+    void sendPlayerParams()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendPlayerParams();
       }
 
-    void
-    sendPlayerTypes()
+    void sendPlayerTypes()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendPlayerTypes();
       }
 
-    void
-    sendChangedPlayers()
+    void sendChangedPlayers()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendChangedPlayers();
       }
 
-    void
-    sendScore()
+    void sendScore()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendScore();
       }
@@ -1161,13 +1076,12 @@ public:
 */
 
 class InitSenderOfflineCoachV1
-    : public InitSenderOfflineCoach
-{
+    : public InitSenderOfflineCoach {
 public:
-    InitSenderOfflineCoachV1( const Params& params );
+    InitSenderOfflineCoachV1( const Params & params );
 
 protected:
-    InitSenderOfflineCoachV1( const Params& params,
+    InitSenderOfflineCoachV1( const Params & params,
                               const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -1175,20 +1089,16 @@ public:
     ~InitSenderOfflineCoachV1();
 
     virtual
-    void
-    sendInit();
+    void sendInit();
 
     virtual
-    void
-    sendReconnect();
+    void sendReconnect();
 
     virtual
-    void
-    sendScore();
+    void sendScore();
 
     virtual
-    void
-    sendChangedPlayers();
+    void sendChangedPlayers();
 };
 
 /*!
@@ -1202,13 +1112,12 @@ public:
 */
 
 class InitSenderOfflineCoachV7
-    : public InitSenderOfflineCoachV1
-{
+    : public InitSenderOfflineCoachV1 {
 public:
-    InitSenderOfflineCoachV7( const Params& params );
+    InitSenderOfflineCoachV7( const Params & params );
 
 protected:
-    InitSenderOfflineCoachV7( const Params& params,
+    InitSenderOfflineCoachV7( const Params & params,
                               const boost::shared_ptr< InitSenderCommon > common );
 
 public:
@@ -1228,8 +1137,7 @@ public:
 */
 
 class InitSenderOfflineCoachV8
-    : public InitSenderOfflineCoachV7
-{
+    : public InitSenderOfflineCoachV7 {
 public:
     InitSenderOfflineCoachV8( const Params& params );
 

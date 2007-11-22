@@ -53,8 +53,7 @@ public:
     ~BodySender();
 
     virtual
-    void
-    sendBody() = 0;
+    void sendBody() = 0;
 };
 
 /*!
@@ -133,34 +132,37 @@ public:
     };
 
     typedef std::auto_ptr< BodySenderPlayer > Ptr;
-    typedef Ptr (*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
-    BodySenderPlayer( const Params& params );
+    BodySenderPlayer( const Params & params );
 
     virtual
     ~BodySenderPlayer();
 
 protected:
-    const SerializerPlayer&
-    serializer() const
-      { return M_serializer; }
+    const
+    SerializerPlayer & serializer() const
+      {
+          return M_serializer;
+      }
 
-    const Player&
-    self() const
-      { return M_self; }
+    const
+    Player & self() const
+      {
+          return M_self;
+      }
 
 private:
-    const SerializerPlayer& M_serializer;
+    const SerializerPlayer & M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       BodyObserver and BodyObserver should have virtual functions for
       stuff like velocity, stamina, etc */
-    const Player& M_self;
+    const Player & M_self;
 
 };
 
@@ -181,18 +183,18 @@ class BodyObserverPlayer
 public:
 
     BodyObserverPlayer()
-      {}
+      { }
 
     BodyObserverPlayer( BodySenderPlayer & sender )
         : BaseObserver< BodySenderPlayer >( sender )
-      {}
+      { }
 
     BodyObserverPlayer( std::auto_ptr< BodySenderPlayer > sender )
         : BaseObserver< BodySenderPlayer >( sender )
-      {}
+      { }
 
     ~BodyObserverPlayer()
-      {}
+      { }
 
     void
     setBodySender( BodySenderPlayer & sender )
@@ -229,31 +231,26 @@ class BodySenderPlayerV1
 {
 public:
 
-    BodySenderPlayerV1( const Params& params );
+    BodySenderPlayerV1( const Params & params );
 
     virtual
     ~BodySenderPlayerV1();
 
     virtual
-    void
-    sendBody();
+    void sendBody();
 
 protected:
     virtual
-    void
-    sendBodyData();
+    void sendBodyData();
 
     virtual
-    void
-    sendVelocity();
+    void sendVelocity();
 
     virtual
-    void
-    sendNeck();
+    void sendNeck();
 
     virtual
-    void
-    sendCounts();
+    void sendCounts();
 
 public:
 
@@ -281,12 +278,10 @@ public:
 
 protected:
     virtual
-    void
-    sendNeck();
+    void sendNeck();
 
     virtual
-    void
-    sendCounts();
+    void sendCounts();
 };
 
 /*!
@@ -311,8 +306,7 @@ public:
 
 protected:
     virtual
-    void
-    sendVelocity();
+    void sendVelocity();
 };
 
 /*!
@@ -336,8 +330,7 @@ public:
 
 protected:
     virtual
-    void
-    sendCounts();
+    void sendCounts();
 
 };
 
@@ -363,8 +356,7 @@ public:
 
 protected:
     virtual
-    void
-    sendBodyData();
+    void sendBodyData();
 
 };
 
@@ -389,8 +381,7 @@ public:
 
 protected:
     virtual
-    void
-    sendBodyData();
+    void sendBodyData();
 
 };
 

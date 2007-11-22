@@ -27,8 +27,7 @@
 static char *PlayModeString[] = PLAYMODE_STRINGS;
 
 
-namespace rcss
-{
+namespace rcss {
 
 /*!
 //===================================================================
@@ -40,12 +39,16 @@ namespace rcss
 //===================================================================
 */
 
-FullStateSender::FullStateSender( std::ostream& transport )
+FullStateSender::FullStateSender( std::ostream & transport )
     : M_transport( transport )
-{}
+{
+
+}
 
 FullStateSender::~FullStateSender()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -62,7 +65,7 @@ FullStateObserver::FullStateObserver()
       M_owns_sender( false )
 {}
 
-FullStateObserver::FullStateObserver( FullStateSender& sender )
+FullStateObserver::FullStateObserver( FullStateSender & sender )
     : M_sender( &sender ),
       M_owns_sender( false )
 {}
@@ -76,7 +79,7 @@ FullStateObserver::~FullStateObserver()
 { clear(); }
 
 void
-FullStateObserver::setFullStateSender( FullStateSender& sender )
+FullStateObserver::setFullStateSender( FullStateSender & sender )
 {
     clear();
     M_sender = &sender;
@@ -93,12 +96,14 @@ FullStateObserver::setFullStateSender( std::auto_ptr< FullStateSender > sender )
 
 void
 FullStateObserver::sendFullState()
-{ M_sender->sendFullState(); }
+{
+    M_sender->sendFullState();
+}
 
 void
 FullStateObserver::clear()
 {
-    if( M_owns_sender )
+    if ( M_owns_sender )
     {
         delete M_sender;
         M_sender = NULL;
@@ -115,11 +120,14 @@ FullStateObserver::clear()
 //===================================================================
 */
 
-FullStateSenderPlayer::Factory&
+FullStateSenderPlayer::Factory &
 FullStateSenderPlayer::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
-FullStateSenderPlayer::FullStateSenderPlayer( const Params& params )
+FullStateSenderPlayer::FullStateSenderPlayer( const Params & params )
     : FullStateSender( params.m_transport ),
       M_serializer( params.m_serializer ),
       M_self( params.m_self ),
@@ -143,16 +151,22 @@ FullStateSenderPlayer::~FullStateSenderPlayer()
 */
 
 
-FullStateSenderPlayerV1::FullStateSenderPlayerV1( const Params& params )
+FullStateSenderPlayerV1::FullStateSenderPlayerV1( const Params & params )
     : FullStateSenderPlayer( params )
-{}
+{
+
+}
 
 FullStateSenderPlayerV1::~FullStateSenderPlayerV1()
-{}
+{
+
+}
 
 void
 FullStateSenderPlayerV1::sendFullState()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -166,12 +180,16 @@ FullStateSenderPlayerV1::sendFullState()
 //===================================================================
 */
 
-FullStateSenderPlayerV5::FullStateSenderPlayerV5( const Params& params )
+FullStateSenderPlayerV5::FullStateSenderPlayerV5( const Params & params )
     : FullStateSenderPlayerV1( params )
-{}
+{
+
+}
 
 FullStateSenderPlayerV5::~FullStateSenderPlayerV5()
-{}
+{
+
+}
 
 void
 FullStateSenderPlayerV5::sendFullState()
@@ -234,6 +252,7 @@ FullStateSenderPlayerV5::sendFullState()
 void
 FullStateSenderPlayerV5::sendSelf()
 {
+
 }
 
 void
@@ -271,7 +290,7 @@ FullStateSenderPlayerV5::sendBall()
 }
 
 void
-FullStateSenderPlayerV5::sendPlayer( const Player& p )
+FullStateSenderPlayerV5::sendPlayer( const Player & p )
 {
     const float quantize_step = .001;
     char side = (p.team()->side() == LEFT) ? 'l' : 'r';
@@ -308,12 +327,16 @@ FullStateSenderPlayerV5::sendPlayer( const Player& p )
 //===================================================================
 */
 
-FullStateSenderPlayerV8::FullStateSenderPlayerV8( const Params& params )
+FullStateSenderPlayerV8::FullStateSenderPlayerV8( const Params & params )
     : FullStateSenderPlayerV5( params )
-{}
+{
+
+}
 
 FullStateSenderPlayerV8::~FullStateSenderPlayerV8()
-{}
+{
+
+}
 
 void
 FullStateSenderPlayerV8::sendSelf()
@@ -375,7 +398,7 @@ FullStateSenderPlayerV8::sendBall()
 }
 
 void
-FullStateSenderPlayerV8::sendPlayer( const Player& p )
+FullStateSenderPlayerV8::sendPlayer( const Player & p )
 {
     char side = (p.team()->side() == LEFT) ? 'l' : 'r';
     serializer().serializeFSPlayerBegin( transport(),
@@ -406,6 +429,7 @@ FullStateSenderPlayerV8::sendPlayer( const Player& p )
                                        p.effort(),
                                        p.recovery() );
 }
+
 /*!
 //===================================================================
 //
@@ -414,12 +438,14 @@ FullStateSenderPlayerV8::sendPlayer( const Player& p )
 //===================================================================
 */
 
-namespace fullstatesender
-{
+namespace fullstatesender {
+
 template< typename Sender >
 FullStateSender::Ptr
-create( const FullStateSenderPlayer::Params& params )
-{ return FullStateSender::Ptr( new Sender( params ) ); }
+create( const FullStateSenderPlayer::Params & params )
+{
+    return FullStateSender::Ptr( new Sender( params ) );
+}
 
 lib::RegHolder vp1 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 1 );
 lib::RegHolder vp2 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 2 );
@@ -433,5 +459,6 @@ lib::RegHolder vp9 = FullStateSenderPlayer::factory().autoReg( &create< FullStat
 lib::RegHolder vp10 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 10 );
 lib::RegHolder vp11 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 11 );
 lib::RegHolder vp12 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 12 );
+
 }
 }
