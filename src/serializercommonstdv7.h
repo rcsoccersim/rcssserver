@@ -80,5 +80,7 @@ public:
     void serializeParam( std::ostream & strm,
                          const std::string & param ) const;
 };
+
 }
+
 #endif

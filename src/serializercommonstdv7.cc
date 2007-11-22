@@ -22,14 +22,17 @@
 #include "serializercommonstdv7.h"
 #include "clangmsg.h"
 
-namespace rcss
-{
+namespace rcss {
 
 SerializerCommonStdv7::SerializerCommonStdv7()
-{}
+{
+
+}
 
 SerializerCommonStdv7::~SerializerCommonStdv7()
-{}
+{
+
+}
 
 const
 SerializerCommonStdv7 &
@@ -110,12 +113,16 @@ SerializerCommonStdv7::serializeParam( std::ostream & strm,
     strm << " " << param;
 }
 
-namespace
-{
-const SerializerCommon&
+namespace {
+
+const
+SerializerCommon &
 create()
-{ return SerializerCommonStdv7::instance(); }
+{
+    return SerializerCommonStdv7::instance();
+}
 
 lib::RegHolder v7 = SerializerCommon::factory().autoReg( &create, 7 );
+
 }
 }

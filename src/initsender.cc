@@ -26,15 +26,12 @@
 #include "serializer.h"
 #include "field.h"
 
-namespace rcss
-{
+namespace rcss {
 
-/*!
+/*
 //===================================================================
 //
 //  CLASS: InitSender
-//
-//  DESC: Base class for the init protocol.
 //
 //===================================================================
 */
@@ -42,17 +39,23 @@ namespace rcss
 InitSender::InitSender( std::ostream& transport,
                         const boost::shared_ptr< InitSenderCommon >& common )
     : Sender( transport ), m_common_sender( common )
-{}
+{
+
+}
 
 InitSender::~InitSender()
-{}
+{
+
+}
 
 
-
-
-
-//----------------------
-
+/*
+//===================================================================
+//
+//  CLASS: InitSenderCommonV7
+//
+//===================================================================
+*/
 
 void
 InitSenderCommonV7::sendServerParams()
@@ -422,11 +425,11 @@ InitSenderCommonV8::sendServerParams()
 void
 InitSenderCommonV8::doSendServerParam( ServerParam::VerMap::value_type param )
 {
-    if( param.second <= version() )
+    if ( param.second <= version() )
     {
 
         int ivalue;
-        if( ServerParam::instance().getInt( param.first, ivalue ) )
+        if ( ServerParam::instance().getInt( param.first, ivalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -435,7 +438,7 @@ InitSenderCommonV8::doSendServerParam( ServerParam::VerMap::value_type param )
         }
 
         bool bvalue;
-        if( ServerParam::instance().getBool( param.first, bvalue ) )
+        if ( ServerParam::instance().getBool( param.first, bvalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -444,7 +447,7 @@ InitSenderCommonV8::doSendServerParam( ServerParam::VerMap::value_type param )
         }
 
         double dvalue;
-        if( ServerParam::instance().getDoub( param.first, dvalue ) )
+        if ( ServerParam::instance().getDoub( param.first, dvalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -453,7 +456,7 @@ InitSenderCommonV8::doSendServerParam( ServerParam::VerMap::value_type param )
         }
 
         std::string svalue;
-        if( ServerParam::instance().getStr( param.first, svalue ) )
+        if ( ServerParam::instance().getStr( param.first, svalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -486,10 +489,10 @@ InitSenderCommonV8::sendPlayerParams()
 void
 InitSenderCommonV8::doSendPlayerParam( PlayerParam::VerMap::value_type param )
 {
-    if( param.second <= version() )
+    if ( param.second <= version() )
     {
         int ivalue;
-        if( PlayerParam::instance().getInt( param.first, ivalue ) )
+        if ( PlayerParam::instance().getInt( param.first, ivalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -498,7 +501,7 @@ InitSenderCommonV8::doSendPlayerParam( PlayerParam::VerMap::value_type param )
         }
 
         bool bvalue;
-        if( PlayerParam::instance().getBool( param.first, bvalue ) )
+        if ( PlayerParam::instance().getBool( param.first, bvalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -507,7 +510,7 @@ InitSenderCommonV8::doSendPlayerParam( PlayerParam::VerMap::value_type param )
         }
 
         double dvalue;
-        if( PlayerParam::instance().getDoub( param.first, dvalue ) )
+        if ( PlayerParam::instance().getDoub( param.first, dvalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -516,7 +519,7 @@ InitSenderCommonV8::doSendPlayerParam( PlayerParam::VerMap::value_type param )
         }
 
         std::string svalue;
-        if( PlayerParam::instance().getStr( param.first, svalue ) )
+        if ( PlayerParam::instance().getStr( param.first, svalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -594,21 +597,28 @@ InitSenderCommonV8::sendPlayerTypes()
 //===================================================================
 */
 
-InitSenderPlayer::Factory&
+InitSenderPlayer::Factory &
 InitSenderPlayer::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 
-InitSenderPlayer::InitSenderPlayer( const Params& params,
+InitSenderPlayer::InitSenderPlayer( const Params & params,
                                     const boost::shared_ptr< InitSenderCommon > common )
     : InitSender( params.m_transport, common ),
       M_serializer( params.m_ser ),
       M_self( params.m_self ),
       M_stadium( params.m_stadium )
-{}
+{
+
+}
 
 InitSenderPlayer::~InitSenderPlayer()
-{}
+{
+
+}
 
 
 
@@ -625,21 +635,28 @@ InitSenderPlayer::~InitSenderPlayer()
 */
 
 
-InitSenderPlayerV1::InitSenderPlayerV1( const Params& params )
+InitSenderPlayerV1::InitSenderPlayerV1( const Params & params )
     : InitSenderPlayer( params,
-                        boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV1( params.m_transport,
-                                                                                             params.m_ser,
-                                                                                             params.m_stadium,
-                                                                                             (unsigned int)params.m_self.version() ) ) )
-{}
+                        boost::shared_ptr< rcss::InitSenderCommon >
+                        ( new InitSenderCommonV1( params.m_transport,
+                                                  params.m_ser,
+                                                  params.m_stadium,
+                                                  (unsigned int)params.m_self.version() ) ) )
+{
+
+}
 
 InitSenderPlayerV1::InitSenderPlayerV1( const Params& params,
                                         const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderPlayer( params, common )
-{}
+{
+
+}
 
 InitSenderPlayerV1::~InitSenderPlayerV1()
-{}
+{
+
+}
 
 void
 InitSenderPlayerV1::sendInit()
@@ -705,12 +722,13 @@ InitSenderPlayerV1::sendChangedPlayers()
 */
 
 
-InitSenderPlayerV7::InitSenderPlayerV7( const Params& params )
+InitSenderPlayerV7::InitSenderPlayerV7( const Params & params )
     : InitSenderPlayerV1( params,
-                          boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV7( params.m_transport,
-                                                                                               params.m_ser,
-                                                                                               params.m_stadium,
-                                                                                               (unsigned int)params.m_self.version() ) ) )
+                          boost::shared_ptr< rcss::InitSenderCommon >
+                          ( new InitSenderCommonV7( params.m_transport,
+                                                    params.m_ser,
+                                                    params.m_stadium,
+                                                    (unsigned int)params.m_self.version() ) ) )
 {
 
 }
@@ -766,19 +784,26 @@ InitSenderPlayerV7::sendChangedPlayers()
 
 InitSenderPlayerV8::InitSenderPlayerV8( const Params& params )
     : InitSenderPlayerV7( params,
-                          boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV8( params.m_transport,
-                                                                                               params.m_ser,
-                                                                                               params.m_stadium,
-                                                                                               (unsigned int)params.m_self.version() ) ) )
-{}
+                          boost::shared_ptr< rcss::InitSenderCommon >
+                          ( new InitSenderCommonV8( params.m_transport,
+                                                    params.m_ser,
+                                                    params.m_stadium,
+                                                    (unsigned int)params.m_self.version() ) ) )
+{
+
+}
 
 InitSenderPlayerV8::InitSenderPlayerV8( const Params& params,
                                         const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderPlayerV7( params, common )
-{}
+{
+
+}
 
 InitSenderPlayerV8::~InitSenderPlayerV8()
-{}
+{
+
+}
 
 
 /*!
@@ -895,15 +920,21 @@ InitSenderOnlineCoachV1::sendScore()
 
 InitSenderOnlineCoachV6::InitSenderOnlineCoachV6( const Params& params )
     : InitSenderOnlineCoachV1( params )
-{}
+{
+
+}
 
 InitSenderOnlineCoachV6::InitSenderOnlineCoachV6( const Params& params,
                                                   const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderOnlineCoachV1( params, common )
-{}
+{
+
+}
 
 InitSenderOnlineCoachV6::~InitSenderOnlineCoachV6()
-{}
+{
+
+}
 
 void
 InitSenderOnlineCoachV6::sendInit()
@@ -926,19 +957,26 @@ InitSenderOnlineCoachV6::sendInit()
 
 InitSenderOnlineCoachV7::InitSenderOnlineCoachV7( const Params& params )
     : InitSenderOnlineCoachV6( params,
-                               boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV7( params.m_transport,
-                                                                                                    params.m_ser,
-                                                                                                    params.m_stadium,
-                                                                                                    (unsigned int)params.m_self.version() ) ) )
-{}
+                               boost::shared_ptr< rcss::InitSenderCommon >
+                               ( new InitSenderCommonV7( params.m_transport,
+                                                         params.m_ser,
+                                                         params.m_stadium,
+                                                         (unsigned int)params.m_self.version() ) ) )
+{
+
+}
 
 InitSenderOnlineCoachV7::InitSenderOnlineCoachV7( const Params& params,
                                                   const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderOnlineCoachV6( params, common )
-{}
+{
+
+}
 
 InitSenderOnlineCoachV7::~InitSenderOnlineCoachV7()
-{}
+{
+
+}
 
 void
 InitSenderOnlineCoachV7::sendChangedPlayers()
@@ -978,12 +1016,13 @@ InitSenderOnlineCoachV7::sendChangedPlayers()
 */
 
 
-InitSenderOnlineCoachV8::InitSenderOnlineCoachV8( const Params& params )
+InitSenderOnlineCoachV8::InitSenderOnlineCoachV8( const Params & params )
     : InitSenderOnlineCoachV7( params,
-                               boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV8( params.m_transport,
-                                                                                                    params.m_ser,
-                                                                                                    params.m_stadium,
-                                                                                                    (unsigned int)params.m_self.version() ) ) )
+                               boost::shared_ptr< rcss::InitSenderCommon >
+                               ( new InitSenderCommonV8( params.m_transport,
+                                                         params.m_ser,
+                                                         params.m_stadium,
+                                                         (unsigned int)params.m_self.version() ) ) )
 {
 
 }
@@ -1056,12 +1095,13 @@ InitSenderOfflineCoach::~InitSenderOfflineCoach()
 */
 
 
-InitSenderOfflineCoachV1::InitSenderOfflineCoachV1( const Params& params )
+InitSenderOfflineCoachV1::InitSenderOfflineCoachV1( const Params & params )
     : InitSenderOfflineCoach( params,
-                              boost::shared_ptr< InitSenderCommon >( new InitSenderCommonV1( params.m_transport,
-                                                                                             params.m_ser,
-                                                                                             params.m_stadium,
-                                                                                             (unsigned int)params.m_self.version() ) ) )
+                              boost::shared_ptr< InitSenderCommon >
+                              ( new InitSenderCommonV1( params.m_transport,
+                                                        params.m_ser,
+                                                        params.m_stadium,
+                                                        (unsigned int)params.m_self.version() ) ) )
 {
 
 }
@@ -1114,21 +1154,28 @@ InitSenderOfflineCoachV1::sendScore()
 */
 
 
-InitSenderOfflineCoachV7::InitSenderOfflineCoachV7( const Params& params )
+InitSenderOfflineCoachV7::InitSenderOfflineCoachV7( const Params & params )
     : InitSenderOfflineCoachV1( params,
-                                boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV7( params.m_transport,
-                                                                                                     params.m_ser,
-                                                                                                     params.m_stadium,
-                                                                                                     (unsigned int)params.m_self.version() ) ) )
-{}
+                                boost::shared_ptr< rcss::InitSenderCommon >
+                                ( new InitSenderCommonV7( params.m_transport,
+                                                          params.m_ser,
+                                                          params.m_stadium,
+                                                          (unsigned int)params.m_self.version() ) ) )
+{
 
-InitSenderOfflineCoachV7::InitSenderOfflineCoachV7( const Params& params,
+}
+
+InitSenderOfflineCoachV7::InitSenderOfflineCoachV7( const Params & params,
                                                     const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderOfflineCoachV1( params, common )
-{}
+{
+
+}
 
 InitSenderOfflineCoachV7::~InitSenderOfflineCoachV7()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -1141,21 +1188,28 @@ InitSenderOfflineCoachV7::~InitSenderOfflineCoachV7()
 */
 
 
-InitSenderOfflineCoachV8::InitSenderOfflineCoachV8( const Params& params )
+InitSenderOfflineCoachV8::InitSenderOfflineCoachV8( const Params & params )
     : InitSenderOfflineCoachV7( params,
-                                boost::shared_ptr< rcss::InitSenderCommon >( new InitSenderCommonV8( params.m_transport,
-                                                                                                     params.m_ser,
-                                                                                                     params.m_stadium,
-                                                                                                     (unsigned int)params.m_self.version() ) ) )
-{}
+                                boost::shared_ptr< rcss::InitSenderCommon >
+                                ( new InitSenderCommonV8( params.m_transport,
+                                                          params.m_ser,
+                                                          params.m_stadium,
+                                                          (unsigned int)params.m_self.version() ) ) )
+{
 
-InitSenderOfflineCoachV8::InitSenderOfflineCoachV8( const Params& params,
+}
+
+InitSenderOfflineCoachV8::InitSenderOfflineCoachV8( const Params & params,
                                                     const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderOfflineCoachV7( params, common )
-{}
+{
+
+}
 
 InitSenderOfflineCoachV8::~InitSenderOfflineCoachV8()
-{}
+{
+
+}
 
 
 /*!
@@ -1166,8 +1220,8 @@ InitSenderOfflineCoachV8::~InitSenderOfflineCoachV8()
 //===================================================================
 */
 
-namespace initsender
-{
+namespace initsender {
+
 template< typename Sender >
 InitSenderPlayer::Ptr
 create( const InitSenderPlayer::Params & params )
@@ -1227,5 +1281,6 @@ lib::RegHolder vc9 = InitSenderOfflineCoach::factory().autoReg( &create< InitSen
 lib::RegHolder vc10 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 10 );
 lib::RegHolder vc11 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 11 );
 lib::RegHolder vc12 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 12 );
+
 }
 }

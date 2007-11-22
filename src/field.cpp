@@ -154,6 +154,7 @@ Stadium::Stadium()
       M_team_r( NULL ),
       M_playmode( PM_BeforeKickOff ),
       M_time( 0 ),
+      M_stoppage_time( 0 ),
       M_ball_catcher( NULL ),
       M_kick_off_side( LEFT ),
       M_nr_monitor_v1( 0 ),
@@ -380,8 +381,6 @@ Stadium::init()
     M_weather.init();
 
     initObjects();
-
-    M_time = 0;
 
     change_play_mode( PM_BeforeKickOff );
 
@@ -1026,6 +1025,7 @@ Stadium::step()
     if ( playmode() == PM_BeforeKickOff )
     {
         turnMovableObjects();
+        ++M_stoppage_time;
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
     }
     else if ( playmode() == PM_AfterGoal_Right
@@ -1041,6 +1041,7 @@ Stadium::step()
     {
         M_ball_catcher = NULL;
         incMovableObjects();
+        ++M_stoppage_time;
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
     }
     else if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
@@ -1048,6 +1049,7 @@ Stadium::step()
         incMovableObjects();
 
         ++M_time;
+        M_stoppage_time = 0;
 
         move_caught_ball();
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
@@ -1085,9 +1087,7 @@ Stadium::stepEnd()
         (*p)->updateCapacity();
     }
 
-    makeMonitorMessage();
-    sendToMonitors();
-    writeCurrentGameLog();
+    sendDisp();
 }
 
 void
@@ -1123,6 +1123,14 @@ Stadium::incMovableObjects()
     }
 
     collisions();
+}
+
+void
+Stadium::sendDisp()
+{
+    makeMonitorMessage();
+    sendToMonitors();
+    writeCurrentGameLog();
 }
 
 void

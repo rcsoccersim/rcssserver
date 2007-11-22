@@ -23,26 +23,25 @@
 #ifndef RCSSINITSENDER_H
 #define RCSSINITSENDER_H
 
-//#include "paramreader.h"
 #include "sender.h"
 #include "observer.h"
-#include <rcssbase/lib/factory.hpp>
 #include "serverparam.h"
 #include "playerparam.h"
+
+#include <rcssbase/lib/factory.hpp>
 
 class Stadium;
 class Player;
 class Coach;
 class OnlineCoach;
 
-namespace rcss
-{
+namespace rcss {
+
 class Serializer;
 class SerializerPlayer;
 class SerializerCommon;
 class SerializerOnlineCoach;
 class SerializerCoach;
-
 
 /*!
 //===================================================================
@@ -85,21 +84,27 @@ public:
     void
     sendPlayerTypes() = 0;
 
-    std::ostream&
-    transport()
-      { return m_transport; }
+    std::ostream & transport()
+      {
+          return m_transport;
+      }
 
-    const Serializer&
-    serializer()
-      { return m_serializer; }
+    const
+    Serializer & serializer()
+      {
+          return m_serializer;
+      }
 
-    const Stadium&
-    stadium()
-      { return m_stad; }
+    const
+    Stadium & stadium()
+      {
+          return m_stad;
+      }
 
-    unsigned int
-    version()
-      { return m_ver; }
+    unsigned int version()
+      {
+          return m_ver;
+      }
 
     bool newLine() const
       {

@@ -36,30 +36,30 @@
 
 #include <rcssbase/lib/factory.hpp>
 
-namespace rcss
-{
+namespace rcss {
+
 void
-Listener::sendRefAudio( const char* msg )
+Listener::sendRefAudio( const char * msg )
 {
     sender().sendRefAudio( msg );
 }
 
 void
-Listener::sendCoachAudio( const Coach& coach,
-                          const char* msg )
+Listener::sendCoachAudio( const Coach & coach,
+                          const char * msg )
 {
     sender().sendCoachAudio( coach, msg );
 }
 
 void
-Listener::sendCoachStdAudio( const rcss::clang::Msg& msg )
+Listener::sendCoachStdAudio( const rcss::clang::Msg & msg )
 {
     sender().sendCoachStdAudio( msg );
 }
 
 void
-Listener::sendPlayerAudio( const Player& player,
-                           const char* msg )
+Listener::sendPlayerAudio( const Player & player,
+                           const char * msg )
 {
     sender().sendPlayerAudio( player, msg );
 }
@@ -71,7 +71,7 @@ Listener::newCycle()
 }
 
 void
-Listener::focusOn( const Player& player )
+Listener::focusOn( const Player & player )
 {
     sender().focusOn( player );
 }
@@ -83,7 +83,10 @@ Listener::focusOff()
 }
 
 void
-Listener::setEar( bool on, Side side, bool complete, bool partial )
+Listener::setEar( bool on,
+                  Side side,
+                  bool complete,
+                  bool partial )
 {
     sender().setEar( on, side, complete, partial );
 }
@@ -95,21 +98,24 @@ Listener::sendOKClang()
 }
 
 void
-Listener::sendErrorNoTeamName( const std::string& team_name )
+Listener::sendErrorNoTeamName( const std::string & team_name )
 {
     sender().sendErrorNoTeamName( team_name );
 }
 
 
-AudioSenderPlayer::Factory&
+AudioSenderPlayer::Factory &
 AudioSenderPlayer::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 void
-AudioSenderPlayer::sendPlayerAudio( const Player& player,
-                                    const char* msg )
+AudioSenderPlayer::sendPlayerAudio( const Player & player,
+                                    const char * msg )
 {
-    if( &player == &M_listener )
+    if ( &player == &M_listener )
     {
         sendSelfAudio( msg );
     }
@@ -126,7 +132,7 @@ AudioSenderPlayer::generalPredicate() const
 }
 
 bool
-AudioSenderPlayer::coachStdPredicate( const rcss::clang::Msg& msg ) const
+AudioSenderPlayer::coachStdPredicate( const rcss::clang::Msg & msg ) const
 {
     return ( generalPredicate()
              && M_listener.team()->side() == msg.getSide() );
@@ -134,7 +140,7 @@ AudioSenderPlayer::coachStdPredicate( const rcss::clang::Msg& msg ) const
 
 
 bool
-AudioSenderPlayer::nonSelfPlayerPredicate( const Player& player ) const
+AudioSenderPlayer::nonSelfPlayerPredicate( const Player & player ) const
 {
     // we could do this as one big return statement, but then it becomes
     // a nightmare to understand
@@ -165,7 +171,7 @@ AudioSenderPlayer::nonSelfPlayerPredicate( const Player& player ) const
 }
 
 bool
-AudioSenderPlayer::postNonSelfPlayer( const Player& player )
+AudioSenderPlayer::postNonSelfPlayer( const Player & player )
 {
     M_listener.decrementHearCapacity( player );
 //     if ( M_listener.team() == player.team() )
@@ -179,9 +185,9 @@ AudioSenderPlayer::postNonSelfPlayer( const Player& player )
 
 
 void
-AudioSenderPlayerv1::sendRefAudio( const char* msg )
+AudioSenderPlayerv1::sendRefAudio( const char * msg )
 {
-    if( generalPredicate () )
+    if ( generalPredicate () )
     {
         M_serializer.serializeRefAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
@@ -190,10 +196,10 @@ AudioSenderPlayerv1::sendRefAudio( const char* msg )
 
 
 void
-AudioSenderPlayerv1::sendCoachAudio( const Coach& coach,
-                                     const char* msg )
+AudioSenderPlayerv1::sendCoachAudio( const Coach & coach,
+                                     const char * msg )
 {
-    if( generalPredicate () )
+    if ( generalPredicate () )
     {
         std::string name;
         switch( coach.side() ) {
@@ -223,13 +229,12 @@ AudioSenderPlayerv1::sendCoachAudio( const Coach& coach,
 
 
 void
-AudioSenderPlayerv1::sendCoachStdAudio( const rcss::clang::Msg& msg )
+AudioSenderPlayerv1::sendCoachStdAudio( const rcss::clang::Msg & msg )
 {
-    if( coachStdPredicate( msg ) )
+    if ( coachStdPredicate( msg ) )
     {
         std::string name;
-        switch( msg.getSide() )
-        {
+        switch( msg.getSide() ) {
         case LEFT:
             name = OLCOACH_NAME_L;
             break;
@@ -264,9 +269,9 @@ AudioSenderPlayerv1::sendCoachStdAudio( const rcss::clang::Msg& msg )
 }
 
 void
-AudioSenderPlayerv1::sendSelfAudio( const char* msg )
+AudioSenderPlayerv1::sendSelfAudio( const char * msg )
 {
-    if( generalPredicate () )
+    if ( generalPredicate () )
     {
         M_serializer.serializeSelfAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
@@ -274,10 +279,10 @@ AudioSenderPlayerv1::sendSelfAudio( const char* msg )
 }
 
 void
-AudioSenderPlayerv1::sendNonSelfPlayerAudio( const Player& player,
-                                             const char* msg )
+AudioSenderPlayerv1::sendNonSelfPlayerAudio( const Player & player,
+                                             const char * msg )
 {
-    if( nonSelfPlayerPredicate( player ) )
+    if ( nonSelfPlayerPredicate( player ) )
     {
         int dir = Rad2IDeg( M_listener.angleFromBody( player ) );
         M_serializer.serializePlayerAudio( transport(),
@@ -307,10 +312,10 @@ AudioSenderPlayerv1::sendErrorNoTeamName( const std::string& team_name )
 
 
 void
-AudioSenderPlayerv7::sendCoachAudio( const Coach& coach,
-                                     const char* msg )
+AudioSenderPlayerv7::sendCoachAudio( const Coach & coach,
+                                     const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         std::string name;
         switch( coach.side() ) {
@@ -340,7 +345,7 @@ AudioSenderPlayerv7::sendCoachAudio( const Coach& coach,
 
 void
 AudioSenderPlayerv7::sendNonSelfPlayerAudio( const Player & player,
-                                             const char* msg )
+                                             const char * msg )
 {
     if ( nonSelfPlayerPredicate( player ) )
     {
@@ -352,6 +357,37 @@ AudioSenderPlayerv7::sendNonSelfPlayerAudio( const Player & player,
         transport() << std::ends << std::flush;
         postNonSelfPlayer( player );
     }
+}
+
+
+AudioSenderPlayerv8::~AudioSenderPlayerv8()
+{
+    for( player_msg_cont_t::iterator i = M_player_msgs.begin();
+         i != M_player_msgs.end();
+         ++i )
+    {
+        free( i->second );
+        i->second = NULL;
+    }
+    M_player_msgs.clear();
+
+    for( self_msg_cont_t::iterator i = M_self_msgs.begin();
+         i != M_self_msgs.end();
+         ++i )
+    {
+        free( *i );
+        *i = NULL;
+    }
+    M_self_msgs.clear();
+
+    for( coach_msg_cont_t::iterator i = M_coach_msgs.begin();
+         i != M_coach_msgs.end();
+         ++i )
+    {
+        free( i->second );
+        i->second = NULL;
+    }
+    M_coach_msgs.clear();
 }
 
 bool
@@ -380,10 +416,11 @@ AudioSenderPlayerv8::nonSelfPlayerFullPredicate( const Player & player ) const
 
 
 void
-AudioSenderPlayerv8::sendCoachAudio( const Coach& coach, const char* msg )
+AudioSenderPlayerv8::sendCoachAudio( const Coach & coach,
+                                     const char * msg )
 {
-    char* msg_copy = strdup( msg );
-    if( msg_copy == NULL )
+    char * msg_copy = strdup( msg );
+    if ( msg_copy == NULL )
     {
         std::cerr << "Error:  could not alocate memory to cache coach audio message\n";
     }
@@ -396,10 +433,10 @@ AudioSenderPlayerv8::sendCoachAudio( const Coach& coach, const char* msg )
 
 
 void
-AudioSenderPlayerv8::sendSelfAudio( const char* msg )
+AudioSenderPlayerv8::sendSelfAudio( const char * msg )
 {
-    char* msg_copy = strdup( msg );
-    if( msg_copy == NULL )
+    char * msg_copy = strdup( msg );
+    if ( msg_copy == NULL )
     {
         std::cerr << "Error:  could not alocate memory to cache player's own audio message\n";
     }
@@ -411,8 +448,8 @@ AudioSenderPlayerv8::sendSelfAudio( const char* msg )
 
 
 void
-AudioSenderPlayerv8::sendNonSelfPlayerAudio( const Player& player,
-                                             const char* msg )
+AudioSenderPlayerv8::sendNonSelfPlayerAudio( const Player & player,
+                                             const char * msg )
 {
     if ( ! nonSelfPlayerPredicate( player ) )
     {
@@ -435,8 +472,8 @@ AudioSenderPlayerv8::sendNonSelfPlayerAudio( const Player& player,
         return;
     }
 
-    char* msg_copy = strdup( msg );
-    if( msg_copy == NULL )
+    char * msg_copy = strdup( msg );
+    if ( msg_copy == NULL )
     {
         std::cerr << "Error:  could not alocate memory to cache player audio message\n";
     }
@@ -478,7 +515,7 @@ AudioSenderPlayerv8::newCycle()
 }
 
 void
-AudioSenderPlayerv8::focusOn( const Player& player )
+AudioSenderPlayerv8::focusOn( const Player & player )
 {
     M_focused.focusOn ( &player );
     M_state_p = &M_focused;
@@ -494,21 +531,21 @@ AudioSenderPlayerv8::focusOff()
 
 
 void
-AudioSenderPlayerv8::sendCachedCoachAudio( const Coach& coach,
-                                           const char* msg )
+AudioSenderPlayerv8::sendCachedCoachAudio( const Coach & coach,
+                                           const char * msg )
 {
     AudioSenderPlayerv7::sendCoachAudio( coach, msg );
 }
 
 void
-AudioSenderPlayerv8::sendCachedSelfAudio( const char* msg )
+AudioSenderPlayerv8::sendCachedSelfAudio( const char * msg )
 {
     AudioSenderPlayerv7::sendSelfAudio( msg );
 }
 
 void
-AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player& player,
-                                                   const char* msg )
+AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player & player,
+                                                   const char * msg )
 {
     //if ( nonSelfPlayerPredicate( player ) )
     {
@@ -560,7 +597,7 @@ AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player& player,
 }
 
 AudioSenderPlayerv8::Unfocused::key_value_t
-AudioSenderPlayerv8::Unfocused::getMsg( msg_cont_t& msgs )
+AudioSenderPlayerv8::Unfocused::getMsg( msg_cont_t & msgs )
 {
     if ( msgs.size() == 1 )
     {
@@ -584,7 +621,7 @@ AudioSenderPlayerv8::Unfocused::getMsg( msg_cont_t& msgs )
 }
 
 AudioSenderPlayerv8::Focused::key_value_t
-AudioSenderPlayerv8::Focused::getMsg( msg_cont_t& msgs )
+AudioSenderPlayerv8::Focused::getMsg( msg_cont_t & msgs )
 {
 #if 1
      std::pair< msg_cont_t::iterator, msg_cont_t::iterator > iters;
@@ -597,7 +634,7 @@ AudioSenderPlayerv8::Focused::getMsg( msg_cont_t& msgs )
            i != iters.second; //msgs.end();
            ++i )
      {
-         if( i->first != M_key )
+         if ( i->first != M_key )
          {
              iters.second = i;
              break;
@@ -645,29 +682,32 @@ AudioSenderPlayerv8::Focused::getMsg( msg_cont_t& msgs )
 
 
 void
-AudioSenderPlayerv8::setEar( bool on, Side side, bool complete, bool partial )
+AudioSenderPlayerv8::setEar( bool on,
+                             Side side,
+                             bool complete,
+                             bool partial )
 {
-    if( side != RIGHT )
+    if ( side != RIGHT )
     {
-        if( complete )
+        if ( complete )
         {
             M_left_complete = on;
             //std::cout << "Set left complete to: " << on << std::endl;
         }
-        if( partial )
+        if ( partial )
         {
             M_left_partial = on;
             //std::cout << "Set left partial to: " << on << std::endl;
         }
     }
-    if( side != LEFT )
+    if ( side != LEFT )
     {
-        if( complete )
+        if ( complete )
         {
             M_right_complete = on;
             //std::cout << "Set right complete to: " << on << std::endl;
         }
-        if( partial )
+        if ( partial )
         {
             M_right_partial = on;
             //std::cout << "Set right partial to: " << on << std::endl;
@@ -675,9 +715,12 @@ AudioSenderPlayerv8::setEar( bool on, Side side, bool complete, bool partial )
     }
 }
 
-AudioSenderCoach::Factory&
+AudioSenderCoach::Factory &
 AudioSenderCoach::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 bool
 AudioSenderCoach::generalPredicate() const
@@ -690,9 +733,9 @@ AudioSenderCoach::generalPredicate() const
 
 
 void
-AudioSenderCoachv1::sendRefAudio( const char* msg )
+AudioSenderCoachv1::sendRefAudio( const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         M_serializer.serializeRefAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
@@ -700,9 +743,10 @@ AudioSenderCoachv1::sendRefAudio( const char* msg )
 }
 
 void
-AudioSenderCoachv1::sendCoachAudio( const Coach& coach, const char* msg )
+AudioSenderCoachv1::sendCoachAudio( const Coach & coach,
+                                    const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         std::string name;
         switch( coach.side() ) {
@@ -731,9 +775,9 @@ AudioSenderCoachv1::sendCoachAudio( const Coach& coach, const char* msg )
 }
 
 void
-AudioSenderCoachv1::sendCoachStdAudio( const rcss::clang::Msg& msg )
+AudioSenderCoachv1::sendCoachStdAudio( const rcss::clang::Msg & msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         std::string name;
         switch ( msg.getSide() ) {
@@ -758,9 +802,10 @@ AudioSenderCoachv1::sendCoachStdAudio( const rcss::clang::Msg& msg )
 }
 
 void
-AudioSenderCoachv1::sendPlayerAudio( const Player& player, const char* msg )
+AudioSenderCoachv1::sendPlayerAudio( const Player & player,
+                                     const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         M_serializer.serializePlayerAudio( transport(),
                                            M_stadium.time(),
@@ -771,9 +816,10 @@ AudioSenderCoachv1::sendPlayerAudio( const Player& player, const char* msg )
 }
 
 void
-AudioSenderCoachv7::sendPlayerAudio( const Player& player, const char* msg )
+AudioSenderCoachv7::sendPlayerAudio( const Player & player,
+                                     const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         M_serializer.serializePlayerAudio( transport(),
                                            M_stadium.time(),
@@ -784,9 +830,12 @@ AudioSenderCoachv7::sendPlayerAudio( const Player& player, const char* msg )
 }
 
 
-AudioSenderOnlineCoach::Factory&
+AudioSenderOnlineCoach::Factory &
 AudioSenderOnlineCoach::factory()
-{ static Factory rval; return rval; }
+{
+    static Factory rval;
+    return rval;
+}
 
 bool
 AudioSenderOnlineCoach::generalPredicate() const
@@ -796,16 +845,16 @@ AudioSenderOnlineCoach::generalPredicate() const
 
 
 bool
-AudioSenderOnlineCoach::coachPredicate( const Coach& coach ) const
+AudioSenderOnlineCoach::coachPredicate( const Coach & coach ) const
 {
     return generalPredicate() && coach.side() == NEUTRAL;
 }
 
 
 void
-AudioSenderOnlineCoachv1::sendRefAudio( const char* msg )
+AudioSenderOnlineCoachv1::sendRefAudio( const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         M_serializer.serializeRefAudio( transport(),
                                         M_stadium.time(),
@@ -816,10 +865,10 @@ AudioSenderOnlineCoachv1::sendRefAudio( const char* msg )
 }
 
 void
-AudioSenderOnlineCoachv1::sendCoachAudio( const Coach& coach,
-                                          const char* msg )
+AudioSenderOnlineCoachv1::sendCoachAudio( const Coach & coach,
+                                          const char * msg )
 {
-    if( coachPredicate( coach ) )
+    if ( coachPredicate( coach ) )
     {
         M_serializer.serializeRefAudio ( transport(),
                                          M_stadium.time(),
@@ -830,10 +879,10 @@ AudioSenderOnlineCoachv1::sendCoachAudio( const Coach& coach,
 }
 
 void
-AudioSenderOnlineCoachv1::sendPlayerAudio( const Player& player,
-                                           const char* msg )
+AudioSenderOnlineCoachv1::sendPlayerAudio( const Player & player,
+                                           const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         M_serializer.serializePlayerAudio( transport(),
                                            M_stadium.time(),
@@ -844,10 +893,10 @@ AudioSenderOnlineCoachv1::sendPlayerAudio( const Player& player,
 }
 
 void
-AudioSenderOnlineCoachv7::sendPlayerAudio( const Player& player,
-                                           const char* msg )
+AudioSenderOnlineCoachv7::sendPlayerAudio( const Player & player,
+                                           const char * msg )
 {
-    if( generalPredicate() )
+    if ( generalPredicate() )
     {
         M_serializer.serializePlayerAudio( transport(),
                                            M_stadium.time(),
@@ -857,23 +906,14 @@ AudioSenderOnlineCoachv7::sendPlayerAudio( const Player& player,
     }
 }
 
-namespace audio
+namespace audio {
+
+template< typename Sender >
+AudioSender::Ptr
+create( const AudioSenderPlayer::Params & params )
 {
-template< typename Sender >
-AudioSender::Ptr
-create( const AudioSenderPlayer::Params& params )
-{ return AudioSender::Ptr( new Sender( params ) ); }
-
-template< typename Sender >
-AudioSender::Ptr
-create( const AudioSenderCoach::Params& params )
-{ return AudioSender::Ptr( new Sender( params ) ); }
-
-template< typename Sender >
-AudioSender::Ptr
-create( const AudioSenderOnlineCoach::Params& params )
-{ return AudioSender::Ptr( new Sender( params ) ); }
-
+    return AudioSender::Ptr( new Sender( params ) );
+}
 
 lib::RegHolder vp1 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 1 );
 lib::RegHolder vp2 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 2 );
@@ -888,6 +928,13 @@ lib::RegHolder vp10 = AudioSenderPlayer::factory().autoReg( &create< AudioSender
 lib::RegHolder vp11 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 11 );
 lib::RegHolder vp12 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 12 );
 
+template< typename Sender >
+AudioSender::Ptr
+create( const AudioSenderCoach::Params & params )
+{
+    return AudioSender::Ptr( new Sender( params ) );
+}
+
 lib::RegHolder vc1 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 1 );
 lib::RegHolder vc2 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 2 );
 lib::RegHolder vc3 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 3 );
@@ -901,6 +948,13 @@ lib::RegHolder vc10 = AudioSenderCoach::factory().autoReg( &create< AudioSenderC
 lib::RegHolder vc11 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 11 );
 lib::RegHolder vc12 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 12 );
 
+template< typename Sender >
+AudioSender::Ptr
+create( const AudioSenderOnlineCoach::Params & params )
+{
+    return AudioSender::Ptr( new Sender( params ) );
+}
+
 lib::RegHolder voc1 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 1 );
 lib::RegHolder voc2 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 2 );
 lib::RegHolder voc3 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 3 );
@@ -913,5 +967,6 @@ lib::RegHolder voc9 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioS
 lib::RegHolder voc10 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 10 );
 lib::RegHolder voc11 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 11 );
 lib::RegHolder voc12 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 12 );
+
 }
 }

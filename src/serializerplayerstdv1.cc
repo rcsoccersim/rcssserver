@@ -26,22 +26,28 @@
 static char *PlayModeString[] = PLAYMODE_STRINGS;
 
 
-namespace rcss
-{
+namespace rcss {
 
 SerializerPlayerStdv1::SerializerPlayerStdv1( const SerializerCommon& common )
     : SerializerPlayer( common )
-{}
+{
+
+}
 
 SerializerPlayerStdv1::~SerializerPlayerStdv1()
-{}
+{
+
+}
 
 const SerializerPlayerStdv1*
 SerializerPlayerStdv1::instance()
 {
     SerializerCommon::Creator cre;
-    if( !SerializerCommon::factory().getCreator( cre, 1 ) )
+    if ( ! SerializerCommon::factory().getCreator( cre, 1 ) )
+    {
         return NULL;
+    }
+
     static SerializerPlayerStdv1 ser( cre() );
     return &ser;
 }
@@ -525,11 +531,14 @@ SerializerPlayerStdv1::serializeScore( std::ostream& strm,
     strm << "(score " << time << " " << our << " " << opp << ")";
 }
 
-namespace
-{
-const SerializerPlayer*
+namespace {
+
+const
+SerializerPlayer*
 create()
-{ return SerializerPlayerStdv1::instance(); }
+{
+    return SerializerPlayerStdv1::instance();
+}
 
 lib::RegHolder v1 = SerializerPlayer::factory().autoReg( &create, 1 );
 lib::RegHolder v2 = SerializerPlayer::factory().autoReg( &create, 2 );
@@ -537,5 +546,6 @@ lib::RegHolder v3 = SerializerPlayer::factory().autoReg( &create, 3 );
 lib::RegHolder v4 = SerializerPlayer::factory().autoReg( &create, 4 );
 lib::RegHolder v5 = SerializerPlayer::factory().autoReg( &create, 5 );
 lib::RegHolder v6 = SerializerPlayer::factory().autoReg( &create, 6 );
+
 }
 }

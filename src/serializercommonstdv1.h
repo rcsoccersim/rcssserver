@@ -39,8 +39,8 @@ public:
     ~SerializerCommonStdv1();
 
     static
-    const SerializerCommonStdv1&
-    instance();
+    const
+    SerializerCommonStdv1 & instance();
 
     virtual
     void serializeServerParamBegin( std::ostream & strm ) const;

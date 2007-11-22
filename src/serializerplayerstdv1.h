@@ -37,8 +37,8 @@ public:
     ~SerializerPlayerStdv1();
 
     static
-    const SerializerPlayerStdv1*
-    instance();
+    const
+    SerializerPlayerStdv1 * instance();
 
     virtual
     void

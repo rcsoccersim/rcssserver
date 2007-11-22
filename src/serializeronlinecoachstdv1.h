@@ -24,11 +24,10 @@
 
 #include "serializer.h"
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerOnlineCoachStdv1
-    : public SerializerOnlineCoach
-{
+    : public SerializerOnlineCoach {
 protected:
     SerializerOnlineCoachStdv1( const SerializerCommon & common,
                                 const SerializerCoach & coach );
@@ -38,8 +37,8 @@ public:
     ~SerializerOnlineCoachStdv1();
 
     static
-    const SerializerOnlineCoachStdv1*
-    instance();
+    const
+    SerializerOnlineCoachStdv1 * instance();
 
     virtual
     void

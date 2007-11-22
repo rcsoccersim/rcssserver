@@ -38,10 +38,9 @@ class Player;
 class Stadium;
 class RemoteClient;
 
-namespace rcss
-{
-namespace clang
-{
+namespace rcss {
+
+namespace clang {
 class Msg;
 }
 
@@ -62,8 +61,7 @@ class Msg;
 // generic Serializer that AudioSender delegates to.
 
 class AudioSender
-    : protected Sender
-{
+    : protected Sender {
 public:
     typedef std::auto_ptr< rcss::AudioSender > Ptr;
 
@@ -71,146 +69,149 @@ protected:
     const Stadium& M_stadium;
 
 public:
-    AudioSender( const Stadium& stadium,
-                 std::ostream& transport )
-        : Sender( transport ), M_stadium( stadium )
-      {}
+    AudioSender( const Stadium & stadium,
+                 std::ostream & transport )
+        : Sender( transport )
+        , M_stadium( stadium )
+      { }
 
     virtual
-    ~AudioSender() {}
+    ~AudioSender()
+      { }
 
     virtual
-    void
-    sendRefAudio( const char* ) {}
+    void sendRefAudio( const char * )
+      { }
 
     virtual
-    void
-    sendCoachAudio( const Coach&, const char* ) {}
+    void sendCoachAudio( const Coach &,
+                         const char * )
+      { }
 
     virtual
-    void
-    sendCoachStdAudio( const clang::Msg& ) {}
+    void sendCoachStdAudio( const clang::Msg & )
+      { }
 
     virtual
-    void
-    sendPlayerAudio( const Player&, const char* ) {}
+    void sendPlayerAudio( const Player &,
+                          const char * )
+      { }
 
     virtual
-    void
-    newCycle() {}
+    void newCycle()
+      { }
 
     virtual
-    void
-    focusOn( const Player& ) {}
+    void focusOn( const Player & )
+      { }
 
     virtual
-    void
-    focusOff() {}
+    void focusOff()
+      { }
 
     virtual
-    const Player*
-    getFocusTarget() const
-      { return NULL; }
+    const
+    Player * getFocusTarget() const
+      {
+          return NULL;
+      }
 
     virtual
-    unsigned int
-    getFocusCount() const
-      { return 0; }
+    unsigned int getFocusCount() const
+      {
+          return 0;
+      }
 
     virtual
-    void
-    setEar( bool, Side, bool, bool )
-      {}
+    void setEar( bool, Side, bool, bool )
+      { }
 
     virtual
-    void
-    sendOKClang()
-      {}
+    void sendOKClang()
+      { }
 
     virtual
-    void
-    sendErrorNoTeamName( const std::string& )
-      {}
+    void sendErrorNoTeamName( const std::string& )
+      { }
 };
 
 
 
 
 class Listener
-    : protected BaseObserver< AudioSender >
-{
+    : protected BaseObserver< AudioSender > {
 public:
     Listener()
-      {}
+      { }
 
     Listener( AudioSender& sender )
         : BaseObserver< AudioSender >( sender )
-      {}
+      { }
 
     Listener( std::auto_ptr< AudioSender > sender )
         : BaseObserver< AudioSender >( sender )
-      {}
+      { }
 
     ~Listener()
-      {}
+      { }
 
-    void
-    setAudioSender( AudioSender& sender )
+    void setAudioSender( AudioSender & sender )
       {
           BaseObserver< AudioSender >::setSender( sender );
       }
 
-    void
-    setAudioSender( std::auto_ptr< AudioSender > sender )
+    void setAudioSender( std::auto_ptr< AudioSender > sender )
       {
           BaseObserver< AudioSender >::setSender( sender );
       }
 
-    void
-    sendRefAudio( const char* msg );
+    void sendRefAudio( const char * msg );
 
-    void
-    sendCoachAudio( const Coach& coach, const char* msg );
+    void sendCoachAudio( const Coach & coach,
+                         const char * msg );
 
-    void
-    sendCoachStdAudio( const clang::Msg& msg );
+    void sendCoachStdAudio( const clang::Msg & msg );
 
-    void
-    sendPlayerAudio( const Player& player, const char* msg );
+    void sendPlayerAudio( const Player & player,
+                          const char * msg );
 
-    void
-    newCycle();
+    void newCycle();
 
-    void
-    focusOn( const Player& player );
+    void focusOn( const Player& player );
 
-    void
-    focusOff();
+    void focusOff();
 
-    const Player*
-    getFocusTarget() const
-      { return sender().getFocusTarget(); }
+    const
+    Player * getFocusTarget() const
+      {
+          return sender().getFocusTarget();
+      }
 
-    unsigned int
-    getFocusCount() const
-      { return sender().getFocusCount(); }
+    unsigned int getFocusCount() const
+      {
+          return sender().getFocusCount();
+      }
 
-    class NewCycle
-    {
+    class NewCycle {
     public:
         void
-        operator()( Listener* listener )
-          { listener->newCycle(); }
+        operator()( Listener * listener )
+          {
+              listener->newCycle();
+          }
     };
 
     void
-    setEar( bool on, Side side, bool complete, bool partial );
+    setEar( bool on,
+            Side side,
+            bool complete,
+            bool partial );
 
     void
     sendOKClang();
 
     void
-    sendErrorNoTeamName( const std::string& team_name );
+    sendErrorNoTeamName( const std::string & team_name );
 };
 
 
@@ -218,11 +219,10 @@ class SerializerPlayer;
 
 
 class AudioSenderPlayer
-    : public AudioSender
-{
+    : public AudioSender {
 protected:
     Player& M_listener;
-    const SerializerPlayer& M_serializer;
+    const SerializerPlayer & M_serializer;
 
 public:
     class Params {
@@ -243,43 +243,43 @@ public:
           { }
     };
 
-    typedef Ptr (*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
 
-    AudioSenderPlayer( const Params& params )
-        : AudioSender( params.m_stadium, params.m_transport ),
+    AudioSenderPlayer( const Params & params )
+        : AudioSender( params.m_stadium,
+                       params.m_transport ),
           M_listener( params.m_listener ),
           M_serializer( params.m_serializer )
-      {}
+      { }
 
-    ~AudioSenderPlayer() {}
-
-    virtual
-    void
-    sendPlayerAudio( const Player& player, const char* msg );
+    ~AudioSenderPlayer()
+      { }
 
     virtual
-    void
-    sendSelfAudio( const char* ) {}
+    void sendPlayerAudio( const Player & player,
+                          const char * msg );
 
     virtual
-    void
-    sendNonSelfPlayerAudio( const Player&, const char* ) {}
+    void sendSelfAudio( const char * )
+      { }
 
     virtual
-    void
-    sendOKClang()
-      {}
+    void sendNonSelfPlayerAudio( const Player &,
+                                 const char * )
+      { }
 
     virtual
-    void
-    sendErrorNoTeamName( const std::string& )
-      {}
+    void sendOKClang()
+      { }
+
+    virtual
+    void sendErrorNoTeamName( const std::string & )
+      { }
 
 protected:
 
@@ -288,22 +288,18 @@ protected:
     // also allows you to change the predicate without changing the data
     // construction.
     virtual
-    bool
-    generalPredicate() const;
+    bool generalPredicate() const;
 
     virtual
-    bool
-    coachStdPredicate( const clang::Msg& msg ) const;
+    bool coachStdPredicate( const clang::Msg & msg ) const;
 
     virtual
-    bool
-    nonSelfPlayerPredicate( const Player& player ) const;
+    bool nonSelfPlayerPredicate( const Player & player ) const;
 
     // The post method(s) allow any adjustmets to the listeners state to
     // be done, independant of the data contruction
     virtual
-    bool
-    postNonSelfPlayer( const Player& player );
+    bool postNonSelfPlayer( const Player & player );
 
 };
 
@@ -311,44 +307,38 @@ protected:
 
 
 class AudioSenderPlayerv1
-    : public AudioSenderPlayer
-{
+    : public AudioSenderPlayer {
 public:
-    AudioSenderPlayerv1( const Params& params )
+    AudioSenderPlayerv1( const Params & params )
         : AudioSenderPlayer( params )
-      {}
+      { }
 
     virtual
     ~AudioSenderPlayerv1()
-      {}
+      { }
 
     virtual
-    void
-    sendRefAudio( const char* msg );
+    void sendRefAudio( const char * msg );
 
     virtual
-    void
-    sendCoachAudio( const Coach& coach, const char* msg );
+    void sendCoachAudio( const Coach & coach,
+                         const char * msg );
 
     virtual
-    void
-    sendCoachStdAudio( const clang::Msg& msg );
+    void sendCoachStdAudio( const clang::Msg & msg );
 
     virtual
-    void
-    sendSelfAudio( const char* msg );
+    void sendSelfAudio( const char * msg );
 
     virtual
-    void
-    sendNonSelfPlayerAudio( const Player& player, const char* msg );
+    void sendNonSelfPlayerAudio( const Player & player,
+                                 const char * msg );
 
     virtual
-    void
-    sendOKClang();
+    void sendOKClang();
 
     virtual
-    void
-    sendErrorNoTeamName( const std::string& team_name );
+    void sendErrorNoTeamName( const std::string & team_name );
 
 };
 
@@ -356,30 +346,28 @@ public:
 
 
 class AudioSenderPlayerv7
-    : public AudioSenderPlayerv1
-{
+    : public AudioSenderPlayerv1 {
 public:
-    AudioSenderPlayerv7( const Params& params )
+    AudioSenderPlayerv7( const Params & params )
         : AudioSenderPlayerv1( params )
-      {}
+      { }
 
     virtual
     ~AudioSenderPlayerv7()
-      {}
+      { }
 
     virtual
-    void
-    sendCoachAudio( const Coach& coach, const char* msg );
+    void sendCoachAudio( const Coach & coach,
+                         const char * msg );
 
     virtual
-    void
-    sendNonSelfPlayerAudio( const Player& player, const char* msg );
+    void sendNonSelfPlayerAudio( const Player & player,
+                                 const char * msg );
 };
 
 
 class AudioSenderPlayerv8
-    : public AudioSenderPlayerv7
-{
+    : public AudioSenderPlayerv7 {
 protected:
     // the containers and pairs below use char* instead of const
     // char* as the strings belong to the containers and pairs and
@@ -391,79 +379,80 @@ protected:
     // to that store.  Then we could just delete from that store
     // when we are done... More work for later.
 
-    typedef const Player*                         player_key_t;
-    typedef std::pair< player_key_t, char* >   player_key_value_t;
-    typedef const Coach*                          coach_key_t;
-    typedef std::pair< coach_key_t, char* >    coach_key_value_t;
+    typedef const Player* player_key_t;
+    typedef std::pair< player_key_t, char* > player_key_value_t;
+    typedef const Coach* coach_key_t;
+    typedef std::pair< coach_key_t, char* > coach_key_value_t;
 
-    typedef std::multimap< player_key_t, char* >  player_msg_cont_t;
-    typedef std::list< char* >                    self_msg_cont_t;
-    typedef std::list< coach_key_value_t >               coach_msg_cont_t;
+    typedef std::multimap< player_key_t, char* > player_msg_cont_t;
+    typedef std::list< char* > self_msg_cont_t;
+    typedef std::list< coach_key_value_t > coach_msg_cont_t;
 
-    class State
-    {
+    class State {
     public:
-        typedef AudioSenderPlayerv8::player_key_t               key_t;
-        typedef AudioSenderPlayerv8::player_msg_cont_t          msg_cont_t;
-        typedef AudioSenderPlayerv8::player_key_value_t         key_value_t;
+        typedef AudioSenderPlayerv8::player_key_t key_t;
+        typedef AudioSenderPlayerv8::player_msg_cont_t msg_cont_t;
+        typedef AudioSenderPlayerv8::player_key_value_t key_value_t;
 
-        State() {}
-
-        virtual
-        ~State() {}
+        State()
+          { }
 
         virtual
-        key_value_t
-        getMsg( msg_cont_t& msgs ) = 0;
+        ~State()
+          { }
 
         virtual
-        const Player*
-        getFocusTarget() const
-          { return NULL; }
+        key_value_t getMsg( msg_cont_t& msgs ) = 0;
+
+        virtual
+        const
+        Player * getFocusTarget() const
+          {
+              return NULL;
+          }
     };
 
     class Unfocused
-        : public State
-    {
+        : public State {
     public:
-        Unfocused() {}
+        Unfocused()
+          { }
 
         virtual
-        ~Unfocused() {}
+        ~Unfocused()
+          { }
 
         virtual
-        key_value_t
-        getMsg( msg_cont_t& msgs );
+        key_value_t getMsg( msg_cont_t & msgs );
     };
 
     class Focused
-        : public Unfocused
-    {
+        : public Unfocused {
     protected:
         player_key_t M_key;
     public:
         Focused()
             : M_key( NULL )
-          {}
+          { }
 
         virtual
-        ~Focused() {}
+        ~Focused()
+          { }
 
         virtual
-        void
-        focusOn( const player_key_t& key )
+        void focusOn( const player_key_t & key )
           {
               M_key = key;
           }
 
         virtual
-        key_value_t
-        getMsg( msg_cont_t& msgs );
+        key_value_t getMsg( msg_cont_t & msgs );
 
         virtual
-        player_key_t
-        getFocusTarget() const
-          { return M_key; }
+        player_key_t getFocusTarget() const
+          {
+              return M_key;
+          }
     };
 
     // since we might be switching back and forth between being focused
@@ -486,7 +475,7 @@ protected:
     bool M_right_complete;
 
 public:
-    AudioSenderPlayerv8( const Params& params )
+    AudioSenderPlayerv8( const Params & params )
         : AudioSenderPlayerv7( params ),
           M_state_p( &M_unfocused ),
           M_focus_count ( 0 ),
@@ -497,93 +486,64 @@ public:
       {}
 
     virtual
-    ~AudioSenderPlayerv8()
-      {
-          for( player_msg_cont_t::iterator i = M_player_msgs.begin();
-               i != M_player_msgs.end(); i++ )
-          {
-              free( i->second );
-              i->second = NULL;
-          }
-          M_player_msgs.clear();
-
-          for( self_msg_cont_t::iterator i = M_self_msgs.begin();
-               i != M_self_msgs.end(); i++ )
-          {
-              free( *i );
-              *i = NULL;
-          }
-          M_self_msgs.clear();
-
-          for( coach_msg_cont_t::iterator i = M_coach_msgs.begin();
-               i != M_coach_msgs.end(); i++ )
-          {
-              free( i->second );
-              i->second = NULL;
-          }
-          M_coach_msgs.clear();
-      }
+    ~AudioSenderPlayerv8();
 
     virtual
-    void
-    sendCoachAudio( const Coach& coach, const char* msg );
+    void sendCoachAudio( const Coach & coach,
+                         const char * msg );
 
     virtual
-    void
-    sendSelfAudio( const char* msg );
+    void sendSelfAudio( const char * msg );
 
     virtual
-    void
-    sendNonSelfPlayerAudio( const Player& player, const char* msg );
+    void sendNonSelfPlayerAudio( const Player & player,
+                                 const char * msg );
 
     virtual
-    void
-    newCycle();
+    void newCycle();
 
     virtual
-    void
-    focusOn( const Player& player );
+    void focusOn( const Player & player );
 
     virtual
-    void
-    focusOff();
+    void focusOff();
 
     virtual
-    const Player*
-    getFocusTarget() const
+    const
+    Player * getFocusTarget() const
       {
           return M_state_p->getFocusTarget();
       }
 
     virtual
-    unsigned int
-    getFocusCount() const
-      { return M_focus_count; }
+    unsigned int getFocusCount() const
+      {
+          return M_focus_count;
+      }
 
     virtual
-    void
-    setEar( bool on, Side side, bool complete, bool partial );
+    void setEar( bool on,
+                 Side side,
+                 bool complete,
+                 bool partial );
 
 protected:
     virtual
-    void
-    sendCachedCoachAudio( const Coach& coach, const char* msg );
+    void sendCachedCoachAudio( const Coach & coach,
+                               const char * msg );
 
     virtual
-    void
-    sendCachedSelfAudio( const char* msg );
+    void sendCachedSelfAudio( const char * msg );
 
     virtual
-    void
-    sendCachedNonSelfPlayerAudio( const Player& player, const char* msg );
+    void sendCachedNonSelfPlayerAudio( const Player & player,
+                                       const char * msg );
 
     virtual
-    bool
-    nonSelfPlayerPredicate( const Player& player ) const;
+    bool nonSelfPlayerPredicate( const Player & player ) const;
 
     virtual
-    bool
-    nonSelfPlayerFullPredicate( const Player& player ) const;
+    bool nonSelfPlayerFullPredicate( const Player & player ) const;
 
 };
 
@@ -592,11 +552,10 @@ class SerializerCoach;
 
 
 class AudioSenderCoach
-    : public AudioSender
-{
+    : public AudioSender {
 protected:
-    Coach& M_listener;
-    const SerializerCoach& M_serializer;
+    Coach & M_listener;
+    const SerializerCoach & M_serializer;
 public:
     class Params {
     public:
@@ -617,88 +576,83 @@ public:
     };
 
 public:
-    typedef Ptr(*Creator)( const Params& );
+    typedef Ptr (*Creator)( const Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
 
-    AudioSenderCoach( const Params& params )
-        : AudioSender( params.m_stadium, params.m_transport ),
+    AudioSenderCoach( const Params & params )
+        : AudioSender( params.m_stadium,
+                       params.m_transport ),
           M_listener( params.m_listener ),
           M_serializer( params.m_serializer )
-      {}
+      { }
 
-    ~AudioSenderCoach() {}
+    ~AudioSenderCoach()
+      { }
 
 protected:
     virtual
-    bool
-    generalPredicate() const;
+    bool generalPredicate() const;
 };
 
 
 
 
 class AudioSenderCoachv1
-    : public AudioSenderCoach
-{
+    : public AudioSenderCoach {
 public:
-    AudioSenderCoachv1( const Params& params )
+    AudioSenderCoachv1( const Params & params )
         : AudioSenderCoach( params )
-      {}
+      { }
 
     virtual
     ~AudioSenderCoachv1()
-      {}
+      { }
 
     virtual
-    void
-    sendRefAudio( const char* msg );
+    void sendRefAudio( const char * msg );
 
     virtual
-    void
-    sendCoachAudio( const Coach& coach, const char* msg );
+    void sendCoachAudio( const Coach & coach,
+                         const char * msg );
 
     virtual
-    void
-    sendCoachStdAudio( const clang::Msg& msg );
+    void sendCoachStdAudio( const clang::Msg & msg );
 
     virtual
-    void
-    sendPlayerAudio( const Player& player, const char* msg );
+    void sendPlayerAudio( const Player & player,
+                          const char * msg );
 };
 
 
 
 
 class AudioSenderCoachv7
-    : public AudioSenderCoachv1
-{
+    : public AudioSenderCoachv1 {
 public:
-    AudioSenderCoachv7( const Params& params )
+    AudioSenderCoachv7( const Params & params )
         : AudioSenderCoachv1( params )
-      {}
+      { }
 
     virtual
     ~AudioSenderCoachv7()
-      {}
+      { }
 
     virtual
-    void
-    sendPlayerAudio( const Player& player, const char* msg );
+    void sendPlayerAudio( const Player & player,
+                          const char * msg );
 };
 
 class SerializerOnlineCoach;
 
 class AudioSenderOnlineCoach
-    : public AudioSender
-{
+    : public AudioSender {
 protected:
-    OnlineCoach& M_listener;
-    const SerializerOnlineCoach& M_serializer;
+    OnlineCoach & M_listener;
+    const SerializerOnlineCoach & M_serializer;
 public:
     class Params {
     public:
@@ -719,73 +673,70 @@ public:
     };
 
 public:
-    typedef Ptr(*Creator)( const rcss::AudioSenderOnlineCoach::Params& );
+    typedef Ptr (*Creator)( const rcss::AudioSenderOnlineCoach::Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
-    AudioSenderOnlineCoach( const Params& params )
+    AudioSenderOnlineCoach( const Params & params )
         : AudioSender( params.m_stadium, params.m_transport ),
           M_listener( params.m_listener ),
           M_serializer( params.m_serializer )
       {}
 
-    ~AudioSenderOnlineCoach() {}
+    ~AudioSenderOnlineCoach()
+      { }
 
 protected:
     virtual
-    bool
-    generalPredicate() const;
+    bool generalPredicate() const;
 
     virtual
-    bool
-    coachPredicate( const Coach& coach ) const;
+    bool coachPredicate( const Coach & coach ) const;
 
 };
 
 class AudioSenderOnlineCoachv1
-    : public AudioSenderOnlineCoach
-{
+    : public AudioSenderOnlineCoach {
 public:
-    AudioSenderOnlineCoachv1( const Params& params )
+    AudioSenderOnlineCoachv1( const Params & params )
         : AudioSenderOnlineCoach( params )
-      {}
+      { }
 
     virtual
     ~AudioSenderOnlineCoachv1()
-      {}
+      { }
 
     virtual
-    void
-    sendRefAudio( const char* msg );
+    void sendRefAudio( const char * msg );
 
     virtual
-    void
-    sendCoachAudio( const Coach& coach, const char* msg );
+    void sendCoachAudio( const Coach & coach,
+                         const char * msg );
 
     virtual
-    void
-    sendPlayerAudio( const Player& player, const char* msg );
+    void sendPlayerAudio( const Player & player,
+                          const char * msg );
 };
 
 class AudioSenderOnlineCoachv7
-    : public AudioSenderOnlineCoachv1
-{
+    : public AudioSenderOnlineCoachv1 {
 public:
-    AudioSenderOnlineCoachv7( const Params& params )
+    AudioSenderOnlineCoachv7( const Params & params )
         : AudioSenderOnlineCoachv1( params )
-      {}
+      { }
 
     virtual
     ~AudioSenderOnlineCoachv7()
-      {}
+      { }
 
     virtual
     void
-    sendPlayerAudio( const Player& player, const char* msg );
+    sendPlayerAudio( const Player & player,
+                     const char * msg );
 };
+
 }
 
 #endif // _AUDIO_H_

@@ -178,6 +178,7 @@ protected:
     PlayMode M_playmode;
 
     int M_time;
+    int M_stoppage_time;
 
     std::vector< HeteroPlayer * > M_player_types;
 
@@ -242,6 +243,11 @@ public:
     int time() const
       {
           return M_time;
+      }
+
+    int stoppageTime() const
+      {
+          return M_stoppage_time;
       }
 
     const
@@ -449,6 +455,7 @@ private:
     void turnMovableObjects();
     void incMovableObjects();
 
+    void sendDisp();
     void makeMonitorMessage();
     void sendToMonitors();
     void writeCurrentGameLog();

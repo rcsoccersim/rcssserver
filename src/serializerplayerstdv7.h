@@ -39,96 +39,81 @@ public:
     ~SerializerPlayerStdv7();
 
     static
-    const SerializerPlayerStdv7*
-    instance();
+    const
+    SerializerPlayerStdv7 * instance();
 
     virtual
-    void
-    serializeCoachAudio( std::ostream& strm,
-                         const int& time,
-                         const std::string& name,
-                         const char* msg ) const;
+    void serializeCoachAudio( std::ostream & strm,
+                              const int & time,
+                              const std::string & name,
+                              const char * msg ) const;
 
     virtual
-    void
-    serializeCoachStdAudio( std::ostream& strm,
-                            const int& time,
-                            const std::string& name,
-                            const rcss::clang::Msg& msg ) const;
+    void serializeCoachStdAudio( std::ostream & strm,
+                                 const int & time,
+                                 const std::string & name,
+                                 const rcss::clang::Msg & msg ) const;
 
     virtual
-    void
-    serializeSelfAudio( std::ostream& strm,
-                        const int& time,
-                        const char* msg ) const;
+    void serializeSelfAudio( std::ostream& strm,
+                             const int & time,
+                             const char * msg ) const;
 
     virtual
-    void
-    serializePlayerAudio( std::ostream& strm,
-                          const int& time,
-                          const double& dir,
-                          const char* msg ) const;
+    void serializePlayerAudio( std::ostream & strm,
+                               const int & time,
+                               const double & dir,
+                               const char * msg ) const;
 
     virtual
-    void
-    serializeServerParamBegin( std::ostream& strm ) const;
+    void serializeServerParamBegin( std::ostream & strm ) const;
 
     virtual
-    void
-    serializeServerParamEnd( std::ostream& strm ) const;
+    void serializeServerParamEnd( std::ostream & strm ) const;
 
     virtual
-    void
-    serializePlayerParamBegin( std::ostream& strm ) const;
+    void serializePlayerParamBegin( std::ostream & strm ) const;
 
     virtual
-    void
-    serializePlayerParamEnd( std::ostream& strm ) const;
+    void serializePlayerParamEnd( std::ostream & strm ) const;
 
     virtual
-    void
-    serializePlayerTypeBegin( std::ostream& strm ) const;
+    void serializePlayerTypeBegin( std::ostream & strm ) const;
 
     virtual
-    void
-    serializePlayerTypeEnd( std::ostream& strm ) const;
+    void serializePlayerTypeEnd( std::ostream & strm ) const;
 
     virtual
-    void
-    serializeParam( std::ostream& strm,
-                    const int param ) const;
+    void serializeParam( std::ostream & strm,
+                         const int param ) const;
 
     virtual
-    void
-    serializeParam( std::ostream& strm,
-                    const unsigned int param ) const;
+    void serializeParam( std::ostream & strm,
+                         const unsigned int param ) const;
 
     virtual
-    void
-    serializeParam( std::ostream& strm,
-                    const bool param ) const;
+    void serializeParam( std::ostream & strm,
+                         const bool param ) const;
 
     virtual
-    void
-    serializeParam( std::ostream& strm,
-                    const double & param ) const;
+    void serializeParam( std::ostream & strm,
+                         const double & param ) const;
 
     virtual
-    void
-    serializeParam( std::ostream& strm,
-                    const std::string& param ) const;
+    void serializeParam( std::ostream & strm,
+                         const std::string & param ) const;
 
     virtual
-    void
-    serializeChangePlayer( std::ostream& strm,
-                           const int unum ) const;
+    void serializeChangePlayer( std::ostream & strm,
+                                const int unum ) const;
 
     virtual
-    void
-    serializeChangePlayer( std::ostream& strm,
-                           const int unum,
-                           const int type ) const;
+    void serializeChangePlayer( std::ostream & strm,
+                                const int unum,
+                                const int type ) const;
 
 };
+
 }
+
 #endif

@@ -121,8 +121,7 @@ public:
 */
 
 class VisualSenderPlayer
-    : public VisualSender
-{
+    : public VisualSender {
 public:
 
     static const double UNUM_FAR_LENGTH;
@@ -151,12 +150,11 @@ public:
 
 public:
     typedef std::auto_ptr< VisualSenderPlayer > Ptr;
-    typedef Ptr(*Creator)( const VisualSenderPlayer::Params& );
+    typedef Ptr (*Creator)( const VisualSenderPlayer::Params & );
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
     VisualSenderPlayer( const Params& params );
 

@@ -342,10 +342,10 @@ BodySenderPlayerV12::sendBodyData()
 namespace bodysender {
 
 template< typename Sender >
-std::auto_ptr< BodySenderPlayer >
+BodySenderPlayer::Ptr
 create( const BodySenderPlayer::Params& params )
 {
-    return std::auto_ptr< BodySenderPlayer >( new Sender( params ) );
+    return BodySenderPlayer::Ptr( new Sender( params ) );
 }
 
 lib::RegHolder vp1 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 1 );

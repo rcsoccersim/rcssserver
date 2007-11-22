@@ -1229,19 +1229,25 @@ Player::setSenders()
     rcss::SerializerPlayer::Creator ser_cre;
     if ( ! rcss::SerializerPlayer::factory().getCreator( ser_cre,
                                                          (int)version() ) )
+    {
         return false;
+    }
 
-    const rcss::SerializerPlayer* ser = ser_cre();
+    const rcss::SerializerPlayer * ser = ser_cre();
     if ( ! ser )
+    {
         return false;
+    }
 
     rcss::BodySenderPlayer::Params body_params( getTransport(),
                                                 *this,
                                                 *ser );
     rcss::BodySenderPlayer::Creator body_cre;
-    if( ! rcss::BodySenderPlayer::factory().getCreator( body_cre,
-                                                        (int)version() ) )
+    if ( ! rcss::BodySenderPlayer::factory().getCreator( body_cre,
+                                                         (int)version() ) )
+    {
         return false;
+    }
     M_body_observer->setBodySender( body_cre( body_params ) );
 
     rcss::VisualSenderPlayer::Params visual_params( getTransport(),
@@ -1249,9 +1255,11 @@ Player::setSenders()
                                                     *ser,
                                                     M_stadium );
     rcss::VisualSenderPlayer::Creator vis_cre;
-    if( ! rcss::VisualSenderPlayer::factory().getCreator( vis_cre,
-                                                          (int)version() ) )
+    if ( ! rcss::VisualSenderPlayer::factory().getCreator( vis_cre,
+                                                           (int)version() ) )
+    {
         return false;
+    }
     M_observer->setVisualSender( vis_cre( visual_params ) );
 
 
@@ -1261,9 +1269,11 @@ Player::setSenders()
                                                 M_stadium );
 
     rcss::InitSenderPlayer::Creator init_cre;
-    if( ! rcss::InitSenderPlayer::factory().getCreator( init_cre,
-                                                        (int)version() ) )
+    if ( ! rcss::InitSenderPlayer::factory().getCreator( init_cre,
+                                                         (int)version() ) )
+    {
         return false;
+    }
 
     M_init_observer->setInitSender( init_cre( init_params ) );
 
@@ -1274,9 +1284,11 @@ Player::setSenders()
                                                    M_stadium );
 
     rcss::FullStateSenderPlayer::Creator full_cre;
-    if( ! rcss::FullStateSenderPlayer::factory().getCreator( full_cre,
-                                                             (int)version() ) )
+    if ( ! rcss::FullStateSenderPlayer::factory().getCreator( full_cre,
+                                                              (int)version() ) )
+    {
         return false;
+    }
     M_fullstate_observer->setFullStateSender( full_cre( fs_params ) );
 
 
@@ -1286,11 +1298,13 @@ Player::setSenders()
                                                   M_stadium );
 
     rcss::AudioSenderPlayer::Creator audio_cre;
-    if( ! rcss::AudioSenderPlayer::factory().getCreator( audio_cre,
-                                                         (int)version() ) )
+    if ( ! rcss::AudioSenderPlayer::factory().getCreator( audio_cre,
+                                                          (int)version() ) )
+    {
         return false;
-
+    }
     setAudioSender( audio_cre( audio_params ) );
+
     return true;
 }
 
