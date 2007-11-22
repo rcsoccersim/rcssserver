@@ -1,3 +1,10 @@
+2007-11-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/fullstatesender.cc:
+	* src/fullstatesender.h:
+	- reimplemented FullStateSender with the framework used by other
+	senders.
+
 2007-11-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:

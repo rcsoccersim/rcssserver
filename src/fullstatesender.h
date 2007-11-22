@@ -23,9 +23,9 @@
 #ifndef RCSSFULLSTATESENDER_H
 #define RCSSFULLSTATESENDER_H
 
-#include <iostream>
-#include <memory>
-#include <map>
+#include "sender.h"
+#include "observer.h"
+
 #include <rcssbase/lib/factory.hpp>
 
 class Stadium;
@@ -45,18 +45,9 @@ class SerializerPlayer;
 //===================================================================
 */
 
-class FullStateSender {
-private:
-    std::ostream & M_transport;
-
-protected:
-    std::ostream & transport()
-      {
-          return M_transport;
-      }
-
+class FullStateSender
+    : protected Sender {
 public:
-    typedef std::auto_ptr< FullStateSender > Ptr;
 
     FullStateSender( std::ostream & transport );
 
@@ -65,39 +56,6 @@ public:
 
     virtual
     void sendFullState() = 0;
-};
-
-/*!
-//===================================================================
-//
-//  CLASS: FullStateObserver
-//
-//  DESC: Interface for an object that receives full state information.
-//
-//===================================================================
-*/
-
-
-class FullStateObserver {
-private:
-    FullStateSender * M_sender;
-    bool M_owns_sender;
-
-public:
-    FullStateObserver();
-    FullStateObserver( FullStateSender & sender );
-    FullStateObserver( std::auto_ptr< FullStateSender > sender );
-
-    ~FullStateObserver();
-
-    void setFullStateSender( FullStateSender & sender );
-
-    void setFullStateSender( std::auto_ptr< FullStateSender > sender );
-
-    void sendFullState();
-
-private:
-    void clear();
 };
 
 /*!
@@ -112,6 +70,29 @@ private:
 
 class FullStateSenderPlayer
     : public FullStateSender {
+public:
+    class Params {
+    public:
+        std::ostream & m_transport;
+        const Player & m_self;
+        const SerializerPlayer & m_serializer;
+        const Stadium & m_stadium;
+
+        Params( std::ostream & transport,
+                const Player & self,
+                const SerializerPlayer & serializer,
+                const Stadium & stadium )
+            : m_transport( transport )
+            , m_self( self )
+            , m_serializer( serializer )
+            , m_stadium( stadium )
+          { }
+    };
+
+    typedef std::auto_ptr< FullStateSenderPlayer > Ptr;
+    typedef Ptr (*Creator)( const Params & );
+    typedef rcss::lib::Factory< Creator, int > Factory;
+
 private:
     const SerializerPlayer & M_serializer;
 
@@ -120,6 +101,15 @@ private:
       stuff like velocity, stamina, etc */
     const Player & M_self;
     const Stadium & M_stadium;
+
+public:
+    static
+    Factory & factory();
+
+    FullStateSenderPlayer( const Params & params );
+
+    virtual
+    ~FullStateSenderPlayer();
 
 protected:
     const
@@ -140,35 +130,51 @@ protected:
           return M_stadium;
       }
 
+};
+
+
+/*!
+//===================================================================
+//
+//  CLASS: FullStateObserver
+//
+//  DESC: Interface for an object that receives full state information.
+//
+//===================================================================
+*/
+
+class FullStateObserver
+    : protected BaseObserver< FullStateSenderPlayer > {
 public:
-    class Params {
-    public:
-        std::ostream & m_transport;
-        const Player & m_self;
-        const SerializerPlayer & m_serializer;
-        const Stadium & m_stadium;
 
-        Params( std::ostream & transport,
-                const Player & self,
-                const SerializerPlayer & serializer,
-                const Stadium & stadium )
-            : m_transport( transport )
-            , m_self( self )
-            , m_serializer( serializer )
-            , m_stadium( stadium )
-          { }
-    };
+    FullStateObserver()
+      { }
 
-    typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    FullStateObserver( FullStateSenderPlayer & sender )
+        : BaseObserver< FullStateSenderPlayer >( sender )
+      { }
 
-    static
-    Factory & factory();
+    FullStateObserver( std::auto_ptr< FullStateSenderPlayer > sender )
+        : BaseObserver< FullStateSenderPlayer >( sender )
+      { }
 
-    FullStateSenderPlayer( const Params & params );
+    ~FullStateObserver()
+      { }
 
-    virtual
-    ~FullStateSenderPlayer();
+    void setFullStateSender( FullStateSenderPlayer & sender )
+      {
+          BaseObserver< FullStateSenderPlayer >::setSender( sender );
+      }
+
+    void setFullStateSender( std::auto_ptr< FullStateSenderPlayer > sender )
+      {
+          BaseObserver< FullStateSenderPlayer >::setSender( sender );
+      }
+
+    void sendFullState()
+      {
+          BaseObserver< FullStateSenderPlayer >::sender().sendFullState();
+      }
 };
 
 /*!

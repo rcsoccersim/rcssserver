@@ -29,8 +29,7 @@
 
 class Player;
 
-namespace rcss
-{
+namespace rcss {
 class SerializerPlayer;
 
 /*!
@@ -44,8 +43,7 @@ class SerializerPlayer;
 */
 
 class BodySender
-    : protected Sender
-{
+    : protected Sender {
 public:
     BodySender( std::ostream& transport );
 
@@ -111,11 +109,8 @@ public:
 */
 
 class BodySenderPlayer
-    : public BodySender
-{
+    : public BodySender {
 public:
-    typedef BodySenderPlayer Base;
-
     class Params {
     public:
         std::ostream & m_transport;
@@ -196,20 +191,17 @@ public:
     ~BodyObserverPlayer()
       { }
 
-    void
-    setBodySender( BodySenderPlayer & sender )
+    void setBodySender( BodySenderPlayer & sender )
       {
           BaseObserver< BodySenderPlayer >::setSender( sender );
       }
 
-    void
-    setBodySender( std::auto_ptr< BodySenderPlayer > sender )
+    void setBodySender( std::auto_ptr< BodySenderPlayer > sender )
       {
           BaseObserver< BodySenderPlayer >::setSender( sender );
       }
 
-    void
-    sendBody()
+    void sendBody()
       {
           BaseObserver< BodySenderPlayer >::sender().sendBody();
       }

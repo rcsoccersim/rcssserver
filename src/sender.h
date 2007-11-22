@@ -42,17 +42,18 @@ namespace rcss
 class Sender
 {
 private:
-    std::ostream& M_transport;
+    std::ostream & M_transport;
 
 protected:
-    std::ostream&
-    transport()
-      { return M_transport; }
+    std::ostream & transport()
+      {
+          return M_transport;
+      }
 
 public:
-    Sender( std::ostream& transport )
+    Sender( std::ostream & transport )
         : M_transport( transport )
-      {}
+      { }
 };
 }
 

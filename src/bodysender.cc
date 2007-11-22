@@ -28,8 +28,7 @@
 #include "serializer.h"
 #include "field.h"
 
-namespace rcss
-{
+namespace rcss {
 
 /*!
 //===================================================================
@@ -43,10 +42,14 @@ namespace rcss
 
 BodySender::BodySender( std::ostream& transport )
     : Sender( transport )
-{}
+{
+
+}
 
 BodySender::~BodySender()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -143,6 +146,7 @@ BodySenderPlayerV1::sendVelocity()
 void
 BodySenderPlayerV1::sendNeck()
 {
+
 }
 
 void
@@ -236,7 +240,7 @@ BodySenderPlayerV6::sendVelocity()
 //===================================================================
 */
 
-BodySenderPlayerV7::BodySenderPlayerV7( const Params& params )
+BodySenderPlayerV7::BodySenderPlayerV7( const Params & params )
     : BodySenderPlayerV6( params )
 {}
 
@@ -264,7 +268,7 @@ BodySenderPlayerV7::sendCounts()
 //===================================================================
 */
 
-BodySenderPlayerV8::BodySenderPlayerV8( const Params& params )
+BodySenderPlayerV8::BodySenderPlayerV8( const Params & params )
     : BodySenderPlayerV7( params )
 {}
 
@@ -317,7 +321,7 @@ BodySenderPlayerV8::sendBodyData()
 //===================================================================
 */
 
-BodySenderPlayerV12::BodySenderPlayerV12( const Params& params )
+BodySenderPlayerV12::BodySenderPlayerV12( const Params & params )
     : BodySenderPlayerV8( params )
 {
 
@@ -343,7 +347,7 @@ namespace bodysender {
 
 template< typename Sender >
 BodySenderPlayer::Ptr
-create( const BodySenderPlayer::Params& params )
+create( const BodySenderPlayer::Params & params )
 {
     return BodySenderPlayer::Ptr( new Sender( params ) );
 }

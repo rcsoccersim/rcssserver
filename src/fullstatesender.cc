@@ -40,7 +40,7 @@ namespace rcss {
 */
 
 FullStateSender::FullStateSender( std::ostream & transport )
-    : M_transport( transport )
+    : Sender( transport )
 {
 
 }
@@ -48,66 +48,6 @@ FullStateSender::FullStateSender( std::ostream & transport )
 FullStateSender::~FullStateSender()
 {
 
-}
-
-/*!
-//===================================================================
-//
-//  CLASS: FullStateObserver
-//
-//  DESC: Interface for an object that receives full state information.
-//
-//===================================================================
-*/
-
-FullStateObserver::FullStateObserver()
-    : M_sender( NULL ),
-      M_owns_sender( false )
-{}
-
-FullStateObserver::FullStateObserver( FullStateSender & sender )
-    : M_sender( &sender ),
-      M_owns_sender( false )
-{}
-
-FullStateObserver::FullStateObserver( std::auto_ptr< FullStateSender > sender )
-    : M_sender( sender.release() ),
-      M_owns_sender( true )
-{}
-
-FullStateObserver::~FullStateObserver()
-{ clear(); }
-
-void
-FullStateObserver::setFullStateSender( FullStateSender & sender )
-{
-    clear();
-    M_sender = &sender;
-    M_owns_sender = false;
-}
-
-void
-FullStateObserver::setFullStateSender( std::auto_ptr< FullStateSender > sender )
-{
-    clear();
-    M_sender = sender.release();
-    M_owns_sender = true;
-}
-
-void
-FullStateObserver::sendFullState()
-{
-    M_sender->sendFullState();
-}
-
-void
-FullStateObserver::clear()
-{
-    if ( M_owns_sender )
-    {
-        delete M_sender;
-        M_sender = NULL;
-    }
 }
 
 /*!
@@ -441,10 +381,10 @@ FullStateSenderPlayerV8::sendPlayer( const Player & p )
 namespace fullstatesender {
 
 template< typename Sender >
-FullStateSender::Ptr
+FullStateSenderPlayer::Ptr
 create( const FullStateSenderPlayer::Params & params )
 {
-    return FullStateSender::Ptr( new Sender( params ) );
+    return FullStateSenderPlayer::Ptr( new Sender( params ) );
 }
 
 lib::RegHolder vp1 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 1 );
