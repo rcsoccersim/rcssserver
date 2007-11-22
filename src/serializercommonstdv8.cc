@@ -89,16 +89,20 @@ SerializerCommonStdv8::serializeParam( std::ostream & strm,
     strm << "(" << name << " \"" << param << "\")";
 }
 
-namespace
-{
-const SerializerCommon&
+namespace {
+
+const
+SerializerCommon &
 create()
-{ return SerializerCommonStdv8::instance(); }
+{
+    return SerializerCommonStdv8::instance();
+}
 
 lib::RegHolder v8 = SerializerCommon::factory().autoReg( &create, 8 );
 lib::RegHolder v9 = SerializerCommon::factory().autoReg( &create, 9 );
 lib::RegHolder v10 = SerializerCommon::factory().autoReg( &create, 10 );
 lib::RegHolder v11 = SerializerCommon::factory().autoReg( &create, 11 );
 lib::RegHolder v12 = SerializerCommon::factory().autoReg( &create, 12 );
+
 }
 }

@@ -30,8 +30,10 @@
 #include "player.h"
 #include "types.h"
 
-#include "initsender.h"
-#include "serializercommonstdv8.h"
+//#include "initsender.h"
+//#include "serializercommonstdv8.h"
+#include "initsendermonitor.h"
+#include "serializermonitor.h"
 
 namespace {
 
@@ -72,7 +74,8 @@ chop_last_parenthesis( char * str,
 
 Monitor::Monitor( Stadium & stadium,
                   const double & version )
-    : M_stadium( stadium ),
+    : M_init_observer( new rcss::InitObserverMonitor ),
+      M_stadium( stadium ),
       M_version ( version ),
       M_playmode( PM_Null ),
       M_team_l_name( "" ),
@@ -87,52 +90,52 @@ Monitor::Monitor( Stadium & stadium,
 
 Monitor::~Monitor()
 {
+    delete M_init_observer;
+    M_init_observer = NULL;
+}
 
+bool
+Monitor::setSenders()
+{
+    rcss::SerializerMonitor::Creator ser_cre;
+    if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre,
+                                                          (int)version() ) )
+    {
+        std::cerr << "Monitor::setSenders. failed to get ser_cre" << std::endl;
+        return false;
+    }
+
+    const rcss::SerializerMonitor * ser = ser_cre();
+    if ( ! ser )
+    {
+        std::cerr << "Monitor::setSenders. failed to create serializer" << std::endl;
+        return false;
+    }
+
+    rcss::InitSenderMonitor::Params init_params( getTransport(),
+                                                 *this,
+                                                 *ser,
+                                                 M_stadium );
+    rcss::InitSenderMonitor::Creator init_cre;
+    if ( ! rcss::InitSenderMonitor::factory().getCreator( init_cre,
+                                                          (int)version() ) )
+    {
+        std::cerr << "Monitor::setSenders. failed to get init_cre" << std::endl;
+        return false;
+    }
+    M_init_observer->setInitSender( init_cre( init_params ) );
+
+
+    std::cerr << "Monitor::setSenders. end" << std::endl;
+    return true;
 }
 
 void
 Monitor::sendInit()
 {
-    if ( version() >= 3.0 )
-    {
-        rcss::InitSenderCommonV8 init_sender( getTransport(),
-                                              rcss::SerializerCommonStdv8::instance(),
-                                              M_stadium,
-                                              12 ); // version number
-        init_sender.sendServerParams();
-        init_sender.sendPlayerParams();
-        init_sender.sendPlayerTypes();
-    }
-    else if ( version() >= 2.0 )
-    {
-        dispinfo_t2 di;
-
-        di.mode = htons( PARAM_MODE );
-        di.body.sparams = ServerParam::instance().convertToStruct();
-        RemoteClient::send( reinterpret_cast< const char* >( &di ),
-                            sizeof( dispinfo_t2 ) );
-
-        di.mode = htons( PPARAM_MODE );
-        di.body.pparams = PlayerParam::instance().convertToStruct();
-        RemoteClient::send( reinterpret_cast< const  char* >( &di ),
-                            sizeof( dispinfo_t2 ) );
-
-        di.mode = htons ( PT_MODE );
-        for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
-        {
-            const HeteroPlayer * p = M_stadium.playerType( i );
-            if ( p )
-            {
-                di.body.ptinfo = p->convertToStruct( i );
-                RemoteClient::send( reinterpret_cast< const char* >( &di ),
-                                    sizeof( dispinfo_t2 ) );
-            }
-        }
-    }
-    else
-    {
-        // no message
-    }
+    M_init_observer->sendServerParams();
+    M_init_observer->sendPlayerParams();
+    M_init_observer->sendPlayerTypes();
 }
 
 

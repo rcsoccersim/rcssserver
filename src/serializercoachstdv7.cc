@@ -25,7 +25,7 @@
 
 namespace rcss
 {
-SerializerCoachStdv7::SerializerCoachStdv7( const SerializerCommon& common )
+SerializerCoachStdv7::SerializerCoachStdv7( const SerializerCommon & common )
     : SerializerCoachStdv1( common )
 {
 

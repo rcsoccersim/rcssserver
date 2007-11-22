@@ -32,7 +32,7 @@ class SerializerPlayerStdv7
     : public SerializerPlayerStdv1
 {
 protected:
-    SerializerPlayerStdv7( const SerializerCommon& common );
+    SerializerPlayerStdv7( const SerializerCommon & common );
 
 public:
     virtual

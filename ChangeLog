@@ -1,9 +1,22 @@
 2007-11-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/initsendermonitor.cc:
+	* src/initsendermonitor.h:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	- implemented InitSenderMonitor and SerializerMonitor.
+
 	* src/fullstatesender.cc:
 	* src/fullstatesender.h:
 	- reimplemented FullStateSender with the framework used by other
 	senders.
+
+	* src/field.cpp:
+	* src/field.h:
+	- added stoppageTime() to refer the cycles while the play is
+	stopped.
 
 2007-11-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

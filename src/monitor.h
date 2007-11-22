@@ -31,10 +31,16 @@
 
 class Stadium;
 
+namespace rcss {
+class InitObserverMonitor;
+}
+
 class Monitor
-    : public RemoteClient
-{
+    : public RemoteClient {
 protected:
+
+    rcss::InitObserverMonitor * M_init_observer;
+
     Stadium & M_stadium;
     double M_version;
 
@@ -71,6 +77,8 @@ public:
       {
           RemoteClient::close();
       }
+
+    bool setSenders();
 
     void sendInit();
     void sendPlayMode();

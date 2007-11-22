@@ -28,7 +28,7 @@ static char *PlayModeString[] = PLAYMODE_STRINGS;
 
 namespace rcss {
 
-SerializerPlayerStdv1::SerializerPlayerStdv1( const SerializerCommon& common )
+SerializerPlayerStdv1::SerializerPlayerStdv1( const SerializerCommon & common )
     : SerializerPlayer( common )
 {
 

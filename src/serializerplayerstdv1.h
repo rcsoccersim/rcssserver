@@ -30,7 +30,7 @@ class SerializerPlayerStdv1
     : public SerializerPlayer
 {
 protected:
-    SerializerPlayerStdv1( const SerializerCommon& common );
+    SerializerPlayerStdv1( const SerializerCommon & common );
 
 public:
     virtual

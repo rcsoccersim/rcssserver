@@ -230,6 +230,8 @@ serializercommonstdv7.h \
 serializercommonstdv7.cc \
 serializercommonstdv8.h \
 serializercommonstdv8.cc \
+serializermonitor.h \
+serializermonitor.cpp \
 serverparam.h \
 serverparam.cpp \
 referee.h \
@@ -253,6 +255,8 @@ fullstatesender.h \
 fullstatesender.cc \
 initsender.h \
 initsender.cc \
+initsendermonitor.h \
+initsendermonitor.cpp \
 observer.h \
 sender.h
 

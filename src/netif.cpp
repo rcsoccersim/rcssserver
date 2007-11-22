@@ -246,6 +246,11 @@ Stadium::parseMonitorInit( const char * message,
             delete mon;
             return true;
         }
+        if ( ! mon->setSenders() )
+        {
+            delete mon;
+            return true;
+        }
         std::cout << "a new (v1) monitor connected\n";
         mon->setEnforceDedicatedPort( false );
         M_monitors.push_back( mon );
@@ -274,6 +279,11 @@ Stadium::parseMonitorInit( const char * message,
         Monitor * mon = new Monitor( *this, ver );
 
         if( ! mon->connect( addr ) )
+        {
+            delete mon;
+            return true;
+        }
+        if ( ! mon->setSenders() )
         {
             delete mon;
             return true;

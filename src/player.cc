@@ -1267,14 +1267,12 @@ Player::setSenders()
                                                 *this,
                                                 *ser,
                                                 M_stadium );
-
     rcss::InitSenderPlayer::Creator init_cre;
     if ( ! rcss::InitSenderPlayer::factory().getCreator( init_cre,
                                                          (int)version() ) )
     {
         return false;
     }
-
     M_init_observer->setInitSender( init_cre( init_params ) );
 
 
@@ -1282,7 +1280,6 @@ Player::setSenders()
                                                    *this,
                                                    *ser,
                                                    M_stadium );
-
     rcss::FullStateSenderPlayer::Creator full_cre;
     if ( ! rcss::FullStateSenderPlayer::factory().getCreator( full_cre,
                                                               (int)version() ) )
@@ -1296,7 +1293,6 @@ Player::setSenders()
                                                   *this,
                                                   *ser,
                                                   M_stadium );
-
     rcss::AudioSenderPlayer::Creator audio_cre;
     if ( ! rcss::AudioSenderPlayer::factory().getCreator( audio_cre,
                                                           (int)version() ) )

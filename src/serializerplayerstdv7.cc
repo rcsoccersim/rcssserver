@@ -25,7 +25,7 @@
 namespace rcss
 {
 
-SerializerPlayerStdv7::SerializerPlayerStdv7( const SerializerCommon& common )
+SerializerPlayerStdv7::SerializerPlayerStdv7( const SerializerCommon & common )
     : SerializerPlayerStdv1( common )
 {}
 

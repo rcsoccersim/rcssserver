@@ -30,7 +30,7 @@ class SerializerCoachStdv8
     : public SerializerCoachStdv7
 {
 protected:
-    SerializerCoachStdv8( const SerializerCommon& common );
+    SerializerCoachStdv8( const SerializerCommon & common );
 
 
 public:

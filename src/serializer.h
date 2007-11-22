@@ -46,7 +46,7 @@ protected:
     virtual
     ~SerializerCommon();
 public:
-    typedef const SerializerCommon& (*Creator)();
+    typedef const SerializerCommon & (*Creator)();
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
@@ -777,7 +777,7 @@ public:
     factory();
 
 protected:
-    SerializerCoach( const SerializerCommon& common );
+    SerializerCoach( const SerializerCommon & common );
 
     virtual
     ~SerializerCoach();
