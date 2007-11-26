@@ -26,14 +26,12 @@
 
 #include "monitor.h"
 
+#include "initsendermonitor.h"
+#include "serializermonitor.h"
+
 #include "field.h"
 #include "player.h"
 #include "types.h"
-
-//#include "initsender.h"
-//#include "serializercommonstdv8.h"
-#include "initsendermonitor.h"
-#include "serializermonitor.h"
 
 namespace {
 
@@ -101,14 +99,12 @@ Monitor::setSenders()
     if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre,
                                                           (int)version() ) )
     {
-        std::cerr << "Monitor::setSenders. failed to get ser_cre" << std::endl;
         return false;
     }
 
     const rcss::SerializerMonitor * ser = ser_cre();
     if ( ! ser )
     {
-        std::cerr << "Monitor::setSenders. failed to create serializer" << std::endl;
         return false;
     }
 
@@ -120,13 +116,11 @@ Monitor::setSenders()
     if ( ! rcss::InitSenderMonitor::factory().getCreator( init_cre,
                                                           (int)version() ) )
     {
-        std::cerr << "Monitor::setSenders. failed to get init_cre" << std::endl;
         return false;
     }
     M_init_observer->setInitSender( init_cre( init_params ) );
 
 
-    std::cerr << "Monitor::setSenders. end" << std::endl;
     return true;
 }
 
