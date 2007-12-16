@@ -67,12 +67,13 @@
 
   * The default value of player::player_types parameter is changed to
     18, and the default value of player::pt_max paremter is changed to
-    1. This means that all field players have to be changed to the
-    non-default type because the type of goalie cannot be changed. If
-    server::allow_mult_default_type is false and teams use the default
-    player type more than player::pt_max, rcssserver automatically
-    assign the heterogeneous player type to field players just before
-    the playmode is changed to kick-off.
+    1. Now, the restriction of player::pt_max is also applied to the
+    default player type. This means that all field players have to be
+    changed to the non-default type because the type of goalie cannot
+    be changed. If server::allow_mult_default_type is false and teams
+    use the default player type more than player::pt_max, rcssserver
+    automatically assign the heterogeneous player type to field
+    players just before the playmode is changed to kick-off.
 
   * Added a new restriction to the player substitution. Now, the
     online coach can substitute a same player type within
