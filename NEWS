@@ -1,28 +1,31 @@
-[12.0.0-pre-20071216]
+[12.0.0_pre-20071217]
   * Supported a protocl version 12. Now, player and coach can connect
-	as the version 12 clients. In the version 12 protocol,
+    as a version 12 client. In the version 12 protocol,
 
     - Player can change view width only to normal or wide and cannot
       change the view quality. Instead of them, player can receive
       see messeage at the begining of every cycle if his view width
       is normal. If player's view width is wide, see message is
-      received once every two cycles.
+      received once every two cycles. The new message order is as
+      follows:
 
-    - Related to the chages of see message. The new variation of
-      change_view command is supported. Now, player can send the
-      following format change_view command:
+      sense_body (-> fullstate) -> hear -> see
+
+    - The new variation of change_view command is supported. Now,
+      player can send the following format change_view command:
 
       (change_view <ViewWidth>)
 
       If version 11 or earlier players send this format command, their
-      view quality is automatically set to high.
+      view quality is set to high.
 
-    - Collision information is added to sense_body. The following
-		format message is added to the end of sense_body:
+    - Collision information is added to the sense_body. The following
+      format message is appended to the end of sense_body:
 
-      (collision {none|[(ball)][ (player)][ (post)]})
+      (collision {none|[(ball)][(player)][(post)]})
 
-    For example, the following message may be received.
+      For example, version 12 players may receive the following
+      message.
 
       (sense_body 0 (view_mode high normal) (stamina 4000 1)
         (speed 0 0) (head_angle 0) (kick 0) (dash 0) (turn 0) (say 0)
@@ -31,50 +34,80 @@
         (focus (target none) (count 0)) (tackle (expires 0) (count 0))
         (collision (ball) (player)))
 
-  * Added new parameters.
-    - server::extra_stamina (default 0.0). This value is applied for
-      the default player type.
-    - server::max_tackle_power (default value = 100.0)
-    - server::min_tackle_power (default value = 0.0)
-    - player::allow_mult_default_type (default value = false)
+  * New parameters:
+    - server::extra_stamina (default value: 0.0)
+    - server::max_tackle_power (default value: 100.0)
+    - server::min_tackle_power (default value: 0.0)
+    - server::player_speed_max_min (default value: 0.8)
+    - player::allow_mult_default_type (default value: false)
 
-  * Changed a default value of several parameters.
-    - server::ball_speed_max: 2.7 -> 3.0
-    - server::catchable_area_l:  2.0 -> 1.2
-    - server::tackle_power_rate: 0.027 -> 0.0135
-    - player::player_types: 7 -> 18
-    - player::pt_max: 3 -> 1
-    - player::player_decay_delta_min: 0 -> -0.05
-    - player::new_dash_power_rate_delta_min: 0 -> -0.0005
-    - player::new_dash_power_rate_delta_max: 0.002 -> 0.0015
+  * Changed parameters:
+    - server::ball_speed_max (2.7 -> 3.0)
+    - server::catchable_area_l (2.0 -> 1.2)
+    - server::kick_rand (0 -> 0.1)
+    - server::tackle_power_rate (0.027 -> 0.0135)
+    - player::player_types (7 -> 18)
+    - player::pt_max (3 -> 1)
+    - player::kick_rand_delta_factor (0.5 -> 1)
+    - player::kickable_margin_delta_max (0.2 -> 0.1)2
+    - player::kickable_margin_delta_min (0 -> -0.1)
+    - player::new_dash_power_rate_delta_max (0.002 -> 0.0015)
+    - player::new_dash_power_rate_delta_min (0 -> -0.0005)
+    - player::new_stamina_inc_max_delta_factor (-10000 -> -6000)
+    - player::player_decay_delta_max (0.2 -> 0.1)
+    - player::player_decay_delta_min (0 -> -0.05)
+
+  * Now, the player's maximum dash speed is restricted within
+    server::player_speed_max_min(0.8) and
+    server::palyer_speed_max(1.2). In the heterogeneous player
+    generation procedure, if the generated player type can run faster
+    than server::player_speed_max or cannot run faster than
+    server::player_speed_max_min, rcssserver rejects that type and try
+    to regenerate another one.
+
+  * The default value of player::player_types parameter is changed to
+    18, and the default value of player::pt_max paremter is changed to
+    1. This means that all field players have to be changed to the
+    non-default type because the type of goalie cannot be changed. If
+    server::allow_mult_default_type is false and teams use the default
+    player type more than player::pt_max, rcssserver automatically
+    assign the heterogeneous player type to field players just before
+    the playmode is changed to kick-off.
+
+  * Added a new restriction to the player substitution. Now, the
+    online coach can substitute a same player type within
+    player::pt_max times. This restriction is not applied to the
+    default player type. If player::pt_max is 1, each player type
+    except the default type can be used only once.
+
+  * Slightly changed a noise model for movable objects. The new
+    algorithm is as follows:
+
+      double maxrnd = rand_param * speed;
+      PVector noise = polar2vector( drand( 0.0, maxrnd ),
+                                    drand( -PI, PI ) );
+
+  * Changed a kick noise model. Now, the current ball speed affects
+    the maximum kick noise value. Note that the maximum kick noise
+    value has no effects if player's kick_rand parameter is 0.
 
   * The tackle power sent by player's command is restricted within
     server::min_tackle_power and server::max_tackle_power. This means
     the backward tackle is forbidden now.
 
-  * The default value of player::player_types parameter is changed to
-    18, and the default value of player::pt_max paremter is changed to
-    1. And, if server::allow_mult_default_type is false and teams
-    violate the player type assignment, rcssserver *automatically*
-    assign the heterogeneous player type to field players just before
-    the playmode is changed to kick-off.
-
-  * Added a new restriction to the player substitution. Now, the
-    online coach can substitute the same player type within
-    player::pt_max times. This restriction is not applied to the
-    default player type. If player::pt_max is 1, each player type
-    except the default type can be used only once.
-
-  * Changed a rule of the back pass. Now, an indirect free kick is
-    taken after the back pass at the location where the back pass
+  * Changed a back pass rule. Now, an indirect free kick is taken
+    after the back pass at the location where the back pass
     occured. Note that an indirect free kick can be started within
     penalty areas.
 
-  * Changed a rule of the catch fault. Now, direct free kick is taken
-    after the catch fault.
+  * Changed a catch fault rule. Now, direct free kick is taken after
+    the catch fault.
 
   * Now, goalie cannot catch the ball just after his kick. In such a
     case, back_pass_[lr] is taken.
+
+  * Now, player's stamina, effort and recovery are never recovered at
+    the half time in the extra halves.
 
   * Now, rcssserver accepts some coach commands from monitor clients
     if coach mode is enabled.
@@ -154,7 +187,7 @@
    * Supported 64-bits OS.
 
    * Added automatic drop ball for the ball stuck situation. New
-     server parameter 'ball_stuck_area' have been introduced. If
+     server parameter 'ball_stuck_area' has been introduced. If
      playmode is play_on and ball is within ball_stuck_area distance
      for 'drop_ball_time' cycles, referee will drop the ball at the
      current ball position.
@@ -166,7 +199,7 @@
 
    * Fixed trainer's hear message format.
 
-   * Fixed a goal kick bug. Now any player cannot dribble while goal
+   * Fixed a goal kick bug. Now, any player cannot dribble while goal
      kick modes.
 
 [10.0.7]
