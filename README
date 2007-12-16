@@ -49,6 +49,14 @@ You may need administrator privilages to install the server into the default
 location.  This locations can be modified by using configure's `--prefix=DIR'
 and related options.  See `configure --help' for more details.
 
+The configure script looks for a RCSSBASE enviroment variable and set
+the approriate flags to look for the rcssbase libraries, headers and
+exes in the location specified by rcssbase. If rcssbase was installed
+at the location where the system cannot detect automatically, you need
+to set the RCSSBASE variable. For instance, if rcssbase was configured
+with a prefix of $HOME ("configure --prefix=$HOME"), then you should
+configure rcsssever with RCSSBASE equal to $HOME ("configure RCSSBASE=$HOME").
+
 The server has serveral features that can be enabled or disabled at
 configure time by using the `--enable-FEATURE[=ARG]' or `--disable-FEATURE'
 parameters to `configure'.  `--disable-FEATURE' is equivlant to

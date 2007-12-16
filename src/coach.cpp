@@ -1375,11 +1375,11 @@ OnlineCoach::parse_command( const char *command )
         eye( mode );
         return;
     }
-    else if ( ! std::strcmp( com, "change_player_types" ) )
-    {
-        change_player_types( command );
-        return;
-    }
+//     else if ( ! std::strcmp( com, "change_player_types" ) )
+//     {
+//         change_player_types( command );
+//         return;
+//     }
     else if ( ! std::strcmp ( com, "change_player_type" ) )
     {
         int unum, player_type;

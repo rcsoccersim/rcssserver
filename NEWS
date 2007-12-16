@@ -1,4 +1,4 @@
-[12.0.0a]
+[12.0.0-pre-20071216]
   * Supported a protocl version 12. Now, player and coach can connect
 	as the version 12 clients. In the version 12 protocol,
 
@@ -14,8 +14,8 @@
 
       (change_view <ViewWidth>)
 
-      If -v12 players send this format command, their view quality is
-      automatically set to high.
+      If version 11 or earlier players send this format command, their
+      view quality is automatically set to high.
 
     - Collision information is added to sense_body. The following
 		format message is added to the end of sense_body:
@@ -31,55 +31,33 @@
         (focus (target none) (count 0)) (tackle (expires 0) (count 0))
         (collision (ball) (player)))
 
-  * Changed the number of player types to 18.
+  * Added new parameters.
+    - server::extra_stamina (default 0.0). This value is applied for
+      the default player type.
+    - server::max_tackle_power (default value = 100.0)
+    - server::min_tackle_power (default value = 0.0)
+    - player::allow_mult_default_type (default value = false)
 
-  * Moved allow_mult_default_type parameter from ServerParam to
-    PlayerParam.
+  * Changed a default value of several parameters.
+    - server::ball_speed_max: 2.7 -> 3.0
+    - server::catchable_area_l:  2.0 -> 1.2
+    - server::tackle_power_rate: 0.027 -> 0.0135
+    - player::player_types: 7 -> 18
+    - player::pt_max: 3 -> 1
+    - player::player_decay_delta_min: 0 -> -0.05
+    - player::new_dash_power_rate_delta_min: 0 -> -0.0005
+    - player::new_dash_power_rate_delta_max: 0.002 -> 0.0015
 
-  * Changed the policy of an automatic player type assignment. Now,
-    if allow_mult_default_type parameter is false, rcssserver may
-    change player types just before the playmode is changed to
-    kick-off.
+  * The tackle power sent by player's command is restricted within
+    server::min_tackle_power and server::max_tackle_power. This means
+    the backward tackle is forbidden now.
 
-  * Changed default parameter values.
-    - ball_speed_max: 2.7 -> 3.0
-    - catch_area_l: 1.2 -> 1.35
-
-  * Now, goalie cannot catch the ball just after his kick. In such a
-    case, back_pass_? is taken.
-
-  * Now, rcssserver accepts some coach commands from monitor clients
-    if coach mode is enabled.
-
-[12.0.0-pre-20071025]
-  * Changed default parameter values.
-    - player_decay_delta_min: 0 -> -0.05.
-    - new_dash_power_rate_delta_min: 0 -> -0.0005.
-    - new_dash_power_rate_delta_max: 0.002 -> 0.0015.
-
-  * Added a new server parameter extra_stamina(0.0).
-
-[12.0.0-pre-20071023]
-  * Changed a rule of the back pass. Now, indirect free kick is taken
-	after the back pass.
-
-  * Changed a rule of the catch fault. Now, direct free kick is taken
-    after the catch fault.
-
-  * Forbidden the backward tackle. The tackle power in the player's
-    command is restricted betwween server::min_tackle_power(0) and
-    server::max_tackle_power(100).
-
-  * server::tackle_power_rate is changed to 0.0135.
-
-  * catch_area_l is changed to 1.2.
-
-  * The default value of player::player_types parameter becomes 14,
-    and the default value of player::pt_max paremter becomes 1. And,
-    now, rcssserver automatically assigned the heterogeneous player
-    type to field players if server::allow_mult_default_type is
-    false(This is the default value). This means only one player type
-    can be used at the same time.
+  * The default value of player::player_types parameter is changed to
+    18, and the default value of player::pt_max paremter is changed to
+    1. And, if server::allow_mult_default_type is false and teams
+    violate the player type assignment, rcssserver *automatically*
+    assign the heterogeneous player type to field players just before
+    the playmode is changed to kick-off.
 
   * Added a new restriction to the player substitution. Now, the
     online coach can substitute the same player type within
@@ -87,20 +65,19 @@
     default player type. If player::pt_max is 1, each player type
     except the default type can be used only once.
 
-  * Added new coach command "change_player_types". The online coaches
-    can change the player type assignment of all players with this
-    command. The command has the form:
+  * Changed a rule of the back pass. Now, an indirect free kick is
+    taken after the back pass at the location where the back pass
+    occured. Note that an indirect free kick can be started within
+    penalty areas.
 
-    (change_player_types [(<unum> <type>)]+)
+  * Changed a rule of the catch fault. Now, direct free kick is taken
+    after the catch fault.
 
-    For example, the following commands are valid:
+  * Now, goalie cannot catch the ball just after his kick. In such a
+    case, back_pass_[lr] is taken.
 
-    (change_player_types (2 1) (3 2) (4 3))
-    (change_player_types (10 10) (3 8) (4 9) (5 1) (8 13))
-
-    Note that change_player_types command is allowed to use only
-    before the kick-off.
-
+  * Now, rcssserver accepts some coach commands from monitor clients
+    if coach mode is enabled.
 
 [11.1.2]
   * Fixed a bug in the offside referee.

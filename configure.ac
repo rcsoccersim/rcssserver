@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([RCSSServer], 12.0.0a, sserver-admin@users.sf.net, rcssserver)
+AC_INIT([RCSSServer], 12.0.0-pre-20071216, sserver-admin@users.sf.net, rcssserver)
 
 AC_PREREQ(2.59)
 
