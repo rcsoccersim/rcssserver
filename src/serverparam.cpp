@@ -183,7 +183,7 @@ const char ServerParam::SERVER_CONF[] = "~\\.rcssserver\\server.conf";
 const char ServerParam::OLD_SERVER_CONF[] = "~\\.rcssserver-server.conf";
 #else
 const char ServerParam::LANDMARK_FILE[] = "~/.rcssserver-landmark.xml";
-const char ServerParam::SERVER_CONF[] = "~/.rcssserver/server12.conf";
+const char ServerParam::SERVER_CONF[] = "~/.rcssserver/server.conf";
 const char ServerParam::OLD_SERVER_CONF[] = "~/.rcssserver-server.conf";
 #endif
 
@@ -354,6 +354,20 @@ ServerParam::init( const int & argc,
     }
     else
     {
+        if ( instance().m_builder->version() != instance().m_builder->parsedVersion() )
+        {
+            std::cerr << "No version information or version mismatched in the configuration file '"
+                      << tildeExpand( ServerParam::SERVER_CONF ) << "'"
+                      << std::endl;
+//             std::cerr << "registered version = ["
+//                       << instance().m_builder->version() << "]\n"
+//                       << "parsed version = ["
+//                       << instance().m_builder->parsedVersion() << "]\n"
+//                       << std::flush;
+            instance().clear();
+            std::exit( EXIT_FAILURE );
+        }
+
         if ( ! PlayerParam::init( ServerParam::instance().m_builder.get() ) )
         {
             instance().m_builder->displayHelp();
@@ -408,7 +422,7 @@ ServerParam::init( const int & argc,
 }
 
 ServerParam::ServerParam( const std::string & progname )
-    : m_builder( new rcss::conf::Builder( progname, "server" ) ),
+    : m_builder( new rcss::conf::Builder( progname, VERSION, "server" ) ),
       m_conf_parser( new rcss::conf::Parser( *m_builder ) ),
       m_err_handler( new rcss::conf::StreamStatusHandler() )
 {

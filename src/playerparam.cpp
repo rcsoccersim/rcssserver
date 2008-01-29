@@ -72,7 +72,7 @@ const char PlayerParam::OLD_PLAYER_CONF[] = "~\\.rcssserver-player.conf";
 const char PlayerParam::PLAYER_CONF[] = "~\\.rcssserver\\player.conf";
 #else
 const char PlayerParam::OLD_PLAYER_CONF[] = "~/.rcssserver-player.conf";
-const char PlayerParam::PLAYER_CONF[] = "~/.rcssserver/player12.conf";
+const char PlayerParam::PLAYER_CONF[] = "~/.rcssserver/player.conf";
 #endif
 
 const int PlayerParam::DEFAULT_PLAYER_TYPES = 18; // [12.0.0] 7 -> 18
@@ -186,12 +186,25 @@ PlayerParam::init( rcss::conf::Builder* parent )
 
     boost::filesystem::path conf_path( tildeExpand( PlayerParam::PLAYER_CONF ),
                                        boost::filesystem::portable_posix_name );
-    if( !instance().m_builder->parser()->parseCreateConf( conf_path,
-                                                          "player" ) )
+    if ( ! instance().m_builder->parser()->parseCreateConf( conf_path,
+                                                            "player" ) )
     {
         std::cerr << "could not parse configuration file '"
-                  << PlayerParam::PLAYER_CONF
+                  << tildeExpand( PlayerParam::PLAYER_CONF )
                   << "'\n";
+        return false;
+    }
+
+    if ( instance().m_builder->version() != instance().m_builder->parsedVersion() )
+    {
+        std::cerr << "No version information or version mismatched in the configuration file '"
+                  << tildeExpand( PlayerParam::PLAYER_CONF ) << "'"
+                  << std::endl;
+//         std::cerr << "registered version = ["
+//                   << instance().m_builder->version() << "]\n"
+//                   << "parsed version = ["
+//                   << instance().m_builder->parsedVersion() << "]\n"
+//                   << std::flush;
         return false;
     }
 
@@ -199,7 +212,7 @@ PlayerParam::init( rcss::conf::Builder* parent )
 }
 
 PlayerParam::PlayerParam( rcss::conf::Builder* parent )
-    : m_builder( new rcss::conf::Builder( parent, "player" ) )
+    : m_builder( new rcss::conf::Builder( parent, VERSION, "player" ) )
 {
     setDefaults();
     addParams();
@@ -207,6 +220,7 @@ PlayerParam::PlayerParam( rcss::conf::Builder* parent )
 
 PlayerParam::~PlayerParam()
 {
+
 }
 
 void

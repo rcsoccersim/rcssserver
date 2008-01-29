@@ -148,7 +148,7 @@ class CSVSaverParams
 public:
     CSVSaverParams( rcss::conf::Builder * parent,
                     const std::string & module_name )
-        : rcss::conf::Builder( parent, module_name ),
+        : rcss::conf::Builder( parent, VERSION, module_name ),
           m_save( false ),
           m_filename( "rcssserver.csv" )
       {

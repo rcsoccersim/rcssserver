@@ -1,3 +1,10 @@
+2008-01-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/csvsaver.cpp:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	- implemented a package version check in the configuration files.
+
 2007-12-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:
