@@ -524,7 +524,7 @@ Player::kick( double power, double dir )
 
             accel += kick_noise;
         }
-#else
+#elif 0
         // akiyama 2007-11-14
         // new kick noise
         {
@@ -546,6 +546,43 @@ Player::kick( double power, double dir )
 //                       << " mag = " << kick_noise.r()
 //                       << std::endl;
 
+        }
+#else
+        // akiyama 2008-01-30
+        // new kick noise
+        {
+            // noise = kick_rand
+            //         * power/100
+            //         * 0.5*(   ( 0.5 + ( dist_rate + dir_rate )/4 )
+            //                 + ( 0.5 + ball_speed/ball_speed_max*ball_decay/2 ) )
+
+            // [0,1]
+            double pos_rate = 0.5
+                + 0.25 * ( dir_diff/M_PI + dist_ball/M_player_type->kickableMargin() );
+            // [0,1]
+            double speed_rate = 0.5
+                + 0.5 * ( M_stadium.ball().vel().r()
+                          / ( ServerParam::instance().ballSpeedMax() * ServerParam::instance().ballDecay() ) );
+            // [0,2*kick_rand]
+            double max_rand = M_kick_rand
+                * ( power / ServerParam::instance().maxPower() )
+                * ( pos_rate + speed_rate );
+
+            PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
+                                                     drand( -M_PI, M_PI ) );
+
+            accel += kick_noise;
+
+            std::cout << M_stadium.time()
+                      << " Kick:"
+                      << " kick_rand=" << M_kick_rand
+                      << " power=" << power
+                      << " pos_rate=" << pos_rate
+                      << " speed_rate=" << speed_rate
+                      << " kick_noise=" << kick_noise
+                      << " mag=" << kick_noise.r()
+                      << "/" << max_rand
+                      << std::endl;
         }
 #endif
 
@@ -1056,7 +1093,7 @@ Player::tackle( double power )
 
                     accel += kick_noise;
                 }
-#else
+#elif 0
                 // akiyama 2007-11-14
                 // new kick noise
                 {
@@ -1077,6 +1114,31 @@ Player::tackle( double power )
 //                               << " kick_noise = " << kick_noise
 //                               << " mag = " << kick_noise.r()
 //                               << std::endl;
+                }
+#elif 1
+                // akiyama 2008-01-30
+                // new kick noise
+                {
+                    // noise = kick_rand
+                    //         * power/100
+                    //         * 0.5*(   ( 0.5 + ( dist_rate + dir_rate )/4 )
+                    //                 + ( 0.5 + ball_speed/ball_speed_max*ball_decay/2 ) )
+
+                    // [0,1]
+                    double pos_rate = 1.0 - prob;
+                    // [0,1]
+                    double speed_rate = 0.5
+                        + 0.5 * ( M_stadium.ball().vel().r()
+                                  / ( ServerParam::instance().ballSpeedMax() * ServerParam::instance().ballDecay() ) );
+                    // [0,2*kick_rand]
+                    double max_rand = M_kick_rand
+                        * ( power / ServerParam::instance().maxPower() )
+                        * ( pos_rate + speed_rate );
+
+                    PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
+                                                             drand( -M_PI, M_PI ) );
+
+                    accel += kick_noise;
                 }
 #endif
 
