@@ -1,7 +1,7 @@
-2008-01-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+2008-01-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/player.cc:
-	- reimplemented a noise mode of kick and tackle.
+	- reimplemented a kick noise model.
 
 2008-01-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

@@ -1,3 +1,14 @@
+[12.0.0_pre-20080131]
+
+  * Changed a kick noise model. Now, the maximum kick noise is
+    directly proportional to the kick power, the ball distance, the
+    ball direction and the ball speed. And, when the kick power is 0,
+    the kick noise becomes always 0.
+
+  * Added an automatic version check of the configuration files. If
+    configuration files do not contain a version string, rcssserver
+    exit with error messages.
+
 [12.0.0_pre-20071217]
   * Supported a protocl version 12. Now, player and coach can connect
     as a version 12 client. In the version 12 protocol,

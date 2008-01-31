@@ -553,18 +553,22 @@ Player::kick( double power, double dir )
         {
             // noise = kick_rand
             //         * power/100
-            //         * 0.5*(   ( 0.5 + ( dist_rate + dir_rate )/4 )
-            //                 + ( 0.5 + ball_speed/ball_speed_max*ball_decay/2 ) )
+            //         * (   ( 0.5 + 0.25*( dist_rate + dir_rate ) )
+            //             + ( 0.5 + 0.5*ball_speed/(ball_speed_max*ball_decay) ) )
 
-            // [0,1]
-            double pos_rate = 0.5
+            // [0.5, 1.0]
+            double pos_rate
+                = 0.5
                 + 0.25 * ( dir_diff/M_PI + dist_ball/M_player_type->kickableMargin() );
-            // [0,1]
-            double speed_rate = 0.5
+            // [0.5, 1.0]
+            double speed_rate
+                = 0.5
                 + 0.5 * ( M_stadium.ball().vel().r()
-                          / ( ServerParam::instance().ballSpeedMax() * ServerParam::instance().ballDecay() ) );
-            // [0,2*kick_rand]
-            double max_rand = M_kick_rand
+                          / ( ServerParam::instance().ballSpeedMax()
+                              * ServerParam::instance().ballDecay() ) );
+            // [0, 2*kick_rand]
+            double max_rand
+                = M_kick_rand
                 * ( power / ServerParam::instance().maxPower() )
                 * ( pos_rate + speed_rate );
 
@@ -573,16 +577,16 @@ Player::kick( double power, double dir )
 
             accel += kick_noise;
 
-            std::cout << M_stadium.time()
-                      << " Kick:"
-                      << " kick_rand=" << M_kick_rand
-                      << " power=" << power
-                      << " pos_rate=" << pos_rate
-                      << " speed_rate=" << speed_rate
-                      << " kick_noise=" << kick_noise
-                      << " mag=" << kick_noise.r()
-                      << "/" << max_rand
-                      << std::endl;
+//             std::cout << M_stadium.time()
+//                       << " Kick "
+//                       << M_kick_rand
+//                       << " " << power
+//                       << " " << pos_rate
+//                       << " " << speed_rate
+//                       << " " << kick_noise
+//                       << " " << kick_noise.r()
+//                       << " " << max_rand
+//                       << std::endl;
         }
 #endif
 
@@ -1121,17 +1125,20 @@ Player::tackle( double power )
                 {
                     // noise = kick_rand
                     //         * power/100
-                    //         * 0.5*(   ( 0.5 + ( dist_rate + dir_rate )/4 )
-                    //                 + ( 0.5 + ball_speed/ball_speed_max*ball_decay/2 ) )
+                    //         * (   ( 0.5 + 0.25*( dist_rate + dir_rate ) )
+                    //             + ( 0.5 + 0.5*ball_speed/(ball_speed_max*ball_decay) ) )
 
                     // [0,1]
-                    double pos_rate = 1.0 - prob;
-                    // [0,1]
-                    double speed_rate = 0.5
+                    double pos_rate = 0.5 + 0.5*( 1.0 - prob );
+                    // [0.5,1]
+                    double speed_rate
+                        = 0.5
                         + 0.5 * ( M_stadium.ball().vel().r()
-                                  / ( ServerParam::instance().ballSpeedMax() * ServerParam::instance().ballDecay() ) );
+                                  / ( ServerParam::instance().ballSpeedMax()
+                                      * ServerParam::instance().ballDecay() ) );
                     // [0,2*kick_rand]
-                    double max_rand = M_kick_rand
+                    double max_rand
+                        = M_kick_rand
                         * ( power / ServerParam::instance().maxPower() )
                         * ( pos_rate + speed_rate );
 
