@@ -1,3 +1,10 @@
+2008-02-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/monitor.cc:
+	- the value of msg info beomes double quated message string.
+	- fixed a bug about the update timing of player state flags.
+
 2008-01-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/player.cc:

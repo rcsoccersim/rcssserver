@@ -219,7 +219,10 @@ Monitor::sendShow()
            << ' ' << (*p)->unum()
            << ')';
         os << ' ' << (*p)->playerTypeId()
-           << ' ' << (*p)->state(); // include goalie flag
+           << ' '
+           << std::hex << std::showbase
+           << (*p)->state(); // hex code
+
         os << ' ' << Quantize( (*p)->pos().x, prec )
            << ' ' << Quantize( (*p)->pos().y, prec )
            << ' ' << Quantize( (*p)->vel().x, prec )
@@ -281,7 +284,7 @@ Monitor::sendMsg( const BoardType board,
     if ( version() >= 3.0 )
     {
         char buf[MaxMesg];
-        std::snprintf( buf, MaxMesg, "(msg %d %s)", board, msg );
+        std::snprintf( buf, MaxMesg, "(msg %d \"%s\")", board, msg );
         return RemoteClient::send( buf, std::strlen( buf ) + 1 );
     }
     else if ( version() >= 2.0 )

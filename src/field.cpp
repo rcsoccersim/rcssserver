@@ -1131,6 +1131,11 @@ Stadium::sendDisp()
     makeMonitorMessage();
     sendToMonitors();
     writeCurrentGameLog();
+
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        M_players[i]->resetState();
+    }
 }
 
 void
@@ -1238,11 +1243,6 @@ Stadium::makeMonitorMessage()
         }
     }
 
-
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        M_players[i]->resetState();
-    }
 }
 
 void
