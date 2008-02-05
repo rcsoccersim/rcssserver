@@ -163,7 +163,7 @@ InitSenderMonitorV2::InitSenderMonitorV2( const Params & params )
 }
 
 InitSenderMonitorV2::InitSenderMonitorV2( const Params & params,
-                                           const boost::shared_ptr< InitSenderCommon > common )
+                                          const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderMonitorV1( params, common )
 {
 
@@ -273,6 +273,7 @@ void
 InitSenderMonitorV3::sendScore()
 {
     serializer().serializeScore( transport(),
+                                 stadium().time(),
                                  stadium().teamLeft().name(),
                                  stadium().teamRight().name(),
                                  stadium().teamLeft().point(),
@@ -288,6 +289,7 @@ void
 InitSenderMonitorV3::sendPlayMode()
 {
     serializer().serializePlayMode( transport(),
+                                    stadium().time(),
                                     stadium().playmode() );
     transport() << std::ends << std::flush;
 }

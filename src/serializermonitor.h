@@ -54,6 +54,7 @@ public:
 
     virtual
     void serializeScore( std::ostream & os,
+                         const int time,
                          const std::string & left_name,
                          const std::string & right_name,
                          const int left_point,
@@ -65,6 +66,7 @@ public:
 
     virtual
     void serializePlayMode( std::ostream & os,
+                            const int time,
                             const PlayMode pmode ) const = 0;
 
 };
@@ -91,6 +93,7 @@ public:
 
     virtual
     void serializeScore( std::ostream & ,
+                         const int,
                          const std::string & ,
                          const std::string & ,
                          const int ,
@@ -103,6 +106,7 @@ public:
 
     virtual
     void serializePlayMode( std::ostream & ,
+                            const int,
                             const PlayMode ) const
       { }
 
@@ -131,6 +135,7 @@ public:
 
     virtual
     void serializeScore( std::ostream & os,
+                         const int time,
                          const std::string & left_name,
                          const std::string & right_name,
                          const int left_point,
@@ -142,6 +147,7 @@ public:
 
     virtual
     void serializePlayMode( std::ostream & os,
+                            const int time,
                             const PlayMode pmode ) const;
 
 };

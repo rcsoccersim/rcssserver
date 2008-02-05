@@ -127,6 +127,7 @@ SerializerMonitorStdv3::instance()
 
 void
 SerializerMonitorStdv3::serializeScore( std::ostream & os,
+                                        const int time,
                                         const std::string & left_name,
                                         const std::string & right_name,
                                         const int left_point,
@@ -137,6 +138,7 @@ SerializerMonitorStdv3::serializeScore( std::ostream & os,
                                         const int right_pen_point ) const
 {
     os << "(team "
+       << time << ' '
        << ( left_name.empty() ? "null" : left_name.c_str() )
        << ' ' << ( right_name.empty() ? "null" : right_name.c_str() )
        << ' ' << left_point
@@ -155,9 +157,12 @@ SerializerMonitorStdv3::serializeScore( std::ostream & os,
 
 void
 SerializerMonitorStdv3::serializePlayMode( std::ostream & os,
+                                           const int time,
                                            const PlayMode pmode ) const
 {
-    os << "(playmode " << playmode_strings[pmode] << ')';
+    os << "(playmode "
+       << time << ' '
+       << playmode_strings[pmode] << ')';
 }
 
 

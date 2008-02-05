@@ -146,7 +146,8 @@ Monitor::sendPlayMode()
     M_playmode = M_stadium.playmode();
 
     getTransport() << "(playmode "
-                   << playmode_strings[M_playmode]
+                   << M_stadium.time()
+                   << ' ' << playmode_strings[M_playmode]
                    << ")"
                    << std::ends << std::flush;
 }
@@ -171,7 +172,9 @@ Monitor::sendTeam()
 
         std::ostream & os = getTransport();
 
-        os << "(team " << ( M_team_l_name.empty() ? "null" : M_team_l_name.c_str() )
+        os << "(team "
+           << M_stadium.time()
+           << ' ' << ( M_team_l_name.empty() ? "null" : M_team_l_name.c_str() )
            << ' ' << ( M_team_r_name.empty() ? "null" : M_team_r_name.c_str() )
            << ' ' << M_team_l_score
            << ' ' << M_team_r_score;
@@ -221,7 +224,8 @@ Monitor::sendShow()
         os << ' ' << (*p)->playerTypeId()
            << ' '
            << std::hex << std::showbase
-           << (*p)->state(); // hex code
+           << (*p)->state()
+           << std::dec << std::noshowbase;
 
         os << ' ' << Quantize( (*p)->pos().x, prec )
            << ' ' << Quantize( (*p)->pos().y, prec )
@@ -284,7 +288,9 @@ Monitor::sendMsg( const BoardType board,
     if ( version() >= 3.0 )
     {
         char buf[MaxMesg];
-        std::snprintf( buf, MaxMesg, "(msg %d \"%s\")", board, msg );
+        std::snprintf( buf, MaxMesg,
+                       "(msg %d %d \"%s\")",
+                       M_stadium.time(), board, msg );
         return RemoteClient::send( buf, std::strlen( buf ) + 1 );
     }
     else if ( version() >= 2.0 )
