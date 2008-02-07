@@ -532,7 +532,7 @@ private:
     void done();
     void pointto( bool on, double dist, double head );
     void attentionto( bool on, rcss::pcom::TEAM team_side, std::string team_name, int at_unum );
-    void tackle( double power );
+    void tackle( double power_or_angle );
     void clang( int min, int max);
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode );
 

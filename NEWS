@@ -1,8 +1,33 @@
+[12.0.0_pre-20080209]
+
+  * Renamed parameters:
+    - server::min_tackle_power -> server::max_back_tackle_power
+      (default value: 50.0)
+
+  * Changed parameters:
+    - server::tackle_power_rate (0.0135 -> 0.027)
+
+  * Changed a tackle model for the v.12 players based on the Thomas
+    Gabel's proposal. The argument of the tackle command sent by v.12
+    players means the ball acceleration angle relative to the player's
+    body angle. Now, effective power is calculated as follows:
+
+      eff_power = ( max_back_tackle_power
+                    + ( max_tackle_power - max_back_tackle_power )
+                    * ( 1 - fabs( angle )/180 ) )
+                * tackle_power_rate
+
+  * Changed a tackle power restriction rule for the v.11 or older
+    players as follows:
+
+      power = max( -max_back_tackle_power,
+                   min( max_tackle_power, power ) )
+
 [12.0.0_pre-20080131]
 
   * Changed a kick noise model. Now, the maximum kick noise is
     directly proportional to the kick power, the ball distance, the
-    ball direction and the ball speed. And, when the kick power is 0,
+    ball direction and the ball speed. When the kick power is 0,
     the kick noise becomes always 0.
 
   * Added an automatic version check of the configuration files. If
@@ -50,6 +75,7 @@
     - server::max_tackle_power (default value: 100.0)
     - server::min_tackle_power (default value: 0.0)
     - server::player_speed_max_min (default value: 0.8)
+    - server::max_monitors (default value: -1)
     - player::allow_mult_default_type (default value: false)
 
   * Changed parameters:
@@ -123,6 +149,11 @@
 
   * Now, rcssserver accepts some coach commands from monitor clients
     if coach mode is enabled.
+
+  * If server::max_monitor is a positive value, the total number of
+    monitor clients that can connect to the rcssserver is restricted
+    within that number. If server::max_monitor is a negative
+    value(default), there is no restriction.
 
 [11.1.2]
   * Fixed a bug in the offside referee.

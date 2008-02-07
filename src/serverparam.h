@@ -273,8 +273,8 @@ private:
     static const double TACKLE_EXPONENT;
     static const unsigned int TACKLE_CYCLES;
     static const double TACKLE_POWER_RATE;
-    static const double MIN_TACKLE_POWER;
     static const double MAX_TACKLE_POWER;
+    static const double MAX_BACK_TACKLE_POWER;
 
     static const int NR_NORMAL_HALFS;
     static const int NR_EXTRA_HALFS;
@@ -552,8 +552,8 @@ private:
     std::string M_coach_msg_file; /* file name that contains the messages sent to coaches */
 
     // 12.0.0
-    double M_min_tackle_power;
     double M_max_tackle_power;
+    double M_max_back_tackle_power;
 		double M_player_speed_max_min; // minumum value of player speed max
 		double M_extra_stamina;
     int M_max_monitors; //!< The maximum number of monitor client connection.
@@ -954,8 +954,8 @@ public:
     const double & tackleExponent() const { return M_tackle_exponent; }
     int tackleCycles() const { return M_tackle_cycles; }
     const double & tacklePowerRate() const { return M_tackle_power_rate; }
-    const double & minTacklePower() const { return M_min_tackle_power; }
     const double & maxTacklePower() const { return M_max_tackle_power; }
+    const double & maxBackTacklePower() const { return M_max_back_tackle_power; }
 
     unsigned int freeformWaitPeriod() const { return (unsigned int)M_freeform_wait_period; }
     unsigned int freeformSendPeriod() const { return (unsigned int)M_freeform_send_period; }

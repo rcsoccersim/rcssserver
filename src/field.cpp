@@ -2842,6 +2842,20 @@ Stadium::ballCaught( const Player & catcher )
 }
 
 void
+Stadium::ballCatchFailed()
+{
+    M_ball_catcher = NULL;
+
+    PVector new_ball_vel = ball().vel();
+    new_ball_vel *= drand( 0.1, 0.9 );
+    new_ball_vel.rotate( drand( -M_PI*0.5, M_PI*0.5 ) );
+
+    PVector accel = new_ball_vel - ball().vel();
+
+    M_ball->push( accel );
+}
+
+void
 Stadium::sendGraphic( Side side,
                       unsigned int x,
                       unsigned int y,

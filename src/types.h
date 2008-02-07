@@ -502,8 +502,8 @@ typedef struct
     // 11.0.0
     Int32 ball_stuck_area; // automatic drop ball threshold while play_on
     // 12.0.0
-    Int32 min_tackle_power;
     Int32 max_tackle_power;
+    Int32 max_back_tackle_power;
     Int32 player_speed_max_min;
     Int32 extra_stamina;
 

@@ -1,3 +1,18 @@
+2008-02-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	- updated new rule descriptions.
+
+	* src/field.cpp:
+	* src/field.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/types.h:
+	- implemented new tackle model based on the Thomas Gabel's
+	proposal.
+
 2008-02-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/initsendermonitor.cpp:

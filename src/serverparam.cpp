@@ -227,7 +227,7 @@ const double ServerParam::TACKLE_BACK_DIST = 0.5;
 const double ServerParam::TACKLE_WIDTH = 1.0;
 const double ServerParam::TACKLE_EXPONENT = 6.0;
 const unsigned int ServerParam::TACKLE_CYCLES = 10;
-const double ServerParam::TACKLE_POWER_RATE = 0.0135; // [12.0.0] 0.027 -> 0.0135
+const double ServerParam::TACKLE_POWER_RATE = 0.027;
 
 const int ServerParam::NR_NORMAL_HALFS = 2;
 const int ServerParam::NR_EXTRA_HALFS = 2;
@@ -277,8 +277,8 @@ const char ServerParam::S_MODULE_DIR[] = "/usr/local/lib/rcssserver/modules";
 const double ServerParam::BALL_STUCK_AREA = 3.0;
 
 // 12.0.0
-const double ServerParam::MIN_TACKLE_POWER = 0.0;
 const double ServerParam::MAX_TACKLE_POWER = 100.0;
+const double ServerParam::MAX_BACK_TACKLE_POWER = 50.0;
 const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.8;
 const double ServerParam::EXTRA_STAMINA = 0.0;
 
@@ -730,8 +730,8 @@ ServerParam::addParams()
               rcss::conf::makeGetter( M_coach_msg_file ),
               "", 999 );
 
-    addParam( "min_tackle_power", M_min_tackle_power, "", 12 );
     addParam( "max_tackle_power", M_max_tackle_power, "", 12 );
+    addParam( "max_back_tackle_power", M_max_back_tackle_power, "", 12 );
     addParam( "player_speed_max_min", M_player_speed_max_min,
               "The minumum value of the max speed of players", 12 );
     addParam( "extra_stamina", M_extra_stamina, "", 12 );
@@ -1043,8 +1043,8 @@ ServerParam::setDefaults()
     M_coach_msg_file = "";
 
     // 12.0.0
-    M_min_tackle_power = MIN_TACKLE_POWER;
     M_max_tackle_power = MAX_TACKLE_POWER;
+    M_max_back_tackle_power = MAX_BACK_TACKLE_POWER;
     M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
     M_extra_stamina = EXTRA_STAMINA;
     M_max_monitors = -1;
@@ -1207,8 +1207,8 @@ ServerParam::convertToStruct () const
     tmp.ball_stuck_area = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_ball_stuck_area ) );
 
     // 12.0.0
-    tmp.min_tackle_power = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_min_tackle_power ) );
     tmp.max_tackle_power = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_max_tackle_power ) );
+    tmp.max_back_tackle_power = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_max_back_tackle_power ) );
     tmp.player_speed_max_min = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_player_speed_max_min ) );
     tmp.extra_stamina = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_extra_stamina ) );
 

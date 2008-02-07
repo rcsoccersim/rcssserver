@@ -569,6 +569,8 @@ public:
 
     void ballCaught( const Player & catcher );
 
+    void ballCatchFailed();
+
     void collisions();
 
 private:
