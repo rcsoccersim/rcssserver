@@ -1,5 +1,8 @@
 2008-02-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/monitor.cc:
+	- fixed a monitor protocol v3.
+
 	* NEWS:
 	- updated new rule descriptions.
 

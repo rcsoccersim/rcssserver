@@ -179,10 +179,13 @@ Monitor::sendTeam()
            << ' ' << M_team_l_score
            << ' ' << M_team_r_score;
 
-        if ( M_stadium.teamLeft().penaltyTaken() > 0 )
+        if ( M_stadium.teamLeft().penaltyTaken() > 0
+             || M_stadium.teamRight().penaltyTaken() > 0 )
         {
-            os << ' ' << M_team_l_pen_score
-               << ' ' << M_team_r_pen_score;
+            os << ' ' << M_stadium.teamLeft().penaltyPoint()
+               << ' ' << M_stadium.teamLeft().penaltyTaken() - M_stadium.teamLeft().penaltyPoint()
+               << ' ' << M_stadium.teamRight().penaltyPoint()
+               << ' ' << M_stadium.teamRight().penaltyTaken() - M_stadium.teamRight().penaltyPoint();
         }
         os << ')' << std::ends << std::flush;
     }
@@ -205,6 +208,21 @@ Monitor::sendShow()
     std::ostream & os = getTransport();
 
     os << "(show " << M_stadium.time();
+
+    os << " (pm " << M_stadium.playmode() << ')';
+    os << " (score "
+       << ' ' << M_stadium.teamLeft().point()
+       << ' ' << M_stadium.teamRight().point();
+    if ( M_stadium.teamLeft().penaltyTaken() > 0
+         || M_stadium.teamRight().penaltyTaken() > 0 )
+    {
+        os << ' ' << M_stadium.teamLeft().penaltyPoint()
+           << ' ' << M_stadium.teamLeft().penaltyTaken() - M_stadium.teamLeft().penaltyPoint()
+           << ' ' << M_stadium.teamRight().penaltyPoint()
+           << ' ' << M_stadium.teamRight().penaltyTaken() - M_stadium.teamRight().penaltyPoint();
+    }
+    os << ')';
+
     os << " (" << BALL_NAME_SHORT
        << ' ' << Quantize( M_stadium.ball().pos().x, prec )
        << ' ' << Quantize( M_stadium.ball().pos().y, prec )
