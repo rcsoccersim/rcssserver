@@ -1,3 +1,18 @@
+2008-02-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* src/field.cpp:
+	* src/player.cc:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/team.cpp:
+	- reimplemented a catch model and a tackle model, based on the
+	Sebastian Marian's proposal.
+
+	* src/team.cpp (Team::assignPlayerTypes):
+	- fixed a bug of the automatic player type assignment in the case
+	of nr_normal_halfs == 0 and nr_extra_halfs == 0.
+
 2008-02-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/monitor.cc:

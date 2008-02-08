@@ -163,7 +163,9 @@ Team::assignCoach( OnlineCoach * coach )
 void
 Team::assignPlayerTypes()
 {
-    if ( PlayerParam::instance().allowMultDefaultType() )
+    if ( PlayerParam::instance().allowMultDefaultType()
+         || ( ServerParam::instance().nrNormalHalfs() == 0
+              && ServerParam::instance().nrExtraHalfs() == 0 ) )
     {
         return;
     }

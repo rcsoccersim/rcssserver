@@ -605,7 +605,7 @@ Player::goalieCatch( double dir )
         //        break ;
         //      }
 
-#if 1
+#if 0
         RArea catchable( PVector( ServerParam::instance().catchAreaLength()*0.5,
                                   0.0 ),
                          PVector( ServerParam::instance().catchAreaLength(),
@@ -641,18 +641,17 @@ Player::goalieCatch( double dir )
 
         M_stadium.ballCaught( *this );
 #else
-        // 2008-02-06 akiyama
-        // new catch model
-        const double reliable_catch_area_l = ServerParam::instance().catchAreaLength() * 0.6;
-
-        const RArea reliable_catch_area( PVector( reliable_catch_area_l*0.5,
-                                                  0.0 ),
-                                         PVector( reliable_catch_area_l,
-                                                  ServerParam::instance().catchAreaWidth() ) );
+        // 2008-02-08 akiyama
+        // new catch model based on the Sebastian Marian's proposal
+        std::cerr << M_stadium.time() << ": goalie catch" << std::endl;
         const RArea catch_area( PVector( ServerParam::instance().catchAreaLength()*0.5,
                                          0.0 ),
                                 PVector( ServerParam::instance().catchAreaLength(),
                                          ServerParam::instance().catchAreaWidth() ) );
+        const RArea reliable_catch_area( PVector( ServerParam::instance().reliableCatchAreaLength()*0.5,
+                                                  0.0 ),
+                                         PVector( ServerParam::instance().reliableCatchAreaLength(),
+                                                  ServerParam::instance().catchAreaWidth() ) );
         PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
         rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
 
@@ -669,25 +668,31 @@ Player::goalieCatch( double dir )
 
         if ( ! reliable_catch_area.inArea( rotated_pos ) )
         {
-            double reliable_diagonal = std::sqrt( std::pow( reliable_catch_area_l, 2.0 )
-                                                  + std::pow( ServerParam::instance().catchAreaWidth()*0.5, 2.0 ) );
             double diagonal = std::sqrt( std::pow( ServerParam::instance().catchAreaLength(), 2.0 )
                                          + std::pow( ServerParam::instance().catchAreaWidth()*0.5, 2.0 ) );
+            double reliable_diagonal = std::sqrt( std::pow( ServerParam::instance().reliableCatchAreaLength(), 2.0 )
+                                                  + std::pow( ServerParam::instance().catchAreaWidth()*0.5, 2.0 ) );
             double ball_dist = rotated_pos.r();
-            double dist_rate
-                = 0.5 + 0.5*( ball_dist - reliable_diagonal ) / ( diagonal - reliable_diagonal );
-            double speed_rate = ( M_stadium.ball().vel().r()
-                                  / ( ServerParam::instance().ballSpeedMax()
-                                      * ServerParam::instance().ballDecay() ) );
+
+            const double alpha = 0.75;
+
+            double max_fail_prob = 1.0 - ServerParam::instance().minCatchProbability();
+            double speed_rate = max_fail_prob * alpha
+                *( M_stadium.ball().vel().r()
+                   / ( ServerParam::instance().ballSpeedMax()
+                       * ServerParam::instance().ballDecay() ) );
+            double dist_rate = max_fail_prob * ( 1.0 - alpha )
+                * ( ( ball_dist - reliable_diagonal ) / ( diagonal - reliable_diagonal ) );
+
             double fail_prob = rcss::bound( 0.0,
-                                            ( dist_rate * speed_rate ),
+                                            speed_rate + dist_rate,
                                             1.0 );
 
-            std::cout << M_stadium.time() << " catch no-reliable "
-                      << " diagonal=" << diagonal
-                      << " r-diagonal=" << reliable_diagonal
-                      << " dist_rate=" << dist_rate
+            std::cerr << M_stadium.time() << ": Unreliable catch"
+                //<< " diagonal=" << diagonal
+                //<< " r-diagonal=" << reliable_diagonal
                       << " speed_rate=" << speed_rate
+                      << " dist_rate=" << dist_rate
                       << " fail_prob=" << fail_prob << std::endl;
 
             boost::bernoulli_distribution<> rng( fail_prob );
@@ -697,7 +702,16 @@ Player::goalieCatch( double dir )
             if ( dst() )
             {
                 success = false;
+                std::cerr << "Unreliable catch. failure dist=" << ball_dist << " speed=" << M_stadium.ball().vel().r() << std::endl;
             }
+            else
+            {
+                std::cerr << "Unreliable catch. success. dist=" << ball_dist << " speed=" << M_stadium.ball().vel().r() << std::endl;
+            }
+        }
+        else
+        {
+            std::cerr << "Reliable catch. ball_dist=" << rotated_pos.r() << std::endl;
         }
 
         if ( success )
@@ -716,11 +730,6 @@ Player::goalieCatch( double dir )
 
             M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
             M_stadium.ballCaught( *this );
-        }
-        else
-        {
-            std::cout << "catch failed" << std::endl;
-            M_stadium.ballCatchFailed();
         }
 #endif
         ++M_catch_count;
@@ -1077,6 +1086,12 @@ Player::tackle( double power_or_angle )
                                ? ServerParam::instance().tackleDist()
                                : ServerParam::instance().tackleBackDist() );
 
+        if ( std::fabs( tackle_dist ) <= 1.0e-5 )
+        {
+            M_state |= TACKLE_FAULT;
+            return;
+        }
+
         // tackle failure probability
         double prob = ( std::pow( std::fabs( player_2_ball.x ) / tackle_dist,
                                   ServerParam::instance().tackleExponent() )
@@ -1089,9 +1104,9 @@ Player::tackle( double power_or_angle )
             boost::bernoulli_distribution<> rng( 1 - prob );
             boost::variate_generator< rcss::random::DefaultRNG &,
                 boost::bernoulli_distribution<> >
-                gen( rcss::random::DefaultRNG::instance(), rng );
+                dst( rcss::random::DefaultRNG::instance(), rng );
 
-            if ( gen() )
+            if ( dst() )
             {
                 M_state |= TACKLE;
 
@@ -1112,6 +1127,8 @@ Player::tackle( double power_or_angle )
                 double power_rate = 1.0;
                 PVector accel( 0.0, 0.0 );
 
+                // 2008-02-07 akiyama
+                // new tackle model based on the Thomas Gabel's proposal
                 if ( version() >= 12.0 )
                 {
                     double angle = NormalizeMoment( power_or_angle );
@@ -1119,8 +1136,13 @@ Player::tackle( double power_or_angle )
                         = ( ServerParam::instance().maxBackTacklePower()
                             + ( ( ServerParam::instance().maxTacklePower()
                                   - ServerParam::instance().maxBackTacklePower() )
-                                * ( 1.0 - std::fabs( angle ) / 180.0 ) ) )
+                                * ( 1.0 - std::pow( std::fabs( angle ) / 180.0, 2.0 ) )
+                                )
+                            )
                         * ServerParam::instance().tacklePowerRate();
+                    eff_power *= ( 1.0
+                                   - 0.25*( std::fabs( player_2_ball.x ) / tackle_dist )
+                                   - 0.25*( std::fabs( player_2_ball.y ) / ServerParam::instance().tackleWidth() ) );
 
                     accel = PVector::fromPolar( eff_power,
                                                 angle + angleBodyCommitted() );
@@ -1131,15 +1153,28 @@ Player::tackle( double power_or_angle )
                     double power = NormalizeTacklePower( power_or_angle );
                     double eff_power = power * ServerParam::instance().tacklePowerRate();
 
-                    power_rate = ( power > 0.0
-                                   ? power / ServerParam::instance().maxTacklePower()
-                                   : -power / ServerParam::instance().maxBackTacklePower() );
+                    if ( power >= 0.0 )
+                    {
+                        power_rate = power / ServerParam::instance().maxTacklePower();
+                    }
+                    else if ( std::fabs( power ) < 1.0e-10 )
+                    {
+                        power_rate = 0.0;
+                    }
+                    else if ( std::fabs( ServerParam::instance().maxBackTacklePower() ) > 1.0e-10 )
+                    {
+                        power_rate = -power / ServerParam::instance().maxBackTacklePower();
+                    }
 
                     // Reduce the acceleration by the probability of kicking it.
                     // For instance when the ball is on the boundry of the tackle
                     // area, the acceleration is very low as one only barely touches
                     // the ball.
-                    // eff_power *= 1 - prob;
+                    //eff_power *= 1 - prob;
+
+                    eff_power *= ( 1.0
+                                   - 0.25*( std::fabs( player_2_ball.x ) / tackle_dist )
+                                   - 0.25*( std::fabs( player_2_ball.y ) / ServerParam::instance().tackleWidth() ) );
 
                     accel = PVector::fromPolar( eff_power,
                                                 angleBodyCommitted() );
@@ -1172,10 +1207,15 @@ Player::tackle( double power_or_angle )
                     * ( pos_rate + speed_rate );
                 PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
                                                          drand( -M_PI, M_PI ) );
+                std::cerr << M_stadium.time()
+                          << ": tackled arg=" << power_or_angle
+                          << " eff_power=" << accel.r()
+                          << " angle=" << accel.th()
+                          << " noise=" << kick_noise.r()
+                          << std::endl;
                 accel += kick_noise;
 
                 M_stadium.kickTaken( *this, accel );
-
             }
             else
             {

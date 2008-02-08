@@ -1800,8 +1800,7 @@ Stadium::_Start( Stadium& stad )
                 stad.recoveryPlayers();
             }
             stad.set_ball( LEFT, PVector( 0.0, 0.0 ) );
-            if ( stad.time() == 0
-                 && ! PlayerParam::instance().allowMultDefaultType() )
+            if ( stad.time() == 0 )
             {
                 stad.assignPlayerTypes();
             }

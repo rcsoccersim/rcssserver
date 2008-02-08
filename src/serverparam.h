@@ -189,6 +189,7 @@ private:
     static const double GOALIE_CATCHABLE_POSSIBILITY;
     static const double GOALIE_CATCHABLE_AREA_LENGTH;
     static const double GOALIE_CATCHABLE_AREA_WIDTH;
+    static const double GOALIE_RELIABLE_CATCH_AREA_LENGTH;
     static const int GOALIE_CATCH_BAN_CYCLE;
     static const int GOALIE_MAX_MOVES;
 
@@ -556,6 +557,8 @@ private:
     double M_max_back_tackle_power;
 		double M_player_speed_max_min; // minumum value of player speed max
 		double M_extra_stamina;
+		double M_reliable_catch_area_l; /* goalie reliable catchable area length */
+    double M_min_catch_probability;
     int M_max_monitors; //!< The maximum number of monitor client connection.
 
 private:
@@ -799,7 +802,9 @@ public:
 
 		const double & catchAreaLength() const { return catch_area_l; }
 		const double & catchAreaWidth() const { return catch_area_w; }
+		const double & reliableCatchAreaLength() const { return M_reliable_catch_area_l; }
 		const double & catchProb() const { return catch_prob; }
+		const double & minCatchProbability() const { return M_min_catch_probability; }
     int goalieMaxMoves() const { return goalie_max_moves; }
 
     bool keepAwayMode() const { return kaway; }

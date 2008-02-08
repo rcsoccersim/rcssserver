@@ -1,11 +1,20 @@
 [12.0.0_pre-20080209]
 
+  * New parameters:
+    - server::reliable_catch_area_l (default value: 1.2)
+
   * Renamed parameters:
     - server::min_tackle_power -> server::max_back_tackle_power
-      (default value: 50.0)
+      (default value: 0.0)
 
   * Changed parameters:
     - server::tackle_power_rate (0.0135 -> 0.027)
+
+  * Added a catch probalility to unreliable catches. If ball is not
+    within the goalie's reliable catch area, the catch probability is
+    calculated according to the ball position and goalie's catch
+    command may be failed.
+
 
   * Changed a tackle model for the v.12 players based on the Thomas
     Gabel's proposal. The argument of the tackle command sent by v.12
@@ -23,27 +32,32 @@
       power = max( -max_back_tackle_power,
                    min( max_tackle_power, power ) )
 
-[12.0.0_pre-20080131]
+  * Added a tackle power reduction according to the ball position.
+
+      eff_power *= ( 1
+                     - 0.25*fabs( player_2_ball.x )/tackle_dist
+                     - 0.25*fabs( player_2_ball.y )/tackle_back_dist )
 
   * Changed a kick noise model. Now, the maximum kick noise is
     directly proportional to the kick power, the ball distance, the
     ball direction and the ball speed. When the kick power is 0,
     the kick noise becomes always 0.
 
-  * Added an automatic version check of the configuration files. If
-    configuration files do not contain a version string, rcssserver
-    exit with error messages.
+  * Added an automatic version check for configuration files. If
+    configuration files do not contain a version string that is same
+    as the rcssserver's release version, rcssserver will exit with
+    error messages.
 
 [12.0.0_pre-20071217]
-  * Supported a protocl version 12. Now, player and coach can connect
-    as a version 12 client. In the version 12 protocol,
+  * Supported a protocl version 12. Now, players and coaches can
+    connect as a version 12 client. In the version 12 protocol,
 
-    - Player can change view width only to normal or wide and cannot
-      change the view quality. Instead of them, player can receive
-      see messeage at the begining of every cycle if his view width
-      is normal. If player's view width is wide, see message is
-      received once every two cycles. The new message order is as
-      follows:
+    - Players can change view width only to normal or wide and cannot
+      change the view quality. Instead of them, players can receive
+      see messeage at the begining of every cycle if their view width
+      is normal. If players' view width is wide, see message is
+      received once every two cycles. The new message arrival order is
+      as follows:
 
       sense_body (-> fullstate) -> hear -> see
 
@@ -55,8 +69,8 @@
       If version 11 or earlier players send this format command, their
       view quality is set to high.
 
-    - Collision information is added to the sense_body. The following
-      format message is appended to the end of sense_body:
+    - Collision information is added to the sense_body message. The
+      following format message is appended to the end of sense_body:
 
       (collision {none|[(ball)][(player)][(post)]})
 
@@ -119,7 +133,7 @@
     except the default type can be used only once.
 
   * Slightly changed a noise model for movable objects. The new
-    algorithm is as follows:
+    formula is as follows:
 
       double maxrnd = rand_param * speed;
       PVector noise = polar2vector( drand( 0.0, maxrnd ),
@@ -128,6 +142,14 @@
   * Changed a kick noise model. Now, the current ball speed affects
     the maximum kick noise value. Note that the maximum kick noise
     value has no effects if player's kick_rand parameter is 0.
+
+      double maxrnd = kick_rand
+                * kick_power / max_power
+                * ( 1.0
+                    + 0.25*(dir_diff/PI + dist_2_ball/kickable_margin)
+                    + 0.5*(ball_speed/(ball_speed_max * ball_decay)) )
+      PVector kick_noise = polar2vector( drand( 0.0, maxrnd ),
+                                         drand( -PI, PI ) );
 
   * The tackle power sent by player's command is restricted within
     server::min_tackle_power and server::max_tackle_power. This means

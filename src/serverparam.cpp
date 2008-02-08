@@ -136,8 +136,9 @@ const double ServerParam::KICK_RAND_FACTOR_R = 1.0;
 
 
 const double ServerParam::GOALIE_CATCHABLE_POSSIBILITY = 1.0;
-const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 1.2; // [12.0.0] 2.0 -> 1.2
+const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 2.0;
 const double ServerParam::GOALIE_CATCHABLE_AREA_WIDTH = 1.0;
+const double ServerParam::GOALIE_RELIABLE_CATCH_AREA_LENGTH = 1.2; // [12.0.0]
 const int ServerParam::GOALIE_CATCH_BAN_CYCLE = 5;
 const int ServerParam::GOALIE_MAX_MOVES = 2;
 
@@ -223,8 +224,8 @@ const unsigned int ServerParam::HEAR_INC = 1;
 const unsigned int ServerParam::HEAR_DECAY = 1;
 
 const double ServerParam::TACKLE_DIST = 2.0;
-const double ServerParam::TACKLE_BACK_DIST = 0.5;
-const double ServerParam::TACKLE_WIDTH = 1.0;
+const double ServerParam::TACKLE_BACK_DIST = 0.0; // [12.0.0] 0.5 -> 0.0
+const double ServerParam::TACKLE_WIDTH = 1.25; // [12.0.0] 1.0 -> 1.25
 const double ServerParam::TACKLE_EXPONENT = 6.0;
 const unsigned int ServerParam::TACKLE_CYCLES = 10;
 const double ServerParam::TACKLE_POWER_RATE = 0.027;
@@ -278,7 +279,7 @@ const double ServerParam::BALL_STUCK_AREA = 3.0;
 
 // 12.0.0
 const double ServerParam::MAX_TACKLE_POWER = 100.0;
-const double ServerParam::MAX_BACK_TACKLE_POWER = 50.0;
+const double ServerParam::MAX_BACK_TACKLE_POWER = 0.0;
 const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.8;
 const double ServerParam::EXTRA_STAMINA = 0.0;
 
@@ -526,9 +527,9 @@ ServerParam::addParams()
               7 );
 
     addParam( "catch_probability", catch_prob, "", 7 );
-    addParam( "catchable_area_l",    catch_area_l, "", 7 );
-    addParam( "catchable_area_w",    catch_area_w, "", 7 );
-    addParam( "goalie_max_moves",    goalie_max_moves, "", 7 );
+    addParam( "catchable_area_l", catch_area_l, "", 7 );
+    addParam( "catchable_area_w", catch_area_w, "", 7 );
+    addParam( "goalie_max_moves", goalie_max_moves, "", 7 );
 
     addParam( "maxpower", maxp, "", 7 );
     addParam( "minpower", minp, "", 7 );
@@ -735,6 +736,9 @@ ServerParam::addParams()
     addParam( "player_speed_max_min", M_player_speed_max_min,
               "The minumum value of the max speed of players", 12 );
     addParam( "extra_stamina", M_extra_stamina, "", 12 );
+    addParam( "reliable_catch_area_l", M_reliable_catch_area_l, "", 12 );
+    addParam( "min_catch_probability", M_min_catch_probability, "", 12 );
+
     addParam( "max_monitors", M_max_monitors, "", 999 );
 }
 
@@ -1047,6 +1051,8 @@ ServerParam::setDefaults()
     M_max_back_tackle_power = MAX_BACK_TACKLE_POWER;
     M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
     M_extra_stamina = EXTRA_STAMINA;
+    M_reliable_catch_area_l = GOALIE_RELIABLE_CATCH_AREA_LENGTH;
+    M_min_catch_probability = 0.0;
     M_max_monitors = -1;
 
     setHalfTime( HALF_TIME );
