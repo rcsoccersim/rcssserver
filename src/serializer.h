@@ -30,16 +30,14 @@
 
 class PVector;
 
-namespace rcss
-{
-namespace clang
-{
+namespace rcss {
+
+namespace clang {
 class Msg;
 }
 
 
-class SerializerCommon
-{
+class SerializerCommon {
 protected:
     SerializerCommon();
 
@@ -54,81 +52,80 @@ public:
 
     virtual
     void serializeServerParamBegin( std::ostream & ) const
-      {}
+      { }
 
     virtual
     void serializeServerParamEnd( std::ostream & ) const
-      {}
+      { }
 
     virtual
     void serializePlayerParamBegin( std::ostream & ) const
-      {}
+      { }
 
     virtual
     void serializePlayerParamEnd( std::ostream & ) const
-      {}
+      { }
 
     virtual
     void serializePlayerTypeBegin( std::ostream & ) const
-      {}
+      { }
 
     virtual
     void serializePlayerTypeEnd( std::ostream & ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const int ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const unsigned int ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const bool ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const double & ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const std::string & ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const std::string &,
                          const int ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const std::string &,
                          const bool ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const std::string &,
                          const double & ) const
-      {}
+      { }
 
     virtual
     void serializeParam( std::ostream &,
                          const std::string &,
                          const std::string & ) const
-      {}
+      { }
 };
 
 
-class Serializer
-{
+class Serializer {
 public:
     Serializer( const SerializerCommon & common )
         : m_common( common )
@@ -194,7 +191,9 @@ public:
 
     void serializeParam( std::ostream & strm,
                          const double & value ) const
-      { commonSerializer().serializeParam( strm, value ); }
+      {
+          commonSerializer().serializeParam( strm, value );
+      }
 
     void serializeParam( std::ostream & strm,
                          const std::string & value ) const
@@ -236,15 +235,13 @@ private:
 
 
 class SerializerPlayer
-    : public Serializer
-{
+    : public Serializer {
 public:
     typedef const SerializerPlayer* (*Creator)();
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
 protected:
     SerializerPlayer( const SerializerCommon & common );
@@ -285,35 +282,35 @@ public:
                                  const double &,
                                  const int,
                                  const char * ) const
-      {}
+      { }
 
     virtual
     void serializeOppAudioFull( std::ostream &,
                                 const int,
                                 const double &,
                                 const char * ) const
-      {}
+      { }
 
     virtual
     void serializeAllyAudioShort( std::ostream &,
                                   const int,
                                   const int ) const
-      {}
+      { }
 
     virtual
     void serializeOppAudioShort( std::ostream &,
                                  const int ) const
-      {}
+      { }
 
 
     virtual
     void serializeVisualBegin( std::ostream &,
                                const int ) const
-      {}
+      { }
 
     virtual
     void serializeVisualEnd( std::ostream & ) const
-      {}
+      { }
 
 //     virtual
 //     void serializeVisualObject( std::ostream &,
@@ -525,39 +522,39 @@ public:
     void
     serializeBodyBegin( std::ostream &,
                         const int ) const
-      {}
+      { }
 
     virtual
     void
     serializeBodyEnd( std::ostream & ) const
-      {}
+      { }
 
     virtual
     void
     serializeBodyViewMode( std::ostream &,
                            const char *,
                            const char * ) const
-      {}
+      { }
 
     virtual
     void
     serializeBodyStamina( std::ostream &,
                           const double &,
                           const double & ) const
-      {}
+      { }
 
     virtual
     void
     serializeBodyVelocity( std::ostream &,
                            const double & ) const
-      {}
+      { }
 
     virtual
     void
     serializeBodyVelocity( std::ostream &,
                            const double &,
                            const int ) const
-      {}
+      { }
 
     virtual
     void
@@ -566,7 +563,7 @@ public:
                          const int,
                          const int,
                          const int ) const
-      {}
+      { }
 
     virtual
     void
@@ -574,19 +571,19 @@ public:
                          const int,
                          const int,
                          const int ) const
-      {}
+      { }
 
     virtual
     void
     serializeNeckAngle( std::ostream &,
                         const int ) const
-      {}
+      { }
 
     virtual
     void
     serializeNeckCount( std::ostream &,
                         const int ) const
-      {}
+      { }
 
     virtual
     void
@@ -596,14 +593,14 @@ public:
                   const double &,
                   const int,
                   const int ) const
-      {}
+      { }
 
     virtual
     void
     serializeFocus( std::ostream &,
                     const char *,
                     const int ) const
-      {}
+      { }
 
     virtual
     void
@@ -611,7 +608,7 @@ public:
                     const char *,
                     const int,
                     const int ) const
-      {}
+      { }
 
 
     virtual
@@ -619,7 +616,7 @@ public:
     serializeTackle( std::ostream &,
                      const int,
                      const int ) const
-      {}
+      { }
 
 
     virtual
@@ -630,151 +627,131 @@ public:
       { }
 
     virtual
-    void
-    serializeFSBegin( std::ostream &,
-                      const int ) const
-      {}
-
-    virtual
-    void
-    serializeFSEnd( std::ostream & ) const
-      {}
-
-    virtual
-    void
-    serializeFSPlayMode( std::ostream &,
-                         const char * ) const
-      {}
-
-    virtual
-    void
-    serializeFSViewMode( std::ostream &,
-                         const char *,
-                         const char * ) const
-      {}
-
-    virtual
-    void
-    serializeFSCounts( std::ostream &,
-                       const int,
-                       const int,
-                       const int,
-                       const int,
-                       const int,
-                       const int,
-                       const int,
-                       const int ) const
-      {}
-
-    virtual
-    void
-    serializeFSScore( std::ostream &,
-                      const int,
-                      const int ) const
-      {}
-
-    virtual
-    void
-    serializeFSBall( std::ostream &,
-                     const double &,
-                     const double &,
-                     const double &,
-                     const double & ) const
-      {}
-
-    virtual
-    void
-    serializeFSPlayerBegin( std::ostream &,
-                            const char,
-                            const int,
-                            const bool,
-                            const int,
-                            const double &,
-                            const double &,
-                            const double &,
-                            const double &,
-                            const double &,
-                            const double & ) const
-      {}
-
-    virtual
-    void
-    serializeFSPlayerArm( std::ostream &,
-                          const double &,
-                          const double & ) const
-      {}
-
-    virtual
-    void
-    serializeFSPlayerEnd( std::ostream &,
-                          const double &,
-                          const double &,
-                          const double & ) const
-      {}
-
-    virtual
-    void
-    serializeInit( std::ostream &,
-                   const char *,
-                   const int,
-                   const PlayMode& ) const
-      {}
-
-    virtual
-    void
-    serializeReconnect( std::ostream &,
-                        const char *,
-                        const PlayMode& ) const
-      {}
-
-    virtual
-    void
-    serializeChangePlayer( std::ostream &,
+    void serializeFSBegin( std::ostream &,
                            const int ) const
-      {}
+      { }
 
     virtual
-    void
-    serializeChangePlayer( std::ostream &,
+    void serializeFSEnd( std::ostream & ) const
+      { }
+
+    virtual
+    void serializeFSPlayMode( std::ostream &,
+                              const char * ) const
+      { }
+
+    virtual
+    void serializeFSViewMode( std::ostream &,
+                              const char *,
+                              const char * ) const
+      { }
+
+    virtual
+    void serializeFSCounts( std::ostream &,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int ) const
+      { }
+
+    virtual
+    void serializeFSScore( std::ostream &,
                            const int,
                            const int ) const
-      {}
+      { }
 
     virtual
-    void
-    serializeOKClang( std::ostream &,
-                      const int,
-                      const int ) const
-      {}
+    void serializeFSBall( std::ostream &,
+                          const double &,
+                          const double &,
+                          const double &,
+                          const double & ) const
+      { }
 
     virtual
-    void
-    serializeErrorNoTeamName( std::ostream &,
-                              const std::string & ) const
-      {}
+    void serializeFSPlayerBegin( std::ostream &,
+                                 const char,
+                                 const int,
+                                 const bool,
+                                 const int,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double & ) const
+      { }
 
     virtual
-    void
-    serializeScore( std::ostream &,
-                    const int,
-                    const int,
-                    const int ) const
-      {}
+    void serializeFSPlayerArm( std::ostream &,
+                               const double &,
+                               const double & ) const
+      { }
 
+    virtual
+    void serializeFSPlayerEnd( std::ostream &,
+                               const double &,
+                               const double &,
+                               const double & ) const
+      { }
+
+    virtual
+    void serializeInit( std::ostream &,
+                        const char *,
+                        const int,
+                        const PlayMode & ) const
+      { }
+
+    virtual
+    void serializeReconnect( std::ostream &,
+                             const char *,
+                             const PlayMode& ) const
+      { }
+
+    virtual
+    void serializeChangePlayer( std::ostream &,
+                                const int ) const
+      { }
+
+    virtual
+    void serializeChangePlayer( std::ostream &,
+                                const int,
+                                const int ) const
+      { }
+
+    virtual
+    void serializeOKClang( std::ostream &,
+                           const int,
+                           const int ) const
+      { }
+
+    virtual
+    void serializeErrorNoTeamName( std::ostream &,
+                                   const std::string & ) const
+      { }
+
+    virtual
+    void serializeScore( std::ostream &,
+                         const int,
+                         const int,
+                         const int ) const
+      { }
 };
 
 
 
 class SerializerCoach
-    : public Serializer
-{
+    : public Serializer {
 public:
     typedef const rcss::SerializerCoach* (*Creator)();
     typedef rcss::lib::Factory< Creator, int > Factory;
 
     static
-    Factory&
-    factory();
+    Factory & factory();
 
 protected:
     SerializerCoach( const SerializerCommon & common );
@@ -887,8 +864,7 @@ public:
 
 
 class SerializerOnlineCoach
-    : public Serializer
-{
+    : public Serializer {
 public:
     typedef const rcss::SerializerOnlineCoach* (*Creator)();
     typedef rcss::lib::Factory< Creator, int > Factory;
@@ -919,36 +895,31 @@ public:
       }
 
     virtual
-    void
-    serializeRefAudio( std::ostream &,
-                       const int &,
-                       const std::string &,
-                       const char * ) const = 0;
+    void serializeRefAudio( std::ostream &,
+                            const int &,
+                            const std::string &,
+                            const char * ) const = 0;
 
     virtual
-    void
-    serializePlayerAudio( std::ostream &,
-                          const int &,
-                          const std::string &,
-                          const char * ) const = 0;
+    void serializePlayerAudio( std::ostream &,
+                               const int &,
+                               const std::string &,
+                               const char * ) const = 0;
 
     virtual
-    void
-    serializePlayerClangVer( std::ostream &,
-                             const std::string &,
-                             const unsigned int &,
-                             const unsigned int & ) const = 0;
+    void serializePlayerClangVer( std::ostream &,
+                                  const std::string &,
+                                  const unsigned int &,
+                                  const unsigned int & ) const = 0;
 
     virtual
-    void
-    serializeInit( std::ostream &,
-                   const int side = 0 ) const = 0;
+    void serializeInit( std::ostream &,
+                        const int side = 0 ) const = 0;
 
     virtual
-    void
-    serializeChangedPlayer( std::ostream &,
-                            const int unum,
-                            const int type = -1 ) const = 0;
+    void serializeChangedPlayer( std::ostream &,
+                                 const int unum,
+                                 const int type = -1 ) const = 0;
 
 
     void serializeVisualBegin( std::ostream & strm,

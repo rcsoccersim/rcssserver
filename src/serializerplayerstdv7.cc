@@ -22,22 +22,27 @@
 #include "serializerplayerstdv7.h"
 #include "clangmsg.h"
 
-namespace rcss
-{
+namespace rcss {
 
 SerializerPlayerStdv7::SerializerPlayerStdv7( const SerializerCommon & common )
     : SerializerPlayerStdv1( common )
-{}
+{
+
+}
 
 SerializerPlayerStdv7::~SerializerPlayerStdv7()
-{}
+{
+
+}
 
 const SerializerPlayerStdv7*
 SerializerPlayerStdv7::instance()
 {
     rcss::SerializerCommon::Creator cre;
-    if( !rcss::SerializerCommon::factory().getCreator( cre, 7 ) )
+    if( ! rcss::SerializerCommon::factory().getCreator( cre, 7 ) )
+    {
         return NULL;
+    }
     static SerializerPlayerStdv7 ser( cre() );
     return &ser;
 }

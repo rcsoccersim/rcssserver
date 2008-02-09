@@ -1314,6 +1314,7 @@ Stadium::writeCurrentGameLog()
 	  }
 }
 
+// TODO: replaced with DispSender
 void
 Stadium::writeCurrentGameLogV4()
 {
@@ -1334,7 +1335,8 @@ Stadium::writeCurrentGameLogV4()
     {
         pm = playmode();
 
-        os << "(playmode " << playmode_strings[pm] << ")\n";
+        os << "(playmode " << this->time()
+           << ' ' << playmode_strings[pm] << ")\n";
     }
 
     // if teams or score has changed, write teams and score
@@ -1353,14 +1355,18 @@ Stadium::writeCurrentGameLogV4()
         team_l_pen_score = M_team_l->penaltyPoint();
         team_r_pen_score = M_team_r->penaltyPoint();
 
-        os << "(team " << ( team_l_name.empty() ? "null" : team_l_name.c_str() )
+        os << "(team " << this->time()
+           << ' ' << ( team_l_name.empty() ? "null" : team_l_name.c_str() )
            << ' ' << ( team_r_name.empty() ? "null" : team_r_name.c_str() )
            << ' ' << team_l_score
            << ' ' << team_r_score;
-        if ( M_team_l->penaltyTaken() > 0 )
+        if ( M_team_l->penaltyTaken() > 0
+             || M_team_r->penaltyTaken() > 0 )
         {
             os << ' ' << team_l_pen_score
-                << ' ' << team_r_pen_score;
+               << ' ' << M_team_l->penaltyTaken() - team_l_pen_score
+               << ' ' << team_r_pen_score
+               << ' ' << M_team_l->penaltyTaken() - team_r_pen_score;
         }
         os << ")\n";
     }
@@ -1383,7 +1389,10 @@ Stadium::writeCurrentGameLogV4()
            << ' ' << (*p)->unum()
            << ')';
         os << ' ' << (*p)->playerTypeId()
-           << ' ' << (*p)->state(); // include goalie flag
+           << std::hex << std::showbase
+           << (*p)->state() // include goalie flag
+           << std::dec << std::noshowbase;
+
         os << ' ' << Quantize( (*p)->pos().x, prec )
            << ' ' << Quantize( (*p)->pos().y, prec )
            << ' ' << Quantize( (*p)->vel().x, prec )

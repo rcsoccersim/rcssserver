@@ -1139,7 +1139,7 @@ Player::tackle( double power_or_angle )
                                                 angle + angleBodyCommitted() );
 
 //                     std::cerr << M_stadium.time()
-//                               << ": v12 tackled arg=" << power_or_angle
+//                               << ": v12 tackle arg=" << power_or_angle
 //                               << " angle=" << angle
 //                               << " eff_power=" << eff_power
 //                               << std::endl;
@@ -1177,7 +1177,7 @@ Player::tackle( double power_or_angle )
                                                 angleBodyCommitted() );
 
 //                     std::cerr << M_stadium.time()
-//                               << ": v11 tackled arg=" << power_or_angle
+//                               << ": v11 tackle arg=" << power_or_angle
 //                               << " power=" << power
 //                               << " eff_power=" << eff_power
 //                               << std::endl;

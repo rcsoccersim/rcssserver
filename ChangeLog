@@ -1,5 +1,21 @@
 2008-02-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a version number. Development release
+	12.0.0_pre-20080209.
+
+	* src/field.cpp:
+	* src/monitor.cc:
+	* src/player.cc:
+	* src/serializer.h:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/serializerplayerstdv7.cc:
+	* src/visual.h:
+	- implementing a new disp sender framework, not completed yet.
+	- fixed a game log format version 4.
+
 	* src/field.cpp:
 	* src/initsendermonitor.h:
 	* src/monitor.cc:

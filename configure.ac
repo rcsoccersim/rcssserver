@@ -1,10 +1,11 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([RCSSServer], 12.0.0_pre, sserver-admin@users.sf.net, rcssserver)
+AC_INIT([RCSSServer], 12.0.0_pre-20080209, sserver-admin@users.sf.net, rcssserver)
 
 AC_PREREQ(2.59)
 
 AC_CONFIG_SRCDIR([src/types.h])
-AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
+#AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
+AM_INIT_AUTOMAKE([gnu 1.7.2 check-news])
 AC_CONFIG_HEADERS([config.h])
 AC_PROG_MAKE_SET
 

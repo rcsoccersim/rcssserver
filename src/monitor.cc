@@ -146,8 +146,7 @@ Monitor::sendPlayMode()
     M_init_observer->sendPlayMode();
 
 //     static char * playmode_strings[] = PLAYMODE_STRINGS;
-//     getTransport() << "(playmode "
-//                    << M_stadium.time()
+//     getTransport() << "(playmode " << M_stadium.time()
 //                    << ' ' << playmode_strings[M_playmode]
 //                    << ")"
 //                    << std::ends << std::flush;
@@ -175,8 +174,7 @@ Monitor::sendScore()
 
 //         std::ostream & os = getTransport();
 
-//         os << "(team "
-//            << M_stadium.time()
+//         os << "(team " << M_stadium.time()
 //            << ' ' << ( M_team_l_name.empty() ? "null" : M_team_l_name.c_str() )
 //            << ' ' << ( M_team_r_name.empty() ? "null" : M_team_r_name.c_str() )
 //            << ' ' << M_team_l_score

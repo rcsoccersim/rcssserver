@@ -32,8 +32,8 @@
 
 class Stadium;
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerPlayer;
 class SerializerCoach;
 

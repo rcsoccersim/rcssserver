@@ -1,29 +1,21 @@
 [12.0.0_pre-20080209]
 
-  * New parameters:
-    - server::reliable_catch_area_l (default value: 1.2)
-
   * Renamed parameters:
     - server::min_tackle_power -> server::max_back_tackle_power
-      (default value: 0.0)
+      (default value: 50.0)
 
   * Changed parameters:
     - server::tackle_power_rate (0.0135 -> 0.027)
 
-  * Added a catch probalility to unreliable catches. If ball is not
-    within the goalie's reliable catch area, the catch probability is
-    calculated according to the ball position and goalie's catch
-    command may be failed.
-
-
   * Changed a tackle model for the v.12 players based on the Thomas
-    Gabel's proposal. The argument of the tackle command sent by v.12
-    players means the ball acceleration angle relative to the player's
-    body angle. Now, effective power is calculated as follows:
+    Gabel's proposal. Now, the argument of the tackle command sent by
+    v.12 players means the ball acceleration angle relative to the
+    player's body angle. Effective power for tackle(angle) is
+    calculated as follows:
 
       eff_power = ( max_back_tackle_power
                     + ( max_tackle_power - max_back_tackle_power )
-                    * ( 1 - fabs( angle )/180 ) )
+                    * ( 1 - fabs( angle )/PI ) )
                 * tackle_power_rate
 
   * Changed a tackle power restriction rule for the v.11 or older
@@ -31,6 +23,11 @@
 
       power = max( -max_back_tackle_power,
                    min( max_tackle_power, power ) )
+
+    This means a tackle power is restricted within [-50,100] in the
+    default settings. Note that a backwards tackle might be completely
+    forbidden (max_back_tackle_power is set to 0) in the v.13 or later
+    simulator.
 
   * Added a tackle power reduction according to the ball position.
 
@@ -43,10 +40,37 @@
     ball direction and the ball speed. When the kick power is 0,
     the kick noise becomes always 0.
 
+      pos_rate = 0.5 + 0.25*( dir_diff/PI + dist_2_bal/kickable_margin )
+        For tackle: pos_rate = 0.5 + 0.5*( 1.0 - tackle_prob )
+      speed_rate = 0.5
+                 + 0.5*( ball_speed / (ball_speed_max*ball_decay) )
+      max_rand = kick_rand
+               * ( power / max_power )
+               * ( pos_rate + speed_rate )
+      kick_noise = polar2vector( rand( 0, max_rand ),
+                                 rand(-PI,PI) )
+
+  * (Test version) Set a catch probalility to unreliable catches. If
+    ball is not within the goalie's reliable catch area, the catch
+    probability is calculated according to the ball position and
+    goalie's catch command may be failed.
+
+    Note that This rule is not actually used in the default
+    settings of v.12 server. If you try to test this rule, you need
+    to change the server::catchable_area_l(default value: 1.2)
+    parameter to the value greater than
+    server::reliable_catch_area_l(default value: 1.2). RCSSServer can
+    read the server::reliable_catch_area_l parameter from
+    server.conf, but does not send this parameter to any client.
+
   * Added an automatic version check for configuration files. If
     configuration files do not contain a version string that is same
     as the rcssserver's release version, rcssserver will exit with
     error messages.
+
+  * (Not fixed yet) Supported a monitor protocol version 3 and a
+    game log format version 4. From these versions, data is
+    represented by human readable text messages.
 
 [12.0.0_pre-20071217]
   * Supported a protocl version 12. Now, players and coaches can
@@ -66,7 +90,7 @@
 
       (change_view <ViewWidth>)
 
-      If version 11 or earlier players send this format command, their
+      If version 11 or older players send this format command, their
       view quality is set to high.
 
     - Collision information is added to the sense_body message. The
