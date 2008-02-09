@@ -2817,7 +2817,7 @@ Stadium::kickTaken( const Player & kicker,
 void
 Stadium::ballCaught( const Player & catcher )
 {
-    if( ! Referee::isPenaltyShootOut( playmode() ) )
+    if ( ! Referee::isPenaltyShootOut( playmode() ) )
     {
         std::string msg = "goalie_catch_ball_";
         msg += SideStr( catcher.team()->side() );

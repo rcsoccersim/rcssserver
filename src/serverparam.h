@@ -189,7 +189,6 @@ private:
     static const double GOALIE_CATCHABLE_POSSIBILITY;
     static const double GOALIE_CATCHABLE_AREA_LENGTH;
     static const double GOALIE_CATCHABLE_AREA_WIDTH;
-    static const double GOALIE_RELIABLE_CATCH_AREA_LENGTH;
     static const int GOALIE_CATCH_BAN_CYCLE;
     static const int GOALIE_MAX_MOVES;
 
@@ -557,9 +556,11 @@ private:
     double M_max_back_tackle_power;
 		double M_player_speed_max_min; // minumum value of player speed max
 		double M_extra_stamina;
+    int M_max_monitors; //!< The maximum number of monitor client connection.
+
+    // test parameters for future specification
 		double M_reliable_catch_area_l; /* goalie reliable catchable area length */
     double M_min_catch_probability;
-    int M_max_monitors; //!< The maximum number of monitor client connection.
 
 private:
 
@@ -746,10 +747,8 @@ public:
     const double & playerRand() const { return prand; }
     const double & playerWeight() const { return pweight; }
     const double & playerSpeedMax() const { return pspeed_max; }
-    const double & playerSpeedMaxMin() const { return M_player_speed_max_min; }
     const double & playerAccelMax() const { return paccel_max; }
     const double & staminaMax() const { return stamina_max; }
-    const double & extraStamina() const { return M_extra_stamina; }
     const double & staminaInc() const { return stamina_inc; }
     const double & recoverInit() const { return recover_init; }
 		const double & recoverDecThr() const { return recover_dthr; }
@@ -802,9 +801,7 @@ public:
 
 		const double & catchAreaLength() const { return catch_area_l; }
 		const double & catchAreaWidth() const { return catch_area_w; }
-		const double & reliableCatchAreaLength() const { return M_reliable_catch_area_l; }
 		const double & catchProb() const { return catch_prob; }
-		const double & minCatchProbability() const { return M_min_catch_probability; }
     int goalieMaxMoves() const { return goalie_max_moves; }
 
     bool keepAwayMode() const { return kaway; }
@@ -959,8 +956,6 @@ public:
     const double & tackleExponent() const { return M_tackle_exponent; }
     int tackleCycles() const { return M_tackle_cycles; }
     const double & tacklePowerRate() const { return M_tackle_power_rate; }
-    const double & maxTacklePower() const { return M_max_tackle_power; }
-    const double & maxBackTacklePower() const { return M_max_back_tackle_power; }
 
     unsigned int freeformWaitPeriod() const { return (unsigned int)M_freeform_wait_period; }
     unsigned int freeformSendPeriod() const { return (unsigned int)M_freeform_send_period; }
@@ -983,11 +978,20 @@ public:
 
     double goalPostRadius() const { return 0.06; }
 
+    // v.11
     const double & ballStuckArea() const { return M_ball_stuck_area; }
-
     const std::string & coachMsgFile() const { return M_coach_msg_file; }
 
+    // v.12
+    const double & maxTacklePower() const { return M_max_tackle_power; }
+    const double & maxBackTacklePower() const { return M_max_back_tackle_power; }
+    const double & playerSpeedMaxMin() const { return M_player_speed_max_min; }
+    const double & extraStamina() const { return M_extra_stamina; }
     int maxMonitors() const { return M_max_monitors; }
+
+    // test
+		const double & reliableCatchAreaLength() const { return M_reliable_catch_area_l; }
+		const double & minCatchProbability() const { return M_min_catch_probability; }
 
 };
 

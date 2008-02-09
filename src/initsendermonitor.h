@@ -124,62 +124,52 @@ public:
     ~InitObserverMonitor()
       { }
 
-    void
-    setInitSender( InitSenderMonitor & sender )
+    void setInitSender( InitSenderMonitor & sender )
       {
           BaseObserver< InitSenderMonitor >::setSender( sender );
       }
 
-    void
-    setInitSender( std::auto_ptr< InitSenderMonitor > sender )
+    void setInitSender( std::auto_ptr< InitSenderMonitor > sender )
       {
           BaseObserver< InitSenderMonitor >::setSender( sender );
       }
 
-    void
-    sendInit()
+    void sendInit()
       {
           BaseObserver< InitSenderMonitor >::sender().sendInit();
       }
 
-    void
-    sendReconnect()
+    void sendReconnect()
       {
           BaseObserver< InitSenderMonitor >::sender().sendReconnect();
       }
 
-    void
-    sendServerParams()
+    void sendServerParams()
       {
           BaseObserver< InitSenderMonitor >::sender().sendServerParams();
       }
 
-    void
-    sendPlayerParams()
+    void sendPlayerParams()
       {
           BaseObserver< InitSenderMonitor >::sender().sendPlayerParams();
       }
 
-    void
-    sendPlayerTypes()
+    void sendPlayerTypes()
       {
           BaseObserver< InitSenderMonitor >::sender().sendPlayerTypes();
       }
 
-    void
-    sendChangedPlayers()
+    void sendChangedPlayers()
       {
           BaseObserver< InitSenderMonitor >::sender().sendChangedPlayers();
       }
 
-    void
-    sendScore()
+    void sendScore()
       {
           BaseObserver< InitSenderMonitor >::sender().sendScore();
       }
 
-    void
-    sendPlayMode()
+    void sendPlayMode()
       {
           BaseObserver< InitSenderMonitor >::sender().sendPlayMode();
       }

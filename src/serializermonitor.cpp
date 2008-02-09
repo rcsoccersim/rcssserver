@@ -25,8 +25,6 @@
 
 #include "serializermonitor.h"
 
-static const char *playmode_strings[] = PLAYMODE_STRINGS;
-
 namespace rcss {
 
 /*
@@ -137,14 +135,13 @@ SerializerMonitorStdv3::serializeScore( std::ostream & os,
                                         const int left_pen_point,
                                         const int right_pen_point ) const
 {
-    os << "(team "
-       << time << ' '
-       << ( left_name.empty() ? "null" : left_name.c_str() )
+    os << "(team " << time
+       << ' ' << ( left_name.empty() ? "null" : left_name.c_str() )
        << ' ' << ( right_name.empty() ? "null" : right_name.c_str() )
        << ' ' << left_point
        << ' ' << right_point;
 
-    if ( left_pen_taken > 0 )
+    if ( left_pen_taken > 0 || right_pen_taken > 0 )
     {
         os << ' ' << left_pen_point
            << ' ' << left_pen_taken - left_pen_point
@@ -160,6 +157,9 @@ SerializerMonitorStdv3::serializePlayMode( std::ostream & os,
                                            const int time,
                                            const PlayMode pmode ) const
 {
+
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
+
     os << "(playmode "
        << time << ' '
        << playmode_strings[pmode] << ')';

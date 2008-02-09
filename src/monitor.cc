@@ -80,8 +80,8 @@ Monitor::Monitor( Stadium & stadium,
       M_team_r_name( "" ),
       M_team_l_score( 0 ),
       M_team_r_score( 0 ),
-      M_team_l_pen_score( 0 ),
-      M_team_r_pen_score( 0 )
+      M_team_l_pen_taken( 0 ),
+      M_team_r_pen_taken( 0 )
 {
 
 }
@@ -136,8 +136,6 @@ Monitor::sendInit()
 void
 Monitor::sendPlayMode()
 {
-    static char * playmode_strings[] = PLAYMODE_STRINGS;
-
     if ( M_playmode == M_stadium.playmode() )
     {
         return;
@@ -145,20 +143,23 @@ Monitor::sendPlayMode()
 
     M_playmode = M_stadium.playmode();
 
-    getTransport() << "(playmode "
-                   << M_stadium.time()
-                   << ' ' << playmode_strings[M_playmode]
-                   << ")"
-                   << std::ends << std::flush;
+    M_init_observer->sendPlayMode();
+
+//     static char * playmode_strings[] = PLAYMODE_STRINGS;
+//     getTransport() << "(playmode "
+//                    << M_stadium.time()
+//                    << ' ' << playmode_strings[M_playmode]
+//                    << ")"
+//                    << std::ends << std::flush;
 }
 
 void
-Monitor::sendTeam()
+Monitor::sendScore()
 {
     if ( M_team_l_score != M_stadium.teamLeft().point()
-         || M_team_l_pen_score != M_stadium.teamLeft().penaltyPoint()
+         || M_team_l_pen_taken != M_stadium.teamLeft().penaltyTaken()
          || M_team_r_score != M_stadium.teamRight().point()
-         || M_team_r_pen_score != M_stadium.teamRight().penaltyPoint()
+         || M_team_r_pen_taken != M_stadium.teamRight().penaltyTaken()
          || M_team_l_name != M_stadium.teamLeft().name()
          || M_team_r_name != M_stadium.teamRight().name()
          )
@@ -167,27 +168,29 @@ Monitor::sendTeam()
         M_team_r_name = M_stadium.teamRight().name();
         M_team_l_score = M_stadium.teamLeft().point();
         M_team_r_score = M_stadium.teamRight().point();
-        M_team_l_pen_score = M_stadium.teamLeft().penaltyPoint();
-        M_team_r_pen_score = M_stadium.teamRight().penaltyPoint();
+        M_team_l_pen_taken = M_stadium.teamLeft().penaltyTaken();
+        M_team_r_pen_taken = M_stadium.teamRight().penaltyTaken();
 
-        std::ostream & os = getTransport();
+        M_init_observer->sendScore();
 
-        os << "(team "
-           << M_stadium.time()
-           << ' ' << ( M_team_l_name.empty() ? "null" : M_team_l_name.c_str() )
-           << ' ' << ( M_team_r_name.empty() ? "null" : M_team_r_name.c_str() )
-           << ' ' << M_team_l_score
-           << ' ' << M_team_r_score;
+//         std::ostream & os = getTransport();
 
-        if ( M_stadium.teamLeft().penaltyTaken() > 0
-             || M_stadium.teamRight().penaltyTaken() > 0 )
-        {
-            os << ' ' << M_stadium.teamLeft().penaltyPoint()
-               << ' ' << M_stadium.teamLeft().penaltyTaken() - M_stadium.teamLeft().penaltyPoint()
-               << ' ' << M_stadium.teamRight().penaltyPoint()
-               << ' ' << M_stadium.teamRight().penaltyTaken() - M_stadium.teamRight().penaltyPoint();
-        }
-        os << ')' << std::ends << std::flush;
+//         os << "(team "
+//            << M_stadium.time()
+//            << ' ' << ( M_team_l_name.empty() ? "null" : M_team_l_name.c_str() )
+//            << ' ' << ( M_team_r_name.empty() ? "null" : M_team_r_name.c_str() )
+//            << ' ' << M_team_l_score
+//            << ' ' << M_team_r_score;
+
+//         if ( M_stadium.teamLeft().penaltyTaken() > 0
+//              || M_stadium.teamRight().penaltyTaken() > 0 )
+//         {
+//             os << ' ' << M_stadium.teamLeft().penaltyPoint()
+//                << ' ' << M_stadium.teamLeft().penaltyTaken() - M_stadium.teamLeft().penaltyPoint()
+//                << ' ' << M_stadium.teamRight().penaltyPoint()
+//                << ' ' << M_stadium.teamRight().penaltyTaken() - M_stadium.teamRight().penaltyPoint();
+//         }
+//         os << ')' << std::ends << std::flush;
     }
 }
 
@@ -200,7 +203,7 @@ Monitor::sendShow()
     }
 
     sendPlayMode();
-    sendTeam();
+    sendScore();
 
     const double prec = 0.0001;
     const double dprec = 0.001;

@@ -49,8 +49,8 @@ protected:
     std::string M_team_r_name;
     int M_team_l_score;
     int M_team_r_score;
-    int M_team_l_pen_score;
-    int M_team_r_pen_score;
+    int M_team_l_pen_taken;
+    int M_team_r_pen_taken;
 
 public:
     Monitor( Stadium & stadium,
@@ -82,7 +82,7 @@ public:
 
     void sendInit();
     void sendPlayMode();
-    void sendTeam();
+    void sendScore();
     void sendShow();
     int sendMsg( const BoardType board,
                  const char * msg );

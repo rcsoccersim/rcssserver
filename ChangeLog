@@ -1,3 +1,17 @@
+2008-02-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/initsendermonitor.h:
+	* src/monitor.cc:
+	* src/monitor.h:
+	* src/player.cc:
+	* src/serializermonitor.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- renamed Monitor::sendTeam() with Monitor::sendScore()
+	- replaced the implementation of Monitor::sendScore() and
+	Monitor::sendPlayMode() with InitSenderMonitor.
+
 2008-02-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

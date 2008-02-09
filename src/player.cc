@@ -642,8 +642,8 @@ Player::goalieCatch( double dir )
         M_stadium.ballCaught( *this );
 #else
         // 2008-02-08 akiyama
-        // new catch model based on the Sebastian Marian's proposal
-        std::cerr << M_stadium.time() << ": goalie catch" << std::endl;
+        // TEST version catch model based on the Sebastian Marian's proposal
+
         const RArea catch_area( PVector( ServerParam::instance().catchAreaLength()*0.5,
                                          0.0 ),
                                 PVector( ServerParam::instance().catchAreaLength(),
@@ -688,12 +688,10 @@ Player::goalieCatch( double dir )
                                             speed_rate + dist_rate,
                                             1.0 );
 
-            std::cerr << M_stadium.time() << ": Unreliable catch"
-                //<< " diagonal=" << diagonal
-                //<< " r-diagonal=" << reliable_diagonal
-                      << " speed_rate=" << speed_rate
-                      << " dist_rate=" << dist_rate
-                      << " fail_prob=" << fail_prob << std::endl;
+//             std::cerr << M_stadium.time() << ": Unreliable catch"
+//                       << " speed_rate=" << speed_rate
+//                       << " dist_rate=" << dist_rate
+//                       << " fail_prob=" << fail_prob << std::endl;
 
             boost::bernoulli_distribution<> rng( fail_prob );
             boost::variate_generator< rcss::random::DefaultRNG &,
@@ -702,16 +700,7 @@ Player::goalieCatch( double dir )
             if ( dst() )
             {
                 success = false;
-                std::cerr << "Unreliable catch. failure dist=" << ball_dist << " speed=" << M_stadium.ball().vel().r() << std::endl;
             }
-            else
-            {
-                std::cerr << "Unreliable catch. success. dist=" << ball_dist << " speed=" << M_stadium.ball().vel().r() << std::endl;
-            }
-        }
-        else
-        {
-            std::cerr << "Reliable catch. ball_dist=" << rotated_pos.r() << std::endl;
         }
 
         if ( success )
@@ -1136,16 +1125,24 @@ Player::tackle( double power_or_angle )
                         = ( ServerParam::instance().maxBackTacklePower()
                             + ( ( ServerParam::instance().maxTacklePower()
                                   - ServerParam::instance().maxBackTacklePower() )
-                                * ( 1.0 - std::pow( std::fabs( angle ) / 180.0, 2.0 ) )
+                                * ( 1.0 - ( std::fabs( angle ) / M_PI ) )
+                                //* ( 1.0 - std::pow( std::fabs( angle ) / M_PI, 2.0 ) )
                                 )
                             )
                         * ServerParam::instance().tacklePowerRate();
+
                     eff_power *= ( 1.0
                                    - 0.25*( std::fabs( player_2_ball.x ) / tackle_dist )
                                    - 0.25*( std::fabs( player_2_ball.y ) / ServerParam::instance().tackleWidth() ) );
 
                     accel = PVector::fromPolar( eff_power,
                                                 angle + angleBodyCommitted() );
+
+//                     std::cerr << M_stadium.time()
+//                               << ": v12 tackled arg=" << power_or_angle
+//                               << " angle=" << angle
+//                               << " eff_power=" << eff_power
+//                               << std::endl;
                 }
                 else
                 {
@@ -1178,6 +1175,12 @@ Player::tackle( double power_or_angle )
 
                     accel = PVector::fromPolar( eff_power,
                                                 angleBodyCommitted() );
+
+//                     std::cerr << M_stadium.time()
+//                               << ": v11 tackled arg=" << power_or_angle
+//                               << " power=" << power
+//                               << " eff_power=" << eff_power
+//                               << std::endl;
                 }
 
 //                 // pfr 8/14/00: for RC2000 evaluation
@@ -1207,12 +1210,6 @@ Player::tackle( double power_or_angle )
                     * ( pos_rate + speed_rate );
                 PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
                                                          drand( -M_PI, M_PI ) );
-                std::cerr << M_stadium.time()
-                          << ": tackled arg=" << power_or_angle
-                          << " eff_power=" << accel.r()
-                          << " angle=" << accel.th()
-                          << " noise=" << kick_noise.r()
-                          << std::endl;
                 accel += kick_noise;
 
                 M_stadium.kickTaken( *this, accel );
