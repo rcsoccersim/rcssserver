@@ -116,9 +116,13 @@ VisualSenderPlayerV1::sendVisual()
     incSendCount();
 
     if ( sendCount() >= self().visSend() )
+    {
         resetSendCount();
+    }
     else
+    {
         return;
+    }
 
     serializer().serializeVisualBegin( transport(), stadium().time() );
     if( self().highquality() )

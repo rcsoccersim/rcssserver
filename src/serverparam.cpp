@@ -418,7 +418,44 @@ ServerParam::init( const int & argc,
 //         }
 //     }
 
+    instance().setSlowDownFactor();
+
     return true;
+}
+
+void
+ServerParam::setSlowDownFactor()
+{
+//     if ( value <= 0 )
+//     {
+//         return;
+//     }
+//     // undo the effect of the last slow_down_factor
+//     sim_st /= slow_down_factor;
+//     sb_step /= slow_down_factor;
+//     sv_st /= slow_down_factor;
+//     send_st /= slow_down_factor;
+//     synch_offset /= slow_down_factor;
+//     M_synch_see_offset /= slow_down_factor;
+
+//     // set the slow_down_factor
+//     slow_down_factor = value;
+
+    // apply the slow_down_factor to all the depandant varaibles
+    sim_st *= slow_down_factor;
+    sb_step *= slow_down_factor;
+    sv_st *= slow_down_factor;
+    send_st *= slow_down_factor;
+    synch_offset *= slow_down_factor;
+    M_synch_see_offset *= slow_down_factor;
+
+    lcm_st = lcm( sim_st,
+                  lcm( send_st,
+                       lcm( recv_st,
+                            lcm( sb_step,
+                                 lcm( sv_st,
+                                      lcm( M_synch_see_offset,
+                                           ( synch_mode ? synch_offset : 1 ) ) ) ) ) ) );
 }
 
 ServerParam::ServerParam( const std::string & progname )
@@ -611,9 +648,9 @@ ServerParam::addParams()
     addParam( "forbid_kick_off_offside", kickoffoffside, "", 7 );
     addParam( "verbose", verbose, "", 8 );
     addParam( "offside_kick_margin", offside_kick_margin, "", 7 );
-    addParam( "slow_down_factor",
-              rcss::conf::makeSetter( this, &ServerParam::setSlowDownFactor ),
-              rcss::conf::makeGetter( slow_down_factor ), "", 7 );
+    addParam( "slow_down_factor", slow_down_factor, "", 7 );
+              //rcss::conf::makeSetter( this, &ServerParam::setSlowDownFactor ),
+              //rcss::conf::makeGetter( slow_down_factor ), "", 7 );
     addParam( "synch_mode",
               rcss::conf::makeSetter( this, &ServerParam::setSynchMode ),
               rcss::conf::makeGetter( synch_mode ), "", 8 ); //pfr:SYNCH
@@ -736,11 +773,13 @@ ServerParam::addParams()
               "The minumum value of the max speed of players", 12 );
     addParam( "extra_stamina", M_extra_stamina, "", 12 );
 
+    addParam( "synch_see_offset", M_synch_see_offset, "", 12 );
+
+    addParam( "max_monitors", M_max_monitors, "", 999 );
+
     // test
     addParam( "reliable_catch_area_l", M_reliable_catch_area_l, "", 999 );
     addParam( "min_catch_probability", M_min_catch_probability, "", 999 );
-
-    addParam( "max_monitors", M_max_monitors, "", 999 );
 }
 
 
@@ -783,7 +822,8 @@ ServerParam::setSynchMode( bool value )
                            lcm( recv_st,
                                 lcm( sb_step,
                                      lcm( sv_st,
-                                          ( synch_mode ? synch_offset : 1 ) ) ) ) ) );
+                                          lcm( M_synch_see_offset,
+                                               ( synch_mode ? synch_offset : 1 ) ) ) ) ) ) );
     }
 }
 
@@ -1053,6 +1093,8 @@ ServerParam::setDefaults()
     M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
     M_extra_stamina = EXTRA_STAMINA;
     M_max_monitors = -1;
+
+    M_synch_see_offset = 30;
 
     // test
     M_reliable_catch_area_l = GOALIE_CATCHABLE_AREA_LENGTH;

@@ -99,6 +99,7 @@ namespace
 %token RCSS_PCOM_TACKLE "tackle"
 %token RCSS_PCOM_CLANG "clang"
 %token RCSS_PCOM_EAR "ear"
+%token RCSS_PCOM_SYNCH_SEE "synch_see"
 
 %token < rcss:pcom::VIEW_WIDTH > RCSS_PCOM_VIEW_WIDTH_NARROW "narrow"
 %token < rcss:pcom::VIEW_WIDTH > RCSS_PCOM_VIEW_WIDTH_NORMAL "normal"
@@ -144,7 +145,8 @@ command : dash_com
           | attentionto_com
           | tackle_com
           | clang_com
-          | ear_com ;
+          | ear_com
+					| synch_see_com ;
 
 dash_com : RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number RCSS_PCOM_RP
            {
@@ -299,6 +301,12 @@ ear_com : RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off team_side partial_compl
             BUILDER.ear( $4.m_bool, rcss::pcom::UNKNOWN_TEAM, "", rcss::pcom::UNKNOWN_EAR_MODE );
           }
           ;
+
+synch_see_com : RCSS_PCOM_LP RCSS_PCOM_SYNCH_SEE RCSS_PCOM_RP
+                {
+                   BUILDER.synch_see();
+                }
+                ;
 
 on_off : RCSS_PCOM_ON
          {

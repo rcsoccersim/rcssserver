@@ -3,7 +3,7 @@
  *Copyright:
 
     Copyright (C) 2001 RoboCup Soccer Server Maintainance Group.
-    	Patrick Riley, Tom Howard, Itsuki Noda,	Mikhail Prokopenko, Jan Wendler 
+    	Patrick Riley, Tom Howard, Itsuki Noda,	Mikhail Prokopenko, Jan Wendler
 
     This file is part of SoccerServer.
 
@@ -66,6 +66,7 @@ attentionto { return RCSS_PCOM_ATTENTIONTO; }
 tackle { return RCSS_PCOM_TACKLE; }
 clang { return RCSS_PCOM_CLANG; }
 ear { return RCSS_PCOM_EAR; }
+synch_see { return RCSS_PCOM_SYNCH_SEE; }
 
 narrow { return RCSS_PCOM_VIEW_WIDTH_NARROW; }
 normal { return RCSS_PCOM_VIEW_WIDTH_NORMAL; }
@@ -93,9 +94,9 @@ ver { return RCSS_PCOM_CLANG_VERSION; }
 {REAL} { M_lexed_val->m_double = atof(yytext); return RCSS_PCOM_REAL; }
 {EXP}  { M_lexed_val->m_double = atof(yytext); return RCSS_PCOM_REAL; }
 
-[\-\_a-zA-Z0-9]+ { if( YYLeng() > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR; 
+[\-\_a-zA-Z0-9]+ { if( YYLeng() > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR;
 		   strncpy( M_lexed_val->m_str, yytext, YYLeng() );
-		   for( unsigned int i = YYLeng(); 
+		   for( unsigned int i = YYLeng();
 		   	i != RCSSPComLexer::Holder::STR_MAX;
 			++i )
 		   {
@@ -103,9 +104,9 @@ ver { return RCSS_PCOM_CLANG_VERSION; }
 		   }
                    return RCSS_PCOM_STR; }
 
-\"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\" { if( YYLeng() > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR; 
+\"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\" { if( YYLeng() > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR;
 					  strncpy( M_lexed_val->m_str, yytext, YYLeng() );
-		   for( unsigned int i = YYLeng(); 
+		   for( unsigned int i = YYLeng();
 		   	i != RCSSPComLexer::Holder::STR_MAX;
 			++i )
 		   {
@@ -113,11 +114,11 @@ ver { return RCSS_PCOM_CLANG_VERSION; }
 		   }
 					  return RCSS_PCOM_STR; }
 
-"\(say "[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+"\)" { if( YYLeng()-5 > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR; 
+"\(say "[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+"\)" { if( YYLeng()-5 > RCSSPComLexer::Holder::STR_MAX ) return RCSS_PCOM_ERROR;
 						  strncpy( M_lexed_val->m_str,
-						           yytext + 5, 
+						           yytext + 5,
 							   YYLeng()-5 );
-		   for( unsigned int i = YYLeng()-6; 
+		   for( unsigned int i = YYLeng()-6;
 		   	i != RCSSPComLexer::Holder::STR_MAX;
 			++i )
 		   {

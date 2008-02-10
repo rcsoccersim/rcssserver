@@ -35,6 +35,7 @@ public:
     void newSimulatorStep()  { doNewSimulatorStep();  }
     void sendSenseBody()     { doSendSenseBody();     }
     void sendVisuals()       { doSendVisuals();       }
+    void sendSynchVisuals()  { doSendSynchVisuals();  }
     void sendCoachMessages() { doSendCoachMessages(); }
     bool sendThink()         { return doSendThink();  }
     void quit()              { doQuit();              }
@@ -47,6 +48,7 @@ protected:
     virtual void doNewSimulatorStep()  = 0;
     virtual void doSendSenseBody()     = 0;
     virtual void doSendVisuals()       = 0;
+    virtual void doSendSynchVisuals()  = 0;
     virtual void doSendCoachMessages() = 0;
     virtual bool doSendThink()         = 0;
     virtual void doQuit()              = 0;

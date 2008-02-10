@@ -42,6 +42,7 @@ SyncTimer::run()
         c_sbt  = 1,
         c_svt  = 1,
         c_synch= 1,
+        c_synch_see = 1,
         q_simt = ServerParam::instance().lcmStep()/ServerParam::instance().simStep(),
         q_sent = ServerParam::instance().lcmStep()/ServerParam::instance().sendStep()*4,
         q_sbt  = ServerParam::instance().lcmStep()/ServerParam::instance().senseBodyStep(),
@@ -84,6 +85,14 @@ SyncTimer::run()
                 c_sent++;
         }
 
+        // send synch visual message
+        if ( lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
+                       + ServerParam::instance().synchSeeOffset() ) )
+        {
+            getTimeableRef().sendSynchVisuals();
+            ++c_synch_see;
+        }
+
         // send coach messages
         if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
         {
@@ -108,6 +117,7 @@ SyncTimer::run()
         {
             lcmt = 0;
             c_synch = 1;
+            c_synch_see = 1;
         }
     }
 

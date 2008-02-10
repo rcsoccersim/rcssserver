@@ -137,6 +137,7 @@ protected:
     void doNewSimulatorStep();
     void doSendSenseBody();
     void doSendVisuals();
+    void doSendSynchVisuals();
     void doSendCoachMessages();
     bool doSendThink();
     void doQuit();

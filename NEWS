@@ -1,4 +1,4 @@
-[12.0.0_pre-20080209]
+[12.0.0_pre-20080210]
 
   * Renamed parameters:
     - server::min_tackle_power -> server::max_back_tackle_power
@@ -31,9 +31,7 @@
 
   * Added a tackle power reduction according to the ball position.
 
-      eff_power *= ( 1
-                     - 0.25*fabs( player_2_ball.x )/tackle_dist
-                     - 0.25*fabs( player_2_ball.y )/tackle_back_dist )
+      eff_power *= 1 - 0.5*( fabs( player_2_ball.th() )/PI
 
   * Changed a kick noise model. Now, the maximum kick noise is
     directly proportional to the kick power, the ball distance, the

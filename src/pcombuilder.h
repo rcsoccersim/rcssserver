@@ -100,6 +100,7 @@ public:
     virtual void tackle( double power ) = 0;
     virtual void clang( int min, int max) = 0;
     virtual void ear( bool on, TEAM team_side, std::string team_name, EAR_MODE mode ) = 0;
+    virtual void synch_see() = 0;
 };
 
 

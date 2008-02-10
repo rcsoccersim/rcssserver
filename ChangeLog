@@ -1,9 +1,24 @@
-2008-02-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+2008-02-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
-	* NEWS:
-	* configure.ac:
-	- updated a version number. Development release
-	12.0.0_pre-20080209.
+	* src/bodysender.cc:
+	* src/field.cpp:
+	* src/field.h:
+	* src/fullstatesender.cc:
+	* src/pcombuilder.h:
+	* src/player.cc:
+	* src/player.h:
+	* src/player_command_parser.yy:
+	* src/player_command_tok.ll:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/stdtimer.cc:
+	* src/synctimer.cc:
+	* src/timeable.h:
+	* src/visual.cc:
+	- added a new command "(synch_see)".
+	- implemented a synchronous timer mode.
+
+2008-02-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:
 	* src/monitor.cc:

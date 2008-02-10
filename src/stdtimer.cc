@@ -208,7 +208,7 @@ restoreTimer( struct itimerval& itv_prev,
     checks which messages should be sent / received by the clients and handles
     them appropriately. */
 void
-StandardTimer::run( )
+StandardTimer::run()
 {
     double lcmt = 0.0;
 
@@ -231,6 +231,7 @@ StandardTimer::run( )
         q_rect = ServerParam::instance().lcmStep() / ServerParam::instance().recvStep(),
         q_sbt = ServerParam::instance().lcmStep() / ServerParam::instance().senseBodyStep(),
         q_svt = ServerParam::instance().lcmStep() / ServerParam::instance().coachVisualStep();
+    int c_synch_see = 1;
 
     // create a timer that will be called every TIMEDELTA msec. Each time
     // this timer is called, lcmt is raised and it is checked which message
@@ -313,6 +314,14 @@ StandardTimer::run( )
                 c_sent++;
         }
 
+        // send synch visual message
+        if ( lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
+                       + ServerParam::instance().synchSeeOffset() ) )
+        {
+            getTimeableRef().sendSynchVisuals();
+            ++c_synch_see;
+        }
+
         // send coach look messages
         if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
         {
@@ -324,8 +333,11 @@ StandardTimer::run( )
                 c_svt++;
         }
 
-        if (lcmt >= ServerParam::instance().lcmStep() )
+        if ( lcmt >= ServerParam::instance().lcmStep() )
+        {
             lcmt = 0;
+            c_synch_see = 1;
+        }
     }
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
 #else

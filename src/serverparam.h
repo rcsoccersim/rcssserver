@@ -558,6 +558,8 @@ private:
 		double M_extra_stamina;
     int M_max_monitors; //!< The maximum number of monitor client connection.
 
+		int M_synch_see_offset; //!< synch see offset
+
     // test parameters for future specification
 		double M_reliable_catch_area_l; /* goalie reliable catchable area length */
     double M_min_catch_probability;
@@ -674,36 +676,6 @@ private:
     void setTeamLeftStart( std::string start );
     void setTeamRightStart( std::string start );
 
-    void setSlowDownFactor( int value )
-      {
-          if ( value <= 0 )
-          {
-              return;
-          }
-          // undo the effect of the last slow_down_factor
-          sim_st /= slow_down_factor;
-          sb_step /= slow_down_factor;
-          sv_st /= slow_down_factor;
-          send_st /= slow_down_factor;
-          synch_offset /= slow_down_factor;
-
-          // set the slow_down_factor
-          slow_down_factor = value;
-
-          // apply the slow_down_factor to all the depandant varaibles
-          sim_st *= slow_down_factor;
-          sb_step *= slow_down_factor;
-          sv_st *= slow_down_factor;
-          send_st *= slow_down_factor;
-          synch_offset *= slow_down_factor;
-          lcm_st = lcm( sim_st,
-                        lcm( send_st,
-                             lcm( recv_st,
-                                  lcm( sb_step,
-                                       lcm( sv_st,
-                                            ( synch_mode ? synch_offset : 1 ) ) ) ) ) );
-      }
-
     void setTextLogDir( std::string str )
       {
           text_log_dir = tildeExpand( str );
@@ -721,6 +693,9 @@ private:
       {
           M_coach_msg_file = tildeExpand( str );
       }
+
+
+    void setSlowDownFactor();
 
 public:
 
@@ -988,6 +963,7 @@ public:
     const double & playerSpeedMaxMin() const { return M_player_speed_max_min; }
     const double & extraStamina() const { return M_extra_stamina; }
     int maxMonitors() const { return M_max_monitors; }
+    int synchSeeOffset() const { return M_synch_see_offset; }
 
     // test
 		const double & reliableCatchAreaLength() const { return M_reliable_catch_area_l; }

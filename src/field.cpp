@@ -3381,20 +3381,6 @@ Stadium::doSendSenseBody()
                    rcss::Listener::NewCycle() );
 
     //
-    // send visual
-    //
-    for ( PlayerCont::iterator it = M_remote_players.begin();
-          it != end;
-          ++it )
-    {
-        if ( (*it)->state() != DISABLE
-             && (*it)->connected() )
-        {
-            (*it)->sendSynchVisual();
-        }
-    }
-
-    //
     // write profile
     //
     if ( text_log_open()
@@ -3436,6 +3422,40 @@ Stadium::doSendVisuals()
     {
         gettimeofday( &tv_end, NULL );
         write_profile( tv_start, tv_end, "VIS" );
+    }
+}
+
+void
+Stadium::doSendSynchVisuals()
+{
+    struct timeval tv_start, tv_end;
+
+    if ( text_log_open()
+         && ServerParam::instance().profile() )
+    {
+        gettimeofday( &tv_start, NULL );
+    }
+
+    std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
+                         irand ); //rcss::random::UniformRNG::instance() );
+
+    const PlayerCont::iterator end = M_remote_players.end();
+    for ( PlayerCont::iterator it = M_remote_players.begin();
+          it != end;
+          ++it )
+    {
+        if ( (*it)->state() != DISABLE
+             && (*it)->connected() )
+        {
+            (*it)->sendSynchVisual();
+        }
+    }
+
+    if ( text_log_open()
+         && ServerParam::instance().profile() )
+    {
+        gettimeofday( &tv_end, NULL );
+        write_profile( tv_start, tv_end, "SVIS" );
     }
 }
 

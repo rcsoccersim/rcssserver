@@ -74,6 +74,7 @@ private:
     double M_consumed_stamina;
 
     double M_vis_angle;
+    rcss::pcom::VIEW_WIDTH M_view_width;
 public:
     const double defangle;
     const double vis_distance;
@@ -102,8 +103,8 @@ private:
     // pfr 8/14/00: for RC2000 evaluation
     double M_kick_rand;
 
+    bool M_synch_see;
     int M_vis_send;
-    //int sendcnt;
     bool M_highquality;
 
     Int32 M_state;
@@ -284,6 +285,11 @@ public:
     double & visibleAngle() const
       {
           return M_vis_angle;
+      }
+
+    rcss::pcom::VIEW_WIDTH viewWidth() const
+      {
+          return M_view_width;
       }
 
     const
@@ -535,6 +541,7 @@ private:
     void tackle( double power_or_angle );
     void clang( int min, int max);
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode );
+    void synch_see();
 
 };
 

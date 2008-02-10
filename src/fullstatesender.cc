@@ -155,17 +155,26 @@ FullStateSenderPlayerV5::sendFullState()
                                           PlayModeString[stadium().playmode()] );
     }
 
+//     serializer().serializeFSViewMode( transport(),
+//                                       ( self().highquality()
+//                                         ? "high"
+//                                         : "low" ),
+//                                       ( self().visibleAngle()
+//                                         == self().defangle/2
+//                                         ? "narrow"
+//                                         : ( self().visibleAngle()
+//                                             == self().defangle*2
+//                                             ? "wide"
+//                                             : "normal" ) ) );
     serializer().serializeFSViewMode( transport(),
                                       ( self().highquality()
                                         ? "high"
                                         : "low" ),
-                                      ( self().visibleAngle()
-                                        == self().defangle/2
+                                      ( self().viewWidth() == rcss::pcom::NARROW
                                         ? "narrow"
-                                        : ( self().visibleAngle()
-                                            == self().defangle*2
-                                            ? "wide"
-                                            : "normal" ) ) );
+                                        : self().viewWidth() == rcss::pcom::WIDE
+                                        ? "wide"
+                                        : "normal" ) );
 
     sendSelf();
 

@@ -118,6 +118,7 @@ Player::Player( Stadium & stadium,
       M_recovery( ServerParam::instance().recoverInit() ),
       M_consumed_stamina( 0.0 ),
       M_vis_angle( ServerParam::instance().visAngle() ),
+      M_view_width( rcss::pcom::NORMAL ),
       defangle( ServerParam::instance().visAngle() ),
       vis_distance( ServerParam::instance().visibleDistance() ),
       vis_distance2( vis_distance * vis_distance ),
@@ -130,6 +131,7 @@ Player::Player( Stadium & stadium,
       M_angle_body_committed( 0.0 ),
       M_angle_neck( 0.0 ),
       M_angle_neck_committed( 0.0 ),
+      M_synch_see( false ),
       M_vis_send( 4 ),
       M_highquality( true ),
       M_state( DISABLE ),
@@ -249,16 +251,6 @@ Player::init( const double & ver,
     land_qstep_player = team->landQstepTeam();
     dir_qstep_player  = team->dirQstepTeam();
 #endif
-
-    if ( ver >= 12.0 )
-    {
-        M_vis_send = 1;
-
-        //M_unum_far_length = 30.0;
-        //M_unum_too_far_length = 60.0;
-        //M_team_far_length = 60.0;
-        //M_team_too_far_length = 100.0;
-    }
 
     if ( ! setSenders() )
     {
@@ -795,7 +787,7 @@ void
 Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
                      rcss::pcom::VIEW_QUALITY viewQuality )
 {
-    if ( version() >= 12.0
+    if ( M_synch_see
          && ( viewWidth == rcss::pcom::NARROW
               || viewQuality != rcss::pcom::HIGH  )
          )
@@ -805,40 +797,41 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
 
     if ( viewWidth == rcss::pcom::NARROW )
     {
-        if ( version() < 12.0 )
+        if ( ! M_synch_see )
         {
             M_vis_angle = defangle / 2.0;
             M_vis_send = 2;
         }
         else
         {
-            return;
+            M_vis_angle = defangle * ( 2.0 / 3.0 ); // == sim_step / send_step
+            M_vis_send = 1;
         }
     }
     else if ( viewWidth == rcss::pcom::NORMAL )
     {
-        if ( version() < 12.0 )
+        if ( ! M_synch_see )
         {
             M_vis_angle = defangle;
             M_vis_send = 4;
         }
         else
         {
-            M_vis_angle = defangle;
-            M_vis_send = 1;
+            M_vis_angle = defangle * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
+            M_vis_send = 2;
         }
     }
     else if ( viewWidth == rcss::pcom::WIDE )
     {
-        if ( version() < 12.0 )
+        if ( ! M_synch_see )
         {
             M_vis_angle = defangle * 2.0;
             M_vis_send = 8;
         }
         else
         {
-            M_vis_angle = defangle * 2.0;
-            M_vis_send = 2;
+            M_vis_angle = defangle * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
+            M_vis_send = 3;
         }
     }
     else
@@ -846,13 +839,15 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
         return;
     }
 
+    M_view_width = viewWidth;
+
     if ( viewQuality == rcss::pcom::HIGH )
     {
         M_highquality = true;
     }
     else if ( viewQuality == rcss::pcom::LOW )
     {
-        if ( version() < 12.0 )
+        if ( ! M_synch_see )
         {
             M_vis_send /= 2;
             M_highquality = false;
@@ -876,40 +871,41 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
 {
     if ( viewWidth == rcss::pcom::NARROW )
     {
-        if ( version() < 12.0 )
+        if ( ! M_synch_see )
         {
             M_vis_angle = defangle / 2.0;
             M_vis_send = 2;
         }
         else
         {
-            return;
+            M_vis_angle = defangle * ( 2.0 / 3.0 ); // == sim_step / send_step
+            M_vis_send = 1;
         }
     }
     else if ( viewWidth == rcss::pcom::NORMAL )
     {
-        if ( version() < 12.0 )
+        if ( ! M_synch_see )
         {
             M_vis_angle = defangle;
             M_vis_send = 4;
         }
         else
         {
-            M_vis_angle = defangle;
-            M_vis_send = 1;
+            M_vis_angle = defangle * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
+            M_vis_send = 2;
         }
     }
     else if ( viewWidth == rcss::pcom::WIDE )
     {
-        if ( version() < 12.0 )
+        if ( ! M_synch_see )
         {
             M_vis_angle = defangle * 2.0;
             M_vis_send = 8;
         }
         else
         {
-            M_vis_angle = defangle * 2.0;
-            M_vis_send = 2;
+            M_vis_angle = defangle * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
+            M_vis_send = 3;
         }
     }
     else
@@ -917,6 +913,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
         return;
     }
 
+    M_view_width = viewWidth;
     M_highquality = true;
 
     ++M_change_view_count;
@@ -1039,7 +1036,7 @@ Player::attentionto( bool on,
         }
 
         // make sure we aren't trying to focus on ourselves.
-        if( at_team == team() && at_unum == unum() )
+        if ( at_team == team() && at_unum == unum() )
         {
             return;
         }
@@ -1131,9 +1128,7 @@ Player::tackle( double power_or_angle )
                             )
                         * ServerParam::instance().tacklePowerRate();
 
-                    eff_power *= ( 1.0
-                                   - 0.25*( std::fabs( player_2_ball.x ) / tackle_dist )
-                                   - 0.25*( std::fabs( player_2_ball.y ) / ServerParam::instance().tackleWidth() ) );
+                    eff_power *= 1.0 - 0.5*( std::fabs( player_2_ball.th() ) / M_PI );
 
                     accel = PVector::fromPolar( eff_power,
                                                 angle + angleBodyCommitted() );
@@ -1141,6 +1136,7 @@ Player::tackle( double power_or_angle )
 //                     std::cerr << M_stadium.time()
 //                               << ": v12 tackle arg=" << power_or_angle
 //                               << " angle=" << angle
+//                               << " angl_diff=" << Rad2Deg( player_2_ball.th() )
 //                               << " eff_power=" << eff_power
 //                               << std::endl;
                 }
@@ -1169,9 +1165,7 @@ Player::tackle( double power_or_angle )
                     // the ball.
                     //eff_power *= 1 - prob;
 
-                    eff_power *= ( 1.0
-                                   - 0.25*( std::fabs( player_2_ball.x ) / tackle_dist )
-                                   - 0.25*( std::fabs( player_2_ball.y ) / ServerParam::instance().tackleWidth() ) );
+                    eff_power *= 1.0 - 0.5*( std::fabs( player_2_ball.th() ) / M_PI );
 
                     accel = PVector::fromPolar( eff_power,
                                                 angleBodyCommitted() );
@@ -1179,6 +1173,7 @@ Player::tackle( double power_or_angle )
 //                     std::cerr << M_stadium.time()
 //                               << ": v11 tackle arg=" << power_or_angle
 //                               << " power=" << power
+//                               << " angl_diff=" << Rad2Deg( player_2_ball.th() )
 //                               << " eff_power=" << eff_power
 //                               << std::endl;
                 }
@@ -1296,10 +1291,12 @@ Player::ear( bool on,
 
     bool partial = true;
     bool complete = true;
-    if ( mode == rcss::pcom::PARTIAL ){
+    if ( mode == rcss::pcom::PARTIAL )
+    {
         complete = false;
     }
-    else if ( mode == rcss::pcom::COMPLETE ) {
+    else if ( mode == rcss::pcom::COMPLETE )
+    {
         partial = false;
     }
 
@@ -1308,6 +1305,38 @@ Player::ear( bool on,
     //std::cerr << "\t\tComplete: " << complete << std::endl;
 
     setEar( on, side, complete, partial );
+}
+
+// 2008-02-09 akiyama
+// comand to change the semme message timer
+void
+Player::synch_see()
+{
+    //std::cerr << unum() << "  recv synch_see" << std::endl;
+
+    switch ( M_view_width ) {
+    case rcss::pcom::NARROW:
+        M_vis_angle = defangle * ( 2.0 / 3.0 ); // == sim_step / send_step
+        M_vis_send = 1;
+        break;
+    case rcss::pcom::NORMAL:
+        M_vis_angle = defangle * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
+        M_vis_send = 2;
+        break;
+    case rcss::pcom::WIDE:
+        M_vis_angle = defangle * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
+        M_vis_send = 3;
+        break;
+    default:
+        return;
+        break;
+    }
+
+    M_synch_see = true;
+    M_highquality = true;
+
+    // TODO move to the Observer
+    send( "(ok synch_see)" );
 }
 
 void
@@ -1333,7 +1362,7 @@ Player::sendReconnect()
 void
 Player::sendVisual()
 {
-    if ( version() < 12.0 )
+    if ( ! M_synch_see )
     {
         M_observer->sendVisual();
     }
@@ -1342,7 +1371,7 @@ Player::sendVisual()
 void
 Player::sendSynchVisual()
 {
-    if ( version() >= 12.0 )
+    if ( M_synch_see )
     {
         M_observer->sendVisual();
     }
