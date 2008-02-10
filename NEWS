@@ -7,8 +7,10 @@
     - server::min_tackle_power -> server::max_back_tackle_power
       (default value: 50.0)
 
-  * Changed parameter:
+  * Changed parameters:
     - server::tackle_power_rate (0.0135 -> 0.027)
+    - server::tackle_back_dist (0.5 -> 0.0)
+    - server::tackle_width (1.0 -> 1.25)
 
   * New command:
     - "(synch_see)"
@@ -32,8 +34,8 @@
       | normal  | 120                | every 2 cycles |
       | wide    | 180                | every 3 cycles |
 
-    In all view modes, rcssserver send see messages at *30ms* from the
-    beginning of the cycle.
+    In all view modes, rcssserver send see messages at
+    server::synch_see_offset(30) ms from the beginning of the cycle.
 
     Each view width can be calculated as follows:
 
