@@ -1,13 +1,47 @@
 [12.0.0_pre-20080210]
 
-  * Renamed parameters:
+  * New parameter:
+    - server::synch_see_offset (default value: 30)
+
+  * Renamed parameter:
     - server::min_tackle_power -> server::max_back_tackle_power
       (default value: 50.0)
 
-  * Changed parameters:
+  * Changed parameter:
     - server::tackle_power_rate (0.0135 -> 0.027)
 
-  * Changed a tackle model for the v.12 players based on the Thomas
+  * New command:
+    - "(synch_see)"
+      All version players can use this command. If the command is
+      accepted, rcssserver sent a reply message, "(ok synch_see)".
+      This command is used for a synchronous mode describing below.
+
+  * Changed a see message timer. There are 2 modes for all players,
+    the asynchronous mode and the synchronous mode. The asynchronous
+    mode is completely same as v.11 or older timer and is a default
+    mode for all players including v.12 players. If players send the
+    "(synch_see)" command, they enter to the synchronous mode and
+    cannot return to the asynchronous mode. v.11 or older players
+    also can use this command and the synchronous mode.
+
+    In the synchronous mode, the "low" view quality cannot be used and
+    the following view width are available:
+
+      | mode    | view width(degree) | see frequency  |
+      | narrow  | 60                 | every cycle    |
+      | normal  | 120                | every 2 cycles |
+      | wide    | 180                | every 3 cycles |
+
+    In all view modes, rcssserver send see messages at *30ms* from the
+    beginning of the cycle.
+
+    Each view width can be calculated as follows:
+
+      narrow:  60 = visible_angle(90) * send_step(150) / sim_step(100)
+      normal: 120 = narrow * 2
+      wide:   130 = narrow * 3
+
+  * Changed a tackle model for v.12 players based on the Thomas
     Gabel's proposal. Now, the argument of the tackle command sent by
     v.12 players means the ball acceleration angle relative to the
     player's body angle. Effective power for tackle(angle) is
@@ -29,14 +63,16 @@
     forbidden (max_back_tackle_power is set to 0) in the v.13 or later
     simulator.
 
-  * Added a tackle power reduction according to the ball position.
+  * Added a tackle power reduction according to the ball position as
+    follows:
 
       eff_power *= 1 - 0.5*( fabs( player_2_ball.th() )/PI
 
-  * Changed a kick noise model. Now, the maximum kick noise is
-    directly proportional to the kick power, the ball distance, the
-    ball direction and the ball speed. When the kick power is 0,
-    the kick noise becomes always 0.
+  * Changed a kick noise model. This change is motivated by the Mehrab
+    Norouzitallab's proposal. Now, the maximum kick noise is directly
+    proportional to the kick power, the ball distance, the ball
+    direction and the ball speed. When the kick power is 0, the kick
+    noise becomes always 0.
 
       pos_rate = 0.5 + 0.25*( dir_diff/PI + dist_2_bal/kickable_margin )
         For tackle: pos_rate = 0.5 + 0.5*( 1.0 - tackle_prob )
@@ -48,27 +84,32 @@
       kick_noise = polar2vector( rand( 0, max_rand ),
                                  rand(-PI,PI) )
 
-  * (Test version) Set a catch probalility to unreliable catches. If
-    ball is not within the goalie's reliable catch area, the catch
-    probability is calculated according to the ball position and
-    goalie's catch command may be failed.
-
-    Note that This rule is not actually used in the default
-    settings of v.12 server. If you try to test this rule, you need
-    to change the server::catchable_area_l(default value: 1.2)
-    parameter to the value greater than
-    server::reliable_catch_area_l(default value: 1.2). RCSSServer can
-    read the server::reliable_catch_area_l parameter from
-    server.conf, but does not send this parameter to any client.
-
   * Added an automatic version check for configuration files. If
-    configuration files do not contain a version string that is same
-    as the rcssserver's release version, rcssserver will exit with
-    error messages.
+    configuration files do not contain a version parameter that is
+    same as the rcssserver's release version, rcssserver will exit
+    with error messages.
 
   * (Not fixed yet) Supported a monitor protocol version 3 and a
     game log format version 4. From these versions, data is
-    represented by human readable text messages.
+    represented by human readable text messages. The default version
+    of game log format is still 3 in 12.0.0_pre-10080210 because the
+    format has not been fixed yet and the implementation has not been
+    completed yet.
+
+  * (Test version) Introduced a new catch model based on the
+    Sebastian Marian's proposal. The catch probability is set to
+    unreliable catches. If ball is not within the goalie's reliable
+    catch area, the catch probability is calculated according to the
+    ball position and the goalie's catch command might be failed.
+
+    Note that this rule is not actually used in the default
+    settings of v.12 server. If you try to test this rule, you need
+    to change the server::catchable_area_l(default value: 1.2)
+    parameter to the value greater than
+    server::reliable_catch_area_l(default value: 1.2). And
+    server::min_catch_probability(default value: 1) also need to be
+    change to [0, 1]. RCSSServer can read these parameter from
+    server.conf, but does not send them to clients.
 
 [12.0.0_pre-20071217]
   * Supported a protocl version 12. Now, players and coaches can

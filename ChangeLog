@@ -1,5 +1,11 @@
 2008-02-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a NEWS file.
+	- updated a version number. Development release
+	12.0.0_pre-20080210.
+
 	* src/bodysender.cc:
 	* src/field.cpp:
 	* src/field.h:
