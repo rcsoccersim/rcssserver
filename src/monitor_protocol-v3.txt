@@ -1,0 +1,74 @@
+*ヘッダ
+既存のヘッダフォーマットをそのまま使用．
+  ULG4
+
+*パラメータ
+通常のクライアントと同じ
+  (server_param ...)
+  (player_param ...)
+  (player_type ...)
+
+*プレイモード
+  (playmode <Time> <PlayModeString>)
+
+*チーム情報
+  (team <Time> 
+        <LeftTeamName> <RightTeamName>
+        <LeftScore> <RightScore>
+        [ <LeftPenScore> <LeftPenMiss>
+	  <RightPenScore> <RightPenMiss>])
+
+*各サイクルの情報
+short_showinfo_t2 = 1428
+dispinfo_t2 = 2056
+v3 = about 2900
+
+  (show <Time> <PlayMode> <Score> <Ball> <Players>)
+    <PlayMode> : (pm <ModeId>)
+    <Score> : (score <LeftScore> <RightScore>
+                     [ <LeftPenScore> <LeftPenMiss>
+                       <RightPenScore> <RightPenMiss>])
+    <Ball> : ((b) <Pos> <Vel>)
+    <Players> : <Players> <Players> | <Player>
+    <Player> : ((<Side> <Unum>)
+                   <Type>
+                   <State>
+                   <Pos> <Vel> <Body> <Head>[ <ArmDist> <ArmDir>]
+                   (v <ViewQuality> <ViewWidth>)
+                   (s <Stamina> <Effort> <Recovery>)
+                   [(f <Side> <Unum>)]
+                   (c <Counts>))
+    <Side> : l | r
+    <Unum> : <Integer>   // [1,11]
+    <Type> : <Integer>   // [0,player_types-1]
+    <State> : <Integer>   // Hexical 32bit integer
+    <Pos> : <Real> <Real>
+    <Vel> : <Real> <Real>
+    <Body> : <Real>      // degree
+    <Head> : <Real>      // degree
+    <ArmDist> : <Real>
+    <ArmDir> : <Real>    // degree
+    <ViewQuality> : h | l
+    <ViewWidth> : <Real>   // degree
+    <Stamina> : <Real>
+    <Effort> : <Real>
+    <Recovery> : <Real>
+    <Counts> : <Kick> <Dash> <Turn> <Catch> <Move>
+               <TurnNeck> <ChangeView> <Say> <Tackle>
+               <Pointto> <Attentionto>
+
+* その他
+  (msg <Time> <Board> <Message>)
+
+      <Board> : <Integer>
+      <Message> : <String>
+
+  (draw <Time> <DrawObject>)
+
+      <DrawObject> : <Point> | <Circle> | <Line>
+
+      <Point> : (pt <Real> <Real> <Color>)
+
+      <Circle> : (circle <Real> <Real> <Real> <Color>)
+
+      <Line> : (line <Real> <Real> <Real> <Real> <Color>)
