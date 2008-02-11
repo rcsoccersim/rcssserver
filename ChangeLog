@@ -9,6 +9,7 @@
 	* src/types.h:
 	- cleaned up.
 	- replaced some variables in server_params_t.
+	- enabled stdoutsaver.
 
 2008-02-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

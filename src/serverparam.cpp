@@ -410,13 +410,13 @@ ServerParam::init( const int & argc,
     }
 
 
-//     {
-//         rcss::lib::Loader module;
-//         if ( module.open( "libstdoutsaver" ) )
-//         {
-//             instance().m_builder->manageModule( module );
-//         }
-//     }
+    {
+        rcss::lib::Loader module;
+        if ( module.open( "libstdoutsaver" ) )
+        {
+            instance().m_builder->manageModule( module );
+        }
+    }
 
     instance().setSlowDownFactor();
 
@@ -1092,9 +1092,9 @@ ServerParam::setDefaults()
     M_max_back_tackle_power = MAX_BACK_TACKLE_POWER;
     M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
     M_extra_stamina = EXTRA_STAMINA;
-    M_max_monitors = -1;
-
     M_synch_see_offset = 30;
+
+    M_max_monitors = -1;
 
     // test
     M_reliable_catch_area_l = GOALIE_CATCHABLE_AREA_LENGTH;
