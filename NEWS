@@ -1,3 +1,5 @@
+  * Fixed a build problem on some platforms.
+
 [12.0.0_pre-20080210]
 
   * New parameter:
