@@ -622,7 +622,7 @@ MPObject::_inc()
 
     M_pos = new_pos;
     M_vel *= M_decay;
-    M_accel *= Zero;
+    M_accel *= 0.0;
 }
 
 // void MPObject::collide(MPObject& obj)

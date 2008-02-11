@@ -58,16 +58,9 @@
 #define SUBS 4
 
 
-#define DrawClear	0
-#define DrawPoint	1
-#define DrawCircle	2
-#define DrawLine	3
-
 /*
  *   Objects
  */
-#define MaxObject		128
-
 #define GOAL_L_NAME		"(goal l)"
 #define GOAL_R_NAME		"(goal r)"
 
@@ -273,8 +266,7 @@ enum BallPosInfo {
 	BPI_GoalR,
 	BPI_OutOfField,
 	BPI_MAX
-} ;
-
+};
 
 #define MAX_PLAYER			11
 

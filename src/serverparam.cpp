@@ -1238,17 +1238,6 @@ ServerParam::convertToStruct () const
     tmp.old_hear = htons( static_cast< Int16 >( old_hear ) );
     tmp.sv_st = htons( static_cast< Int16 >( sv_st ) );
 
-    tmp.synch_mode   = htons( static_cast< Int16 >( synch_mode ) );//pfr:SYNCH
-    tmp.synch_offset = htons( static_cast< Int16 >( synch_offset ) );//pfr:SYNCH
-    tmp.synch_micro_sleep = htons( static_cast< Int16 >( synch_micro_sleep ) );//pfr:SYNCH
-
-    tmp.start_goal_l = htons( static_cast< Int16 >( start_goal_l ) );
-    tmp.start_goal_r = htons( static_cast< Int16 >( start_goal_r ) );
-
-    tmp.fullstate_l = htons( static_cast< Int16 >( fullstate_l ) );
-    tmp.fullstate_r = htons( static_cast< Int16 >( fullstate_r ) );
-
-    tmp.drop_time = htons( static_cast< Int16 >( drop_time ) );
 
     tmp.slowness_on_top_for_left_team = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * slowness_on_top_for_left_team ) );
     tmp.slowness_on_top_for_right_team = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * slowness_on_top_for_left_team ) );
@@ -1258,11 +1247,25 @@ ServerParam::convertToStruct () const
 
     tmp.ball_stuck_area = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_ball_stuck_area ) );
 
-    // 12.0.0
     tmp.max_tackle_power = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_max_tackle_power ) );
     tmp.max_back_tackle_power = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_max_back_tackle_power ) );
-    tmp.player_speed_max_min = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_player_speed_max_min ) );
-    tmp.extra_stamina = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_extra_stamina ) );
+
+    tmp.tackle_dist = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_tackle_dist ) );
+    tmp.tackle_back_dist = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_tackle_back_dist ) );
+    tmp.tackle_width = htonl( static_cast< Int32 >( SHOWINFO_SCALE2 * M_tackle_width ) );
+
+
+    tmp.start_goal_l = htons( static_cast< Int16 >( start_goal_l ) );
+    tmp.start_goal_r = htons( static_cast< Int16 >( start_goal_r ) );
+
+    tmp.fullstate_l = htons( static_cast< Int16 >( fullstate_l ) );
+    tmp.fullstate_r = htons( static_cast< Int16 >( fullstate_r ) );
+
+    tmp.drop_time = htons( static_cast< Int16 >( drop_time ) );
+
+    tmp.synch_mode   = htons( static_cast< Int16 >( synch_mode ) );//pfr:SYNCH
+    tmp.synch_offset = htons( static_cast< Int16 >( synch_offset ) );//pfr:SYNCH
+    tmp.synch_micro_sleep = htons( static_cast< Int16 >( synch_micro_sleep ) );//pfr:SYNCH
 
     tmp.point_to_ban =  htons( static_cast< Int16 >( M_point_to_ban ) );
     tmp.point_to_duration =  htons( static_cast< Int16 >( M_point_to_duration ) );
@@ -1271,25 +1274,29 @@ ServerParam::convertToStruct () const
 }
 
 bool
-ServerParam::getInt( const std::string& param, int& value ) const
+ServerParam::getInt( const std::string & param,
+                     int & value ) const
 {
     return m_builder->get( param, value );
 }
 
 bool
-ServerParam::getBool( const std::string& param, bool& value ) const
+ServerParam::getBool( const std::string & param,
+                      bool & value ) const
 {
     return m_builder->get( param, value );
 }
 
 bool
-ServerParam::getDoub( const std::string& param, double& value ) const
+ServerParam::getDoub( const std::string & param,
+                      double & value ) const
 {
     return m_builder->get( param, value );
 }
 
 bool
-ServerParam::getStr( const std::string& param, std::string& value ) const
+ServerParam::getStr( const std::string & param,
+                     std::string & value ) const
 {
     return m_builder->get( param, value );
 }

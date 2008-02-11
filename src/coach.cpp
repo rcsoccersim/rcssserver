@@ -68,12 +68,12 @@ chop_last_parenthesis( char *str, int max_size )
 
     if ( l > max_size )
     {
-        str[max_size] = NULLCHAR;
+        str[max_size] = '\0';
     }
     else
     {
         --l;
-        if( str[l] == ')' ) str[l] = NULLCHAR;
+        if( str[l] == ')' ) str[l] = '\0';
     }
 }
 

@@ -164,7 +164,7 @@ Stadium::udp_recv_message()
                 {
                     --len;
                 }
-                message[len] = NULLCHAR;
+                message[len] = '\0';
 
                 if ( ! parseMonitorInit( message, cli_addr ) )
                 {
@@ -351,7 +351,7 @@ Stadium::udp_recv_from_coach()
                 {
                     --len;
                 }
-                message[len] = NULLCHAR;
+                message[len] = '\0';
 
                 parseCoachInit( message, cli_addr );
             }
@@ -448,7 +448,7 @@ Stadium::udp_recv_from_online_coach()
                 {
                     --len;
                 }
-                message[len] = NULLCHAR ;
+                message[len] = '\0';
 
                 parseOnlineCoachInit( message, cli_addr );
             }

@@ -9,27 +9,27 @@
 /*
  *Copyright:
 
-    Copyright (C) 1996-2000 Electrotechnical Laboratory.
-    	Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
-    Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
-    	Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
-	Mikhail Prokopenko, Jan Wendler
+ Copyright (C) 1996-2000 Electrotechnical Laboratory.
+ Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
+ Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
+ Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
+ Mikhail Prokopenko, Jan Wendler
 
-    This file is a part of SoccerServer.
+ This file is a part of SoccerServer.
 
-    This code is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+ This code is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  *EndCopyright:
  */
@@ -39,9 +39,6 @@
 #include "param.h"
 
 #include <boost/cstdint.hpp>
-
-#define NULLCHAR	'\000'
-
 
 typedef boost::int16_t Int16;
 typedef boost::int32_t Int32;
@@ -73,92 +70,92 @@ enum Side {
     RIGHT = -1
 };
 
-#define PLAYMODE_STRINGS {"",\
-			"before_kick_off",\
-			"time_over",\
-			"play_on",\
-			"kick_off_l",\
-			"kick_off_r",\
-			"kick_in_l",\
-			"kick_in_r",\
-			"free_kick_l",\
-			"free_kick_r",\
-			"corner_kick_l",\
-			"corner_kick_r",\
-			"goal_kick_l",\
-			"goal_kick_r",\
-			"goal_l",\
-			"goal_r",\
-			"drop_ball",\
-			"offside_l",\
-			"offside_r",\
-			"penalty_kick_l",\
-			"penalty_kick_r",\
-			"first_half_over",\
-			"pause",\
-			"human_judge",\
-			"foul_charge_l",\
-			"foul_charge_r",\
-			"foul_push_l",\
-			"foul_push_r",\
-			"foul_multiple_attack_l",\
-			"foul_multiple_attack_r",\
-			"foul_ballout_l",\
-			"foul_ballout_r",\
-      "back_pass_l", \
-      "back_pass_r", \
-      "free_kick_fault_l", \
-      "free_kick_fault_r", \
-      "catch_fault_l", \
-      "catch_fault_r", \
-      "indirect_free_kick_l", \
-      "indirect_free_kick_r",\
-      "penalty_setup_l", \
-      "penalty_setup_r",\
-      "penalty_ready_l",\
-      "penalty_ready_r", \
-      "penalty_taken_l", \
-      "penalty_taken_r", \
-      "penalty_miss_l", \
-      "penalty_miss_r", \
-      "penalty_score_l", \
-      "penalty_score_r" \
-}
+#define PLAYMODE_STRINGS {"",                   \
+            "before_kick_off",                  \
+            "time_over",                        \
+            "play_on",                          \
+            "kick_off_l",                       \
+            "kick_off_r",                       \
+            "kick_in_l",                        \
+            "kick_in_r",                        \
+            "free_kick_l",                      \
+            "free_kick_r",                      \
+            "corner_kick_l",                    \
+            "corner_kick_r",                    \
+            "goal_kick_l",                      \
+            "goal_kick_r",                      \
+            "goal_l",                           \
+            "goal_r",                           \
+            "drop_ball",                        \
+            "offside_l",                        \
+            "offside_r",                        \
+            "penalty_kick_l",                   \
+            "penalty_kick_r",                   \
+            "first_half_over",                  \
+            "pause",                            \
+            "human_judge",                      \
+            "foul_charge_l",                    \
+            "foul_charge_r",                    \
+            "foul_push_l",                      \
+            "foul_push_r",                      \
+            "foul_multiple_attack_l",           \
+            "foul_multiple_attack_r",           \
+            "foul_ballout_l",                   \
+            "foul_ballout_r",                   \
+            "back_pass_l",                      \
+            "back_pass_r",                      \
+            "free_kick_fault_l",                \
+            "free_kick_fault_r",                \
+            "catch_fault_l",                    \
+            "catch_fault_r",                    \
+            "indirect_free_kick_l",             \
+            "indirect_free_kick_r",             \
+            "penalty_setup_l",                  \
+            "penalty_setup_r",                  \
+            "penalty_ready_l",                  \
+            "penalty_ready_r",                  \
+            "penalty_taken_l",                  \
+            "penalty_taken_r",                  \
+            "penalty_miss_l",                   \
+            "penalty_miss_r",                   \
+            "penalty_score_l",                  \
+            "penalty_score_r"                   \
+            }
 
-typedef enum _PlayMode {
-	PM_Null,
-	PM_BeforeKickOff,
-	PM_TimeOver,
-	PM_PlayOn,
-	PM_KickOff_Left,
-	PM_KickOff_Right,
-	PM_KickIn_Left,
-	PM_KickIn_Right,
-	PM_FreeKick_Left,
-	PM_FreeKick_Right,
-	PM_CornerKick_Left,
-	PM_CornerKick_Right,
-	PM_GoalKick_Left,
-	PM_GoalKick_Right,
-	PM_AfterGoal_Left,
-	PM_AfterGoal_Right,
-	PM_Drop_Ball,
-	PM_OffSide_Left,
-	PM_OffSide_Right,
-	// [I.Noda:00/05/13] added for 3D viewer/commentator/small league
-	PM_PK_Left,
-	PM_PK_Right,
-	PM_FirstHalfOver,
-	PM_Pause,
-	PM_Human,
-	PM_Foul_Charge_Left,
-	PM_Foul_Charge_Right,
-	PM_Foul_Push_Left,
-	PM_Foul_Push_Right,
-	PM_Foul_MultipleAttacker_Left,
-	PM_Foul_MultipleAttacker_Right,
-	PM_Foul_BallOut_Left,
-	PM_Foul_BallOut_Right,
+enum PlayMode {
+    PM_Null,
+    PM_BeforeKickOff,
+    PM_TimeOver,
+    PM_PlayOn,
+    PM_KickOff_Left,
+    PM_KickOff_Right,
+    PM_KickIn_Left,
+    PM_KickIn_Right,
+    PM_FreeKick_Left,
+    PM_FreeKick_Right,
+    PM_CornerKick_Left,
+    PM_CornerKick_Right,
+    PM_GoalKick_Left,
+    PM_GoalKick_Right,
+    PM_AfterGoal_Left,
+    PM_AfterGoal_Right,
+    PM_Drop_Ball,
+    PM_OffSide_Left,
+    PM_OffSide_Right,
+    // [I.Noda:00/05/13] added for 3D viewer/commentator/small league
+    PM_PK_Left,
+    PM_PK_Right,
+    PM_FirstHalfOver,
+    PM_Pause,
+    PM_Human,
+    PM_Foul_Charge_Left,
+    PM_Foul_Charge_Right,
+    PM_Foul_Push_Left,
+    PM_Foul_Push_Right,
+    PM_Foul_MultipleAttacker_Left,
+    PM_Foul_MultipleAttacker_Right,
+    PM_Foul_BallOut_Left,
+    PM_Foul_BallOut_Right,
     PM_Back_Pass_Left,
     PM_Back_Pass_Right,
     PM_Free_Kick_Fault_Left,
@@ -178,27 +175,13 @@ typedef enum _PlayMode {
     PM_PenaltyScore_Left,
     PM_PenaltyScore_Right,
     PM_MAX
-} PlayMode;
+};
 
-typedef enum _PlayerTypes {
-  PT_Null,
-  PT_default,
-  PT_Hetro_A,
-  PT_Hetro_B,
-  PT_Hetro_C,
-  PT_Hetro_D,
-  PT_Hetro_E,
-  PT_Hetro_F
-} PlayerTypes;
+enum MPObjectType {
+    MPO_Ball,
+    MPO_Player
+};
 
-typedef enum _MPObjectType {
-	MPO_Ball,
-	MPO_Player
-} MPObjectType;
-
-#define Zero 0.0e0
-
-#define	COLOR_NAME_MAX	64
 
 const double SHOWINFO_SCALE = 16.0;
 const double SHOWINFO_SCALE2 = 65536.0;
@@ -227,139 +210,121 @@ enum BoardType {
     LOG_BOARD = 2,
 };
 
-typedef struct {
-	Int16	enable;
-	Int16	side;
-	Int16	unum;
-	Int16	angle;
-	Int16	x;
-	Int16	y;
-} pos_t;
+struct pos_t {
+    Int16	enable;
+    Int16	side;
+    Int16	unum;
+    Int16	angle;
+    Int16	x;
+    Int16	y;
+};
 
-typedef struct {
-	char	name[16];
-	Int16	score;
-} team_t;
+struct team_t {
+    char	name[16];
+    Int16	score;
+};
 
-typedef struct {
-	char	pmode;
-	team_t	team[2];
-	pos_t	pos[MAX_PLAYER * 2 + 1];
-	Int16	time;
-} showinfo_t;
+struct showinfo_t {
+    char pmode;
+    team_t team[2];
+    pos_t	pos[MAX_PLAYER * 2 + 1];
+    Int16	time;
+};
 
 const int max_message_length_for_display = 2048;
-typedef	struct {
-	Int16	board;
-	char	message[max_message_length_for_display];
-} msginfo_t;
 
-typedef struct {
-	Int16	x;
-	Int16	y;
-	char	color[COLOR_NAME_MAX];
-} pointinfo_t;
+struct msginfo_t {
+    Int16	board;
+    char	message[max_message_length_for_display];
+};
 
-typedef struct {
-	Int16	x;
-	Int16	y;
-	Int16	r;
-	char	color[COLOR_NAME_MAX];
-} circleinfo_t;
+const int COLOR_NAME_MAX = 64;
 
-typedef struct {
-	Int16	x1;
-	Int16	y1;
-	Int16	x2;
-	Int16	y2;
-	char	color[COLOR_NAME_MAX];
-} lineinfo_t;
+struct pointinfo_t {
+    Int16	x;
+    Int16	y;
+    char	color[COLOR_NAME_MAX];
+};
 
-typedef struct {
-	Int16 mode;
-	union {
-		pointinfo_t		pinfo;
-		circleinfo_t	cinfo;
-		lineinfo_t		linfo;
-	} object;
-} drawinfo_t;
+struct circleinfo_t {
+    Int16	x;
+    Int16	y;
+    Int16	r;
+    char	color[COLOR_NAME_MAX];
+};
 
-typedef struct {
-	Int16	mode;
-	union {
-		showinfo_t	show;
-		msginfo_t	msg;
-		drawinfo_t	draw;
-	} body;
-} dispinfo_t;
+struct lineinfo_t {
+    Int16	x1;
+    Int16	y1;
+    Int16	x2;
+    Int16	y2;
+    char	color[COLOR_NAME_MAX];
+};
 
-typedef struct displist {
-	unsigned long	shost;
-        int				sport;
-        int 		version;
-	struct displist *next;
-} displist_t;
+struct drawinfo_t {
+    Int16 mode;
+    union {
+        pointinfo_t		pinfo;
+        circleinfo_t	cinfo;
+        lineinfo_t		linfo;
+    } object;
+};
 
-typedef struct {
-	char	optname[32];
-	void	*vptr;
-	int		vsize;
-} option_t;
+struct dispinfo_t {
+    Int16	mode;
+    union {
+        showinfo_t	show;
+        msginfo_t	msg;
+        drawinfo_t	draw;
+    } body;
+};
 
-//#define	V_INT		1
-//#define	V_DOUBLE	2
-//#define	V_BOOL		3
-//#define	V_STRING	4
-//#define	V_ONOFF		5
-//#define V_NONE		6
+struct ball_t {
+    Int32 x;
+    Int32 y;
+    Int32 deltax;
+    Int32 deltay;
+};
 
+struct player_t {
+    Int16 mode;
+    Int16 type;
+    Int32 x;
+    Int32 y;
+    Int32 deltax;
+    Int32 deltay;
+    Int32 body_angle;
+    Int32 head_angle;
+    Int32 view_width;
+    Int16 view_quality;
+    Int32 stamina;
+    Int32 effort;
+    Int32 recovery;
+    Int16 kick_count;
+    Int16 dash_count;
+    Int16 turn_count;
+    Int16 say_count;
+    Int16 tneck_count;
+    Int16 catch_count;
+    Int16 move_count;
+    Int16 chg_view_count;
+};
 
-typedef struct {
-  Int32 x;
-  Int32 y;
-  Int32 deltax;
-  Int32 deltay;
-} ball_t;
+struct showinfo_t2 {
+    char		pmode;
+    team_t	team[2];
+    ball_t	ball;
+    player_t	pos[MAX_PLAYER * 2];
+    Int16		time;
+};
 
-typedef struct {
-  Int16 mode;
-  Int16 type;
-  Int32 x;
-  Int32 y;
-  Int32 deltax;
-  Int32 deltay;
-  Int32 body_angle;
-  Int32 head_angle;
-  Int32 view_width;
-  Int16 view_quality;
-  Int32 stamina;
-  Int32 effort;
-  Int32 recovery;
-  Int16 kick_count;
-  Int16 dash_count;
-  Int16 turn_count;
-  Int16 say_count;
-  Int16 tneck_count;
-  Int16 catch_count;
-  Int16 move_count;
-  Int16 chg_view_count;
-} player_t;
+struct short_showinfo_t2 {
+    ball_t ball;
+    player_t pos[MAX_PLAYER * 2];
+    Int16 time;
+};
 
-typedef struct {
-  char		pmode;
-  team_t	team[2];
-  ball_t	ball;
-  player_t	pos[MAX_PLAYER * 2];
-  Int16		time;
-} showinfo_t2;
-
-typedef struct {
-  ball_t	ball;
-  player_t	pos[MAX_PLAYER * 2];
-  Int16		time;
-} short_showinfo_t2;
-
-typedef struct {
+struct player_type_t {
     Int16 id;
     Int32 player_speed_max;
     Int32 stamina_inc_max;
@@ -373,7 +338,7 @@ typedef struct {
     Int32 effort_max;
     Int32 effort_min;
 
-  // spare variables which are to be used for paramenter added in the future
+    // spare variables which are to be used for paramenter added in the future
     Int32 sparelong1;
     Int32 sparelong2;
     Int32 sparelong3;
@@ -384,10 +349,9 @@ typedef struct {
     Int32 sparelong8;
     Int32 sparelong9;
     Int32 sparelong10;
-} player_type_t;
+};
 
-typedef struct
-{
+struct server_params_t {
     Int32 gwidth;					/* goal width */
     Int32 inertia_moment;			/* intertia moment for turn */
     Int32 psize;					/* player size */
@@ -494,49 +458,49 @@ typedef struct
     Int16 sv_st;					/* online coach's look interval step */
 
 
-  // spare variables which are to be used for paramenter added in the future
-  Int32 slowness_on_top_for_left_team;
-  Int32 slowness_on_top_for_right_team;
-  Int32 ka_length;                    /* keepaway region length */
-  Int32 ka_width;                     /* keepaway region width */
+    // spare variables which are to be used for paramenter added in the future
+    Int32 slowness_on_top_for_left_team;
+    Int32 slowness_on_top_for_right_team;
+    Int32 ka_length;                    /* keepaway region length */
+    Int32 ka_width;                     /* keepaway region width */
     // 11.0.0
     Int32 ball_stuck_area; // automatic drop ball threshold while play_on
     // 12.0.0
     Int32 max_tackle_power;
     Int32 max_back_tackle_power;
-    Int32 player_speed_max_min;
-    Int32 extra_stamina;
 
-  Int32 sparelong10;
+    Int32 tackle_dist;
+    Int32 tackle_back_dist;
+    Int32 tackle_width;
 
-  Int16 start_goal_l;
-  Int16 start_goal_r;
-  Int16 fullstate_l;
-  Int16 fullstate_r;
-  Int16 drop_time;
-  Int16 synch_mode;
-  Int16 synch_offset;
-  Int16 synch_micro_sleep;
-  Int16 point_to_ban;
-  Int16 point_to_duration;
-  //Int16 kaway; /* keepaway mode on/off */ /* No room in struct */
+    Int16 start_goal_l;
+    Int16 start_goal_r;
+    Int16 fullstate_l;
+    Int16 fullstate_r;
+    Int16 drop_time;
+    Int16 synch_mode;
+    Int16 synch_offset;
+    Int16 synch_micro_sleep;
+    Int16 point_to_ban;
+    Int16 point_to_duration;
+    //Int16 kaway; /* keepaway mode on/off */ /* No room in struct */
 
-  // no room in struct
-//  Int16 pen_before_setup_wait;
-//  Int16 pen_setup_wait;
-//  Int16 pen_ready_wait;
-//  Int16 pen_taken_wait;
-//  Int16 pen_nr_kicks;
-//  Int16 pen_max_extra_kicks;
-//  Int32 pen_dist_x;
-//  Int16 pen_random_winner;
-//  Int32 pen_max_goalie_dist_x;
-//  Int16 pen_allow_mult_kicks;
+    // no room in struct
+    //  Int16 pen_before_setup_wait;
+    //  Int16 pen_setup_wait;
+    //  Int16 pen_ready_wait;
+    //  Int16 pen_taken_wait;
+    //  Int16 pen_nr_kicks;
+    //  Int16 pen_max_extra_kicks;
+    //  Int32 pen_dist_x;
+    //  Int16 pen_random_winner;
+    //  Int32 pen_max_goalie_dist_x;
+    //  Int16 pen_allow_mult_kicks;
 
 
-} server_params_t;
+};
 
-typedef struct {
+struct player_params_t {
     Int16 player_types;
     Int16 subs_max;
     Int16 pt_max;
@@ -568,10 +532,10 @@ typedef struct {
     Int32 new_dash_power_rate_delta_max;
     Int32 new_stamina_inc_max_delta_factor;
 
-  //Int32 sparelong1;  replaced by seed
-  //Int32 sparelong2;  replaced by new_dash_power_rate_delta_min
-  //Int32 sparelong3;  replaced by new_dash_power_rate_delta_max
-  //Int32 sparelong4;  replaced by new_stamina_inc_max_delta_factor
+    //Int32 sparelong1;  replaced by seed
+    //Int32 sparelong2;  replaced by new_dash_power_rate_delta_min
+    //Int32 sparelong3;  replaced by new_dash_power_rate_delta_max
+    //Int32 sparelong4;  replaced by new_stamina_inc_max_delta_factor
     Int32 sparelong5;
     Int32 sparelong6;
     Int32 sparelong7;
@@ -579,29 +543,28 @@ typedef struct {
     Int32 sparelong9;
     Int32 sparelong10;
 
-  Int16 spareshort1;
-  Int16 spareshort2;
-  Int16 spareshort3;
-  Int16 spareshort4;
-  Int16 spareshort5;
-  Int16 spareshort6;
-  Int16 spareshort7;
-  Int16 spareshort8;
-  Int16 spareshort9;
-  Int16 spareshort10;
+    Int16 spareshort1;
+    Int16 spareshort2;
+    Int16 spareshort3;
+    Int16 spareshort4;
+    Int16 spareshort5;
+    Int16 spareshort6;
+    Int16 spareshort7;
+    Int16 spareshort8;
+    Int16 spareshort9;
+    Int16 spareshort10;
 
-} player_params_t;
+};
 
-typedef struct {
-  Int16 mode;
-  union {
-      showinfo_t2 		show;
-      msginfo_t 		msg;
-      player_type_t		ptinfo;
-      server_params_t		sparams;
-      player_params_t		pparams;
-  } body;
-} dispinfo_t2;
-
+struct dispinfo_t2 {
+    Int16 mode;
+    union {
+        showinfo_t2 		show;
+        msginfo_t 		msg;
+        player_type_t		ptinfo;
+        server_params_t		sparams;
+        player_params_t		pparams;
+    } body;
+};
 
 #endif
