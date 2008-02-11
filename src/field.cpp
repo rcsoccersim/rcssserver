@@ -277,7 +277,7 @@ Stadium::init()
     // we create the result savers now, so that if there are any
     // errors creating them, it will be reported before
     // the game starts, not after it has finished.
-    std::list< const char* > savers = rcss::ResultSaver::factory().list();
+    std::list< const char * > savers = rcss::ResultSaver::factory().list();
     for ( std::list< const char* >::iterator i = savers.begin();
           i != savers.end();
           ++i )

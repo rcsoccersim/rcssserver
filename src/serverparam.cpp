@@ -35,6 +35,7 @@
 #include "serverparam.h"
 
 #include "playerparam.h"
+
 #include <rcssbase/conf/builder.hpp>
 #include <rcssbase/conf/parser.hpp>
 #include <rcssbase/conf/streamstatushandler.hpp>
@@ -43,6 +44,7 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <cstring>
 
 #ifdef HAVE_SYS_PARAM_H
@@ -297,14 +299,13 @@ ServerParam::init( const int & argc,
     s_in_init = true;
     S_program_name = argv[0];
     instance();
-    //instance( argv[ 0 ] );
     s_in_init = false;
 #ifndef WIN32
-    if ( system( ( "ls " + tildeExpand( ServerParam::OLD_SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0 )
+    if ( std::system( ( "ls " + tildeExpand( ServerParam::OLD_SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0 )
     {
-        if ( system( ( "ls " + tildeExpand( ServerParam::SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) != 0 )
+        if ( std::system( ( "ls " + tildeExpand( ServerParam::SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) != 0 )
         {
-            if( system( "which awk > /dev/null 2>&1" ) == 0 )
+            if( std::system( "which awk > /dev/null 2>&1" ) == 0 )
             {
                 std::cout << "Trying to convert old configuration file '"
                           << ServerParam::OLD_SERVER_CONF
@@ -312,7 +313,7 @@ ServerParam::init( const int & argc,
 
                 char filename[] = "/tmp/rcssserver-oldconf-XXXXXX";
                 int fd = mkstemp( filename );
-                if( fd != -1 )
+                if ( fd != -1 )
                 {
                     close( fd );
                     std::string command = "awk '/^[ \\t]*$/ {} ";
@@ -322,7 +323,7 @@ ServerParam::init( const int & argc,
                     command +=  tildeExpand( ServerParam::OLD_SERVER_CONF );
                     command += " > ";
                     command += filename;
-                    if( system( command.c_str() ) == 0 )
+                    if ( std::system( command.c_str() ) == 0 )
                     {
                         std::cout << "Conversion successful\n";
                         instance().m_conf_parser->parse( filename );
@@ -411,12 +412,27 @@ ServerParam::init( const int & argc,
 
 
     {
-        rcss::lib::Loader module;
-        if ( module.open( "libstdoutsaver" ) )
+        rcss::lib::Loader loader;
+        if ( loader.open( "libstdoutsaver" ) )
         {
-            instance().m_builder->manageModule( module );
+            instance().m_builder->manageModule( loader );
         }
     }
+
+//     {
+//         std::string module_opts;
+//         const std::vector< boost::filesystem::path > & modules = rcss::lib::Loader::listAvailableModules();
+//         for ( std::vector< boost::filesystem::path >::const_iterator i = modules.begin();
+//               i != modules.end();
+//               ++i )
+//         {
+//             module_opts += " load=";
+//             module_opts += i->leaf();
+//         }
+
+//         std::istringstream is( module_opts );
+//         instance().m_conf_parser->parse( is );
+//     }
 
     instance().setSlowDownFactor();
 

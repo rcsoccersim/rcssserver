@@ -21,11 +21,13 @@
 
 #include "resultsaver.hpp"
 
-namespace rcss
-{
-ResultSaver::Factory&
+namespace rcss {
+
+ResultSaver::Factory &
 ResultSaver::factory()
 {
-    static Factory fact; return fact;
+    static Factory fact;
+    return fact;
 }
+
 }

@@ -64,7 +64,7 @@ tilde_expand( const std::string & path_name )
 {
     // There must be a ~ at the start of the path for a valid
     // expansioin.
-    if (path_name.length() == 0 || path_name[0] != '~')
+    if  (path_name.length() == 0 || path_name[0] != '~' )
     {
         return path_name;
     }
@@ -78,12 +78,12 @@ tilde_expand( const std::string & path_name )
 #else
          || path_name[1] == '/'
 #endif
-        )
+         )
     {
 #ifdef WIN32
         char szpath[MAX_PATH];
-        FILE* fp;
-        if(SHGetSpecialFolderPath(NULL, szpath, CSIDL_PERSONAL, TRUE))
+        FILE * fp;
+        if ( SHGetSpecialFolderPath( NULL, szpath, CSIDL_PERSONAL, TRUE ) )
         {
             return szpath + path_name.substr( 1, path_name.length() );
         }
@@ -95,12 +95,14 @@ tilde_expand( const std::string & path_name )
 
         // Get the current user.
         char* err = getenv("USER");
-        if( err == NULL )
+        if ( err == NULL )
         {
             // On Windows USERNAME is used instead
             err = getenv( "USERNAME" );
-            if( err == 0 )
+            if ( err == 0 )
+            {
                 return path_name;
+            }
         }
 
         username = err;
@@ -118,22 +120,24 @@ tilde_expand( const std::string & path_name )
         // Fish out the user name from path_name and remove it
         // from newPath.
         std::string::size_type userEnd = path_name.find( '/' );
-        if (userEnd == std::string::npos)
+        if ( userEnd == std::string::npos )
         {
             // No / so whole path must be the username.
             userEnd = path_name.length();
         }
-        username = path_name.substr(1, userEnd - 1);
-        newPath = path_name.substr(userEnd, path_name.length());
+        username = path_name.substr( 1, userEnd - 1 );
+        newPath = path_name.substr( userEnd, path_name.length() );
     }
 
     // Get the passwd file entry for the user and place their home
     // directory path at the start of newPath.
-    struct passwd *pwdEntry = getpwnam(username.c_str());
-    if (pwdEntry == NULL)
+    struct passwd * pwdEntry = getpwnam( username.c_str() );
+    if ( pwdEntry == NULL )
+    {
         return path_name;
+    }
 
-    newPath.insert(0, pwdEntry->pw_dir);
+    newPath.insert( 0, pwdEntry->pw_dir );
 
     return newPath;
 #endif
@@ -143,8 +147,7 @@ tilde_expand( const std::string & path_name )
 
 
 class CSVSaverParams
-    : public rcss::conf::Builder
-{
+    : public rcss::conf::Builder {
 public:
     CSVSaverParams( rcss::conf::Builder * parent,
                     const std::string & module_name )
@@ -168,19 +171,20 @@ public:
 
     virtual
     ~CSVSaverParams()
+      { }
+
+    bool save() const
       {
+          return m_save;
       }
 
-    bool
-    save() const
-      { return m_save; }
-
-    const std::string&
-    filename() const
-      { return m_filename; }
+    const
+    std::string & filename() const
+      {
+          return m_filename;
+      }
 private:
-    void
-    addParams()
+    void addParams()
       {
           addParam( "save",
                     m_save,
@@ -198,22 +202,19 @@ private:
 
 public:
     static
-    void
-    initInstance()
+    void initInstance()
       {
           s_instance = NULL;
       }
 
     static
-    CSVSaverParams*
-    instance()
+    CSVSaverParams * instance()
       {
           return s_instance;
       }
 
     static
-    rcss::lib::shared_ptr< rcss::conf::Builder >
-    createInstance( rcss::conf::Builder* parent )
+    rcss::lib::shared_ptr< rcss::conf::Builder > createInstance( rcss::conf::Builder * parent )
       {
           std::cerr << "CSVSaverParams::createInstance" << std::endl;
           if( s_instance == NULL )
@@ -227,20 +228,18 @@ public:
       }
 
     static
-    void
-    destroyInstance( CSVSaverParams* )
+    void destroyInstance( CSVSaverParams * )
       {
           delete s_instance;
           s_instance = NULL;
       }
 };
 
-CSVSaverParams* CSVSaverParams::s_instance = NULL;
+CSVSaverParams * CSVSaverParams::s_instance = NULL;
 
 
 class CSVSaver
-    : public rcss::ResultSaver
-{
+    : public rcss::ResultSaver {
 public:
     CSVSaver()
         : rcss::ResultSaver(),
