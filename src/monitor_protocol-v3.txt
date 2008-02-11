@@ -12,7 +12,7 @@
   (playmode <Time> <PlayModeString>)
 
 *チーム情報
-  (team <Time> 
+  (team <Time>
         <LeftTeamName> <RightTeamName>
         <LeftScore> <RightScore>
         [ <LeftPenScore> <LeftPenMiss>
@@ -37,6 +37,7 @@ v3 = about 2900
                    (v <ViewQuality> <ViewWidth>)
                    (s <Stamina> <Effort> <Recovery>)
                    [(f <Side> <Unum>)]
+                   [(m "<Msg>")]
                    (c <Counts>))
     <Side> : l | r
     <Unum> : <Integer>   // [1,11]
@@ -58,6 +59,8 @@ v3 = about 2900
                <Pointto> <Attentionto>
 
 * その他
+  (team_graphic ...)
+
   (msg <Time> <Board> <Message>)
 
       <Board> : <Integer>
