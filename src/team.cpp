@@ -66,7 +66,9 @@ Team::Team( Stadium * stad, const Side s )
 Team::~Team()
 {
     for ( GraphCont::iterator i = M_graphics.begin(); i != M_graphics.end(); ++i )
+    {
         delete i->second;
+    }
 
 }
 
@@ -302,7 +304,9 @@ Team::addGraphic( unsigned int x,
     GraphKey key( x, y );
     GraphCont::iterator i = M_graphics.find( key );
     if( i != M_graphics.end() )
+    {
         delete i->second;
+    }
 
     M_graphics[ key ] = holder.release();
 }

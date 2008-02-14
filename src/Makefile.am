@@ -249,6 +249,8 @@ synctimer.cc \
 timeable.h \
 utility.h \
 utility.cpp \
+dispsender.h \
+dispsender.cpp \
 bodysender.h \
 bodysender.cc \
 fullstatesender.h \

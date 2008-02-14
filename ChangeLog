@@ -1,3 +1,23 @@
+2008-02-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	* src/dispsender.h:
+	* src/dispsender.cpp:
+	- added DispSender.
+
+	* src/bodysender.cc:
+	* src/fullstatesender.cc:
+	* src/initsendermonitor.cpp:
+	* src/initsendermonitor.h:
+	* src/monitor.cc:
+	* src/netif.cpp:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/serializerplayerstdv1.h:
+	* src/team.cpp:
+	* src/visual.h:
+	- cleaned up.
+
 2008-02-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach.cpp:

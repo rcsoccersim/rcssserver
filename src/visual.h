@@ -161,29 +161,38 @@ public:
     ~VisualSenderPlayer();
 
 protected:
-    const SerializerPlayer&
-    serializer() const
-      { return m_ser; }
+    const
+    SerializerPlayer & serializer() const
+      {
+          return m_ser;
+      }
 
-    const Player&
-    self() const
-      { return m_self; }
+    const
+    Player & self() const
+      {
+          return m_self;
+      }
 
-    const Stadium&
-    stadium() const
-      { return m_stadium; }
+    const
+    Stadium & stadium() const
+      {
+          return m_stadium;
+      }
 
-    int
-    sendCount() const
-      { return m_sendcnt; }
+    int sendCount() const
+      {
+          return m_sendcnt;
+      }
 
-    void
-    incSendCount()
-      { m_sendcnt++; }
+    void incSendCount()
+      {
+          ++m_sendcnt;
+      }
 
-    void
-    resetSendCount()
-      { m_sendcnt = 0; }
+    void resetSendCount()
+      {
+          m_sendcnt = 0;
+      }
 
 private:
     const SerializerPlayer& m_ser;
@@ -191,8 +200,8 @@ private:
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
       stuff like velocity, stamina, etc */
-    const Player& m_self;
-    const Stadium& m_stadium;
+    const Player & m_self;
+    const Stadium & m_stadium;
 
     int m_sendcnt;
 };
@@ -209,23 +218,22 @@ private:
 */
 
 class ObserverPlayer
-    : protected BaseObserver< VisualSenderPlayer >
-{
+    : protected BaseObserver< VisualSenderPlayer > {
 public:
 
     ObserverPlayer()
-      {}
+      { }
 
     ObserverPlayer( VisualSenderPlayer & sender )
         : BaseObserver< VisualSenderPlayer >( sender )
-      {}
+      { }
 
     ObserverPlayer( std::auto_ptr< VisualSenderPlayer > sender )
         : BaseObserver< VisualSenderPlayer >( sender )
-      {}
+      { }
 
     ~ObserverPlayer()
-      {}
+      { }
 
     void
     setVisualSender( VisualSenderPlayer & sender )
@@ -266,10 +274,8 @@ public:
 //===================================================================
 */
 
-
 class VisualSenderPlayerV1
-    : public VisualSenderPlayer
-{
+    : public VisualSenderPlayer {
 public:
 
     VisualSenderPlayerV1( const Params & params );
@@ -283,73 +289,63 @@ public:
 
 
 private:
-    void
-    sendFlag( const PObject& obj )
-      { (this->*M_send_flag)( obj ); }
+    void sendFlag( const PObject & obj )
+      {
+          (this->*M_send_flag)( obj );
+      }
 
-    void
-    sendBall( const MPObject& obj )
-      { (this->*M_send_ball)( obj ); }
+    void sendBall( const MPObject & obj )
+      {
+          (this->*M_send_ball)( obj );
+      }
 
-    void
-    sendPlayer( const Player& obj )
-      { (this->*M_send_player)( obj ); }
+    void sendPlayer( const Player & obj )
+      {
+          (this->*M_send_player)( obj );
+      }
 
-    void
-    serializeLine( const std::string & name,
-                   const int dir,
-                   const double & sight_2_line_ang,
-                   const double & player_2_line )
+    void serializeLine( const std::string & name,
+                        const int dir,
+                        const double & sight_2_line_ang,
+                        const double & player_2_line )
       {
           (this->*M_serialize_line)( name, dir,
                                      sight_2_line_ang, player_2_line );
       }
 
-    void
-    sendFlags();
+    void sendFlags();
 
-    void
-    sendBalls();
+    void sendBalls();
 
-    void
-    sendPlayers();
+    void sendPlayers();
 
-    void
-    sendLines();
+    void sendLines();
 
-    void
-    sendLowFlag( const PObject& flag );
+    void sendLowFlag( const PObject & flag );
 
-    void
-    sendHighFlag( const PObject& flag );
+    void sendHighFlag( const PObject & flag );
 
-    void
-    sendLowBall( const MPObject& ball );
+    void sendLowBall( const MPObject & ball );
 
-    void
-    sendHighBall( const MPObject& ball );
+    void sendHighBall( const MPObject & ball );
 
-    void
-    sendLowPlayer( const Player& player );
+    void sendLowPlayer( const Player & player );
 
-    void
-    sendHighPlayer( const Player& player );
+    void sendHighPlayer( const Player & player );
 
-    bool
-    sendLine( const PObject& line );
+    bool sendLine( const PObject & line );
 
-    void
-    serializeLowLine( const std::string & name,
-                      const int dir,
-                      const double &, const double & );
+    void serializeLowLine( const std::string & name,
+                           const int dir,
+                           const double &,
+                           const double & );
 
-    void
-    serializeHighLine( const std::string & name,
-                       const int dir,
-                       const double & sight_2_line_ang,
-                       const double & player_2_line );
+    void serializeHighLine( const std::string & name,
+                            const int dir,
+                            const double & sight_2_line_ang,
+                            const double & player_2_line );
 
-    double calcRadDir( const PObject& obj )
+    double calcRadDir( const PObject & obj )
       {
           return normalize_angle( self().angleFromBody( obj )
                                   - self().angleNeckCommitted() );
@@ -367,8 +363,7 @@ private:
                                   - self().angleNeckCommitted() );
       }
 
-    int
-    calcLineDir( const double & sight_2_line_ang ) const
+    int calcLineDir( const double & sight_2_line_ang ) const
       {
           if ( sight_2_line_ang > 0 )
               return calcDegDir( sight_2_line_ang - M_PI*0.5 );
@@ -387,10 +382,9 @@ private:
           return Quantize( std::exp( Quantize( std::log( dist + EPS ), qstep ) ), 0.1 );
       }
 
-    double
-    calcLineDist( const double & sight_2_line_ang,
-                  const double & player_2_line,
-                  const double & qstep ) const
+    double calcLineDist( const double & sight_2_line_ang,
+                         const double & player_2_line,
+                         const double & qstep ) const
       {
           return Quantize( std::exp( Quantize( std::log( std::fabs( player_2_line
                                                                     / std::cos( sight_2_line_ang ) )
@@ -399,16 +393,14 @@ private:
       }
 
 
-    void
-    calcVel( const PVector & obj_vel,
-             const PVector & obj_pos,
-             const double & un_quant_dist,
-             const double & quant_dist,
-             double & dist_chg,
-             double & dir_chg ) const;
+    void calcVel( const PVector & obj_vel,
+                  const PVector & obj_pos,
+                  const double & un_quant_dist,
+                  const double & quant_dist,
+                  double & dist_chg,
+                  double & dir_chg ) const;
 
-    bool
-    decide( const double & prob )
+    bool decide( const double & prob )
       {
           if ( prob >= 1.0 ) return true;
           if ( prob <= 0.0 ) return false;
@@ -417,20 +409,18 @@ private:
 
 protected:
     virtual
-    void
-    serializePlayer( const Player& player,
-                     const std::string & name,
-                     const double & dist,
-                     const int dir,
-                     const double & dist_chg,
-                     const double & dir_chg );
+    void serializePlayer( const Player & player,
+                          const std::string & name,
+                          const double & dist,
+                          const int dir,
+                          const double & dist_chg,
+                          const double & dir_chg );
 
     virtual
-    void
-    serializePlayer( const Player& player,
-                     const std::string & name,
-                     const double & dist,
-                     const int dir );
+    void serializePlayer( const Player & player,
+                          const std::string & name,
+                          const double & dist,
+                          const int dir );
 
     virtual
     int rad2Deg( const double & rad ) const
@@ -439,37 +429,37 @@ protected:
       }
 
     virtual
-    const std::string &
-    calcName( const PObject& obj ) const
+    const
+    std::string & calcName( const PObject & obj ) const
       {
           return obj.name();
       }
 
     virtual
-    const std::string &
-    calcCloseName( const PObject& obj ) const
+    const
+    std::string & calcCloseName( const PObject & obj ) const
       {
           return obj.closeName();
       }
 
     virtual
-    const std::string &
-    calcTFarName( const Player& obj ) const
+    const
+    std::string & calcTFarName( const Player & obj ) const
       {
           return obj.nameTooFar();
       }
 
     virtual
-    const std::string &
-    calcUFarName( const Player& obj ) const
+    const
+    std::string & calcUFarName( const Player & obj ) const
       {
           return obj.nameFar();
       }
 
 private:
-    void (VisualSenderPlayerV1::*M_send_flag)( const PObject& );
-    void (VisualSenderPlayerV1::*M_send_ball)( const MPObject& );
-    void (VisualSenderPlayerV1::*M_send_player)( const Player& );
+    void (VisualSenderPlayerV1::*M_send_flag)( const PObject & );
+    void (VisualSenderPlayerV1::*M_send_ball)( const MPObject & );
+    void (VisualSenderPlayerV1::*M_send_player)( const Player & );
     void (VisualSenderPlayerV1::*M_serialize_line)( const std::string &,
                                                     const int,
                                                     const double &,
@@ -488,10 +478,8 @@ private:
 //===================================================================
 */
 
-
 class VisualSenderPlayerV4
-    : public VisualSenderPlayerV1
-{
+    : public VisualSenderPlayerV1 {
 public:
     VisualSenderPlayerV4( const Params & params );
 
@@ -500,16 +488,14 @@ public:
 
 protected:
     virtual
-    void
-    serializePlayer( const Player & player,
-                     const double & dist,
-                     const int dir,
-                     const double & dist_chg,
-                     const double & dir_chg );
+    void serializePlayer( const Player & player,
+                          const double & dist,
+                          const int dir,
+                          const double & dist_chg,
+                          const double & dir_chg );
 
 
-    int
-    calcBodyDir( const Player & player ) const
+    int calcBodyDir( const Player & player ) const
       {
           return rad2Deg( normalize_angle( player.angleBodyCommitted()
                                            - self().angleBodyCommitted()
@@ -530,8 +516,7 @@ protected:
 */
 
 class VisualSenderPlayerV5
-    : public VisualSenderPlayerV4
-{
+    : public VisualSenderPlayerV4 {
 public:
     VisualSenderPlayerV5( const Params & params );
 
@@ -540,15 +525,13 @@ public:
 
 protected:
     virtual
-    void
-    serializePlayer( const Player & player,
-                     const double & dist,
-                     const int dir,
-                     const double & dist_chg,
-                     const double & dir_chg );
+    void serializePlayer( const Player & player,
+                          const double & dist,
+                          const int dir,
+                          const double & dist_chg,
+                          const double & dir_chg );
 
-    int
-    calcHeadDir( const Player & player ) const
+    int calcHeadDir( const Player & player ) const
       {
           return rad2Deg( normalize_angle( player.angleNeckCommitted()
                                            + player.angleBodyCommitted()
@@ -572,8 +555,7 @@ protected:
 */
 
 class VisualSenderPlayerV6
-    : public VisualSenderPlayerV5
-{
+    : public VisualSenderPlayerV5 {
 public:
     VisualSenderPlayerV6( const Params & params );
 
@@ -581,29 +563,29 @@ public:
     ~VisualSenderPlayerV6();
 
     virtual
-    const std::string &
-    calcName( const PObject & obj ) const
+    const
+    std::string & calcName( const PObject & obj ) const
       {
           return obj.shortName();
       }
 
     virtual
-    const std::string &
-    calcCloseName( const PObject & obj ) const
+    const
+    std::string & calcCloseName( const PObject & obj ) const
       {
           return obj.shortCloseName();
       }
 
     virtual
-    const std::string &
-    calcUFarName( const Player & obj ) const
+    const
+    std::string & calcUFarName( const Player & obj ) const
       {
           return obj.shortNameFar();
       }
 
     virtual
-    const std::string &
-    calcTFarName( const Player & obj ) const
+    const
+    std::string & calcTFarName( const Player & obj ) const
       {
           return obj.shortNameTooFar();
       }
@@ -626,8 +608,7 @@ public:
 */
 
 class VisualSenderPlayerV7
-    : public VisualSenderPlayerV6
-{
+    : public VisualSenderPlayerV6 {
 public:
     VisualSenderPlayerV7( const Params & params );
 
@@ -636,8 +617,7 @@ public:
 
 protected:
     virtual
-    int
-    rad2Deg( const double & rad ) const
+    int rad2Deg( const double & rad ) const
       {
           return Rad2IDegRound( rad );
       }
@@ -658,8 +638,7 @@ protected:
 */
 
 class VisualSenderPlayerV8
-    : public VisualSenderPlayerV7
-{
+    : public VisualSenderPlayerV7 {
 public:
     VisualSenderPlayerV8( const Params & params );
 
@@ -667,24 +646,21 @@ public:
     ~VisualSenderPlayerV8();
 
 protected:
-    int
-    calcPointDir( const Player & player );
+    int calcPointDir( const Player & player );
 
     virtual
-    void
-    serializePlayer( const Player & player,
-                     const std::string & name,
-                     const double & dist,
-                     const int dir,
-                     const double & dist_chg,
-                     const double & dir_chg );
+    void serializePlayer( const Player & player,
+                          const std::string & name,
+                          const double & dist,
+                          const int dir,
+                          const double & dist_chg,
+                          const double & dir_chg );
 
     virtual
-    void
-    serializePlayer( const Player& player,
-                     const std::string & name,
-                     const double & dist,
-                     const int dir );
+    void serializePlayer( const Player & player,
+                          const std::string & name,
+                          const double & dist,
+                          const int dir );
 };
 
 

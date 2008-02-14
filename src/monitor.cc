@@ -144,12 +144,6 @@ Monitor::sendPlayMode()
     M_playmode = M_stadium.playmode();
 
     M_init_observer->sendPlayMode();
-
-//     static char * playmode_strings[] = PLAYMODE_STRINGS;
-//     getTransport() << "(playmode " << M_stadium.time()
-//                    << ' ' << playmode_strings[M_playmode]
-//                    << ")"
-//                    << std::ends << std::flush;
 }
 
 void
@@ -171,24 +165,6 @@ Monitor::sendScore()
         M_team_r_pen_taken = M_stadium.teamRight().penaltyTaken();
 
         M_init_observer->sendScore();
-
-//         std::ostream & os = getTransport();
-
-//         os << "(team " << M_stadium.time()
-//            << ' ' << ( M_team_l_name.empty() ? "null" : M_team_l_name.c_str() )
-//            << ' ' << ( M_team_r_name.empty() ? "null" : M_team_r_name.c_str() )
-//            << ' ' << M_team_l_score
-//            << ' ' << M_team_r_score;
-
-//         if ( M_stadium.teamLeft().penaltyTaken() > 0
-//              || M_stadium.teamRight().penaltyTaken() > 0 )
-//         {
-//             os << ' ' << M_stadium.teamLeft().penaltyPoint()
-//                << ' ' << M_stadium.teamLeft().penaltyTaken() - M_stadium.teamLeft().penaltyPoint()
-//                << ' ' << M_stadium.teamRight().penaltyPoint()
-//                << ' ' << M_stadium.teamRight().penaltyTaken() - M_stadium.teamRight().penaltyPoint();
-//         }
-//         os << ')' << std::ends << std::flush;
     }
 }
 
@@ -282,18 +258,17 @@ Monitor::sendShow()
                << ')';
         }
         os << " (c "
-           << (*p)->kickCount()
-           << ' ' << (*p)->dashCount()
-           << ' ' << (*p)->turnCount()
-           << ' ' << (*p)->catchCount()
-           << ' ' << (*p)->moveCount()
-           << ' ' << (*p)->turnNeckCount()
-           << ' ' << (*p)->changeViewCount()
-           << ' ' << (*p)->sayCount()
-           << ' ' << (*p)->tackleCount()
-           << ' ' << (*p)->arm().getCounter()
-           << ' ' << (*p)->attentiontoCount()
-           << ')';
+           << (*p)->kickCount() << ' '
+           << (*p)->dashCount() << ' '
+           << (*p)->turnCount() << ' '
+           << (*p)->catchCount() << ' '
+           << (*p)->moveCount() << ' '
+           << (*p)->turnNeckCount() << ' '
+           << (*p)->changeViewCount() << ' '
+           << (*p)->sayCount() << ' '
+           << (*p)->tackleCount() << ' '
+           << (*p)->arm().getCounter() << ' '
+           << (*p)->attentiontoCount() << ')';
         os << ')'; // end of player
     }
 

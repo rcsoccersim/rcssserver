@@ -28,8 +28,10 @@
 #include <rcssbase/lib/factory.hpp>
 
 class Stadium;
+class Monitor;
 
 namespace rcss {
+
 class SerializerMonitor;
 
 /*!
@@ -37,9 +39,9 @@ class SerializerMonitor;
   \brief Base class for the display protocol.
 */
 class DispSender
-    : protected Sender
-{
+    : protected Sender {
 public:
+
     DispSender( std::ostream & transport );
 
     virtual
@@ -50,6 +52,7 @@ public:
 
     virtual
     void sendMsg() = 0;
+
 };
 
 /*!
@@ -80,7 +83,7 @@ public:
 
 
 private:
-    const SerializerPlayer & M_serializer;
+    const SerializerMonitor & M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
@@ -101,9 +104,9 @@ public:
     ~DispSenderMonitor();
 
 protected:
+
     const
-    SerializerMonitor &
-    serializer() const
+    SerializerMonitor & serializer() const
       {
           return M_serializer;
       }
@@ -131,22 +134,22 @@ class ObserverMonitor
 public:
 
     ObserverMonitor()
-      {}
+      { }
 
     ObserverMonitor( DispSenderMonitor & sender )
         : BaseObserver< DispSenderMonitor >( sender )
-      {}
+      { }
 
     ObserverMonitor( std::auto_ptr< DispSenderMonitor > sender )
         : BaseObserver< DispSenderMonitor >( sender )
-      {}
+      { }
 
     ~ObserverMonitor()
-      {}
+      { }
 
     void setDispSender( DispSenderMonitor & sender )
       {
-          BaseObserver< DispSenderPlayer >::setSender( sender );
+          BaseObserver< DispSenderMonitor >::setSender( sender );
       }
 
     void setDispSender( std::auto_ptr< DispSenderMonitor > sender )
@@ -156,12 +159,12 @@ public:
 
     void sendShow()
       {
-          BaseObserver< VisualSenderPlayer >::sender().sendShow();
+          BaseObserver< DispSenderMonitor >::sender().sendShow();
       }
 
     void sendMsg()
       {
-          BaseObserver< VisualSenderPlayer >::sender().sendMsg();
+          BaseObserver< DispSenderMonitor >::sender().sendMsg();
       }
 
 };
@@ -190,17 +193,38 @@ public:
 
 
 /*!
-  \class DispSenderMonitorV1
-  \brief class for the version 1 display protocol.
+  \class DispSenderMonitorV2
+  \brief class for the version 2 display protocol.
 */
-class DispSenderMonitorV1
-    : public DispSenderMonitor {
+class DispSenderMonitorV2
+    : public DispSenderMonitorV1 {
 public:
 
-    DispSenderMonitorV1( const Params & params );
+    DispSenderMonitorV2( const Params & params );
 
     virtual
-    ~DispSenderMonitorV1();
+    ~DispSenderMonitorV2();
+
+    virtual
+    void sendShow();
+
+    virtual
+    void sendMsg();
+
+};
+
+/*!
+  \class DispSenderMonitorV2
+  \brief class for the version 3 display protocol.
+*/
+class DispSenderMonitorV3
+    : public DispSenderMonitorV2 {
+public:
+
+    DispSenderMonitorV3( const Params & params );
+
+    virtual
+    ~DispSenderMonitorV3();
 
     virtual
     void sendShow();

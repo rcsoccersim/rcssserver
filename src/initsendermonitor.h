@@ -102,6 +102,9 @@ protected:
 public:
 
     virtual
+    void sendTeamGraphic() = 0;
+
+    virtual
     void sendPlayMode() = 0;
 
 };
@@ -169,6 +172,11 @@ public:
           BaseObserver< InitSenderMonitor >::sender().sendScore();
       }
 
+    void sendTeamGraphic()
+      {
+          BaseObserver< InitSenderMonitor >::sender().sendTeamGraphic();
+      }
+
     void sendPlayMode()
       {
           BaseObserver< InitSenderMonitor >::sender().sendPlayMode();
@@ -214,6 +222,9 @@ public:
 
     virtual
     void sendScore();
+
+    virtual
+    void sendTeamGraphic();
 
     virtual
     void sendPlayMode();
@@ -278,6 +289,9 @@ public:
 
     virtual
     void sendScore();
+
+    virtual
+    void sendTeamGraphic();
 
     virtual
     void sendPlayMode();

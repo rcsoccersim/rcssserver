@@ -93,10 +93,8 @@ public:
       { }
     virtual
     void serializeShowBall( std::ostream &,
-                            const double &,
-                            const double &,
-                            const double &,
-                            const double & ) const
+                            const PVector &,
+                            const PVector & ) const
       { }
 
     virtual
@@ -117,11 +115,7 @@ public:
                                  const double & ) const
       { }
     virtual
-    void serializeShowPlayerPos( std::ostream &,
-                                 const PVector &,
-                                 const PVector &,
-                                 const double &,
-                                 const double &,
+    void serializeShowPlayerArm( std::ostream &,
                                  const double &,
                                  const double & ) const
       { }
@@ -161,6 +155,13 @@ public:
                                     const int,
                                     const int ) const
       { }
+
+    virtual
+    void serializeTeamGraphic( std::ostream &,
+                               const int,
+                               const int,
+                               const char * ) const
+      { }
 };
 
 /*!
@@ -182,7 +183,6 @@ public:
     static
     const
     SerializerMonitorStdv1 * instance();
-
 
 };
 
@@ -245,10 +245,8 @@ public:
                              const int pen_score_r ) const;
     virtual
     void serializeShowBall( std::ostream & os,
-                            const double & x,
-                            const double & y,
-                            const double & vx,
-                            const double & vy ) const;
+                            const PVector & pos,
+                            const PVector & vel ) const;
     virtual
     void serializeShowPlayerBegin( std::ostream & os,
                                    const Side side,
@@ -264,11 +262,7 @@ public:
                                  const double & body,
                                  const double & neck ) const;
     virtual
-    void serializeShowPlayerPos( std::ostream & os,
-                                 const PVector & pos,
-                                 const PVector & vel,
-                                 const double & body,
-                                 const double & neck,
+    void serializeShowPlayerArm( std::ostream & os,
                                  const double & arm_dist,
                                  const double & arm_dir ) const;
     virtual
@@ -285,10 +279,6 @@ public:
                                    const Side side,
                                    const int unum ) const;
     virtual
-    void serializeShowPlayerCountsBegin( std::ostream & os ) const;
-    virtual
-    void serializeShowPlayerCountsEnd( std::ostream & os ) const;
-    virtual
     void serializeShowPlayerCounts( std::ostream & os,
                                     const int kick,
                                     const int dash,
@@ -301,6 +291,12 @@ public:
                                     const int tackle,
                                     const int pointto,
                                     const int attentionto ) const;
+
+    virtual
+    void serializeTeamGraphic( std::ostream &,
+                               const int x,
+                               const int y,
+                               const char * msg ) const;
 };
 
 

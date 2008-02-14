@@ -41,60 +41,53 @@ public:
     SerializerPlayerStdv1 * instance();
 
     virtual
-    void
-    serializeRefAudio( std::ostream& strm,
-                       const int& time,
-                       const char* msg ) const;
+    void serializeRefAudio( std::ostream & strm,
+                            const int & time,
+                            const char * msg ) const;
 
     virtual
-    void
-    serializeCoachAudio( std::ostream& strm,
-                         const int& time,
-                         const std::string& name,
-                         const char* msg ) const;
+    void serializeCoachAudio( std::ostream & strm,
+                              const int & time,
+                              const std::string & name,
+                              const char * msg ) const;
 
     virtual
-    void
-    serializeCoachStdAudio( std::ostream& strm,
-                            const int& time,
-                            const std::string& name,
-                            const rcss::clang::Msg& msg ) const;
+    void serializeCoachStdAudio( std::ostream & strm,
+                                 const int & time,
+                                 const std::string & name,
+                                 const rcss::clang::Msg & msg ) const;
 
     virtual
-    void
-    serializeSelfAudio( std::ostream& strm,
-                        const int& time,
-                        const char* msg ) const;
+    void serializeSelfAudio( std::ostream & strm,
+                             const int & time,
+                             const char * msg ) const;
 
     virtual
-    void
-    serializePlayerAudio( std::ostream& strm,
-                          const int& time,
-                          const double& dir,
-                          const char* msg ) const;
+    void serializePlayerAudio( std::ostream & strm,
+                               const int & time,
+                               const double & dir,
+                               const char * msg ) const;
 
     virtual
-    void
-    serializeVisualBegin( std::ostream& strm,
-                          const int time ) const;
+    void serializeVisualBegin( std::ostream & strm,
+                               const int time ) const;
 
     virtual
-    void
-    serializeVisualEnd( std::ostream& strm ) const;
+    void serializeVisualEnd( std::ostream & strm ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const int dir ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir,
@@ -102,7 +95,7 @@ public:
 //                                 const double & dir_chg ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir,
@@ -111,7 +104,7 @@ public:
 //                                 const double & body_dir ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir,
@@ -121,14 +114,14 @@ public:
 //                                 const double & head_dir ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir,
 //                                 const bool tackling ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir,
@@ -136,7 +129,7 @@ public:
 //                                 const bool tackling ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir,
@@ -147,7 +140,7 @@ public:
 //                                 const bool tackling ) const;
 
 //     virtual
-//     void serializeVisualObject( std::ostream& strm,
+//     void serializeVisualObject( std::ostream & strm,
 //                                 const std::string & name,
 //                                 const double & dist,
 //                                 const int dir,
@@ -159,90 +152,76 @@ public:
 //                                 const bool tackling ) const;
 
     virtual
-    void
-    serializeBodyBegin( std::ostream& strm,
-                        const int time ) const;
+    void serializeBodyBegin( std::ostream & strm,
+                             const int time ) const;
 
     virtual
-    void
-    serializeBodyEnd( std::ostream& strm ) const;
+    void serializeBodyEnd( std::ostream & strm ) const;
 
     virtual
-    void
-    serializeBodyViewMode( std::ostream& strm,
-                           const char* qual,
-                           const char* width ) const;
+    void serializeBodyViewMode( std::ostream & strm,
+                                const char * qual,
+                                const char * width ) const;
 
     virtual
-    void
-    serializeBodyStamina( std::ostream& strm,
-                          const double & stamina,
-                          const double & effort ) const;
+    void serializeBodyStamina( std::ostream & strm,
+                               const double & stamina,
+                               const double & effort ) const;
 
     virtual
-    void
-    serializeBodyVelocity( std::ostream& strm,
-                           const double & mag ) const;
+    void serializeBodyVelocity( std::ostream & strm,
+                                const double & mag ) const;
 
     virtual
-    void
-    serializeBodyVelocity( std::ostream& strm,
-                           const double & mag,
-                           const int head ) const;
+    void serializeBodyVelocity( std::ostream & strm,
+                                const double & mag,
+                                const int head ) const;
 
     virtual
-    void
-    serializeBodyCounts( std::ostream& strm,
-                         const int count_kick,
-                         const int count_dash,
-                         const int count_turn,
-                         const int count_say ) const;
+    void serializeBodyCounts( std::ostream & strm,
+                              const int count_kick,
+                              const int count_dash,
+                              const int count_turn,
+                              const int count_say ) const;
 
     virtual
-    void
-    serializeBodyCounts( std::ostream& strm,
-                         const int count_catch,
-                         const int count_move,
-                         const int count_change_view ) const;
+    void serializeBodyCounts( std::ostream & strm,
+                              const int count_catch,
+                              const int count_move,
+                              const int count_change_view ) const;
 
     virtual
-    void
-    serializeNeckAngle( std::ostream& strm,
-                        const int ang ) const;
+    void serializeNeckAngle( std::ostream & strm,
+                             const int ang ) const;
 
     virtual
-    void
-    serializeNeckCount( std::ostream& strm,
+    void serializeNeckCount( std::ostream & strm,
                         const int count_turn_neck ) const;
 
     virtual
-    void
-    serializeArm( std::ostream& strm,
-                  const int movable_cycles,
-                  const int expires_cycles,
-                  const double & dist,
-                  const int head,
-                  const int count ) const;
+    void serializeArm( std::ostream & strm,
+                       const int movable_cycles,
+                       const int expires_cycles,
+                       const double & dist,
+                       const int head,
+                       const int count ) const;
 
     virtual
-    void
-    serializeFocus( std::ostream& strm,
-                    const char* name,
-                    const int count ) const;
+    void serializeFocus( std::ostream & strm,
+                         const char * name,
+                         const int count ) const;
 
     virtual
-    void
-    serializeFocus( std::ostream& strm,
-                    const char* team,
-                    const int unum,
-                    const int count ) const;
+    void serializeFocus( std::ostream & strm,
+                         const char * team,
+                         const int unum,
+                         const int count ) const;
 
 
     virtual
-    void
-    serializeTackle( std::ostream& strm,
-                     const int cycles,
-                     const int count ) const;
+    void serializeTackle( std::ostream & strm,
+                          const int cycles,
+                          const int count ) const;
 
     virtual
     void serializeCollision( std::ostream & strm,
@@ -252,92 +231,80 @@ public:
 
 
     virtual
-    void
-    serializeFSBegin( std::ostream& strm,
-                      const int time ) const;
+    void serializeFSBegin( std::ostream & strm,
+                           const int time ) const;
 
     virtual
-    void
-    serializeFSEnd( std::ostream& strm ) const;
+    void serializeFSEnd( std::ostream & strm ) const;
 
     virtual
-    void
-    serializeFSPlayMode( std::ostream& strm,
-                         const char* mode ) const;
+    void serializeFSPlayMode( std::ostream & strm,
+                              const char * mode ) const;
 
     virtual
-    void
-    serializeFSViewMode( std::ostream& strm,
-                         const char* qual,
-                         const char* width ) const;
+    void serializeFSViewMode( std::ostream & strm,
+                              const char * qual,
+                              const char * width ) const;
 
     virtual
-    void
-    serializeFSScore( std::ostream& strm,
-                      const int left,
-                      const int right ) const;
+    void serializeFSScore( std::ostream & strm,
+                           const int left,
+                           const int right ) const;
 
     virtual
-    void
-    serializeFSBall( std::ostream& strm,
-                     const double & x,
-                     const double & y,
-                     const double & vel_x,
-                     const double & vel_y ) const;
+    void serializeFSBall( std::ostream & strm,
+                          const double & x,
+                          const double & y,
+                          const double & vel_x,
+                          const double & vel_y ) const;
 
     virtual
-    void
-    serializeFSPlayerBegin( std::ostream& strm,
-                            const char side,
-                            const int unum,
-                            const bool,
-                            const int,
-                            const double & x,
-                            const double & y,
-                            const double & vel_x,
-                            const double & vel_y,
-                            const double & body_dir,
-                            const double & neck_dir ) const;
+    void serializeFSPlayerBegin( std::ostream & strm,
+                                 const char side,
+                                 const int unum,
+                                 const bool,
+                                 const int,
+                                 const double & x,
+                                 const double & y,
+                                 const double & vel_x,
+                                 const double & vel_y,
+                                 const double & body_dir,
+                                 const double & neck_dir ) const;
 
     virtual
-    void
-    serializeFSPlayerEnd( std::ostream& strm,
-                          const double & stamina,
-                          const double & effort,
-                          const double & recovery ) const;
+    void serializeFSPlayerEnd( std::ostream & strm,
+                               const double & stamina,
+                               const double & effort,
+                               const double & recovery ) const;
 
     virtual
-    void
-    serializeInit( std::ostream& strm,
-                   const char* side,
-                   const int unum,
-                   const PlayMode& mode ) const;
+    void serializeInit( std::ostream & strm,
+                        const char * side,
+                        const int unum,
+                        const PlayMode & mode ) const;
 
     virtual
-    void
-    serializeReconnect( std::ostream& strm,
-                        const char* side,
-                        const PlayMode& mode ) const;
+    void serializeReconnect( std::ostream & strm,
+                             const char * side,
+                             const PlayMode & mode ) const;
 
 
     virtual
-    void
-    serializeOKClang( std::ostream& strm,
-                      const int min,
-                      const int max ) const;
+    void serializeOKClang( std::ostream & strm,
+                           const int min,
+                           const int max ) const;
 
     virtual
-    void
-    serializeErrorNoTeamName( std::ostream& strm,
-                              const std::string& team_name ) const;
+    void serializeErrorNoTeamName( std::ostream & strm,
+                                   const std::string & team_name ) const;
 
     virtual
-    void
-    serializeScore( std::ostream& strm,
-                    const int time,
-                    const int our,
-                    const int opp ) const;
+    void serializeScore( std::ostream & strm,
+                         const int time,
+                         const int our,
+                         const int opp ) const;
 };
+
 }
 
 #endif

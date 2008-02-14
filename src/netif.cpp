@@ -97,11 +97,13 @@ Stadium::recv( std::vector< T >& clients )
     std::random_shuffle( clients.begin(), clients.end(),
                          irand ); //rcss::random::UniformRNG::instance() );
 
-    for( typename std::vector< T >::iterator i = clients.begin();
+    for ( typename std::vector< T >::iterator i = clients.begin();
          i != clients.end(); )
     {
         if ( (*i)->recv() == -1 )
+        {
             ++i;
+        }
     }
 }
 

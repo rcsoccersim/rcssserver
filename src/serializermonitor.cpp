@@ -92,7 +92,6 @@ SerializerMonitorStdv1::instance()
     return &ser;
 }
 
-
 /*
 //===================================================================
 //
@@ -217,16 +216,14 @@ SerializerMonitorStdv3::serializeShowScore( std::ostream & os,
 
 void
 SerializerMonitorStdv3::serializeShowBall( std::ostream & os,
-                                           const double & x,
-                                           const double & y,
-                                           const double & vx,
-                                           const double & vy ) const
+                                           const PVector & pos,
+                                           const PVector & vel ) const
 {
     os << " (" << BALL_NAME_SHORT
-       << ' ' << Quantize( x, PREC )
-       << ' ' << Quantize( y, PREC )
-       << ' ' << Quantize( vx, PREC )
-       << ' ' << Quantize( vy, PREC )
+       << ' ' << Quantize( pos.x, PREC )
+       << ' ' << Quantize( pos.y, PREC )
+       << ' ' << Quantize( vel.x, PREC )
+       << ' ' << Quantize( vel.y, PREC )
        << ')';
 }
 
@@ -264,22 +261,17 @@ SerializerMonitorStdv3::serializeShowPlayerPos( std::ostream & os,
        << ' ' << Quantize( pos.y, PREC )
        << ' ' << Quantize( vel.x, PREC )
        << ' ' << Quantize( vel.y, PREC )
-       << ' ' << Quantize( Rad2Deg( body ), DPREC )
-       << ' ' << Quantize( Rad2Deg( neck ), DPREC );
+       << ' ' << Quantize( body, DPREC )
+       << ' ' << Quantize( neck, DPREC );
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerPos( std::ostream & os,
-                                                const PVector & pos,
-                                                const PVector & vel,
-                                                const double & body,
-                                                const double & neck,
+SerializerMonitorStdv3::serializeShowPlayerArm( std::ostream & os,
                                                 const double & arm_dist,
                                                 const double & arm_dir ) const
 {
-    serializeShowPlayerPos( os, pos, vel, body, neck );
     os << ' ' << Quantize( arm_dist, PREC )
-       << ' ' << Quantize( arm_dir, PREC );
+       << ' ' << Quantize( arm_dir, DPREC );
 }
 
 void
@@ -289,7 +281,7 @@ SerializerMonitorStdv3::serializeShowPlayerViewMode( std::ostream & os,
 {
     os << " (v "
            << ( high_quality ? "h " : "l " )
-           << Quantize( Rad2Deg( vis_angle ), DPREC )
+           << Quantize( vis_angle, DPREC )
            << ')';
 }
 
@@ -311,18 +303,6 @@ SerializerMonitorStdv3::serializeShowPlayerFocus( std::ostream & os,
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerCountsBegin( std::ostream & os ) const
-{
-    os << " (c";
-}
-
-void
-SerializerMonitorStdv3::serializeShowPlayerCountsEnd( std::ostream & os ) const
-{
-    os << ')';
-}
-
-void
 SerializerMonitorStdv3::serializeShowPlayerCounts( std::ostream & os,
                                                    const int kick,
                                                    const int dash,
@@ -336,17 +316,28 @@ SerializerMonitorStdv3::serializeShowPlayerCounts( std::ostream & os,
                                                    const int pointto,
                                                    const int attentionto ) const
 {
-    os << ' ' << kick
-       << ' ' << dash
-       << ' ' << turn
-       << ' ' << goalie_catch
-       << ' ' << move
-       << ' ' << turn_neck
-       << ' ' << change_view
-       << ' ' << say
-       << ' ' << tackle
-       << ' ' << pointto
-       << ' ' << attentionto;
+    os << " (c "
+       << kick << ' '
+       << dash << ' '
+       << turn << ' '
+       << goalie_catch << ' '
+       << move << ' '
+       << turn_neck << ' '
+       << change_view << ' '
+       << say << ' '
+       << tackle << ' '
+       << pointto << ' '
+       << attentionto << ')';
+}
+
+void
+SerializerMonitorStdv3::serializeTeamGraphic( std::ostream & os,
+                                              const int x,
+                                              const int y,
+                                              const char * msg ) const
+{
+    os << "(team_graphic " << x << ' ' << y
+       << " \"" << msg << "\")";
 }
 
 namespace {

@@ -40,7 +40,7 @@ namespace rcss {
 //===================================================================
 */
 
-BodySender::BodySender( std::ostream& transport )
+BodySender::BodySender( std::ostream & transport )
     : Sender( transport )
 {
 
@@ -68,7 +68,7 @@ BodySenderPlayer::factory()
     return rval;
 }
 
-BodySenderPlayer::BodySenderPlayer( const Params& params )
+BodySenderPlayer::BodySenderPlayer( const Params & params )
     : BodySender( params.m_transport ),
       M_serializer( params.m_ser ),
       M_self( params.m_self )

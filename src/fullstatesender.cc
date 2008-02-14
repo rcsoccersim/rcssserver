@@ -362,7 +362,7 @@ FullStateSenderPlayerV8::sendPlayer( const Player & p )
                                          Rad2Deg( p.angleBodyCommitted() ),
                                          Rad2Deg( p.angleNeckCommitted() ) );
 
-    if( p.arm().isPointing() )
+    if ( p.arm().isPointing() )
     {
         rcss::geom::Vector2D arm_vec;
         p.arm().getRelDest( rcss::geom::Vector2D( p.pos().x, p.pos().y ),
