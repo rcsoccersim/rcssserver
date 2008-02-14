@@ -120,28 +120,28 @@ librcssclangparser_la_LDFLAGS = -version-info 3:0:1
 
 
 librcssclangparser_la_SOURCES = \
-clangmsgbuilder.cc \
+clangmsgbuilder.cpp \
 clangparser.cpp \
-clangmsg.cc \
-clangmetamsg.cc \
-clangfreeformmsg.cc \
-clangunsuppmsg.cc \
-clangrulemsg.cc \
-clangdelmsg.cc \
-clanginfomsg.cc \
-clangadvicemsg.cc \
-clangdefmsg.cc \
-clangaction.cc \
+clangmsg.cpp \
+clangmetamsg.cpp \
+clangfreeformmsg.cpp \
+clangunsuppmsg.cpp \
+clangrulemsg.cpp \
+clangdelmsg.cpp \
+clanginfomsg.cpp \
+clangadvicemsg.cpp \
+clangdefmsg.cpp \
+clangaction.cpp \
 coach_lang_comp.cpp \
-coach_lang_par.yy \
-coach_lang_tok.cc \
+coach_lang_par.ypp \
+coach_lang_tok.cpp \
 region.cpp \
-visitor.cc \
-clangutil.cc \
-cond.cc \
-compop.cc \
-arithop.cc \
-rule.cc
+visitor.cpp \
+clangutil.cpp \
+cond.cpp \
+compop.cpp \
+arithop.cpp \
+rule.cpp
 
 
 bin_PROGRAMS = \
@@ -152,13 +152,13 @@ bin_SCRIPTS = rcsoccersim
 
 BUILT_SOURCES = libimports.cpp \
 coach_lang_par.h \
-coach_lang_tok.cc \
-player_command_tok.cc \
+coach_lang_tok.cpp \
+player_command_tok.cpp \
 player_command_parser.h
 
 EXTRA_DIST = \
-coach_lang_tok.ll \
-player_command_tok.ll \
+coach_lang_tok.lpp \
+player_command_tok.lpp \
 rcsoccersim.in \
 ac_lib_rcssclangparser.m4
 
@@ -193,70 +193,70 @@ pcombuilder.h \
 pcomparser.h \
 player_command_parser.yy \
 player_command_tok.h \
-player_command_tok.cc \
+player_command_tok.cpp \
 player.h \
-player.cc \
+player.cpp \
 monitor.h \
-monitor.cc \
+monitor.cpp \
 arm.h \
 random.h \
 audio.h \
-audio.cc \
+audio.cpp \
 serializer.h \
-serializer.cc \
+serializer.cpp \
 serializerplayerstdv1.h \
-serializerplayerstdv1.cc \
+serializerplayerstdv1.cpp \
 serializerplayerstdv7.h \
-serializerplayerstdv7.cc \
+serializerplayerstdv7.cpp \
 serializerplayerstdv8.h \
-serializerplayerstdv8.cc \
+serializerplayerstdv8.cpp \
 serializercoachstdv1.h \
-serializercoachstdv1.cc \
+serializercoachstdv1.cpp \
 serializercoachstdv7.h \
-serializercoachstdv7.cc \
+serializercoachstdv7.cpp \
 serializercoachstdv8.h \
-serializercoachstdv8.cc \
+serializercoachstdv8.cpp \
 serializeronlinecoachstdv1.h \
-serializeronlinecoachstdv1.cc \
+serializeronlinecoachstdv1.cpp \
 serializeronlinecoachstdv6.h \
-serializeronlinecoachstdv6.cc \
+serializeronlinecoachstdv6.cpp \
 serializeronlinecoachstdv7.h \
-serializeronlinecoachstdv7.cc \
+serializeronlinecoachstdv7.cpp \
 serializeronlinecoachstdv8.h \
-serializeronlinecoachstdv8.cc \
+serializeronlinecoachstdv8.cpp \
 serializercommonstdv1.h \
-serializercommonstdv1.cc \
+serializercommonstdv1.cpp \
 serializercommonstdv7.h \
-serializercommonstdv7.cc \
+serializercommonstdv7.cpp \
 serializercommonstdv8.h \
-serializercommonstdv8.cc \
+serializercommonstdv8.cpp \
 serializermonitor.h \
 serializermonitor.cpp \
 serverparam.h \
 serverparam.cpp \
 referee.h \
-referee.cc \
+referee.cpp \
 xpmholder.h \
 visual.h \
-visual.cc \
+visual.cpp \
 xpmholder.h \
 timer.h \
 timer.cpp \
 stdtimer.h \
-stdtimer.cc \
+stdtimer.cpp \
 synctimer.h \
-synctimer.cc \
+synctimer.cpp \
 timeable.h \
 utility.h \
 utility.cpp \
 dispsender.h \
 dispsender.cpp \
 bodysender.h \
-bodysender.cc \
+bodysender.cpp \
 fullstatesender.h \
-fullstatesender.cc \
+fullstatesender.cpp \
 initsender.h \
-initsender.cc \
+initsender.cpp \
 initsendermonitor.h \
 initsendermonitor.cpp \
 observer.h \
@@ -297,7 +297,7 @@ AM_FLEXFLEX=@AM_FLEXFLAGS@
 
 .lpp.cpp:	$*.lpp Makefile.am
 	$(FLEX) $(FLEXFLAGS) $(AM_FLEXFLAGS) $<
-	$(AWK) '/#include <FlexLexer\.h>/ { print "#include \"$*.hpp\""; getline; } \
+	$(AWK) '/#include <FlexLexer\.h>/ { print "#include \"$*.h\""; getline; } \
 		/class istream;/ { print "#include <iosfwd>"; print "using namespace std;"; getline; } \
 		/#include <iostream\.h>/ { print "#include <iostream>"; getline; } \
 		{ gsub( "lex\.yy\.c", "$@" ); print; }' lex.yy.c > $@

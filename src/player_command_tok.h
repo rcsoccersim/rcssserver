@@ -5,10 +5,10 @@
                           Lexer for PlayerCommands
                         ----------------------------
     begin                : 27-JUN-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -31,51 +31,50 @@
 #define yyFlexLexer RCSSPComFlexLexer
 #include <rcssbase/FlexLexer.h>
 
-class RCSSPComLexer : public RCSSPComFlexLexer
-{
-  public:
-//     typedef rcss::util::Tuple10< int,
-//                                  double,
-//                                  std::string,
-//                                  bool,
-//                                  rcss::pcom::VIEW_WIDTH,
-//                                  rcss::pcom::VIEW_QUALITY,
-//                                  rcss::pcom::TEAM,
-//                                  rcss::pcom::EAR_MODE
-//                                > Holder;
-	union Holder
-	{
-	    enum { STR_MAX = 8192 };
+class RCSSPComLexer
+    : public RCSSPComFlexLexer {
+public:
+    //     typedef rcss::util::Tuple10< int,
+    //                                  double,
+    //                                  std::string,
+    //                                  bool,
+    //                                  rcss::pcom::VIEW_WIDTH,
+    //                                  rcss::pcom::VIEW_QUALITY,
+    //                                  rcss::pcom::TEAM,
+    //                                  rcss::pcom::EAR_MODE
+    //                                > Holder;
+    union Holder {
+        enum { STR_MAX = 8192 };
 
-	    int m_int;
-	    double m_double;
-	    char m_str[ STR_MAX ];
-	    bool m_bool;
-	    rcss::pcom::VIEW_WIDTH m_view_w;
-	    rcss::pcom::VIEW_QUALITY m_view_q;
-	    rcss::pcom::TEAM m_team;
-	    rcss::pcom::EAR_MODE m_ear;
-	};
+        int m_int;
+        double m_double;
+        char m_str[ STR_MAX ];
+        bool m_bool;
+        rcss::pcom::VIEW_WIDTH m_view_w;
+        rcss::pcom::VIEW_QUALITY m_view_q;
+        rcss::pcom::TEAM m_team;
+        rcss::pcom::EAR_MODE m_ear;
+    };
 
 
-  virtual int yylex(); // defined in player_command_tok.cc
+    virtual
+    int yylex(); // defined in player_command_tok.cc
 
-  inline int lex( Holder& holder )
-  {
-    M_lexed_val = &holder;
-    return yylex();
-  }
+    inline
+    int lex( Holder & holder )
+      {
+          M_lexed_val = &holder;
+          return yylex();
+      }
 
-  private:
-    Holder* M_lexed_val;
+private:
+    Holder * M_lexed_val;
 };
 
-namespace rcss
-{
-  namespace pcom
-  {
-    typedef RCSSPComLexer Lexer;
-  }
+namespace rcss {
+namespace pcom {
+typedef RCSSPComLexer Lexer;
+}
 }
 
 #endif
