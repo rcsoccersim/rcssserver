@@ -1,5 +1,12 @@
 2008-02-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/field.h:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	- cleaned up the logging procedure.
+
 	* src/Makefile.am:
 	* src/coach.cpp:
 	* src/field.cpp:

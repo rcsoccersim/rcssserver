@@ -204,11 +204,6 @@ Monitor::sendTeamGraphic( const Side,
 void
 Monitor::sendShow()
 {
-    if ( version() < 3.0 )
-    {
-        return;
-    }
-
     sendPlayMode();
     sendScore();
 

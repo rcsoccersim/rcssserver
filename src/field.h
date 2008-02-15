@@ -188,12 +188,6 @@ protected:
 
     Side M_kick_off_side;
 
-    int M_nr_monitor_v1;
-    int M_nr_monitor_v2;
-
-    dispinfo_t M_dinfo;
-    dispinfo_t2 M_dinfo2;
-
     std::string M_text_log_name;
     std::string M_game_log_name;
     std::string M_kaway_log_name;
@@ -445,9 +439,7 @@ private:
     OnlineCoach * initOnlineCoach( const char * init_message,
                                    const rcss::net::Addr & );
 
-
     void removeDisconnectedClients();
-
 
     void stepBegin();
     void step();
@@ -456,12 +448,21 @@ private:
     void turnMovableObjects();
     void incMovableObjects();
 
-    void sendDisp();
-    void makeMonitorMessage();
     void sendToMonitors();
+
+    std::ostream & writeGameLog( const char * str,
+                                 const std::streamsize n );
+
+    void writeMsgToGameLog( const BoardType board_type,
+                            const char * msg );
+
     void writeCurrentGameLog();
 
-    void writeCurrentGameLogV4();
+    void writeGameLogV1();
+    void writeGameLogV2();
+    void writeGameLogV3();
+    void writeGameLogV4();
+
 
     void move_caught_ball(); // [2000.07.21: I.Noda]
 
@@ -509,13 +510,13 @@ public:
 private:
     //! diretcly send message to player client that has cli_addr
     void sendToPlayer( const char *msg,
-                       const rcss::net::Addr& cli_addr );
+                       const rcss::net::Addr & cli_addr );
     //! diretcly send message to offline coach client that has cli_addr
     void sendToCoach( const char *msg,
-                      const rcss::net::Addr& cli_addr );
+                      const rcss::net::Addr & cli_addr );
     //! diretcly send message to online coach client that has cli_addr
     void sendToOnlineCoach( const char *msg,
-                            const rcss::net::Addr& cli_addr );
+                            const rcss::net::Addr & cli_addr );
 
     void sendRefAudio( const std::string & msg );
 public:
@@ -536,23 +537,23 @@ public:
 
     BallPosInfo ballPosInfo();
 
-    void writeTextLog( const char *message, int flag );
-    void writeTextLog( const Player & p, const char * message, const int flag );
-    void writeTextLog( const Coach &, const char * message, const int flag );
-    void writeTextLog( const OnlineCoach & p, const char * message, const int flag );
-
+    void writeTextLog( const char * message,
+                       const int flag );
+    void writeTextLog( const Player & p,
+                       const char * message,
+                       const int flag );
+    void writeTextLog( const Coach &,
+                       const char * message,
+                       const int flag );
+    void writeTextLog( const OnlineCoach & p,
+                       const char * message,
+                       const int flag );
 private:
-    std::ostream & writeGameLog( const char * str,
-                                 const std::streamsize n );
-
-    void writeGameLog( const dispinfo_t * msg );
-    void writeGameLog( const dispinfo_t2 * msg );
-    void writeMsgToGameLog( const BoardType board_type,
-                            const char * msg );
-
-
-    void write_times( timeval, timeval );
-    void write_profile( timeval, timeval, char* );
+    void write_times( const timeval &,
+                      const timeval & );
+    void write_profile( const timeval &,
+                        const timeval &,
+                        const char * );
 
     void assignPlayerTypes();
 public:
@@ -589,9 +590,9 @@ private:
 
     void startTeams();
 
-    int startTeam( const std::string& start );
+    int startTeam( const std::string & start );
 
-    bool teamConnected( Side side );
+    bool teamConnected( const Side side );
 
     void killTeams();
 
@@ -605,7 +606,7 @@ private:
 
 public:
     static
-    void _Start( Stadium& stad );
+    void _Start( Stadium & stad );
 
 };
 

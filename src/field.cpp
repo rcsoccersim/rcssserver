@@ -157,15 +157,13 @@ Stadium::Stadium()
       M_stoppage_time( 0 ),
       M_ball_catcher( NULL ),
       M_kick_off_side( LEFT ),
-      M_nr_monitor_v1( 0 ),
-      M_nr_monitor_v2( 0 ),
       M_last_playon_start( 0 ),
       M_game_over_wait( 0 ),
       M_left_child( 0 ),
       M_right_child( 0 )
 {
     time_t tmp_time = std::time( NULL );
-    tm* tmp_local_time = localtime( &tmp_time );
+    tm * tmp_local_time = std::localtime( &tmp_time );
     if ( tmp_local_time == NULL )
     {
         std::cerr << __FILE__ << ":" << __LINE__
@@ -384,23 +382,14 @@ Stadium::init()
 
     change_play_mode( PM_BeforeKickOff );
 
-    for ( int i = 0; i <= MAX_PLAYER * 2; ++i )
-    {
-        M_dinfo.body.show.pos[i].enable = htons( DISABLE );
-    }
-    M_dinfo.mode = htons( SHOW_MODE );
-    std::memset( &M_dinfo.body.show.team[0].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
-    std::memset( &M_dinfo.body.show.team[1].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
-    M_dinfo.body.show.time = htons((unsigned short)-1);
-
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        M_dinfo2.body.show.pos[i].mode = htons( DISABLE );
-    }
-    M_dinfo2.mode = htons( SHOW_MODE );
-    std::memset( &M_dinfo2.body.show.team[0].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
-    std::memset( &M_dinfo2.body.show.team[1].name, 0, sizeof(M_dinfo.body.show.team[1].name) );
-    M_dinfo2.body.show.time = htons((unsigned short)-1);
+//     for ( int i = 0; i <= MAX_PLAYER * 2; ++i )
+//     {
+//         M_dinfo.body.show.pos[i].enable = htons( DISABLE );
+//     }
+//     M_dinfo.mode = htons( SHOW_MODE );
+//     std::memset( &M_dinfo.body.show.team[0].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
+//     std::memset( &M_dinfo.body.show.team[1].name, 0, sizeof(M_dinfo.body.show.team[0].name) );
+//     M_dinfo.body.show.time = htons((unsigned short)-1);
 
 
     M_kick_off_wait = std::max( 0, ServerParam::instance().kickOffWait() );
@@ -468,7 +457,7 @@ Stadium::startTeam( const std::string& start )
 }
 
 bool
-Stadium::teamConnected( Side side )
+Stadium::teamConnected( const Side side )
 {
     if ( side == LEFT )
     {
@@ -1064,7 +1053,6 @@ Stadium::step()
             M_olcoaches[0]->awardFreeformMessageCount();
             M_olcoaches[1]->awardFreeformMessageCount();
         }
-
     }
 
     stepEnd();
@@ -1087,7 +1075,13 @@ Stadium::stepEnd()
         (*p)->updateCapacity();
     }
 
-    sendDisp();
+    sendToMonitors();
+    writeCurrentGameLog();
+
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        M_players[i]->resetState();
+    }
 }
 
 void
@@ -1126,126 +1120,6 @@ Stadium::incMovableObjects()
 }
 
 void
-Stadium::sendDisp()
-{
-    makeMonitorMessage();
-    sendToMonitors();
-    writeCurrentGameLog();
-
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        M_players[i]->resetState();
-    }
-}
-
-void
-Stadium::makeMonitorMessage()
-{
-    if ( M_nr_monitor_v1 > 0
-         || ( game_log_open()
-              && ( ServerParam::instance().gameLogVersion() == REC_OLD_VERSION
-                   || ServerParam::instance().gameLogVersion() == REC_VERSION_2 )
-              )
-         )
-    {
-        M_dinfo.body.show.time = htons( time() );
-
-        M_dinfo.body.show.pos[0].x = htons( (Int16)rint( ( M_ball->pos().x * SHOWINFO_SCALE ) ) );
-        M_dinfo.body.show.pos[0].y = htons( (Int16)rint( ( M_ball->pos().y * SHOWINFO_SCALE ) ) );
-
-        for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-        {
-            M_dinfo.body.show.pos[i+1].enable = htons( M_players[i]->state() );
-            //M_players[i]->alive &= (STAND | GOALIE | DISCARD);
-            M_dinfo.body.show.pos[i+1].x
-                = htons( (Int16)rint( M_players[i]->pos().x * SHOWINFO_SCALE ) );
-            M_dinfo.body.show.pos[i+1].y
-                = htons( (Int16)rint( M_players[i]->pos().y * SHOWINFO_SCALE ) );
-            M_dinfo.body.show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( M_players[i]->angleBodyCommitted() ) );
-            M_dinfo.body.show.pos[i+1].side = htons( M_players[i]->team()->side() );
-            M_dinfo.body.show.pos[i+1].unum = htons( M_players[i]->unum() );
-        }
-
-        if ( ! M_team_l->name().empty() )
-        {
-            std::strncpy( M_dinfo.body.show.team[0].name, M_team_l->name().c_str(), 16 );
-            M_dinfo.body.show.team[0].score = htons( M_team_l->point() );
-        }
-
-        if ( ! M_team_r->name().empty() )
-        {
-            std::strncpy( M_dinfo.body.show.team[1].name, M_team_r->name().c_str(), 16 );
-            M_dinfo.body.show.team[1].score = htons( M_team_r->point() );
-        }
-    }
-
-    if ( M_nr_monitor_v2 > 0
-         || ( game_log_open()
-              && ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
-         )
-    {
-        M_dinfo2.body.show.time = htons( time() );
-
-        M_dinfo2.body.show.ball.x = htonl( (Int32)rint( ( M_ball->pos().x * SHOWINFO_SCALE2 ) ) );
-        M_dinfo2.body.show.ball.y = htonl( (Int32)rint( ( M_ball->pos().y * SHOWINFO_SCALE2 ) ) );
-        M_dinfo2.body.show.ball.deltax = htonl( (Int32)rint( ( M_ball->vel().x * SHOWINFO_SCALE2 ) ) );
-        M_dinfo2.body.show.ball.deltay = htonl( (Int32)rint( ( M_ball->vel().y * SHOWINFO_SCALE2) ) );
-
-        for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-        {
-            M_dinfo2.body.show.pos[i].mode = htons( M_players[i]->state() );
-            M_dinfo2.body.show.pos[i].type = htons( M_players[i]->playerTypeId() );
-
-            //M_players[i]->alive &= (STAND | GOALIE | DISCARD);
-            M_dinfo2.body.show.pos[i].x = htonl( (Int32)rint( M_players[i]->pos().x * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].y = htonl( (Int32)rint( M_players[i]->pos().y * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].deltax = htonl( (Int32)rint( M_players[i]->vel().x * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].deltay = htonl( (Int32)rint( M_players[i]->vel().y * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].body_angle = htonl( (Int32)rint( M_players[i]->angleBodyCommitted() * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].head_angle = htonl( (Int32)rint( M_players[i]->angleNeckCommitted() * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].view_width = htonl( (Int32)rint( M_players[i]->visibleAngle() * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].view_quality = htons( (Int16)rint( M_players[i]->highquality() ) );
-
-            M_dinfo2.body.show.pos[i].stamina = htonl( (Int32)rint( M_players[i]->stamina() * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].effort = htonl( (Int32)rint( M_players[i]->effort() * SHOWINFO_SCALE2 ) );
-            M_dinfo2.body.show.pos[i].recovery = htonl( (Int32)rint( M_players[i]->recovery() * SHOWINFO_SCALE2 ) );
-
-            M_dinfo2.body.show.pos[i].kick_count = htons( M_players[i]->kickCount() );
-            M_dinfo2.body.show.pos[i].dash_count = htons( M_players[i]->dashCount() );
-            M_dinfo2.body.show.pos[i].turn_count = htons( M_players[i]->turnCount() );
-            M_dinfo2.body.show.pos[i].say_count = htons( M_players[i]->sayCount() );
-            M_dinfo2.body.show.pos[i].tneck_count = htons( M_players[i]->turnNeckCount() );
-            M_dinfo2.body.show.pos[i].catch_count = htons( M_players[i]->catchCount() );
-            M_dinfo2.body.show.pos[i].move_count = htons( M_players[i]->moveCount() );
-            M_dinfo2.body.show.pos[i].chg_view_count = htons( M_players[i]->changeViewCount() );
-        }
-
-        if ( ! M_team_l->name().empty() )
-        {
-            std::strncpy( M_dinfo2.body.show.team[0].name, M_team_l->name().c_str(), 16 );
-            M_dinfo2.body.show.team[0].score = htons( M_team_l->point() );
-        }
-        else
-        {
-            std::strncpy( M_dinfo2.body.show.team[0].name, "", 16 );
-            M_dinfo2.body.show.team[0].score = htons( 0 );
-        }
-
-        if ( ! M_team_r->name().empty() )
-        {
-            std::strncpy( M_dinfo2.body.show.team[1].name, M_team_r->name().c_str(), 16 );
-            M_dinfo2.body.show.team[1].score = htons( M_team_r->point() );
-        }
-        else
-        {
-            std::strncpy( M_dinfo2.body.show.team[1].name, "", 16 );
-            M_dinfo2.body.show.team[1].score = htons( 0 );
-        }
-    }
-
-}
-
-void
 Stadium::sendToMonitors()
 {
     // send to displays
@@ -1253,20 +1127,14 @@ Stadium::sendToMonitors()
           i != M_monitors.end();
           ++i )
     {
-        if ( (*i)->version() >= 3.0 )
-        {
-            (*i)->sendShow();
-        }
-        else if ( (*i)->version() >= 2.0 )
-        {
-            (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_dinfo2 ),
-                                      sizeof( dispinfo_t2 ) );
-        }
-        else if ( (*i)->version() >= 1.0 )
-        {
-            (*i)->RemoteClient::send( reinterpret_cast< const char * >( &M_dinfo ),
-                                      sizeof( dispinfo_t ) );
-        }
+        (*i)->sendShow();
+
+        // v.2
+        // (*i)->RemoteClient::send( reinterpret_cast< const char * >( &dinfo2 ),
+        //                           sizeof( dispinfo_t2 ) );
+        // v.1
+        // (*i)->RemoteClient::send( reinterpret_cast< const char * >( &dinfo ),
+        //                           sizeof( dispinfo_t ) );
     }
 }
 
@@ -1276,47 +1144,275 @@ Stadium::writeCurrentGameLog()
     /* TH - 2-NOV-2000 */
     static bool wrote_final_cycle = false;
 
-    if ( game_log_open() )
-	  {
-        if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
-        {
-            if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
-            {
-                writeCurrentGameLogV4();
-            }
-            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
-            {
-                writeGameLog( &M_dinfo2 );
-            }
-            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_2
-                      || ServerParam::instance().gameLogVersion() == REC_OLD_VERSION )
-            {
-                writeGameLog( &M_dinfo );
-            }
+    if ( ! game_log_open() )
+    {
+        return;
+    }
+
+    if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
+    {
+        switch ( ServerParam::instance().gameLogVersion() ) {
+        case REC_VERSION_4:
+            writeGameLogV4();
+            break;
+        case REC_VERSION_3:
+            writeGameLogV3();
+            break;
+        case REC_VERSION_2:
+            writeGameLogV2();
+            break;
+        case REC_OLD_VERSION:
+            writeGameLogV1();
+            break;
+        default:
+            break;
         }
-        else if ( playmode() == PM_TimeOver && ! wrote_final_cycle )
-        {
-            if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
-            {
-                writeCurrentGameLogV4();
-            }
-            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
-            {
-                writeGameLog( &M_dinfo2 );
-            }
-            else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_2
-                      || ServerParam::instance().gameLogVersion() == REC_OLD_VERSION )
-            {
-                writeGameLog( &M_dinfo );
-            }
-            wrote_final_cycle = true;
+    }
+    else if ( playmode() == PM_TimeOver && ! wrote_final_cycle )
+    {
+        switch ( ServerParam::instance().gameLogVersion() ) {
+        case REC_VERSION_4:
+            writeGameLogV4();
+            break;
+        case REC_VERSION_3:
+            writeGameLogV3();
+            break;
+        case REC_VERSION_2:
+            writeGameLogV2();
+            break;
+        case REC_OLD_VERSION:
+            writeGameLogV1();
+            break;
+        default:
+            break;
         }
-	  }
+        wrote_final_cycle = true;
+    }
 }
 
 // TODO: replaced with DispSender
 void
-Stadium::writeCurrentGameLogV4()
+Stadium::writeGameLogV1()
+{
+    dispinfo_t disp;
+
+    disp.mode = htons( SHOW_MODE );
+
+    disp.body.show.time = htons( time() );
+
+    disp.body.show.pmode = static_cast< char >( playmode() );
+
+    disp.body.show.pos[0].x = htons( (Int16)rint( ( M_ball->pos().x * SHOWINFO_SCALE ) ) );
+    disp.body.show.pos[0].y = htons( (Int16)rint( ( M_ball->pos().y * SHOWINFO_SCALE ) ) );
+
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        disp.body.show.pos[i+1].enable = htons( M_players[i]->state() );
+        disp.body.show.pos[i+1].x = htons( (Int16)rint( M_players[i]->pos().x * SHOWINFO_SCALE ) );
+        disp.body.show.pos[i+1].y = htons( (Int16)rint( M_players[i]->pos().y * SHOWINFO_SCALE ) );
+        disp.body.show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( M_players[i]->angleBodyCommitted() ) );
+        disp.body.show.pos[i+1].side = htons( M_players[i]->team()->side() );
+        disp.body.show.pos[i+1].unum = htons( M_players[i]->unum() );
+    }
+
+    if ( ! M_team_l->name().empty() )
+    {
+        std::strncpy( disp.body.show.team[0].name,
+                      M_team_l->name().c_str(),
+                      std::min( M_team_l->name().length() + 1, size_t( 16 ) ) );
+        disp.body.show.team[0].score = htons( M_team_l->point() );
+    }
+    else
+    {
+        std::memset( &disp.body.show.team[0].name,
+                     0,
+                     sizeof( disp.body.show.team[0].name ) );
+    }
+
+    if ( ! M_team_r->name().empty() )
+    {
+        std::strncpy( disp.body.show.team[1].name,
+                      M_team_r->name().c_str(),
+                      std::min( M_team_r->name().length() + 1, size_t( 16 ) ) );
+        disp.body.show.team[1].score = htons( M_team_r->point() );
+    }
+    else
+    {
+        std::memset( &disp.body.show.team[1].name,
+                     0,
+                     sizeof( disp.body.show.team[1].name ) );
+    }
+
+    writeGameLog( reinterpret_cast< const char * >( &disp ),
+                  sizeof( dispinfo_t ) );
+}
+
+
+// TODO: replaced with DispSender
+void
+Stadium::writeGameLogV2()
+{
+    Int16 mode = htons( SHOW_MODE );
+
+    showinfo_t show;
+
+    show.time = htons( time() );
+
+    show.pmode = static_cast< char >( playmode() );
+
+    show.pos[0].x = htons( (Int16)rint( ( M_ball->pos().x * SHOWINFO_SCALE ) ) );
+    show.pos[0].y = htons( (Int16)rint( ( M_ball->pos().y * SHOWINFO_SCALE ) ) );
+
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        show.pos[i+1].enable = htons( M_players[i]->state() );
+        show.pos[i+1].x = htons( (Int16)rint( M_players[i]->pos().x * SHOWINFO_SCALE ) );
+        show.pos[i+1].y = htons( (Int16)rint( M_players[i]->pos().y * SHOWINFO_SCALE ) );
+        show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( M_players[i]->angleBodyCommitted() ) );
+        show.pos[i+1].side = htons( M_players[i]->team()->side() );
+        show.pos[i+1].unum = htons( M_players[i]->unum() );
+    }
+
+    if ( ! M_team_l->name().empty() )
+    {
+        std::strncpy( show.team[0].name,
+                      M_team_l->name().c_str(),
+                      std::min( M_team_l->name().length() + 1, size_t( 16 ) ) );
+        show.team[0].score = htons( M_team_l->point() );
+    }
+    else
+    {
+        std::memset( &show.team[0].name,
+                     0,
+                     sizeof( show.team[0].name ) );
+        show.team[0].score = htons( 0 );
+    }
+
+    if ( ! M_team_r->name().empty() )
+    {
+        std::strncpy( show.team[1].name,
+                      M_team_r->name().c_str(),
+                      std::min( M_team_r->name().length() + 1, size_t( 16 ) ) );
+        show.team[1].score = htons( M_team_r->point() );
+    }
+    else
+    {
+        std::memset( &show.team[1].name,
+                     0,
+                     sizeof( show.team[1].name ) );
+        show.team[1].score = htons( 0 );
+    }
+
+    // write a show struct
+    writeGameLog( reinterpret_cast< const char * >( &mode ),
+                  sizeof( Int16 ) );
+    writeGameLog( reinterpret_cast< const char * >( &show ),
+                  sizeof( showinfo_t ) );
+}
+
+
+// TODO: replaced with DispSender
+void
+Stadium::writeGameLogV3()
+{
+    static PlayMode pmode = PM_Null;
+    static team_t teams[2] = { { "", 0 },
+                               { "", 0 } };
+    static int score_l = 0;
+    static int score_r = 0;
+
+    Int16 mode;
+
+    // if playmode has changed wirte playmode
+    if ( pmode != playmode() )
+    {
+        pmode = playmode();
+
+        char pm = static_cast< char >( pmode );
+
+        mode = htons( PM_MODE );
+        writeGameLog( reinterpret_cast< const char * >( &mode ),
+                      sizeof( mode ) );
+        writeGameLog( reinterpret_cast< const char * >( &pm ),
+                      sizeof( char ) );
+    }
+
+    // if teams or score has changed, write teams and score
+    if ( M_team_l->point() != score_l
+         || M_team_r->point() != score_r
+         || M_team_l->name() != teams[ 0 ].name
+         || M_team_r->name() != teams[ 1 ].name )
+    {
+        score_l = M_team_l->point();
+        score_r = M_team_l->point();
+
+        std::strncpy( teams[ 0 ].name,
+                      M_team_l->name().c_str(),
+                      std::min( M_team_l->name().length() + 1, size_t( 16 ) ) );
+        teams[ 0 ].score = htons( score_l );
+
+        std::strncpy( teams[ 1 ].name,
+                      M_team_r->name().c_str(),
+                      std::min( M_team_r->name().length() + 1, size_t( 16 ) ) );
+        teams[ 1 ].score = htons( score_r );
+
+        mode = htons( TEAM_MODE );
+        writeGameLog( reinterpret_cast< const char * >( &mode ),
+                      sizeof( mode ) );
+        writeGameLog( reinterpret_cast< const char * >( teams ),
+                      sizeof( team_t ) * 2 );
+
+    }
+
+    // write positional data
+    short_showinfo_t2 show;
+
+    show.time = htons( time() );
+
+    show.ball.x = htonl( (Int32)rint( ( M_ball->pos().x * SHOWINFO_SCALE2 ) ) );
+    show.ball.y = htonl( (Int32)rint( ( M_ball->pos().y * SHOWINFO_SCALE2 ) ) );
+    show.ball.deltax = htonl( (Int32)rint( ( M_ball->vel().x * SHOWINFO_SCALE2 ) ) );
+    show.ball.deltay = htonl( (Int32)rint( ( M_ball->vel().y * SHOWINFO_SCALE2) ) );
+
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        show.pos[i].mode = htons( M_players[i]->state() );
+        show.pos[i].type = htons( M_players[i]->playerTypeId() );
+
+        show.pos[i].x = htonl( (Int32)rint( M_players[i]->pos().x * SHOWINFO_SCALE2 ) );
+        show.pos[i].y = htonl( (Int32)rint( M_players[i]->pos().y * SHOWINFO_SCALE2 ) );
+        show.pos[i].deltax = htonl( (Int32)rint( M_players[i]->vel().x * SHOWINFO_SCALE2 ) );
+        show.pos[i].deltay = htonl( (Int32)rint( M_players[i]->vel().y * SHOWINFO_SCALE2 ) );
+        show.pos[i].body_angle = htonl( (Int32)rint( M_players[i]->angleBodyCommitted() * SHOWINFO_SCALE2 ) );
+        show.pos[i].head_angle = htonl( (Int32)rint( M_players[i]->angleNeckCommitted() * SHOWINFO_SCALE2 ) );
+        show.pos[i].view_width = htonl( (Int32)rint( M_players[i]->visibleAngle() * SHOWINFO_SCALE2 ) );
+        show.pos[i].view_quality = htons( (Int16)rint( M_players[i]->highquality() ) );
+
+        show.pos[i].stamina = htonl( (Int32)rint( M_players[i]->stamina() * SHOWINFO_SCALE2 ) );
+        show.pos[i].effort = htonl( (Int32)rint( M_players[i]->effort() * SHOWINFO_SCALE2 ) );
+        show.pos[i].recovery = htonl( (Int32)rint( M_players[i]->recovery() * SHOWINFO_SCALE2 ) );
+
+        show.pos[i].kick_count = htons( M_players[i]->kickCount() );
+        show.pos[i].dash_count = htons( M_players[i]->dashCount() );
+        show.pos[i].turn_count = htons( M_players[i]->turnCount() );
+        show.pos[i].say_count = htons( M_players[i]->sayCount() );
+        show.pos[i].tneck_count = htons( M_players[i]->turnNeckCount() );
+        show.pos[i].catch_count = htons( M_players[i]->catchCount() );
+        show.pos[i].move_count = htons( M_players[i]->moveCount() );
+        show.pos[i].chg_view_count = htons( M_players[i]->changeViewCount() );
+    }
+
+    mode = htons( SHOW_MODE );
+    writeGameLog( reinterpret_cast< const char * >( &mode ),
+                  sizeof( mode ) );
+    writeGameLog( reinterpret_cast< const char * >( &show ),
+                  sizeof( short_showinfo_t2 ) );
+}
+
+
+// TODO: replaced with DispSender
+void
+Stadium::writeGameLogV4()
 {
     static char * playmode_strings[] = PLAYMODE_STRINGS;
 
@@ -1606,8 +1702,6 @@ Stadium::change_play_mode( const PlayMode pm )
     static char *PlayModeString[] = PLAYMODE_STRINGS;
 
     M_playmode = pm;
-    M_dinfo.body.show.pmode = (char)pm;
-    M_dinfo2.body.show.pmode = (char)pm;
 
     for_each( M_referees.begin(), M_referees.end(),
               Referee::doPlayModeChange( pm ) );
@@ -2068,136 +2162,20 @@ Stadium::openKawayLog()
 
 
 std::ostream &
-Stadium::writeGameLog( const char* str, std::streamsize n )
+Stadium::writeGameLog( const char * str,
+                       std::streamsize n )
 {
 #ifdef HAVE_LIBZ
     if ( ServerParam::instance().gameLogCompression() > 0 )
+    {
         return M_gz_game_log.write( str, n );
+    }
     else
 #endif
+    {
         return M_game_log.write( str, n );
-}
-
-void
-Stadium::writeGameLog( const dispinfo_t * msg )
-{
-    if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_4 )
-    {
-        std::cerr << __FILE__ << " " << __LINE__
-                  << ": dispinfo_t cannot be recorded for rcg version "
-                  << ServerParam::instance().gameLogVersion()
-                  << std::endl;
-    }
-    else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
-    {
-        // write the type of next msg
-        if ( ntohs( msg->mode ) != MSG_MODE
-             || ServerParam::instance().recordMessages() )
-        {
-            switch ( ntohs( msg->mode ) ) {
-            case SHOW_MODE:
-                // write a show struct
-                writeGameLog( reinterpret_cast< const char* >( &msg->mode ),
-                              sizeof( msg->mode ) );
-                writeGameLog( reinterpret_cast< const char* >( &msg->body.show ),
-                              sizeof( msg->body.show ) );
-                break;
-            case MSG_MODE:
-                {
-                    // it is a message write the board info
-                    writeGameLog( reinterpret_cast< const char* >( &msg->mode ),
-                                  sizeof( msg->mode ) );
-                    writeGameLog( reinterpret_cast< const char* >( &msg->body.msg.board ),
-                                  sizeof( msg->body.msg.board ) );
-
-                    // calculate the string length and write it
-                    Int16 len = 1;
-                    while ( (msg->body.msg.message[len-1] != '\0') && (len < 2048) )
-                    {
-                        ++len;
-                    }
-                    /* pfr 1/7/00 Need to put length in network byte order */
-                    Int16 nlen = htons( len );
-                    writeGameLog( reinterpret_cast< const char* >( &nlen ),
-                                  sizeof( nlen ) );
-
-                    // write the message
-                    writeGameLog( msg->body.msg.message, len );
-                }
-                break;
-            default:
-                std::cerr << "writeGameLog : unknown mode dispinfo_t " << ntohs( msg->mode )
-                          << std::endl;
-                break;
-            }
-        }
-    }
-    else
-    {
-        writeGameLog( reinterpret_cast< const char * >( msg ),
-                      sizeof( dispinfo_t ) );
     }
 }
-
-void
-Stadium::writeGameLog( const dispinfo_t2 * msg )
-{
-    Int16 mode;
-    static char pm = (char)0;
-    static team_t teams[2] = { { "", 0 },
-                               { "", 0 } };
-
-
-    // if playmode has changed wirte playmode
-    if ( pm != msg->body.show.pmode )
-    {
-        pm = msg->body.show.pmode;
-
-        mode = htons( PM_MODE );
-        writeGameLog( reinterpret_cast< const char* >( &mode ),
-                      sizeof( mode ) );
-        writeGameLog( reinterpret_cast< const char* >( &pm ),
-                      sizeof( pm ) );
-    }
-
-    // if teams or score has changed, write teams and score
-    if ( std::strlen( teams[ 0 ].name ) != std::strlen( msg->body.show.team[ 0 ].name )
-         || std::strcmp( teams[ 0 ].name, msg->body.show.team[ 0 ].name )
-         || teams[ 0 ].score != msg->body.show.team[ 0 ].score
-         || std::strlen( teams[ 1 ].name ) != std::strlen( msg->body.show.team[ 1 ].name )
-         || std::strcmp( teams[ 1 ].name, msg->body.show.team[ 1 ].name )
-         || teams[ 1 ].score != msg->body.show.team[ 1 ].score
-         )
-    {
-        std::strncpy( teams[ 0 ].name, msg->body.show.team[ 0 ].name, 16 );
-        teams[ 0 ].score = msg->body.show.team[ 0 ].score;
-        std::strncpy( teams[ 1 ].name, msg->body.show.team[ 1 ].name, 16 );
-        teams[ 1 ].score = msg->body.show.team[ 1 ].score;
-
-        mode = htons( TEAM_MODE );
-        writeGameLog( reinterpret_cast< const char* >( &mode ),
-                      sizeof( mode ) );
-        writeGameLog( reinterpret_cast< const char* >( teams ),
-                      sizeof( team_t ) * 2 );
-
-    }
-
-    // write positional data
-    short_showinfo_t2 pos_data;
-    pos_data.ball = msg->body.show.ball;
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        pos_data.pos[ i ] = msg->body.show.pos[ i ];
-    }
-    pos_data.time = msg->body.show.time;
-
-    mode = htons( SHOW_MODE );
-    writeGameLog( reinterpret_cast< const char* >( &mode ),
-                  sizeof( mode ) );
-    writeGameLog( reinterpret_cast< const char* >( &pos_data ),
-                  sizeof( pos_data ) );
-}
-
 
 void
 Stadium::writeMsgToGameLog( const BoardType board_type,
@@ -2207,7 +2185,8 @@ Stadium::writeMsgToGameLog( const BoardType board_type,
     {
         if ( ServerParam::instance().recordMessages() )
         {
-            gameLogStream() << "(msg " << board_type << ' ' << msg << ")\n";
+            gameLogStream() << "(msg " << this->time()
+                            << ' ' << board_type << ' ' << msg << ")\n";
         }
     }
     else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
@@ -2221,8 +2200,11 @@ Stadium::writeMsgToGameLog( const BoardType board_type,
             writeGameLog( reinterpret_cast< const char* >( &board ),
                           sizeof( board ) );
             // calculate the string length and write it
+
+            const Int16 max_len = static_cast< Int16 >( std::min( static_cast< int >( std::strlen( msg ) ),
+                                                                  2048 ) );
             Int16 len = 1;
-            while ( (msg[len-1] != '\0') && (len < 2048) )
+            while ( (msg[len-1] != '\0') && (len < max_len) )
             {
                 ++len;
             }
@@ -2246,11 +2228,12 @@ Stadium::writeMsgToGameLog( const BoardType board_type,
         writeGameLog( reinterpret_cast< const char * >( &disp ),
                       sizeof( dispinfo_t ) );
     }
-
 }
 
+
 void
-Stadium::writeTextLog( const char * message, int flag )
+Stadium::writeTextLog( const char * message,
+                       const int flag )
 {
     if ( flag == RECV )
     {
@@ -2288,7 +2271,6 @@ Stadium::writeTextLog( const char * message, int flag )
         }
     }
 }
-
 
 
 void
@@ -2348,7 +2330,8 @@ Stadium::writeTextLog( const OnlineCoach & p,
 
 // th 6.3.00
 void
-Stadium::write_times( timeval tp_new, timeval tp_old )
+Stadium::write_times( const timeval & tp_new,
+                      const timeval & tp_old )
 {
     if ( text_log_open()
          && ServerParam::instance().logTimes() )
@@ -2359,10 +2342,11 @@ Stadium::write_times( timeval tp_new, timeval tp_old )
         text_log_stream() << time() << "\tCYCLE_TIMES: " << diff << std::endl;
     }
 }
-//
 
 void
-Stadium::write_profile( timeval tv_start, timeval tv_end, char* str )
+Stadium::write_profile( const timeval & tv_start,
+                        const timeval & tv_end,
+                        const char * str )
 {
     if ( text_log_open()
          && ServerParam::instance().profile() )
@@ -2959,7 +2943,9 @@ Stadium::removeDisconnectedClients()
             i = M_remote_players.erase( i );
         }
         else
+        {
             ++i;
+        }
     }
 
     for ( OfflineCoachCont::iterator i = M_remote_offline_coaches.begin();
@@ -2972,7 +2958,9 @@ Stadium::removeDisconnectedClients()
             i = M_remote_offline_coaches.erase( i );
         }
         else
+        {
             ++i;
+        }
     }
 
     for ( OnlineCoachCont::iterator i = M_remote_online_coaches.begin();
@@ -2985,7 +2973,9 @@ Stadium::removeDisconnectedClients()
             i = M_remote_online_coaches.erase( i );
         }
         else
+        {
             ++i;
+        }
     }
 
     for ( MonitorCont::iterator i = M_monitors.begin();
@@ -2993,25 +2983,14 @@ Stadium::removeDisconnectedClients()
     {
         if ( ! (*i)->connected() )
         {
-            if ( (*i)->version() >= 3.0 )
-            {
-
-            }
-            else if ( (*i)->version() >= 2.0 )
-            {
-                --M_nr_monitor_v2;
-            }
-            else if ( (*i)->version() >= 1.0 )
-            {
-                --M_nr_monitor_v1;
-            }
-
             delete *i;
             i = M_monitors.erase( i );
             std::cout << "A monitor disconnected\n";
         }
         else
+        {
             ++i;
+        }
     }
 }
 
@@ -3284,10 +3263,11 @@ Stadium::doRecvFromClients()
         }
     }
 
-    if ( text_log_open() && ServerParam::instance().profile() )
+    if ( text_log_open()
+         && ServerParam::instance().profile() )
     {
-        gettimeofday ( &tv_end, NULL );
-        write_profile ( tv_start, tv_end, "RECV" );
+        gettimeofday( &tv_end, NULL );
+        write_profile( tv_start, tv_end, "RECV" );
     }
 }
 

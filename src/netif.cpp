@@ -256,7 +256,6 @@ Stadium::parseMonitorInit( const char * message,
         std::cout << "a new (v1) monitor connected\n";
         mon->setEnforceDedicatedPort( false );
         M_monitors.push_back( mon );
-        ++M_nr_monitor_v1;
         return true;
     }
     else if ( std::sscanf( message, "(dispinit version %lf)", &ver ) == 1 )
@@ -302,12 +301,11 @@ Stadium::parseMonitorInit( const char * message,
         }
         else if ( ver >= 2.0 )
         {
-            ++M_nr_monitor_v2;
             mon->sendInit();
         }
         else if ( ver >= 1.0 )
         {
-            ++M_nr_monitor_v1;
+            // nothing to do
         }
         return true;
     }
