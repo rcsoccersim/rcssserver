@@ -127,14 +127,22 @@ private:
 
 class InitSender
     : protected Sender {
+private:
+    boost::shared_ptr< InitSenderCommon > m_common_sender;
+
 protected:
 
-    InitSender( std::ostream& transport,
+    InitSender( std::ostream & transport,
                 const boost::shared_ptr< InitSenderCommon >& common );
 
 public:
     virtual
     ~InitSender();
+
+    InitSenderCommon & commonSender()
+      {
+          return *m_common_sender;
+      }
 
     virtual
     void sendInit() = 0;
@@ -165,14 +173,6 @@ public:
 
     virtual
     void sendScore() = 0;
-
-    InitSenderCommon & commonSender()
-      {
-          return *m_common_sender;
-      }
-
-private:
-    boost::shared_ptr< InitSenderCommon > m_common_sender;
 };
 
 /*!
@@ -394,8 +394,7 @@ public:
 */
 
 class InitSenderPlayer
-    : public InitSender
-{
+    : public InitSender {
 public:
     class Params {
     public:

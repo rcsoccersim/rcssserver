@@ -70,7 +70,7 @@ DispSender::~DispSender()
 //
 //  CLASS: DispSenderMonitor
 //
-//  DESC: Base class for the display protocol for players.
+//  DESC: Base class for the display protocol for monitors.
 //
 //===================================================================
 */
@@ -514,6 +514,178 @@ DispSenderMonitorV3::sendMsg()
 }
 
 
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderLogger
+//
+//  DESC: Base class for the display protocol for logger.
+//
+//===================================================================
+*/
+
+DispSenderLogger::Factory &
+DispSenderLogger::factory()
+{
+    static Factory rval;
+    return rval;
+}
+
+DispSenderLogger::DispSenderLogger( const Params & params )
+    : DispSender( params.M_transport )
+    , M_serializer( params.M_serializer )
+    , M_self( params.M_self )
+    , M_stadium( params.M_stadium )
+{
+
+}
+
+DispSenderLogger::~DispSenderLogger()
+{
+
+}
+
+
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderLoggerV1
+//
+//  DESC: version 1 log format
+//
+//===================================================================
+*/
+
+
+DispSenderLoggerV1::DispSenderLoggerV1( const Params & params )
+    : DispSenderLogger( params )
+{
+
+}
+
+DispSenderLoggerV1::~DispSenderLoggerV1()
+{
+
+}
+
+void
+DispSenderLoggerV1::sendShow()
+{
+
+}
+
+void
+DispSenderLoggerV1::sendMsg()
+{
+
+}
+
+
+
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderLoggerV2
+//
+//  DESC: version 2 log format
+//
+//===================================================================
+*/
+
+
+DispSenderLoggerV2::DispSenderLoggerV2( const Params & params )
+    : DispSenderLoggerV1( params )
+{
+
+}
+
+DispSenderLoggerV2::~DispSenderLoggerV2()
+{
+
+}
+
+void
+DispSenderLoggerV2::sendShow()
+{
+
+}
+
+void
+DispSenderLoggerV2::sendMsg()
+{
+
+}
+
+
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderLoggerV3
+//
+//  DESC: version 3 log format
+//
+//===================================================================
+*/
+
+
+DispSenderLoggerV3::DispSenderLoggerV3( const Params & params )
+    : DispSenderLoggerV2( params )
+{
+
+}
+
+DispSenderLoggerV3::~DispSenderLoggerV3()
+{
+
+}
+
+void
+DispSenderLoggerV3::sendShow()
+{
+
+}
+
+void
+DispSenderLoggerV3::sendMsg()
+{
+
+}
+
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderLoggerV4
+//
+//  DESC: version 4 log format
+//
+//===================================================================
+*/
+
+
+DispSenderLoggerV4::DispSenderLoggerV4( const Params & params )
+    : DispSenderLoggerV3( params )
+{
+
+}
+
+DispSenderLoggerV4::~DispSenderLoggerV4()
+{
+
+}
+
+void
+DispSenderLoggerV4::sendShow()
+{
+
+}
+
+void
+DispSenderLoggerV4::sendMsg()
+{
+
+}
+
+
 namespace dispsender {
 
 template< typename Sender >
@@ -526,6 +698,19 @@ create( const DispSenderMonitor::Params & params )
 lib::RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV1 >, 1 );
 lib::RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
 lib::RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
+
+
+template< typename Sender >
+DispSenderLogger::Ptr
+create( const DispSenderLogger::Params & params )
+{
+    return DispSenderLogger::Ptr( new Sender( params ) );
+}
+
+lib::RegHolder vl1 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV1 >, 1 );
+lib::RegHolder vl2 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV2 >, 2 );
+lib::RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 3 );
+lib::RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 4 );
 
 }
 }

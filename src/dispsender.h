@@ -28,6 +28,7 @@
 #include <rcssbase/lib/factory.hpp>
 
 class Stadium;
+class Logger;
 class Monitor;
 
 namespace rcss {
@@ -54,6 +55,10 @@ public:
     void sendMsg() = 0;
 
 };
+
+//===================================================================
+//===================================================================
+//===================================================================
 
 /*!
   \class DispSenderMonitor
@@ -113,7 +118,9 @@ protected:
 
     const
     Monitor & self() const
-      { return M_self; }
+      {
+          return M_self;
+      }
 
     const
     Stadium & stadium() const
@@ -126,11 +133,10 @@ protected:
 
 /*!
   \class ObserverMonitor
-  \brief Interface for players that receives display information.
+  \brief Interface for monitors to send display information.
 */
 class ObserverMonitor
-    : protected BaseObserver< DispSenderMonitor >
-{
+    : protected BaseObserver< DispSenderMonitor > {
 public:
 
     ObserverMonitor()
@@ -234,6 +240,205 @@ public:
 
 };
 
+
+//===================================================================
+//===================================================================
+//===================================================================
+
+class DispSenderLogger
+    : public DispSender {
+public:
+
+    class Params {
+    public:
+        std::ostream & M_transport;
+        const Logger & M_self;
+        const SerializerMonitor & M_serializer;
+        const Stadium & M_stadium;
+
+        Params( std::ostream & transport,
+                const Logger & self,
+                const SerializerMonitor & serializer,
+                const Stadium & stadium )
+            : M_transport( transport )
+            , M_self( self )
+            , M_serializer( serializer )
+            , M_stadium( stadium )
+          { }
+    };
+
+private:
+    const SerializerMonitor & M_serializer;
+
+    /*:TODO: M_self needs to be replaced with a reference to a
+      Observer and Observer should have virtual functions for
+      stuff like velocity, stamina, etc */
+    const Logger & M_self;
+    const Stadium & M_stadium;
+
+public:
+    typedef std::auto_ptr< DispSenderLogger > Ptr;
+    typedef Ptr (*Creator)( const DispSenderLogger::Params & );
+    typedef rcss::lib::Factory< Creator, int > Factory;
+
+    static
+    Factory & factory();
+
+    DispSenderLogger( const Params & params );
+
+    ~DispSenderLogger();
+
+protected:
+
+    const
+    SerializerMonitor & serializer() const
+      {
+          return M_serializer;
+      }
+
+    const
+    Logger & self() const
+      {
+          return M_self;
+      }
+
+    const
+    Stadium & stadium() const
+      {
+          return M_stadium;
+      }
+
+};
+
+/*!
+  \class ObserverMonitor
+  \brief Interface for logger to recorde the display information.
+*/
+class ObserverLogger
+    : protected BaseObserver< DispSenderLogger > {
+public:
+
+    ObserverLogger()
+      { }
+
+    ObserverLogger( DispSenderLogger & sender )
+        : BaseObserver< DispSenderLogger >( sender )
+      { }
+
+    ObserverLogger( std::auto_ptr< DispSenderLogger > sender )
+        : BaseObserver< DispSenderLogger >( sender )
+      { }
+
+    ~ObserverLogger()
+      { }
+
+    void setDispSender( DispSenderLogger & sender )
+      {
+          BaseObserver< DispSenderLogger >::setSender( sender );
+      }
+
+    void setDispSender( std::auto_ptr< DispSenderLogger > sender )
+      {
+          BaseObserver< DispSenderLogger >::setSender( sender );
+      }
+
+    void sendShow()
+      {
+          BaseObserver< DispSenderLogger >::sender().sendShow();
+      }
+
+    void sendMsg()
+      {
+          BaseObserver< DispSenderLogger >::sender().sendMsg();
+      }
+};
+
+
+/*!
+  \class DispSenderLoggerV1
+  \brief class for the log version 1
+ */
+class DispSenderLoggerV1
+    : public DispSenderLogger {
+public:
+
+    DispSenderLoggerV1( const Params & params );
+
+    virtual
+    ~DispSenderLoggerV1();
+
+    virtual
+    void sendShow();
+
+    virtual
+    void sendMsg();
+
+};
+
+
+/*!
+  \class DispSenderLoggerV2
+  \brief class for the log version 2
+ */
+class DispSenderLoggerV2
+    : public DispSenderLoggerV1 {
+public:
+
+    DispSenderLoggerV2( const Params & params );
+
+    virtual
+    ~DispSenderLoggerV2();
+
+    virtual
+    void sendShow();
+
+    virtual
+    void sendMsg();
+
+};
+
+
+/*!
+  \class DispSenderLoggerV3
+  \brief class for the log version 3
+ */
+class DispSenderLoggerV3
+    : public DispSenderLoggerV2 {
+public:
+
+    DispSenderLoggerV3( const Params & params );
+
+    virtual
+    ~DispSenderLoggerV3();
+
+    virtual
+    void sendShow();
+
+    virtual
+    void sendMsg();
+
+};
+
+/*!
+  \class DispSenderLoggerV4
+  \brief class for the log version 4
+ */
+class DispSenderLoggerV4
+    : public DispSenderLoggerV3 {
+public:
+
+    DispSenderLoggerV4( const Params & params );
+
+    virtual
+    ~DispSenderLoggerV4();
+
+    virtual
+    void sendShow();
+
+    virtual
+    void sendMsg();
+
+};
 
 }
 

@@ -26,8 +26,7 @@
 #include <iosfwd>
 
 
-namespace rcss
-{
+namespace rcss {
 
 /*!
 //===================================================================
@@ -39,8 +38,7 @@ namespace rcss
 //===================================================================
 */
 
-class Sender
-{
+class Sender {
 private:
     std::ostream & M_transport;
 
@@ -55,6 +53,7 @@ public:
         : M_transport( transport )
       { }
 };
+
 }
 
 #endif

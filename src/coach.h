@@ -129,7 +129,7 @@ public:
                   send( "(warning message_not_null_terminated)" );
               str[ len ] = 0;
           }
-          M_stadium.writeTextLog(  *this, str, RECV );
+          M_stadium.writeCoachLog( str, RECV );
           parse_command( str );
       }
 
@@ -229,7 +229,7 @@ public:
       {
           if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
           {
-              M_stadium.writeTextLog( *this, msg, SEND );
+              M_stadium.writeOnlineCoachLog( *this, msg, SEND );
           }
           else
           {
@@ -252,7 +252,7 @@ public:
                   send( "(warning message_not_null_terminated)" );
               str[ len ] = 0;
           }
-          M_stadium.writeTextLog( *this, str, RECV );
+          M_stadium.writeOnlineCoachLog( *this, str, RECV );
           parse_command( str );
       }
 

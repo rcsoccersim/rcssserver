@@ -51,8 +51,6 @@
 #include "player.h"
 #include "random.h"
 #include "referee.h"
-#include "remoteclient.h"
-#include "serializer.h"
 #include "serverparam.h"
 #include "types.h"
 #include "utility.h"
@@ -74,7 +72,6 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <fstream>
 #include <algorithm>
 
 #include <cmath>
@@ -84,8 +81,8 @@
 #include <cctype>
 #include <cerrno>
 
-#include <unistd.h>
-#include <strings.h>
+//#include <unistd.h>
+//#include <strings.h>
 #include <sys/time.h>
 #include <netinet/in.h>
 
@@ -1144,7 +1141,7 @@ Stadium::writeCurrentGameLog()
     /* TH - 2-NOV-2000 */
     static bool wrote_final_cycle = false;
 
-    if ( ! game_log_open() )
+    if ( ! isGameLogOpen() )
     {
         return;
     }
@@ -1975,7 +1972,7 @@ Stadium::openTextLog()
         M_text_log.open( M_text_log_name.c_str() );
     }
 
-    if ( ! text_log_open() )
+    if ( ! isTextLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": can't open log_file " << M_text_log_name << std::endl;
@@ -2036,7 +2033,7 @@ Stadium::openGameLog()
                                                     | std::ofstream::trunc ) );
     }
 
-    if ( ! game_log_open() )
+    if ( ! isGameLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": can't open record_file " << M_game_log_name << std::endl;
@@ -2237,14 +2234,14 @@ Stadium::writeTextLog( const char * message,
 {
     if ( flag == RECV )
     {
-        if ( text_log_open() )
+        if ( isTextLogOpen() )
         {
-            text_log_stream() << time() << "\t" << message;
+            textLogStream() << time() << "\t" << message;
         }
     }
 
     if ( ( flag == RECV || flag == SUBS )
-         && ( ( game_log_open()
+         && ( ( isGameLogOpen()
                 && ServerParam::instance().recordMessages() )
               || ServerParam::instance().sendComms() )
          )
@@ -2263,7 +2260,7 @@ Stadium::writeTextLog( const char * message,
             }
         }
 
-        if ( game_log_open()
+        if ( isGameLogOpen()
              && ServerParam::instance().recordMessages()
              && playmode() != PM_TimeOver )
         {
@@ -2274,12 +2271,12 @@ Stadium::writeTextLog( const char * message,
 
 
 void
-Stadium::writeTextLog( const Player & p,
-                       const char * message,
-                       const int flag )
+Stadium::writePlayerLog( const Player & p,
+                         const char * message,
+                         const int flag )
 {
-    if ( text_log_open()
-         || ( game_log_open() && flag == RECV )
+    if ( isTextLogOpen()
+         || ( isGameLogOpen() && flag == RECV )
          || ( ServerParam::instance().sendComms() && flag == RECV ) )
     {
         char tmp[MaxMesg];
@@ -2292,12 +2289,11 @@ Stadium::writeTextLog( const Player & p,
 }
 
 void
-Stadium::writeTextLog( const Coach &,
-                       const char * message,
-                       const int flag )
+Stadium::writeCoachLog( const char * message,
+                        const int flag )
 {
-    if ( text_log_open()
-         || ( game_log_open() && flag == RECV )
+    if ( isTextLogOpen()
+         || ( isGameLogOpen() && flag == RECV )
          || ( ServerParam::instance().sendComms() && flag == RECV ) )
     {
         char tmp[MaxMesg];
@@ -2310,12 +2306,12 @@ Stadium::writeTextLog( const Coach &,
 }
 
 void
-Stadium::writeTextLog( const OnlineCoach & p,
-                       const char * message,
-                       const int flag )
+Stadium::writeOnlineCoachLog( const OnlineCoach & p,
+                              const char * message,
+                              const int flag )
 {
-    if ( text_log_open()
-         || ( game_log_open() && flag == RECV )
+    if ( isTextLogOpen()
+         || ( isGameLogOpen() && flag == RECV )
          || ( ServerParam::instance().sendComms() && flag == RECV ) )
     {
         char tmp[MaxMesg];
@@ -2330,16 +2326,17 @@ Stadium::writeTextLog( const OnlineCoach & p,
 
 // th 6.3.00
 void
-Stadium::write_times( const timeval & tp_new,
-                      const timeval & tp_old )
+Stadium::write_times( const timeval & tp_old,
+                      const timeval & tp_new )
+
 {
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().logTimes() )
     {
         double diff = (tp_new.tv_sec - tp_old.tv_sec) * 1000
             + (double)(tp_new.tv_usec - tp_old.tv_usec) / 1000;
 
-        text_log_stream() << time() << "\tCYCLE_TIMES: " << diff << std::endl;
+        textLogStream() << time() << "\tCYCLE_TIMES: " << diff << std::endl;
     }
 }
 
@@ -2348,13 +2345,13 @@ Stadium::write_profile( const timeval & tv_start,
                         const timeval & tv_end,
                         const char * str )
 {
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         double diff = (tv_end.tv_sec - tv_start.tv_sec) * 1000
             + (double)(tv_end.tv_usec - tv_start.tv_usec) / 1000;
 
-        text_log_stream() << time() << "\t" << str << ": " << diff << std::endl;
+        textLogStream() << time() << "\t" << str << ": " << diff << std::endl;
     }
 }
 
@@ -2425,7 +2422,7 @@ Stadium::renameLogs()
         team_name_score += "null";
     }
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ! ServerParam::instance().textLogFixed() )
     {
         std::string newname = ServerParam::instance().textLogDir();
@@ -2455,7 +2452,7 @@ Stadium::renameLogs()
         M_text_log_name = newname;
     }
 
-    if ( game_log_open()
+    if ( isGameLogOpen()
          && ! ServerParam::instance().gameLogFixed() )
     {
         std::string newname = ServerParam::instance().gameLogDir();
@@ -3031,7 +3028,7 @@ Stadium::sendCoachAudio( const Coach & coach,
     }
 
 
-    if ( ( game_log_open()
+    if ( ( isGameLogOpen()
            && ServerParam::instance().recordMessages() )
          || ServerParam::instance().sendComms() )
 	  {
@@ -3055,7 +3052,7 @@ Stadium::sendCoachAudio( const Coach & coach,
             }
         }
 
-        if ( game_log_open()
+        if ( isGameLogOpen()
              && ServerParam::instance().recordMessages() )
         {
             if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
@@ -3082,7 +3079,7 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
     }
 
 
-    if ( ( game_log_open()
+    if ( ( isGameLogOpen()
            && ServerParam::instance().recordMessages() )
          || ServerParam::instance().sendComms() )
     {
@@ -3126,7 +3123,7 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
             }
         }
 
-        if ( game_log_open()
+        if ( isGameLogOpen()
              && ServerParam::instance().recordMessages() )
         {
             if ( playmode() != PM_BeforeKickOff
@@ -3155,7 +3152,7 @@ Stadium::sendPlayerAudio( const Player & player,
     }
 
 
-    if ( ( game_log_open()
+    if ( ( isGameLogOpen()
            && ServerParam::instance().recordMessages() )
          || ServerParam::instance().sendComms() )
     {
@@ -3176,7 +3173,7 @@ Stadium::sendPlayerAudio( const Player & player,
             }
         }
 
-        if ( game_log_open()
+        if ( isGameLogOpen()
              && ServerParam::instance().recordMessages() )
         {
             if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
@@ -3193,7 +3190,7 @@ Stadium::doRecvFromClients()
 {
     timeval tv_start, tv_end;
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_start, NULL );
@@ -3263,7 +3260,7 @@ Stadium::doRecvFromClients()
         }
     }
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_end, NULL );
@@ -3278,7 +3275,7 @@ Stadium::doNewSimulatorStep()
     timeval tp_new, tv_start, tv_end;
 
     // th 6.3.00
-    if ( text_log_open() )
+    if ( isTextLogOpen() )
     {
         if ( ServerParam::instance().logTimes() )
         {
@@ -3286,7 +3283,7 @@ Stadium::doNewSimulatorStep()
             //  write_times displays nonsense at first call, since tp_old is never
             //  initialized. Don't want to handle special exception for first call.
             gettimeofday( &tp_new, NULL );
-            write_times( tp_new, tp_old );
+            write_times( tp_old, tp_new );
             gettimeofday( &tp_old, NULL );
         }
 
@@ -3331,7 +3328,7 @@ Stadium::doNewSimulatorStep()
         }
     }
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_end, NULL );
@@ -3343,7 +3340,7 @@ void
 Stadium::doSendSenseBody()
 {
     struct timeval tv_start, tv_end;
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_start, NULL );
@@ -3388,7 +3385,7 @@ Stadium::doSendSenseBody()
     //
     // write profile
     //
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_end, NULL );
@@ -3401,7 +3398,7 @@ Stadium::doSendVisuals()
 {
     struct timeval tv_start, tv_end;
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_start, NULL );
@@ -3422,7 +3419,7 @@ Stadium::doSendVisuals()
         }
     }
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_end, NULL );
@@ -3435,7 +3432,7 @@ Stadium::doSendSynchVisuals()
 {
     struct timeval tv_start, tv_end;
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_start, NULL );
@@ -3456,7 +3453,7 @@ Stadium::doSendSynchVisuals()
         }
     }
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_end, NULL );
@@ -3468,7 +3465,7 @@ void
 Stadium::doSendCoachMessages()
 {
     struct timeval tv_start, tv_end;
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday ( &tv_start, NULL );
@@ -3488,7 +3485,7 @@ Stadium::doSendCoachMessages()
         }
     }
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_end, NULL );
@@ -3661,12 +3658,12 @@ Stadium::doSendThink()
         cycles_missed = 0;
     }
 
-    if ( text_log_open()
+    if ( isTextLogOpen()
          && ServerParam::instance().logTimes() )
     {
-        text_log_stream() << time()
-                          << "  Num sleeps called: "
-                          << num_sleeps << std::endl;
+        textLogStream() << time()
+                        << "\tNum sleeps called: "
+                        << num_sleeps << std::endl;
     }
 
     if ( shutdown )

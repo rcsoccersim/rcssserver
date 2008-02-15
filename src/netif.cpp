@@ -207,7 +207,7 @@ Stadium::parsePlayerInit( const char * message,
             Player * p = reconnectPlayer( message, cli_addr );
             if ( p )
             {
-                writeTextLog( *p, message, RECV );
+                writePlayerLog( *p, message, RECV );
             }
 				}
 		}
@@ -217,7 +217,7 @@ Stadium::parsePlayerInit( const char * message,
         Player * p = initPlayer( message, cli_addr );
         if ( p )
         {
-            writeTextLog( *p, message, RECV );
+            writePlayerLog( *p, message, RECV );
         }
     }
     else
@@ -397,7 +397,7 @@ Stadium::parseCoachInit( const char * message,
         {
             std::cout << "a new (v" << coach->version()
                       << ") offline coach connected" << std::endl;
-            writeTextLog( *M_coach, message, RECV );
+            writeCoachLog( message, RECV );
         }
     }
     else
@@ -405,7 +405,7 @@ Stadium::parseCoachInit( const char * message,
         _Start( *this ); // need to remove this line if we
         // dont want the server to start when the coach connects
         M_coach->parse_command( message );
-        writeTextLog( *M_coach, message, RECV );
+        writeCoachLog( message, RECV );
     }
 
     return true;
@@ -476,7 +476,7 @@ Stadium::parseOnlineCoachInit( const char * message,
         OnlineCoach * olc = initOnlineCoach( message, addr );
         if ( olc )
         {
-            writeTextLog( *olc, message, RECV );
+            writeOnlineCoachLog( *olc, message, RECV );
         }
     }
     else
@@ -500,8 +500,8 @@ Stadium::say( const char *message, bool ref )
 
     //    send_audio_info(message, NULL, FALSE, standard) ;
 
-    if ( text_log_open()
-         || game_log_open()
+    if ( isTextLogOpen()
+         || isGameLogOpen()
          || ServerParam::instance().sendComms() )
 	  {
         char buf[max_message_length_for_display];
@@ -510,9 +510,9 @@ Stadium::say( const char *message, bool ref )
                        "(%s %s)",
                        REFEREE_NAME, message );
         // write to text log
-        if ( text_log_open() )
+        if ( isTextLogOpen() )
 	      {
-            text_log_stream() << time() << "\t" << buf << '\n';
+            textLogStream() << time() << "\t" << buf << '\n';
 	      }
 
         // send to monitors
@@ -527,7 +527,7 @@ Stadium::say( const char *message, bool ref )
         }
 
         // write to game log
-        if ( game_log_open() )
+        if ( isGameLogOpen() )
         {
             if ( playmode() != PM_BeforeKickOff
                  && playmode() != PM_TimeOver )

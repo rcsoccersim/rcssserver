@@ -54,7 +54,7 @@
 #include <algorithm>
 #include <memory>
 #include <cstdio>
-#include <sys/time.h>
+//#include <sys/time.h>
 
 class HeteroPlayer;
 
@@ -65,6 +65,8 @@ class OnlineCoach;
 class Team;
 
 class Referee;
+
+struct timeval;
 
 namespace rcss
 {
@@ -142,13 +144,6 @@ protected:
     bool doSendThink();
     void doQuit();
 
-    static const std::string DEF_TEXT_NAME;
-    static const std::string DEF_TEXT_SUFFIX;
-    static const std::string DEF_GAME_NAME;
-    static const std::string DEF_GAME_SUFFIX;
-    static const std::string DEF_KAWAY_NAME;
-    static const std::string DEF_KAWAY_SUFFIX;
-
 protected:
     bool M_alive;
 
@@ -187,6 +182,14 @@ protected:
     const Player * M_ball_catcher; /* goalie who has caught ball */
 
     Side M_kick_off_side;
+
+
+    static const std::string DEF_TEXT_NAME;
+    static const std::string DEF_TEXT_SUFFIX;
+    static const std::string DEF_GAME_NAME;
+    static const std::string DEF_GAME_SUFFIX;
+    static const std::string DEF_KAWAY_NAME;
+    static const std::string DEF_KAWAY_SUFFIX;
 
     std::string M_text_log_name;
     std::string M_game_log_name;
@@ -251,13 +254,13 @@ public:
           return M_weather;
       }
 
-    bool text_log_open()
+    bool isTextLogOpen()
       {
           return ( M_text_log.is_open()
                    || M_gz_text_log.is_open() );
       }
 
-    std::ostream& text_log_stream()
+    std::ostream & textLogStream()
       {
           if ( ServerParam::instance().textLogCompression() > 0 )
               return M_gz_text_log;
@@ -282,14 +285,13 @@ public:
           return M_kaway_log;
       }
 
-    bool game_log_open()
+    bool isGameLogOpen()
       {
           return ( M_game_log.is_open()
                    || M_gz_game_log.is_open() );
       }
 
-    void
-    flushLogs()
+    void flushLogs()
       {
           M_text_log.flush();
           M_game_log.flush();
@@ -539,21 +541,22 @@ public:
 
     void writeTextLog( const char * message,
                        const int flag );
-    void writeTextLog( const Player & p,
-                       const char * message,
-                       const int flag );
-    void writeTextLog( const Coach &,
-                       const char * message,
-                       const int flag );
-    void writeTextLog( const OnlineCoach & p,
-                       const char * message,
-                       const int flag );
+
+    void writePlayerLog( const Player & p,
+                         const char * message,
+                         const int flag );
+    void writeCoachLog( const char * message,
+                        const int flag );
+    void writeOnlineCoachLog( const OnlineCoach & p,
+                              const char * message,
+                              const int flag );
 private:
-    void write_times( const timeval &,
-                      const timeval & );
-    void write_profile( const timeval &,
-                        const timeval &,
-                        const char * );
+    void write_times( const timeval & tp_old,
+                      const timeval & tp_new );
+
+    void write_profile( const timeval & tv_start,
+                        const timeval & tv_end,
+                        const char * str );
 
     void assignPlayerTypes();
 public:

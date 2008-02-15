@@ -1,5 +1,23 @@
 2008-02-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/Makefile.am:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/dispsender.cpp:
+	* src/dispsender.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/initsender.h:
+	* src/main.cpp:
+	* src/netif.cpp:
+	* src/observer.h:
+	* src/player.h:
+	* src/sender.h:
+	- added Logger class.
+	- impllemented DispSenderLogger.
+
 	* src/bodysender.cpp:
 	* src/coach.cpp:
 	* src/field.cpp:

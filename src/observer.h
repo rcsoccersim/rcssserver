@@ -40,8 +40,7 @@ namespace rcss
 */
 
 template < class S >
-class BaseObserver
-{
+class BaseObserver {
 public:
     typedef S Sender;
 private:
@@ -54,7 +53,7 @@ public:
           M_owns_sender( false )
       {}
 
-    BaseObserver( Sender& sender )
+    BaseObserver( Sender & sender )
         : M_sender( &sender ),
           M_owns_sender( false )
       {}
@@ -71,7 +70,7 @@ public:
       }
 
     void
-    setSender( Sender& sender )
+    setSender( Sender & sender )
       {
           clear();
           M_sender = &sender;
@@ -86,39 +85,41 @@ public:
           M_owns_sender = true;
       }
 
-    Sender&
-    sender()
+    Sender & sender()
       {
-          if( M_sender == NULL )
+          if ( M_sender == NULL )
+          {
               throw util::NullErr( __FILE__, __LINE__,
                                    "Sender is null" );
+          }
           return *M_sender;
       }
 
-    const Sender&
-    sender() const
+    const
+    Sender & sender() const
       {
-          if( M_sender == NULL )
+          if ( M_sender == NULL )
+          {
               throw util::NullErr( __FILE__, __LINE__,
                                    "Sender is null" );
+          }
           return *M_sender;
       }
 
 private:
-    void
-    clear()
+    void clear()
       {
-          if( M_owns_sender )
+          if ( M_owns_sender )
           {
               delete M_sender;
               M_sender = NULL;
           }
       }
 
-    BaseObserver( const BaseObserver& ); // not used;
+    BaseObserver( const BaseObserver & ); // not used;
 
-    BaseObserver&
-    operator=( const BaseObserver& ); // not used;
+    BaseObserver &
+    operator=( const BaseObserver & ); // not used;
 };
 }
 

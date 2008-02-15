@@ -318,7 +318,7 @@ Coach::send( const char* msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.writeTextLog( *this, msg, SEND );
+        M_stadium.writeCoachLog( msg, SEND );
     }
 }
 

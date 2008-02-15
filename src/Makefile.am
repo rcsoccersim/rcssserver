@@ -196,6 +196,8 @@ player_command_tok.h \
 player_command_tok.cpp \
 player.h \
 player.cpp \
+logger.h \
+logger.cpp \
 monitor.h \
 monitor.cpp \
 arm.h \

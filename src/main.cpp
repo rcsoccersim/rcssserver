@@ -100,7 +100,6 @@ main( int argc, char *argv[] )
 
     if ( ! ServerParam::init( argc, argv ) )
     {
-        std::cerr << "failed to init ServerParam" << std::endl;
         return 1;
     }
 
