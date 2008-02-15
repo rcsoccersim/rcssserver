@@ -27,6 +27,7 @@
 #include "monitor.h"
 
 #include "initsendermonitor.h"
+#include "dispsender.h"
 #include "serializermonitor.h"
 
 #include "field.h"
@@ -73,6 +74,7 @@ chop_last_parenthesis( char * str,
 Monitor::Monitor( Stadium & stadium,
                   const double & version )
     : M_init_observer( new rcss::InitObserverMonitor ),
+      M_observer( new rcss::ObserverMonitor ),
       M_stadium( stadium ),
       M_version ( version ),
       M_playmode( PM_Null ),
@@ -108,18 +110,40 @@ Monitor::setSenders()
         return false;
     }
 
-    rcss::InitSenderMonitor::Params init_params( getTransport(),
-                                                 *this,
-                                                 *ser,
-                                                 M_stadium );
-    rcss::InitSenderMonitor::Creator init_cre;
-    if ( ! rcss::InitSenderMonitor::factory().getCreator( init_cre,
-                                                          (int)version() ) )
+    //
+    // disp sender
+    //
     {
-        return false;
+        rcss::DispSenderMonitor::Params disp_params( getTransport(),
+                                                     *this,
+                                                     *ser,
+                                                     M_stadium );
+        rcss::DispSenderMonitor::Creator disp_cre;
+        if ( ! rcss::DispSenderMonitor::factory().getCreator( disp_cre,
+                                                              (int)version() ) )
+        {
+            std::cerr << "failed to create DispSenderMonitor" << std::endl;
+            return false;
+        }
+        M_observer->setDispSender( disp_cre( disp_params ) );
     }
-    M_init_observer->setInitSender( init_cre( init_params ) );
 
+    //
+    // init sender
+    //
+    {
+        rcss::InitSenderMonitor::Params init_params( getTransport(),
+                                                     *this,
+                                                     *ser,
+                                                     M_stadium );
+        rcss::InitSenderMonitor::Creator init_cre;
+        if ( ! rcss::InitSenderMonitor::factory().getCreator( init_cre,
+                                                              (int)version() ) )
+        {
+            return false;
+        }
+        M_init_observer->setInitSender( init_cre( init_params ) );
+    }
 
     return true;
 }
@@ -169,6 +193,15 @@ Monitor::sendScore()
 }
 
 void
+Monitor::sendTeamGraphic( const Side,
+                          const unsigned int,
+                          const unsigned int,
+                          const XPMHolder * )
+{
+    // M_init_observer->sendTeamGraphic( side, x, y, holder );
+}
+
+void
 Monitor::sendShow()
 {
     if ( version() < 3.0 )
@@ -179,100 +212,102 @@ Monitor::sendShow()
     sendPlayMode();
     sendScore();
 
-    const double prec = 0.0001;
-    const double dprec = 0.001;
+    M_observer->sendShow();
 
-    std::ostream & os = getTransport();
+//     const double prec = 0.0001;
+//     const double dprec = 0.001;
 
-    os << "(show " << M_stadium.time();
+//     std::ostream & os = getTransport();
 
-    os << " (pm " << M_stadium.playmode() << ')';
-    os << " (score "
-       << ' ' << M_stadium.teamLeft().point()
-       << ' ' << M_stadium.teamRight().point();
-    if ( M_stadium.teamLeft().penaltyTaken() > 0
-         || M_stadium.teamRight().penaltyTaken() > 0 )
-    {
-        os << ' ' << M_stadium.teamLeft().penaltyPoint()
-           << ' ' << M_stadium.teamLeft().penaltyTaken() - M_stadium.teamLeft().penaltyPoint()
-           << ' ' << M_stadium.teamRight().penaltyPoint()
-           << ' ' << M_stadium.teamRight().penaltyTaken() - M_stadium.teamRight().penaltyPoint();
-    }
-    os << ')';
+//     os << "(show " << M_stadium.time();
 
-    os << " (" << BALL_NAME_SHORT
-       << ' ' << Quantize( M_stadium.ball().pos().x, prec )
-       << ' ' << Quantize( M_stadium.ball().pos().y, prec )
-       << ' ' << Quantize( M_stadium.ball().vel().x, prec )
-       << ' ' << Quantize( M_stadium.ball().vel().y, prec )
-       << ')';
+//     os << " (pm " << M_stadium.playmode() << ')';
+//     os << " (score "
+//        << ' ' << M_stadium.teamLeft().point()
+//        << ' ' << M_stadium.teamRight().point();
+//     if ( M_stadium.teamLeft().penaltyTaken() > 0
+//          || M_stadium.teamRight().penaltyTaken() > 0 )
+//     {
+//         os << ' ' << M_stadium.teamLeft().penaltyPoint()
+//            << ' ' << M_stadium.teamLeft().penaltyTaken() - M_stadium.teamLeft().penaltyPoint()
+//            << ' ' << M_stadium.teamRight().penaltyPoint()
+//            << ' ' << M_stadium.teamRight().penaltyTaken() - M_stadium.teamRight().penaltyPoint();
+//     }
+//     os << ')';
 
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
-    {
-        os << " (";
-        os << "(" << SideStr( (*p)->team()->side() )
-           << ' ' << (*p)->unum()
-           << ')';
-        os << ' ' << (*p)->playerTypeId()
-           << ' '
-           << std::hex << std::showbase
-           << (*p)->state()
-           << std::dec << std::noshowbase;
+//     os << " (" << BALL_NAME_SHORT
+//        << ' ' << Quantize( M_stadium.ball().pos().x, prec )
+//        << ' ' << Quantize( M_stadium.ball().pos().y, prec )
+//        << ' ' << Quantize( M_stadium.ball().vel().x, prec )
+//        << ' ' << Quantize( M_stadium.ball().vel().y, prec )
+//        << ')';
 
-        os << ' ' << Quantize( (*p)->pos().x, prec )
-           << ' ' << Quantize( (*p)->pos().y, prec )
-           << ' ' << Quantize( (*p)->vel().x, prec )
-           << ' ' << Quantize( (*p)->vel().y, prec )
-           << ' ' << Quantize( Rad2Deg( (*p)->angleBodyCommitted() ), dprec )
-           << ' ' << Quantize( Rad2Deg( (*p)->angleNeckCommitted() ), dprec );
-        if ( (*p)->arm().isPointing() )
-        {
-            rcss::geom::Vector2D arm_dest;
-            if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
-                                                               (*p)->pos().y ),
-                                         (*p)->angleBodyCommitted()
-                                         + (*p)->angleNeckCommitted(),
-                                         arm_dest ) )
-            {
-                os << ' ' << Quantize( arm_dest.getMag(), prec )
-                   << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), dprec );
-            }
-        }
+//     const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+//     for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+//           p != end;
+//           ++p )
+//     {
+//         os << " (";
+//         os << "(" << SideStr( (*p)->team()->side() )
+//            << ' ' << (*p)->unum()
+//            << ')';
+//         os << ' ' << (*p)->playerTypeId()
+//            << ' '
+//            << std::hex << std::showbase
+//            << (*p)->state()
+//            << std::dec << std::noshowbase;
 
-        os << " (v "
-           << ( (*p)->highquality() ? "h " : "l " )
-           << Quantize( Rad2Deg( (*p)->visibleAngle() ), dprec )
-           << ')';
-        os << " (s "
-           << (*p)->stamina() << ' '
-           << (*p)->effort() << ' '
-           << (*p)->recovery() << ')';
-        if ( (*p)->state() != DISABLE
-             && (*p)->getFocusTarget() != NULL )
-        {
-            os << " (f " << SideStr( (*p)->getFocusTarget()->team()->side() )
-               << ' ' << (*p)->getFocusTarget()->unum()
-               << ')';
-        }
-        os << " (c "
-           << (*p)->kickCount() << ' '
-           << (*p)->dashCount() << ' '
-           << (*p)->turnCount() << ' '
-           << (*p)->catchCount() << ' '
-           << (*p)->moveCount() << ' '
-           << (*p)->turnNeckCount() << ' '
-           << (*p)->changeViewCount() << ' '
-           << (*p)->sayCount() << ' '
-           << (*p)->tackleCount() << ' '
-           << (*p)->arm().getCounter() << ' '
-           << (*p)->attentiontoCount() << ')';
-        os << ')'; // end of player
-    }
+//         os << ' ' << Quantize( (*p)->pos().x, prec )
+//            << ' ' << Quantize( (*p)->pos().y, prec )
+//            << ' ' << Quantize( (*p)->vel().x, prec )
+//            << ' ' << Quantize( (*p)->vel().y, prec )
+//            << ' ' << Quantize( Rad2Deg( (*p)->angleBodyCommitted() ), dprec )
+//            << ' ' << Quantize( Rad2Deg( (*p)->angleNeckCommitted() ), dprec );
+//         if ( (*p)->arm().isPointing() )
+//         {
+//             rcss::geom::Vector2D arm_dest;
+//             if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
+//                                                                (*p)->pos().y ),
+//                                          (*p)->angleBodyCommitted()
+//                                          + (*p)->angleNeckCommitted(),
+//                                          arm_dest ) )
+//             {
+//                 os << ' ' << Quantize( arm_dest.getMag(), prec )
+//                    << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), dprec );
+//             }
+//         }
 
-    os << ')' << std::ends << std::flush;
+//         os << " (v "
+//            << ( (*p)->highquality() ? "h " : "l " )
+//            << Quantize( Rad2Deg( (*p)->visibleAngle() ), dprec )
+//            << ')';
+//         os << " (s "
+//            << (*p)->stamina() << ' '
+//            << (*p)->effort() << ' '
+//            << (*p)->recovery() << ')';
+//         if ( (*p)->state() != DISABLE
+//              && (*p)->getFocusTarget() != NULL )
+//         {
+//             os << " (f " << SideStr( (*p)->getFocusTarget()->team()->side() )
+//                << ' ' << (*p)->getFocusTarget()->unum()
+//                << ')';
+//         }
+//         os << " (c "
+//            << (*p)->kickCount() << ' '
+//            << (*p)->dashCount() << ' '
+//            << (*p)->turnCount() << ' '
+//            << (*p)->catchCount() << ' '
+//            << (*p)->moveCount() << ' '
+//            << (*p)->turnNeckCount() << ' '
+//            << (*p)->changeViewCount() << ' '
+//            << (*p)->sayCount() << ' '
+//            << (*p)->tackleCount() << ' '
+//            << (*p)->arm().getCounter() << ' '
+//            << (*p)->attentiontoCount() << ')';
+//         os << ')'; // end of player
+//     }
+
+//     os << ')' << std::ends << std::flush;
 }
 
 int

@@ -2864,11 +2864,45 @@ Stadium::ballCatchFailed()
 }
 
 void
-Stadium::sendGraphic( Side side,
-                      unsigned int x,
-                      unsigned int y,
-                      std::auto_ptr< XPMHolder > holder )
+Stadium::addTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y,
+                          std::auto_ptr< XPMHolder > holder )
 {
+    if ( side == LEFT )
+    {
+        M_team_l->addTeamGraphic( x, y, holder );
+    }
+
+    if ( side == RIGHT )
+    {
+        M_team_r->addTeamGraphic( x, y, holder );
+    }
+}
+
+void
+Stadium::sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y )
+{
+    const XPMHolder * holder = static_cast< const XPMHolder * >( 0 );
+
+    if ( side == LEFT )
+    {
+        holder = M_team_l->teamGraphic( x, y );
+    }
+
+    if ( side == RIGHT )
+    {
+        holder = M_team_r->teamGraphic( x, y );
+    }
+
+    if ( ! holder )
+    {
+        return;
+    }
+
+
 #ifdef HAVE_SSTREAM
     std::ostringstream data;
 #else
@@ -2884,7 +2918,8 @@ Stadium::sendGraphic( Side side,
 #endif
 
     for ( MonitorCont::iterator i = M_monitors.begin();
-          i != M_monitors.end(); ++i )
+          i != M_monitors.end();
+          ++i )
     {
 #ifdef HAVE_SSTREAM
         (*i)->sendMsg( MSG_BOARD, data.str().c_str() );
@@ -2895,16 +2930,6 @@ Stadium::sendGraphic( Side side,
 #ifndef HAVE_SSTREAM
     data.freeze( false );
 #endif
-
-    if ( side == LEFT )
-    {
-        M_team_l->addGraphic( x, y, holder );
-    }
-
-    if ( side == RIGHT )
-    {
-        M_team_r->addGraphic( x, y, holder );
-    }
 }
 
 

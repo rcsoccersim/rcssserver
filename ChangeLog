@@ -1,3 +1,22 @@
+2008-02-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	* src/coach.cpp:
+	* src/field.cpp:
+	* src/field.h:
+	* src/team.cpp:
+	* src/team.h:
+	* src/xpmholder.cpp:
+	* src/xpmholder.h:
+	- added xpmholder.cpp
+	- cleaned up the code.
+
+	* src/audio.cpp:
+	* src/dispsender.cpp:
+	* src/monitor.cpp:
+	* src/monitor.h:
+	- enabled DispSender.
+
 2008-02-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/arithop.cpp:

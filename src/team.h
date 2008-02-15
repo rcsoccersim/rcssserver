@@ -219,10 +219,13 @@ public:
           return M_olcoach;
       }
 
-    void
-    addGraphic( unsigned int x,
-                unsigned int y,
-                std::auto_ptr< XPMHolder > holder );
+    void addTeamGraphic( const unsigned int x,
+                         const unsigned int y,
+                         std::auto_ptr< XPMHolder > holder );
+
+    const
+    XPMHolder * teamGraphic( const unsigned int x,
+                             const unsigned int y ) const;
 };
 
 #endif // _H_OBJECT

@@ -526,11 +526,13 @@ public:
     void sendCoachStdAudio( const OnlineCoach &,
                             const rcss::clang::Msg & msg );
 
-    void sendGraphic( Side side,
-                      unsigned int x,
-                      unsigned int y,
-                      std::auto_ptr< XPMHolder > holder );
-
+    void addTeamGraphic( const Side side,
+                         const unsigned int x,
+                         const unsigned int y,
+                         std::auto_ptr< XPMHolder > holder );
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y );
 
     BallPosInfo ballPosInfo();
 

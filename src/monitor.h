@@ -30,9 +30,11 @@
 #include <netinet/in.h>
 
 class Stadium;
+class XPMHolder;
 
 namespace rcss {
 class InitObserverMonitor;
+class ObserverMonitor;
 }
 
 class Monitor
@@ -40,6 +42,7 @@ class Monitor
 protected:
 
     rcss::InitObserverMonitor * M_init_observer;
+    rcss::ObserverMonitor * M_observer;
 
     Stadium & M_stadium;
     double M_version;
@@ -83,6 +86,11 @@ public:
     void sendInit();
     void sendPlayMode();
     void sendScore();
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y,
+                          const XPMHolder * holder );
+
     void sendShow();
     int sendMsg( const BoardType board,
                  const char * msg );

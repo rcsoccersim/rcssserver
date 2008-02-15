@@ -1,4 +1,23 @@
+// -*-c++-*-
 
+/***************************************************************************
+                               team.cpp
+                           Team object class
+                             -------------------
+    begin                : 2007-11-09
+    copyright            : (C) 2007 by The RoboCup Soccer Server
+                           Maintenance Group.
+    email                : sserver-admin@lists.sourceforge.net
+***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU LGPL as published by the Free Software  *
+ *   Foundation; either version 2 of the License, or (at your option) any  *
+ *   later version.                                                        *
+ *                                                                         *
+ ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -297,16 +316,30 @@ Team::substitute( const Player * player,
 
 
 void
-Team::addGraphic( unsigned int x,
-                  unsigned int y,
-                  std::auto_ptr< XPMHolder > holder )
+Team::addTeamGraphic( const unsigned int x,
+                      const unsigned int y,
+                      std::auto_ptr< XPMHolder > holder )
 {
     GraphKey key( x, y );
     GraphCont::iterator i = M_graphics.find( key );
-    if( i != M_graphics.end() )
+    if ( i != M_graphics.end() )
     {
         delete i->second;
     }
 
     M_graphics[ key ] = holder.release();
+}
+
+const
+XPMHolder *
+Team::teamGraphic( const unsigned int x,
+                   const unsigned int y ) const
+{
+    GraphCont::const_iterator i = M_graphics.find( GraphKey( x, y ) );
+    if ( i == M_graphics.end() )
+    {
+        return static_cast< const XPMHolder * >( 0 );
+    }
+
+    return i->second;
 }

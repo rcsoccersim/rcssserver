@@ -271,7 +271,7 @@ AudioSenderPlayerv1::sendCoachStdAudio( const rcss::clang::Msg & msg )
 void
 AudioSenderPlayerv1::sendSelfAudio( const char * msg )
 {
-    if ( generalPredicate () )
+    if ( generalPredicate() )
     {
         M_serializer.serializeSelfAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
@@ -318,7 +318,7 @@ AudioSenderPlayerv7::sendCoachAudio( const Coach & coach,
     if ( generalPredicate() )
     {
         std::string name;
-        switch( coach.side() ) {
+        switch ( coach.side() ) {
         case NEUTRAL:
             name = COACH_NAME;
             break;
@@ -362,17 +362,17 @@ AudioSenderPlayerv7::sendNonSelfPlayerAudio( const Player & player,
 
 AudioSenderPlayerv8::~AudioSenderPlayerv8()
 {
-    for( player_msg_cont_t::iterator i = M_player_msgs.begin();
-         i != M_player_msgs.end();
-         ++i )
+    for ( player_msg_cont_t::iterator i = M_player_msgs.begin();
+          i != M_player_msgs.end();
+          ++i )
     {
         free( i->second );
         i->second = NULL;
     }
     M_player_msgs.clear();
 
-    for( self_msg_cont_t::iterator i = M_self_msgs.begin();
-         i != M_self_msgs.end();
+    for ( self_msg_cont_t::iterator i = M_self_msgs.begin();
+          i != M_self_msgs.end();
          ++i )
     {
         free( *i );
@@ -380,9 +380,9 @@ AudioSenderPlayerv8::~AudioSenderPlayerv8()
     }
     M_self_msgs.clear();
 
-    for( coach_msg_cont_t::iterator i = M_coach_msgs.begin();
-         i != M_coach_msgs.end();
-         ++i )
+    for ( coach_msg_cont_t::iterator i = M_coach_msgs.begin();
+          i != M_coach_msgs.end();
+          ++i )
     {
         free( i->second );
         i->second = NULL;

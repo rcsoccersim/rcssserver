@@ -275,8 +275,8 @@ create( const DispSenderMonitor::Params & params )
 }
 
 lib::RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV1 >, 1 );
-lib::RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV1 >, 2 );
-lib::RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV1 >, 3 );
+lib::RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
+lib::RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
 
 }
 }

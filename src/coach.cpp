@@ -1650,7 +1650,8 @@ OnlineCoach::team_graphic( const char * command )
         return;
     }
 
-    M_stadium.sendGraphic( side(), x, y, holder );
+    M_stadium.addTeamGraphic( side(), x, y, holder );
+    M_stadium.sendTeamGraphic( side(), x, y );
 
 #ifdef HAVE_SSTREAM
     std::ostringstream msg;

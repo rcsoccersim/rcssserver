@@ -236,6 +236,7 @@ serverparam.h \
 serverparam.cpp \
 referee.h \
 referee.cpp \
+xpmholder.cpp \
 xpmholder.h \
 visual.h \
 visual.cpp \
