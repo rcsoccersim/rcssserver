@@ -132,8 +132,6 @@ DispSenderMonitorV1::sendShow()
     if ( stadium().time() == last_sent_time
          && stadium().stoppageTime() == last_sent_stoppage_time )
     {
-        std::cerr << last_sent_time << ":" << last_sent_stoppage_time
-                  << " send cached data" << std::endl;
         transport().write( reinterpret_cast< char * >( &dinfo ),
                            sizeof( dispinfo_t ) );
         transport().flush();
@@ -142,9 +140,6 @@ DispSenderMonitorV1::sendShow()
 
     last_sent_time = stadium().time();
     last_sent_stoppage_time = stadium().stoppageTime();
-
-    std::cerr << last_sent_time << ":" << last_sent_stoppage_time
-              << " create new data" << std::endl;
 
     //
     // show mode

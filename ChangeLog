@@ -6,6 +6,7 @@
 	* src/monitor.cpp:
 	* src/netif.cpp:
 	- cleaned up the logging procedure.
+	- implemented disp senders using cached data.
 
 	* src/Makefile.am:
 	* src/coach.cpp:
