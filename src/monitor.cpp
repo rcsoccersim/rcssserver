@@ -34,10 +34,17 @@
 #include "player.h"
 #include "types.h"
 
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
+
 namespace {
 
 PlayMode
-play_mode_id( const char *mode )
+play_mode_id( const char * mode )
 {
     static char * playmode_strings[] = PLAYMODE_STRINGS;
 
@@ -49,23 +56,6 @@ play_mode_id( const char *mode )
         }
     }
     return PM_Null;
-}
-
-void
-chop_last_parenthesis( char * str,
-                       int max_size )
-{
-    int l = std::strlen( str );
-
-    if ( l > max_size )
-    {
-        str[max_size] = '\0';
-    }
-    else
-    {
-        --l;
-        if( str[l] == ')' ) str[l] = '\0';
-    }
 }
 
 }

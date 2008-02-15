@@ -24,9 +24,6 @@
 #include "serializer.h"
 #include "field.h"
 
-static char *PlayModeString[] = PLAYMODE_STRINGS;
-
-
 namespace rcss {
 
 /*!
@@ -134,6 +131,8 @@ FullStateSenderPlayerV5::~FullStateSenderPlayerV5()
 void
 FullStateSenderPlayerV5::sendFullState()
 {
+    static char * playmode_string[] = PLAYMODE_STRINGS;
+
     // send begining of FS
     serializer().serializeFSBegin( transport(), stadium().time() );
 
@@ -152,20 +151,9 @@ FullStateSenderPlayerV5::sendFullState()
     else
     {
         serializer().serializeFSPlayMode( transport(),
-                                          PlayModeString[stadium().playmode()] );
+                                          playmode_string[stadium().playmode()] );
     }
 
-//     serializer().serializeFSViewMode( transport(),
-//                                       ( self().highquality()
-//                                         ? "high"
-//                                         : "low" ),
-//                                       ( self().visibleAngle()
-//                                         == self().defangle/2
-//                                         ? "narrow"
-//                                         : ( self().visibleAngle()
-//                                             == self().defangle*2
-//                                             ? "wide"
-//                                             : "normal" ) ) );
     serializer().serializeFSViewMode( transport(),
                                       ( self().highquality()
                                         ? "high"

@@ -20,14 +20,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MONITOR_H
-#define MONITOR_H
+#ifndef RCSSSERVER_MONITOR_H
+#define RCSSSERVER_MONITOR_H
 
 #include "remoteclient.h"
 #include "types.h"
 
 #include <string>
-#include <netinet/in.h>
 
 class Stadium;
 class XPMHolder;

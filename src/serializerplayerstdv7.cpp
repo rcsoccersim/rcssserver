@@ -39,7 +39,7 @@ const SerializerPlayerStdv7*
 SerializerPlayerStdv7::instance()
 {
     rcss::SerializerCommon::Creator cre;
-    if( ! rcss::SerializerCommon::factory().getCreator( cre, 7 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 7 ) )
     {
         return NULL;
     }
@@ -174,12 +174,16 @@ SerializerPlayerStdv7::serializeChangePlayer( std::ostream& strm,
          << unum << " " << type << ")";
 }
 
-namespace
-{
-const SerializerPlayer*
+namespace {
+
+const
+SerializerPlayer *
 create()
-{ return SerializerPlayerStdv7::instance(); }
+{
+    return SerializerPlayerStdv7::instance();
+}
 
 lib::RegHolder v7 = SerializerPlayer::factory().autoReg( &create, 7 );
+
 }
 }

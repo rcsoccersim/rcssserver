@@ -84,8 +84,6 @@ trap kill_server INT
 # start server
 #
 
-
-
 $SERV &
 PID=$!
 
@@ -94,9 +92,9 @@ PID=$!
 #
 kill_server()
 {
-        kill -s INT $PID
-	echo ""
-        exit 0
+    kill -s INT $PID
+    echo ""
+    exit 0
 }
 
 #--------------------------------------------------

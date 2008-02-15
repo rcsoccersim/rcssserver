@@ -116,17 +116,6 @@ BodySenderPlayerV1::sendBody()
 void
 BodySenderPlayerV1::sendBodyData()
 {
-//     serializer().serializeBodyViewMode( transport(),
-//                                         ( self().highquality()
-//                                           ? "high"
-//                                           : "low" ),
-//                                         ( self().visibleAngle()
-//                                           == self().defangle*0.5
-//                                           ? "narrow"
-//                                           : ( self().visibleAngle()
-//                                               == self().defangle*2.0
-//                                               ? "wide"
-//                                               : "normal" ) ) );
     serializer().serializeBodyViewMode( transport(),
                                         ( self().highquality()
                                           ? "high"

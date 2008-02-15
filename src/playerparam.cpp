@@ -197,8 +197,9 @@ PlayerParam::init( rcss::conf::Builder* parent )
 
     if ( instance().m_builder->version() != instance().m_builder->parsedVersion() )
     {
-        std::cerr << "No version information or version mismatched in the configuration file '"
-                  << tildeExpand( PlayerParam::PLAYER_CONF ) << "'"
+        std::cerr << "Version mismatched in the configuration file. "
+                  << "Need to regenerate '" << tildeExpand( PlayerParam::PLAYER_CONF ) << "'"
+                  << " or set '" << instance().m_builder->version() << "' to the 'version' option."
                   << std::endl;
 //         std::cerr << "registered version = ["
 //                   << instance().m_builder->version() << "]\n"

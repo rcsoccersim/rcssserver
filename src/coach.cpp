@@ -44,25 +44,33 @@
 #include <cstring>
 #include <cmath>
 
+#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
 
 namespace {
 
 PlayMode
-PlayModeID( const char *mode )
+play_mode_id( const char * mode )
 {
-    static char *PlayModeString[] = PLAYMODE_STRINGS;
+    static char * playmode_strings[] = PLAYMODE_STRINGS;
 
     for ( int n = 0; n < PM_MAX; ++n )
     {
-        if( ! std::strcmp( PlayModeString[n], mode ) )
-            return (PlayMode)n;
+        if ( ! std::strcmp( playmode_strings[n], mode ) )
+        {
+            return static_cast< PlayMode >( n );
+        }
     }
     return PM_Null;
 }
 
 void
-chop_last_parenthesis( char *str, int max_size )
+chop_last_parenthesis( char *str,
+                       int max_size )
 {
     int l = std::strlen( str );
 
@@ -73,7 +81,7 @@ chop_last_parenthesis( char *str, int max_size )
     else
     {
         --l;
-        if( str[l] == ')' ) str[l] = '\0';
+        if ( str[l] == ')' ) str[l] = '\0';
     }
 }
 
@@ -386,7 +394,7 @@ Coach::parse_change_mode( const char * command )
 void
 Coach::change_mode( std::string mode )
 {
-    PlayMode mode_id = PlayModeID( mode.c_str() );
+    PlayMode mode_id = play_mode_id( mode.c_str() );
 
     if ( mode_id == PM_Null )
     {

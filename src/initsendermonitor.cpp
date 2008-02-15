@@ -31,6 +31,13 @@
 #include "team.h"
 #include "serializermonitor.h"
 
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif
+
 namespace rcss {
 
 /*

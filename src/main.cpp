@@ -98,7 +98,11 @@ main( int argc, char *argv[] )
 //         }
     }
 
-    ServerParam::init( argc, argv );
+    if ( ! ServerParam::init( argc, argv ) )
+    {
+        std::cerr << "failed to init ServerParam" << std::endl;
+        return 1;
+    }
 
     struct sigaction sig_action;
     sig_action.sa_handler = &sigHandle;

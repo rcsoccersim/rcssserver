@@ -1699,7 +1699,7 @@ Stadium::placePlayersInField()
 void
 Stadium::change_play_mode( const PlayMode pm )
 {
-    static char *PlayModeString[] = PLAYMODE_STRINGS;
+    static char * playmode_strings[] = PLAYMODE_STRINGS;
 
     M_playmode = pm;
 
@@ -1737,7 +1737,7 @@ Stadium::change_play_mode( const PlayMode pm )
     if ( pm != PM_AfterGoal_Left
          && pm != PM_AfterGoal_Right )
     {
-        say( PlayModeString[pm] );
+        say( playmode_strings[pm] );
     }
 }
 

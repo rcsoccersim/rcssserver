@@ -351,14 +351,16 @@ ServerParam::init( const int & argc,
                   << "'\n";
         instance().m_builder->displayHelp();
         instance().clear();
-        std::exit( EXIT_FAILURE );
+        //std::exit( EXIT_FAILURE );
+        return false;
     }
     else
     {
         if ( instance().m_builder->version() != instance().m_builder->parsedVersion() )
         {
-            std::cerr << "No version information or version mismatched in the configuration file '"
-                      << tildeExpand( ServerParam::SERVER_CONF ) << "'"
+            std::cerr << "Version mismatched in the configuration file. "
+                      << "You need to regenerate '" << tildeExpand( ServerParam::SERVER_CONF ) << "'"
+                      << " or set '" << instance().m_builder->version() << "' to the 'version' option."
                       << std::endl;
 //             std::cerr << "registered version = ["
 //                       << instance().m_builder->version() << "]\n"
@@ -366,21 +368,24 @@ ServerParam::init( const int & argc,
 //                       << instance().m_builder->parsedVersion() << "]\n"
 //                       << std::flush;
             instance().clear();
-            std::exit( EXIT_FAILURE );
+            //std::exit( EXIT_FAILURE );
+            return false;
         }
 
         if ( ! PlayerParam::init( ServerParam::instance().m_builder.get() ) )
         {
             instance().m_builder->displayHelp();
             instance().clear();
-            std::exit( EXIT_FAILURE );
+            //std::exit( EXIT_FAILURE );
+            return false;
         }
 
         if ( ! instance().m_conf_parser->parse( argc, argv ) )
         {
             instance().m_builder->displayHelp();
             instance().clear();
-            std::exit( EXIT_FAILURE );
+            //std::exit( EXIT_FAILURE );
+            return false;
         }
 
 //         if ( ! instance().timer_loaded )
@@ -406,7 +411,8 @@ ServerParam::init( const int & argc,
         {
             instance().m_builder->displayHelp();
             instance().clear();
-            std::exit( EXIT_SUCCESS );
+            //std::exit( EXIT_SUCCESS );
+            return false;
         }
     }
 

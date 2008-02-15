@@ -24,23 +24,30 @@
 #include "param.h"
 #include "object.h"
 
-namespace rcss
-{
+namespace rcss {
+
 SerializerCoachStdv1::SerializerCoachStdv1( const SerializerCommon & common )
     : SerializerCoach( common )
-{}
+{
+
+}
 
 
 SerializerCoachStdv1::~SerializerCoachStdv1()
-{}
+{
+
+}
 
 const
 SerializerCoachStdv1*
 SerializerCoachStdv1::instance()
 {
     rcss::SerializerCommon::Creator cre;
-    if( !rcss::SerializerCommon::factory().getCreator( cre, 1 ) )
+    if ( !rcss::SerializerCommon::factory().getCreator( cre, 1 ) )
+    {
         return NULL;
+    }
+
     static SerializerCoachStdv1 ser( cre() );
     return &ser;
 }
@@ -166,11 +173,14 @@ SerializerCoachStdv1::serializeOKEye( std::ostream & strm,
 }
 
 
-namespace
-{
-const SerializerCoach*
+namespace {
+
+const
+SerializerCoach *
 create()
-{ return SerializerCoachStdv1::instance(); }
+{
+    return SerializerCoachStdv1::instance();
+}
 
 lib::RegHolder v1 = SerializerCoach::factory().autoReg( &create, 1 );
 lib::RegHolder v2 = SerializerCoach::factory().autoReg( &create, 2 );
@@ -178,5 +188,6 @@ lib::RegHolder v3 = SerializerCoach::factory().autoReg( &create, 3 );
 lib::RegHolder v4 = SerializerCoach::factory().autoReg( &create, 4 );
 lib::RegHolder v5 = SerializerCoach::factory().autoReg( &create, 5 );
 lib::RegHolder v6 = SerializerCoach::factory().autoReg( &create, 6 );
+
 }
 }

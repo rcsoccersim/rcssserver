@@ -2345,7 +2345,7 @@ PenaltyRef::analyse()
 void
 PenaltyRef::analyseImpl()
 {
-    static char *PlayModeString[] = PLAYMODE_STRINGS;
+    static char * playmode_strings[] = PLAYMODE_STRINGS;
     static bool bFirstTime = true;
 
     // if normal and extra time are over -> start the penalty procedure or quit
@@ -2411,7 +2411,7 @@ PenaltyRef::analyseImpl()
 
     if ( M_bDebug )
     {
-        std::cerr << "timer " << PlayModeString[M_stadium.playmode()] << " "
+        std::cerr << "timer " << playmode_strings[M_stadium.playmode()] << " "
                   << M_stadium.time() << " " << M_timer << " " << bCheckLeft
                   << " " << bCheckRight << std::endl;
     }

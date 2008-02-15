@@ -1,3 +1,22 @@
+2008-02-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/bodysender.cpp:
+	* src/coach.cpp:
+	* src/field.cpp:
+	* src/fullstatesender.cpp:
+	* src/initsendermonitor.cpp:
+	* src/main.cpp:
+	* src/monitor.cpp:
+	* src/monitor.h:
+	* src/playerparam.cpp:
+	* src/rcsoccersim.in:
+	* src/referee.cpp:
+	* src/serializercoachstdv1.cpp:
+	* src/serializerplayerstdv1.cpp:
+	* src/serializerplayerstdv7.cpp:
+	* src/serverparam.cpp:
+	- cleaned up.
+
 2008-02-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/dispsender.cpp:
