@@ -38,7 +38,7 @@ namespace rcss {
 //===================================================================
 */
 
-InitSender::InitSender( std::ostream& transport,
+InitSender::InitSender( std::ostream & transport,
                         const boost::shared_ptr< InitSenderCommon > & common )
     : Sender( transport ), m_common_sender( common )
 {

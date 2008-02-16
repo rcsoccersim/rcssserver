@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                             initsendermonitor.cpp
-               Classes for sending sense init messages for monitors
+                             initsenderlogger.cpp
+               Classes for writing init messages for logger
                              -------------------
-    begin                : 2007-11-21
-    copyright            : (C) 2007 by The RoboCup Soccer Simulator
+    begin                : 2008-02-16
+    copyright            : (C) 2008 by The RoboCup Soccer Simulator
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
@@ -20,16 +20,14 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
-#include "initsendermonitor.h"
+#include "initsenderlogger.h"
 
-#include "monitor.h"
-#include "field.h"
-#include "heteroplayer.h"
-#include "team.h"
+#include "logger.h"
 #include "serializermonitor.h"
+#include "types.h"
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -43,20 +41,20 @@ namespace rcss {
 /*
 //===================================================================
 //
-//  CLASS: InitSenderMonitor
+//  CLASS: InitSenderLogger
 //
 //===================================================================
 */
 
-InitSenderMonitor::Factory &
-InitSenderMonitor::factory()
+InitSenderLogger::Factory &
+InitSenderLogger::factory()
 {
     static Factory rval;
     return rval;
 }
 
 
-InitSenderMonitor::InitSenderMonitor( const Params & params,
+InitSenderLogger::InitSenderLogger( const Params & params,
                                       const boost::shared_ptr< InitSenderCommon > common )
     : InitSender( params.M_transport, common ),
       M_serializer( params.M_serializer ),
@@ -66,7 +64,7 @@ InitSenderMonitor::InitSenderMonitor( const Params & params,
 
 }
 
-InitSenderMonitor::~InitSenderMonitor()
+InitSenderLogger::~InitSenderLogger()
 {
 
 }
@@ -74,13 +72,13 @@ InitSenderMonitor::~InitSenderMonitor()
 /*
 //===================================================================
 //
-//  CLASS: InitSenderMonitorV1
+//  CLASS: InitSenderLoggerV1
 //
 //===================================================================
 */
 
-InitSenderMonitorV1::InitSenderMonitorV1( const Params & params )
-    : InitSenderMonitor( params,
+InitSenderLoggerV1::InitSenderLoggerV1( const Params & params )
+    : InitSenderLogger( params,
                          boost::shared_ptr< InitSenderCommon >
                          ( new InitSenderCommonV1( params.M_transport,
                                                    params.M_serializer,
@@ -90,62 +88,50 @@ InitSenderMonitorV1::InitSenderMonitorV1( const Params & params )
 
 }
 
-InitSenderMonitorV1::InitSenderMonitorV1( const Params & params,
+InitSenderLoggerV1::InitSenderLoggerV1( const Params & params,
                                           const boost::shared_ptr< InitSenderCommon > common )
-    : InitSenderMonitor( params, common )
+    : InitSenderLogger( params, common )
 {
 
 }
 
-InitSenderMonitorV1::~InitSenderMonitorV1()
-{
-
-}
-
-void
-InitSenderMonitorV1::sendInit()
+InitSenderLoggerV1::~InitSenderLoggerV1()
 {
 
 }
 
 void
-InitSenderMonitorV1::sendServerParams()
+InitSenderLoggerV1::sendHeader()
 {
 
 }
 
 void
-InitSenderMonitorV1::sendPlayerParams()
+InitSenderLoggerV1::sendServerParams()
 {
 
 }
 
 void
-InitSenderMonitorV1::sendPlayerTypes()
+InitSenderLoggerV1::sendPlayerParams()
 {
 
 }
 
 void
-InitSenderMonitorV1::sendChangedPlayers()
+InitSenderLoggerV1::sendPlayerTypes()
 {
 
 }
 
 void
-InitSenderMonitorV1::sendScore()
+InitSenderLoggerV1::sendPlayMode()
 {
 
 }
 
 void
-InitSenderMonitorV1::sendTeamGraphic()
-{
-
-}
-
-void
-InitSenderMonitorV1::sendPlayMode()
+InitSenderLoggerV1::sendTeam()
 {
 
 }
@@ -153,62 +139,62 @@ InitSenderMonitorV1::sendPlayMode()
 /*
 //===================================================================
 //
-//  InitSenderMonitorV2
+//  InitSenderLoggerV2
 //
 //===================================================================
 */
 
-InitSenderMonitorV2::InitSenderMonitorV2( const Params & params )
-    : InitSenderMonitorV1( params,
+InitSenderLoggerV2::InitSenderLoggerV2( const Params & params )
+    : InitSenderLoggerV1( params,
                            boost::shared_ptr< InitSenderCommon >
                            ( new InitSenderCommonV1( params.M_transport,
                                                      params.M_serializer,
                                                      params.M_stadium,
-                                                     2 ) ) )
+                                                     (unsigned int)params.M_self.version() ) ) )
 {
 
 }
 
-InitSenderMonitorV2::InitSenderMonitorV2( const Params & params,
+InitSenderLoggerV2::InitSenderLoggerV2( const Params & params,
                                           const boost::shared_ptr< InitSenderCommon > common )
-    : InitSenderMonitorV1( params, common )
+    : InitSenderLoggerV1( params, common )
 {
 
 }
 
-InitSenderMonitorV2::~InitSenderMonitorV2()
+InitSenderLoggerV2::~InitSenderLoggerV2()
 {
 
 }
 
 void
-InitSenderMonitorV2::sendServerParams()
+InitSenderLoggerV2::sendServerParams()
 {
     dispinfo_t2 disp;
 
     disp.mode = htons( PARAM_MODE );
     disp.body.sparams = ServerParam::instance().convertToStruct();
 
-    transport().write( reinterpret_cast< const char * >( &disp ),
+    transport().write( reinterpret_cast< const char* >( &disp ),
                        sizeof( dispinfo_t2 ) );
     transport() << std::flush;
 }
 
 void
-InitSenderMonitorV2::sendPlayerParams()
+InitSenderLoggerV2::sendPlayerParams()
 {
     dispinfo_t2 disp;
 
     disp.mode = htons( PPARAM_MODE );
     disp.body.pparams = PlayerParam::instance().convertToStruct();
 
-    transport().write( reinterpret_cast< const char * >( &disp ),
+    transport().write( reinterpret_cast< const  char* >( &disp ),
                        sizeof( dispinfo_t2 ) );
     transport() << std::flush;
 }
 
 void
-InitSenderMonitorV2::sendPlayerTypes()
+InitSenderLoggerV2::sendPlayerTypes()
 {
     dispinfo_t2 disp;
 
@@ -219,7 +205,7 @@ InitSenderMonitorV2::sendPlayerTypes()
         if ( p )
         {
             disp.body.ptinfo = p->convertToStruct( i );
-            transport().write( reinterpret_cast< const char * >( &disp ),
+            transport().write( reinterpret_cast< const char* >( &disp ),
                                sizeof( dispinfo_t2 ) );
             transport() << std::flush;
         }
@@ -229,13 +215,13 @@ InitSenderMonitorV2::sendPlayerTypes()
 /*
 //===================================================================
 //
-//  InitSenderMonitorV3
+//  InitSenderLoggerV3
 //
 //===================================================================
 */
 
-InitSenderMonitorV3::InitSenderMonitorV3( const Params & params )
-    : InitSenderMonitorV2( params,
+InitSenderLoggerV3::InitSenderLoggerV3( const Params & params )
+    : InitSenderLoggerV2( params,
                          boost::shared_ptr< InitSenderCommon >
                            ( new InitSenderCommonV8( params.M_transport,
                                                      params.M_serializer,
@@ -246,38 +232,38 @@ InitSenderMonitorV3::InitSenderMonitorV3( const Params & params )
     // The client version is "999" in order to send all parameters.
 }
 
-InitSenderMonitorV3::InitSenderMonitorV3( const Params & params,
+InitSenderLoggerV3::InitSenderLoggerV3( const Params & params,
                                           const boost::shared_ptr< InitSenderCommon > common )
-    : InitSenderMonitorV2( params, common )
+    : InitSenderLoggerV2( params, common )
 {
 
 }
 
-InitSenderMonitorV3::~InitSenderMonitorV3()
+InitSenderLoggerV3::~InitSenderLoggerV3()
 {
 
 }
 
 void
-InitSenderMonitorV3::sendServerParams()
+InitSenderLoggerV3::sendServerParams()
 {
     commonSender().sendServerParams();
 }
 
 void
-InitSenderMonitorV3::sendPlayerParams()
+InitSenderLoggerV3::sendPlayerParams()
 {
     commonSender().sendPlayerParams();
 }
 
 void
-InitSenderMonitorV3::sendPlayerTypes()
+InitSenderLoggerV3::sendPlayerTypes()
 {
     commonSender().sendPlayerTypes();
 }
 
 void
-InitSenderMonitorV3::sendScore()
+InitSenderLoggerV3::sendScore()
 {
     serializer().serializeTeam( transport(),
                                 stadium().time(),
@@ -287,14 +273,14 @@ InitSenderMonitorV3::sendScore()
 }
 
 void
-InitSenderMonitorV3::sendTeamGraphic()
+InitSenderLoggerV3::sendTeamGraphic()
 {
     // TODO
     // serializer.serializeTeamGraphic( transport(), ...
 }
 
 void
-InitSenderMonitorV3::sendPlayMode()
+InitSenderLoggerV3::sendPlayMode()
 {
     serializer().serializePlayMode( transport(),
                                     stadium().time(),
@@ -305,15 +291,16 @@ InitSenderMonitorV3::sendPlayMode()
 namespace initsender {
 
 template< typename Sender >
-InitSenderMonitor::Ptr
-create( const InitSenderMonitor::Params & params )
+InitSenderLogger::Ptr
+create( const InitSenderLogger::Params & params )
 {
-    return InitSenderMonitor::Ptr( new Sender( params ) );
+    return InitSenderLogger::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder v1 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV1 >, 1 );
-lib::RegHolder v2 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV2 >, 2 );
-lib::RegHolder v3 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 3 );
+lib::RegHolder vl1 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV1 >, 1 );
+lib::RegHolder vl2 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV2 >, 2 );
+lib::RegHolder vl3 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV3 >, 3 );
+lib::RegHolder vl4 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV3 >, 4 );
 
 }
 }

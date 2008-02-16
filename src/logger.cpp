@@ -631,7 +631,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
         if ( ServerParam::instance().recordMessages() )
         {
             *M_game_log << "(msg " << M_stadium.time()
-                        << ' ' << board_type << ' ' << msg << ")\n";
+                        << ' ' << board_type << " \"" << msg << "\")\n";
         }
     }
     else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )

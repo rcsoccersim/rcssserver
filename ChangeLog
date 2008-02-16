@@ -1,3 +1,11 @@
+2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	- fixed a file name extention.
+
+	* src/field.cpp:
+	- added a procedure to record team_graphic messages.
+
 2008-02-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/initsenderlogger.h:

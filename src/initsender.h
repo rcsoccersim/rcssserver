@@ -54,6 +54,13 @@ class SerializerCoach;
 */
 
 class InitSenderCommon {
+private:
+    std::ostream & m_transport;
+    const Serializer & m_serializer;
+    const Stadium & m_stad;
+    unsigned int m_ver;
+    const bool M_new_line;
+
 public:
     InitSenderCommon( std::ostream& transport,
                       const Serializer& serializer,
@@ -106,13 +113,6 @@ public:
       {
           return M_new_line;
       }
-
-private:
-    std::ostream & m_transport;
-    const Serializer & m_serializer;
-    const Stadium & m_stad;
-    unsigned int m_ver;
-    const bool M_new_line;
 };
 
 /*!

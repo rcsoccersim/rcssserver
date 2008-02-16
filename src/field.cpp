@@ -1854,19 +1854,20 @@ Stadium::sendTeamGraphic( const Side side,
     data << std::ends;
 #endif
 
+    std::string msg = data.str();
+
+#ifndef HAVE_SSTREAM
+    data.freeze( false );
+#endif
+
     for ( MonitorCont::iterator i = M_monitors.begin();
           i != M_monitors.end();
           ++i )
     {
-#ifdef HAVE_SSTREAM
-        (*i)->sendMsg( MSG_BOARD, data.str().c_str() );
-#else
-        (*i)->sendMsg( MSG_BOARD, data.str() );
-#endif
+        (*i)->sendMsg( MSG_BOARD, msg.c_str() );
     }
-#ifndef HAVE_SSTREAM
-    data.freeze( false );
-#endif
+
+    M_logger.writeMsgToGameLog( MSG_BOARD, msg.c_str() );
 }
 
 

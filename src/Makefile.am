@@ -191,7 +191,7 @@ compress.h \
 remoteclient.h \
 pcombuilder.h \
 pcomparser.h \
-player_command_parser.yy \
+player_command_parser.ypp \
 player_command_tok.h \
 player_command_tok.cpp \
 player.h \

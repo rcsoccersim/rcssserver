@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                             initwriterlogger.h
+                             initsenderlogger.h
                   Classes for writing init messages for logger
                              -------------------
-    begin                : 2007-11-21
-    copyright            : (C) 2007 by The RoboCup Soccer Simulator
+    begin                : 2008-02-16
+    copyright            : (C) 2008 by The RoboCup Soccer Simulator
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
@@ -23,7 +23,6 @@
 #ifndef RCSS_INITSENDER_LOGGER_H
 #define RCSS_INITSENDER_LOGGER_H
 
-#include "sender.h"
 #include "initsender.h"
 
 class Logger;
@@ -98,12 +97,15 @@ protected:
 
 public:
 
-    void sendReconnect()
+    void sendInit()
       { }
     void sendChangedPlayers()
       { }
     void sendScore()
       { }
+
+    virtual
+    void sendHeader() = 0;
 
     virtual
     void sendPlayMode() = 0;
@@ -141,11 +143,10 @@ public:
           BaseObserver< InitSenderLogger >::setSender( sender );
       }
 
-    void sendInit()
+    void sendHeader()
       {
-          BaseObserver< InitSenderLogger >::sender().sendInit();
+          BaseObserver< InitSenderLogger >::sender().sendHeader();
       }
-
 
     void sendServerParams()
       {
@@ -189,13 +190,124 @@ public:
     ~InitSenderLoggerV1();
 
     virtual
-    void sendInit();
+    void sendHeader();
 
     virtual
+    void sendServerParams();
 
+    virtual
+    void sendPlayerParams();
+
+    virtual
+    void sendPlayerTypes();
+
+    virtual
+    void sendPlayMode();
+
+    virtual
+    void sendTeam();
 
 };
 
+class InitSenderLoggerV2
+    : public InitSenderLoggerV1 {
+public:
+    InitSenderLoggerV2( const Params & params );
+
+protected:
+    InitSenderLoggerV2( const Params & params,
+                        const boost::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderLoggerV2();
+
+    virtual
+    void sendHeader();
+
+    virtual
+    void sendServerParams();
+
+    virtual
+    void sendPlayerParams();
+
+    virtual
+    void sendPlayerTypes();
+
+    virtual
+    void sendPlayMode();
+
+    virtual
+    void sendTeam();
+
+};
+
+class InitSenderLoggerV3
+    : public InitSenderLoggerV2 {
+public:
+    InitSenderLoggerV3( const Params & params );
+
+protected:
+    InitSenderLoggerV3( const Params & params,
+                        const boost::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderLoggerV3();
+
+    virtual
+    void sendHeader();
+
+    virtual
+    void sendServerParams();
+
+    virtual
+    void sendPlayerParams();
+
+    virtual
+    void sendPlayerTypes();
+
+    virtual
+    void sendPlayMode();
+
+    virtual
+    void sendTeam();
+
+};
+
+
+class InitSenderLoggerV4
+    : public InitSenderLoggerV3 {
+public:
+    InitSenderLoggerV4( const Params & params );
+
+protected:
+    InitSenderLoggerV4( const Params & params,
+                        const boost::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderLoggerV4();
+
+    virtual
+    void sendHeader();
+
+    virtual
+    void sendServerParams();
+
+    virtual
+    void sendPlayerParams();
+
+    virtual
+    void sendPlayerTypes();
+
+    virtual
+    void sendPlayMode();
+
+    virtual
+    void sendTeam();
+
+};
 
 }
 
