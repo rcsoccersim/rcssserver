@@ -888,11 +888,6 @@ InitSenderOnlineCoachV1::sendInit()
     transport() << std::ends << std::flush;
 }
 
-void
-InitSenderOnlineCoachV1::sendReconnect()
-{
-
-}
 
 void
 InitSenderOnlineCoachV1::sendChangedPlayers()
@@ -1125,11 +1120,6 @@ InitSenderOfflineCoachV1::sendInit()
     transport() << std::ends << std::flush;
 }
 
-void
-InitSenderOfflineCoachV1::sendReconnect()
-{
-
-}
 
 void
 InitSenderOfflineCoachV1::sendChangedPlayers()

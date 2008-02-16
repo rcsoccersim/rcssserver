@@ -426,79 +426,28 @@ DispSenderMonitorV3::sendShow()
 
     serializer().serializeShowBegin( ostr,
                                      stadium().time() );
-    serializer().serializeShowPlayMode( ostr,
-                                        stadium().playmode() );
-    serializer().serializeShowScore( ostr,
-                                     stadium().teamLeft().point(),
-                                     stadium().teamRight().point(),
-                                     stadium().teamLeft().penaltyTaken(),
-                                     stadium().teamRight().penaltyTaken(),
-                                     stadium().teamLeft().penaltyPoint(),
-                                     stadium().teamRight().penaltyPoint() );
-    serializer().serializeShowBall( ostr,
-                                    stadium().ball().pos(),
-                                    stadium().ball().vel() );
+    serializer().serializePlayModeId( ostr,
+                                      stadium().playmode() );
+    serializer().serializeScore( ostr,
+                                 stadium().teamLeft(),
+                                     stadium().teamRight() );
+
+    serializer().serializeBall( ostr,
+                                stadium().ball() );
 
     const Stadium::PlayerCont::const_iterator end = stadium().players().end();
     for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
           p != end;
           ++p )
     {
-        serializer().serializeShowPlayerBegin( ostr,
-                                               (*p)->side(),
-                                               (*p)->unum(),
-                                               (*p)->playerTypeId(),
-                                               (*p)->state() );
-        serializer().serializeShowPlayerPos( ostr,
-                                             (*p)->pos(),
-                                             (*p)->vel(),
-                                             Rad2Deg( (*p)->angleBodyCommitted() ),
-                                             Rad2Deg( (*p)->angleNeckCommitted() ) );
-
-        if ( (*p)->arm().isPointing() )
-        {
-            rcss::geom::Vector2D arm_dest;
-            if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
-                                                               (*p)->pos().y ),
-                                         (*p)->angleBodyCommitted()
-                                         + (*p)->angleNeckCommitted(),
-                                         arm_dest ) )
-            {
-                serializer().serializeShowPlayerArm( ostr,
-                                                     arm_dest.getMag(),
-                                                     Rad2Deg( arm_dest.getHead() ) );
-            }
-        }
-
-        serializer().serializeShowPlayerViewMode( ostr,
-                                                  (*p)->highquality(),
-                                                  Rad2Deg( (*p)->visibleAngle() ) );
-        serializer().serializeShowPlayerStamina( ostr,
-                                                 (*p)->stamina(),
-                                                 (*p)->effort(),
-                                                 (*p)->recovery() );
-        if ( (*p)->state() != DISABLE
-             && (*p)->getFocusTarget() != NULL )
-        {
-            serializer().serializeShowPlayerFocus( ostr,
-                                                   (*p)->getFocusTarget()->side(),
-                                                   (*p)->getFocusTarget()->unum() );
-        }
-
-        serializer().serializeShowPlayerCounts( ostr,
-                                                (*p)->kickCount(),
-                                                (*p)->dashCount(),
-                                                (*p)->turnCount(),
-                                                (*p)->catchCount(),
-                                                (*p)->moveCount(),
-                                                (*p)->turnNeckCount(),
-                                                (*p)->changeViewCount(),
-                                                (*p)->sayCount(),
-                                                (*p)->tackleCount(),
-                                                (*p)->arm().getCounter(),
-                                                (*p)->attentiontoCount() );
-
-        serializer().serializeShowPlayerEnd( ostr );
+        serializer().serializePlayerBegin( ostr, **p );
+        serializer().serializePlayerPos( ostr, **p );
+        serializer().serializePlayerArm( ostr, **p );
+        serializer().serializePlayerViewMode( ostr, **p );
+        serializer().serializePlayerStamina( ostr, **p );
+        serializer().serializePlayerFocus( ostr, **p );
+        serializer().serializePlayerCounts( ostr, **p );
+        serializer().serializePlayerEnd( ostr );
     }
 
     serializer().serializeShowEnd( ostr );

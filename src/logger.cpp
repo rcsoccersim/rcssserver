@@ -36,7 +36,10 @@
 #include "team.h"
 #include "xpmholder.h"
 
-#include "initsender.h"
+#include "dispsender.h"
+#include "initsendermonitor.h"
+#include "serializermonitor.h"
+
 #include "serializercommonstdv8.h"
 
 #include <boost/lexical_cast.hpp>
@@ -65,7 +68,8 @@ const std::string Logger::DEF_KAWAY_SUFFIX = ".kwy";
 
 
 Logger::Logger( Stadium & stadium )
-    : M_stadium( stadium )
+    : M_init_observer( new rcss::InitObserverMonitor )
+    , M_stadium( stadium )
     , M_game_log( static_cast< std::ostream * >( 0 ) )
     , M_text_log( static_cast< std::ostream * >( 0 ) )
     , M_playmode( PM_Null )
@@ -80,6 +84,49 @@ Logger::Logger( Stadium & stadium )
 Logger::~Logger()
 {
     this->close();
+}
+
+bool
+Logger::setSenders()
+{
+#if 0
+    if ( ! isGameLogOpen() )
+    {
+        return true;
+    }
+
+    rcss::SerializerMonitor::Creator ser_cre;
+    if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre,
+                                                           ) )
+    {
+        return false;
+    }
+
+    const rcss::SerializerMonitor * ser = ser_cre();
+    if ( ! ser )
+    {
+        return false;
+    }
+
+    //
+    // init sender
+    //
+    {
+        rcss::InitSenderLogger::Params init_params( *M_game_log,
+                                                    *this,
+                                                    *ser,
+                                                    M_stadium );
+        rcss::InitSender::Creator init_cre;
+        if ( ! rcss::InitSenderLogger::factory().getCreator( init_cre,
+                                                             ServerParam::instance().gameLogVersion() ) )
+        {
+            return false;
+        }
+        M_init_observer->setInitSender( init_cre( init_params ) );
+    }
+
+#endif
+    return true;
 }
 
 bool
@@ -119,7 +166,7 @@ Logger::close()
     renameLogs();
 
     closeGameLog();
-    closeTextLogLog();
+    closeTextLog();
     closeKawayLog();
 }
 
@@ -186,6 +233,11 @@ Logger::openGameLog()
         return false;
     }
 
+    if ( ! setSenders() )
+    {
+        return false;
+    }
+
     if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
     {
         // write version information
@@ -215,6 +267,9 @@ Logger::openGameLog()
             init_sender.sendServerParams();
             init_sender.sendPlayerParams();
             init_sender.sendPlayerTypes();
+//             M_init_observer->sendServerParams();
+//             M_init_observer->sendPlayerParams();
+//             M_init_observer->sendPlayerTypes();
         }
         else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
         {
@@ -365,7 +420,8 @@ Logger::openKawayLog()
 }
 
 
-void closeGameLog()
+void
+Logger::closeGameLog()
 {
     if ( M_game_log )
     {
@@ -375,7 +431,8 @@ void closeGameLog()
     }
 }
 
-void closeTextLog()
+void
+Logger::closeTextLog()
 {
     if ( M_text_log )
     {
@@ -385,7 +442,8 @@ void closeTextLog()
     }
 }
 
-void closeKawayLog()
+void
+Logger::closeKawayLog()
 {
     if ( M_kaway_log.is_open() )
     {
@@ -397,6 +455,13 @@ void closeKawayLog()
 void
 Logger::renameLogs()
 {
+    if ( ! isGameLogOpen()
+         && ! isTextLogOpen()
+         && ! M_kaway_log.is_open() )
+    {
+        return;
+    }
+
     // add penalty to logfile when penalties are score or was draw and one team won
     bool bAddPenaltyScore = ( M_stadium.teamRight().point() == M_stadium.teamLeft().point()
                               && M_stadium.teamLeft().penaltyTaken() > 0

@@ -28,6 +28,8 @@
 #include "param.h"
 #include "utility.h"
 #include "object.h"
+#include "player.h"
+#include "team.h"
 
 namespace rcss {
 
@@ -130,29 +132,23 @@ SerializerMonitorStdv3::instance()
 
 
 void
-SerializerMonitorStdv3::serializeScore( std::ostream & os,
-                                        const int time,
-                                        const std::string & left_name,
-                                        const std::string & right_name,
-                                        const int left_point,
-                                        const int right_point,
-                                        const int left_pen_taken,
-                                        const int right_pen_taken,
-                                        const int left_pen_point,
-                                        const int right_pen_point ) const
+SerializerMonitorStdv3::serializeTeam( std::ostream & os,
+                                       const int time,
+                                       const Team & team_l,
+                                       const Team & team_r ) const
 {
     os << "(team " << time
-       << ' ' << ( left_name.empty() ? "null" : left_name.c_str() )
-       << ' ' << ( right_name.empty() ? "null" : right_name.c_str() )
-       << ' ' << left_point
-       << ' ' << right_point;
+       << ' ' << ( team_l.name().empty() ? "null" : team_l.name().c_str() )
+       << ' ' << ( team_r.name().empty() ? "null" : team_r.name().c_str() )
+       << ' ' << team_l.point()
+       << ' ' << team_r.point();
 
-    if ( left_pen_taken > 0 || right_pen_taken > 0 )
+    if ( team_l.penaltyTaken() > 0 || team_r.penaltyTaken() > 0 )
     {
-        os << ' ' << left_pen_point
-           << ' ' << left_pen_taken - left_pen_point
-           << ' ' << right_pen_point
-           << ' ' << right_pen_taken - right_pen_point;
+        os << ' ' << team_l.penaltyPoint()
+           << ' ' << team_l.penaltyTaken() - team_l.penaltyPoint()
+           << ' ' << team_r.penaltyPoint()
+           << ' ' << team_r.penaltyTaken() - team_r.penaltyPoint();
     }
     os << ')';
 
@@ -185,149 +181,139 @@ SerializerMonitorStdv3::serializeShowEnd( std::ostream & os ) const
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayMode( std::ostream & os,
-                                               const PlayMode pmode ) const
+SerializerMonitorStdv3::serializePlayModeId( std::ostream & os,
+                                             const PlayMode pmode ) const
 {
     os << " (pm " << pmode << ')';
 }
 
 void
-SerializerMonitorStdv3::serializeShowScore( std::ostream & os,
-                                            const int score_l,
-                                            const int score_r,
-                                            const int pen_taken_l,
-                                            const int pen_taken_r,
-                                            const int pen_score_l,
-                                            const int pen_score_r ) const
+SerializerMonitorStdv3::serializeScore( std::ostream & os,
+                                        const Team & team_l,
+                                        const Team & team_r ) const
 {
     os << " (score "
-       << ' ' << score_l
-       << ' ' << score_r;
-    if ( pen_taken_l > 0
-         || pen_taken_r > 0 )
+       << ' ' << team_l.point()
+       << ' ' << team_r.point();
+
+    if ( team_l.penaltyTaken() > 0 || team_r.penaltyTaken() > 0 )
     {
-        os << ' ' << pen_score_l
-           << ' ' << pen_taken_l - pen_score_l
-           << ' ' << pen_score_r
-           << ' ' << pen_taken_r - pen_score_r;
+        os << ' ' << team_l.penaltyPoint()
+           << ' ' << team_l.penaltyTaken() - team_l.penaltyPoint()
+           << ' ' << team_r.penaltyPoint()
+           << ' ' << team_r.penaltyTaken() - team_r.penaltyPoint();
     }
     os << ')';
 }
 
 void
-SerializerMonitorStdv3::serializeShowBall( std::ostream & os,
-                                           const PVector & pos,
-                                           const PVector & vel ) const
+SerializerMonitorStdv3::serializeBall( std::ostream & os,
+                                       const Ball & ball ) const
 {
     os << " (" << BALL_NAME_SHORT
-       << ' ' << Quantize( pos.x, PREC )
-       << ' ' << Quantize( pos.y, PREC )
-       << ' ' << Quantize( vel.x, PREC )
-       << ' ' << Quantize( vel.y, PREC )
+       << ' ' << Quantize( ball.pos().x, PREC )
+       << ' ' << Quantize( ball.pos().y, PREC )
+       << ' ' << Quantize( ball.vel().x, PREC )
+       << ' ' << Quantize( ball.vel().y, PREC )
        << ')';
 }
 
 void
-SerializerMonitorStdv3:: serializeShowPlayerBegin( std::ostream & os,
-                                                   const Side side,
-                                                   const int unum,
-                                                   const int type,
-                                                   const int state ) const
+SerializerMonitorStdv3:: serializePlayerBegin( std::ostream & os,
+                                               const Player & player ) const
 {
     os << " ("
-       << '(' << SideStr( side )
-       << ' ' << unum
-       << ')'
-       << ' ' << type
+       << '(' << SideStr( player.side() ) << ' ' << player.unum() << ')'
+       << ' ' << player.playerTypeId()
        << ' ' << std::hex << std::showbase
-       << state
+       << player.state()
        << std::dec << std::noshowbase;
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerEnd( std::ostream & os ) const
+SerializerMonitorStdv3::serializePlayerEnd( std::ostream & os ) const
 {
     os << ')';
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerPos( std::ostream & os,
-                                                const PVector & pos,
-                                                const PVector & vel,
-                                                const double & body,
-                                                const double & neck ) const
+SerializerMonitorStdv3::serializePlayerPos( std::ostream & os,
+                                                const Player & player ) const
 {
-    os << ' ' << Quantize( pos.x, PREC )
-       << ' ' << Quantize( pos.y, PREC )
-       << ' ' << Quantize( vel.x, PREC )
-       << ' ' << Quantize( vel.y, PREC )
-       << ' ' << Quantize( body, DPREC )
-       << ' ' << Quantize( neck, DPREC );
+    os << ' ' << Quantize( player.pos().x, PREC )
+       << ' ' << Quantize( player.pos().y, PREC )
+       << ' ' << Quantize( player.vel().x, PREC )
+       << ' ' << Quantize( player.vel().y, PREC )
+       << ' ' << Quantize( Rad2Deg( player.angleBodyCommitted() ), DPREC )
+       << ' ' << Quantize( Rad2Deg( player.angleNeckCommitted() ), DPREC );
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerArm( std::ostream & os,
-                                                const double & arm_dist,
-                                                const double & arm_dir ) const
+SerializerMonitorStdv3::serializePlayerArm( std::ostream & os,
+                                            const Player & player ) const
 {
-    os << ' ' << Quantize( arm_dist, PREC )
-       << ' ' << Quantize( arm_dir, DPREC );
+    if ( player.arm().isPointing() )
+    {
+        rcss::geom::Vector2D arm_dest;
+        if ( player.arm().getRelDest( rcss::geom::Vector2D( player.pos().x,
+                                                            player.pos().y ),
+                                      player.angleBodyCommitted() + player.angleNeckCommitted(),
+                                      arm_dest ) )
+        {
+            os << ' ' << Quantize( arm_dest.getMag(), PREC )
+               << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), DPREC );
+        }
+    }
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerViewMode( std::ostream & os,
-                                                     const bool high_quality,
-                                                     const double & vis_angle ) const
+SerializerMonitorStdv3::serializePlayerViewMode( std::ostream & os,
+                                                 const Player & player ) const
 {
     os << " (v "
-           << ( high_quality ? "h " : "l " )
-           << Quantize( vis_angle, DPREC )
-           << ')';
+       << ( player.highquality() ? "h " : "l " )
+       << Quantize( Rad2Deg( player.visibleAngle() ), DPREC ) << ')';
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerStamina( std::ostream & os,
-                                                    const double & stamina,
-                                                    const double & effort,
-                                                    const double & recovery ) const
+SerializerMonitorStdv3::serializePlayerStamina( std::ostream & os,
+                                                const Player & player ) const
 {
-    os << " (s " << stamina << ' ' << effort << ' ' << recovery << ')';
+    os << " (s "
+       << player.stamina() << ' '
+       << player.effort() << ' '
+       << player.recovery() << ')';
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerFocus( std::ostream & os,
-                                                  const Side side,
-                                                  const int unum ) const
+SerializerMonitorStdv3::serializePlayerFocus( std::ostream & os,
+                                              const Player & player ) const
 {
-    os << " (f " << SideStr( side ) << ' ' << unum << ')';
+    if ( player.state() != DISABLE
+         && player.getFocusTarget() != NULL )
+    {
+        os << " (f "
+           << SideStr( player.getFocusTarget()->side() ) << ' '
+           << player.getFocusTarget()->unum() << ')';
+    }
 }
 
 void
-SerializerMonitorStdv3::serializeShowPlayerCounts( std::ostream & os,
-                                                   const int kick,
-                                                   const int dash,
-                                                   const int turn,
-                                                   const int goalie_catch,
-                                                   const int move,
-                                                   const int turn_neck,
-                                                   const int change_view,
-                                                   const int say,
-                                                   const int tackle,
-                                                   const int pointto,
-                                                   const int attentionto ) const
+SerializerMonitorStdv3::serializePlayerCounts( std::ostream & os,
+                                               const Player & player ) const
 {
-    os << " (c "
-       << kick << ' '
-       << dash << ' '
-       << turn << ' '
-       << goalie_catch << ' '
-       << move << ' '
-       << turn_neck << ' '
-       << change_view << ' '
-       << say << ' '
-       << tackle << ' '
-       << pointto << ' '
-       << attentionto << ')';
+     os << " (c "
+        << player.kickCount() << ' '
+        << player.dashCount() << ' '
+        << player.turnCount() << ' '
+        << player.catchCount() << ' '
+        << player.moveCount() << ' '
+        << player.turnNeckCount() << ' '
+        << player.changeViewCount() << ' '
+        << player.sayCount() << ' '
+        << player.tackleCount() << ' '
+        << player.arm().getCounter() << ' '
+        << player.attentiontoCount() << ')';
 }
 
 void

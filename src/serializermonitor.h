@@ -25,6 +25,10 @@
 
 #include "serializer.h"
 
+class Ball;
+class Player;
+class Team;
+
 namespace rcss {
 
 /*!
@@ -53,16 +57,10 @@ public:
     ~SerializerMonitor();
 
     virtual
-    void serializeScore( std::ostream &,
-                         const int,
-                         const std::string &,
-                         const std::string &,
-                         const int,
-                         const int,
-                         const int,
-                         const int,
-                         const int,
-                         const int ) const
+    void serializeTeam( std::ostream &,
+                        const int,
+                        const Team &,
+                        const Team & ) const
       { }
 
     virtual
@@ -79,81 +77,49 @@ public:
     void serializeShowEnd( std::ostream & ) const
       { }
     virtual
-    void serializeShowPlayMode( std::ostream &,
-                                const PlayMode ) const
+    void serializePlayModeId( std::ostream &,
+                              const PlayMode ) const
       { }
     virtual
-    void serializeShowScore( std::ostream &,
-                             const int,
-                             const int,
-                             const int,
-                             const int,
-                             const int,
-                             const int ) const
+    void serializeScore( std::ostream &,
+                         const Team &,
+                         const Team & ) const
       { }
     virtual
-    void serializeShowBall( std::ostream &,
-                            const PVector &,
-                            const PVector & ) const
+    void serializeBall( std::ostream &,
+                        const Ball & ) const
       { }
 
     virtual
-    void serializeShowPlayerBegin( std::ostream &,
-                                   const Side,
-                                   const int,
-                                   const int,
-                                   const int ) const
+    void serializePlayerBegin( std::ostream &,
+                               const Player & ) const
       { }
     virtual
-    void serializeShowPlayerEnd( std::ostream & ) const
+    void serializePlayerEnd( std::ostream & ) const
       { }
     virtual
-    void serializeShowPlayerPos( std::ostream &,
-                                 const PVector &,
-                                 const PVector &,
-                                 const double &,
-                                 const double & ) const
+    void serializePlayerPos( std::ostream &,
+                             const Player & ) const
       { }
     virtual
-    void serializeShowPlayerArm( std::ostream &,
-                                 const double &,
-                                 const double & ) const
+    void serializePlayerArm( std::ostream &,
+                             const Player & ) const
       { }
     virtual
-    void serializeShowPlayerViewMode( std::ostream &,
-                                      const bool,
-                                      const double & ) const
+    void serializePlayerViewMode( std::ostream &,
+                                  const Player & ) const
       { }
     virtual
-    void serializeShowPlayerStamina( std::ostream &,
-                                     const double &,
-                                     const double &,
-                                     const double & ) const
+    void serializePlayerStamina( std::ostream &,
+                                 const Player & ) const
       { }
     virtual
-    void serializeShowPlayerFocus( std::ostream &,
-                                   const Side,
-                                   const int ) const
+    void serializePlayerFocus( std::ostream &,
+                               const Player & ) const
       { }
     virtual
-    void serializeShowPlayerCountsBegin( std::ostream & ) const
-      { }
-    virtual
-    void serializeShowPlayerCountsEnd( std::ostream & ) const
-      { }
-    virtual
-    void serializeShowPlayerCounts( std::ostream &,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int,
-                                    const int ) const
+    void serializePlayerCounts( std::ostream &,
+                                const Player & ) const
       { }
 
     virtual
@@ -211,16 +177,10 @@ public:
     SerializerMonitorStdv3 * instance();
 
     virtual
-    void serializeScore( std::ostream & os,
-                         const int time,
-                         const std::string & left_name,
-                         const std::string & right_name,
-                         const int left_point,
-                         const int right_point,
-                         const int left_pen_taken,
-                         const int right_pen_taken,
-                         const int left_pen_point,
-                         const int right_pen_point ) const;
+    void serializeTeam( std::ostream & os,
+                        const int time,
+                        const Team & team_l,
+                        const Team & team_r ) const;
 
     virtual
     void serializePlayMode( std::ostream & os,
@@ -233,67 +193,40 @@ public:
     virtual
     void serializeShowEnd( std::ostream & ) const;
     virtual
-    void serializeShowPlayMode( std::ostream & os,
-                                const PlayMode pmode ) const;
+    void serializePlayModeId( std::ostream & os,
+                              const PlayMode pmode ) const;
     virtual
-    void serializeShowScore( std::ostream & os,
-                             const int score_l,
-                             const int score_r,
-                             const int pen_taken_l,
-                             const int pen_taken_r,
-                             const int pen_score_l,
-                             const int pen_score_r ) const;
+    void serializeScore( std::ostream & os,
+                         const Team & team_l,
+                         const Team & team_r ) const;
     virtual
-    void serializeShowBall( std::ostream & os,
-                            const PVector & pos,
-                            const PVector & vel ) const;
+    void serializeBall( std::ostream & os,
+                        const Ball & ball ) const;
     virtual
-    void serializeShowPlayerBegin( std::ostream & os,
-                                   const Side side,
-                                   const int unum,
-                                   const int type,
-                                   const int state ) const;
+    void serializePlayerBegin( std::ostream & os,
+                               const Player & player ) const;
     virtual
-    void serializeShowPlayerEnd( std::ostream & os ) const;
+    void serializePlayerEnd( std::ostream & os ) const;
     virtual
-    void serializeShowPlayerPos( std::ostream & os,
-                                 const PVector & pos,
-                                 const PVector & vel,
-                                 const double & body,
-                                 const double & neck ) const;
+    void serializePlayerPos( std::ostream & os,
+                             const Player & player ) const;
     virtual
-    void serializeShowPlayerArm( std::ostream & os,
-                                 const double & arm_dist,
-                                 const double & arm_dir ) const;
+    void serializePlayerArm( std::ostream & os,
+                             const Player & player ) const;
     virtual
-    void serializeShowPlayerViewMode( std::ostream & os,
-                                      const bool high_quality,
-                                      const double & vis_angle ) const;
+    void serializePlayerViewMode( std::ostream & os,
+                                  const Player & player ) const;
     virtual
-    void serializeShowPlayerStamina( std::ostream & os,
-                                     const double & stamina,
-                                     const double & effort,
-                                     const double & recovery ) const;
-    virtual
-    void serializeShowPlayerFocus( std::ostream & os,
-                                   const Side side,
-                                   const int unum ) const;
-    virtual
-    void serializeShowPlayerCounts( std::ostream & os,
-                                    const int kick,
-                                    const int dash,
-                                    const int turn,
-                                    const int goalie_catch,
-                                    const int move,
-                                    const int turn_neck,
-                                    const int change_view,
-                                    const int say,
-                                    const int tackle,
-                                    const int pointto,
-                                    const int attentionto ) const;
+    void serializePlayerStamina( std::ostream & os,
+                                 const Player & player ) const;
+    void serializePlayerFocus( std::ostream & os,
+                               const Player & player ) const;
 
     virtual
-    void serializeTeamGraphic( std::ostream &,
+    void serializePlayerCounts( std::ostream & os,
+                                const Player & player ) const;
+    virtual
+    void serializeTeamGraphic( std::ostream & os,
                                const int x,
                                const int y,
                                const char * msg ) const;

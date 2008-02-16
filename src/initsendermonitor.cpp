@@ -109,12 +109,6 @@ InitSenderMonitorV1::sendInit()
 }
 
 void
-InitSenderMonitorV1::sendReconnect()
-{
-
-}
-
-void
 InitSenderMonitorV1::sendServerParams()
 {
 
@@ -285,16 +279,10 @@ InitSenderMonitorV3::sendPlayerTypes()
 void
 InitSenderMonitorV3::sendScore()
 {
-    serializer().serializeScore( transport(),
-                                 stadium().time(),
-                                 stadium().teamLeft().name(),
-                                 stadium().teamRight().name(),
-                                 stadium().teamLeft().point(),
-                                 stadium().teamRight().point(),
-                                 stadium().teamLeft().penaltyTaken(),
-                                 stadium().teamRight().penaltyTaken(),
-                                 stadium().teamLeft().penaltyPoint(),
-                                 stadium().teamRight().penaltyPoint() );
+    serializer().serializeTeam( transport(),
+                                stadium().time(),
+                                stadium().teamLeft(),
+                                stadium().teamRight() );
     transport() << std::ends << std::flush;
 }
 

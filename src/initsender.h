@@ -148,9 +148,6 @@ public:
     void sendInit() = 0;
 
     virtual
-    void sendReconnect() = 0;
-
-    virtual
     void sendServerParams()
       {
           commonSender().sendServerParams();
@@ -174,79 +171,6 @@ public:
     virtual
     void sendScore() = 0;
 };
-
-/*!
-//===================================================================
-//
-//  CLASS: InitObserver
-//
-//  DESC: Interface for an object that receives init information.
-//
-//===================================================================
-*/
-
-// template< typename S >
-// class InitObserver
-//     : protected BaseObserver< S >
-// {
-// public:
-//     typedef S InitSender;
-
-//     InitObserver()
-//       {}
-
-//     InitObserver( InitSender& sender )
-//         : BaseObserver< InitSender >( sender )
-//       {}
-
-//     InitObserver( std::auto_ptr< InitSender > sender )
-//         : BaseObserver< InitSender >( sender )
-//       {}
-
-//     ~InitObserver()
-//       {}
-
-//     void
-//     setInitSender( InitSender& sender )
-//       {
-//           BaseObserver< InitSender >::setSender( sender );
-//       }
-
-//     void
-//     setInitSender( std::auto_ptr< InitSender > sender )
-//       {
-//           BaseObserver< InitSender >::setSender( sender );
-//       }
-
-//     void
-//     sendInit()
-//       { BaseObserver< InitSender >::sender().sendInit(); }
-
-//     void
-//     sendReconnect()
-//       { BaseObserver< InitSender >::sender().sendReconnect(); }
-
-//     void
-//     sendServerParams()
-//       { BaseObserver< InitSender >::sender().sendServerParams(); }
-
-//     void
-//     sendPlayerParams()
-//       { BaseObserver< InitSender >::sender().sendPlayerParams(); }
-
-//     void
-//     sendPlayerTypes()
-//       { BaseObserver< InitSender >::sender().sendPlayerTypes(); }
-
-//     void
-//     sendChangedPlayers()
-//       { BaseObserver< InitSender >::sender().sendChangedPlayers(); }
-
-//     void
-//     sendScore()
-//       { BaseObserver< InitSender >::sender().sendScore(); }
-
-// };
 
 
 /*!
@@ -455,6 +379,12 @@ private:
       stuff like velocity, stamina, etc */
     const Player & M_self;
     const Stadium & M_stadium;
+
+public:
+
+    virtual
+    void sendReconnect() = 0;
+
 };
 
 /*!
@@ -746,11 +676,6 @@ public:
           BaseObserver< InitSenderOnlineCoach >::sender().sendInit();
       }
 
-    void sendReconnect()
-      {
-          BaseObserver< InitSenderOnlineCoach >::sender().sendReconnect();
-      }
-
     void sendServerParams()
       {
           BaseObserver< InitSenderOnlineCoach >::sender().sendServerParams();
@@ -813,9 +738,6 @@ public:
 
     virtual
     void sendInit();
-
-    virtual
-    void sendReconnect();
 
     virtual
     void sendScore();
@@ -1031,11 +953,6 @@ public:
           BaseObserver< InitSenderOfflineCoach >::sender().sendInit();
       }
 
-    void sendReconnect()
-      {
-          BaseObserver< InitSenderOfflineCoach >::sender().sendReconnect();
-      }
-
     void sendServerParams()
       {
           BaseObserver< InitSenderOfflineCoach >::sender().sendServerParams();
@@ -1089,9 +1006,6 @@ public:
 
     virtual
     void sendInit();
-
-    virtual
-    void sendReconnect();
 
     virtual
     void sendScore();

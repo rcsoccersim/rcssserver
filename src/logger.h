@@ -40,6 +40,7 @@ class XPMHolder;
 struct timeval;
 
 namespace rcss {
+class InitObserverMonitor;
 namespace clang {
 class Msg;
 }
@@ -55,6 +56,7 @@ private:
     static const std::string DEF_KAWAY_NAME;
     static const std::string DEF_KAWAY_SUFFIX;
 
+    rcss::InitObserverMonitor * M_init_observer;
 
     const Stadium & M_stadium;
 
@@ -79,6 +81,8 @@ public:
     explicit
     Logger( Stadium & stadium );
     ~Logger();
+
+    bool setSenders();
 
     bool open();
     void close();

@@ -1,5 +1,21 @@
 2008-02-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/initsenderlogger.h:
+	* src/dispsender.cpp:
+	* src/initsender.cpp:
+	* src/initsender.h:
+	* src/initsendermonitor.cpp:
+	* src/initsendermonitor.h:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/monitor.cpp:
+	* src/monitor.h:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	- reimplemented SerializerMonitor.
+	- added InitSenderLogger
+	- cleaned up.
+
 	* src/logger.cpp:
 	* src/logger.h:
 	- added close*() methods.

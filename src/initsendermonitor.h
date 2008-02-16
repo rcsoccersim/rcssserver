@@ -101,6 +101,9 @@ protected:
 
 public:
 
+    void sendReconnect()
+      { }
+
     virtual
     void sendTeamGraphic() = 0;
 
@@ -140,11 +143,6 @@ public:
     void sendInit()
       {
           BaseObserver< InitSenderMonitor >::sender().sendInit();
-      }
-
-    void sendReconnect()
-      {
-          BaseObserver< InitSenderMonitor >::sender().sendReconnect();
       }
 
     void sendServerParams()
@@ -204,9 +202,6 @@ public:
 
     virtual
     void sendInit();
-
-    virtual
-    void sendReconnect();
 
     virtual
     void sendServerParams();

@@ -59,26 +59,14 @@ public:
              const double & version );
     ~Monitor();
 
-    void parseMsg( const char * msg,
-                   const size_t & len )
-      {
-          char * str = const_cast< char * >( msg );
-          if ( str[ len - 1 ] != 0 )
-          {
-              if ( version() >= 2.0 )
-              {
-                  sendMsg( MSG_BOARD,
-                           "(warning message_not_null_terminated)" );
-              }
-              str[ len ] = 0;
-          }
-          parseCommand( str );
-      }
-
     void disable()
       {
           RemoteClient::close();
       }
+
+    void parseMsg( const char * msg,
+                   const size_t & len );
+    bool parseCommand( const char * message );
 
     bool setSenders();
 
@@ -93,8 +81,6 @@ public:
     void sendShow();
     int sendMsg( const BoardType board,
                  const char * msg );
-
-    bool parseCommand( const char * message );
 
     const
     double & version() const
