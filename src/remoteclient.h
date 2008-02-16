@@ -66,7 +66,8 @@ public:
           return M_enforce_dedicated_port = enf;
       }
 
-    int send( const char * msg, const size_t & len )
+    int send( const char * msg,
+              const size_t & len )
       {
           if ( M_socket.isConnected() )
           {
@@ -118,7 +119,8 @@ public:
           return -1;
       }
 
-    void undedicatedRecv( char * msg, const size_t & len )
+    void undedicatedRecv( char * msg,
+                          const size_t & len )
       {
           if ( M_enforce_dedicated_port )
           {
@@ -132,7 +134,8 @@ public:
       }
 
 protected:
-    void processMsg( char* msg, const size_t& len )
+    void processMsg( char* msg,
+                     const size_t & len )
       {
 #ifdef HAVE_LIBZ
           if ( M_comp_level >= 0 )
@@ -155,7 +158,7 @@ protected:
     void parseMsg( const char * msg, const size_t & len ) = 0;
 
 public:
-    int getCompressionLevel() const
+    int compressionLevel() const
       {
           return M_comp_level;
       }

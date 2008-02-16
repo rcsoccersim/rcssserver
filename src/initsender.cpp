@@ -22,9 +22,11 @@
 #include "initsender.h"
 
 #include "coach.h"
+#include "field.h"
+#include "heteroplayer.h"
 #include "player.h"
 #include "serializer.h"
-#include "field.h"
+#include "team.h"
 
 namespace rcss {
 
@@ -37,7 +39,7 @@ namespace rcss {
 */
 
 InitSender::InitSender( std::ostream& transport,
-                        const boost::shared_ptr< InitSenderCommon >& common )
+                        const boost::shared_ptr< InitSenderCommon > & common )
     : Sender( transport ), m_common_sender( common )
 {
 
@@ -660,7 +662,7 @@ void
 InitSenderPlayerV1::sendInit()
 {
     serializer().serializeInit( transport(),
-                                SideStr( self().team()->side() ),
+                                SideStr( self().side() ),
                                 self().unum(),
                                 stadium().playmode() );
     transport() << std::ends << std::flush;
@@ -675,7 +677,7 @@ InitSenderPlayerV1::sendReconnect()
     //          std::cerr << "mode = " << stadium().mode << std::endl;
 
     serializer().serializeReconnect( transport(),
-                                     SideStr( self().team()->side() ),
+                                     SideStr( self().side() ),
                                      stadium().playmode() );
     transport() << std::ends << std::flush;
     //          std::cerr << "Sent" << std::endl;
@@ -686,12 +688,12 @@ InitSenderPlayerV1::sendScore()
 {
     int our_score = self().team()->point();
     int opp_score = 0;
-    if( self().team()->side() == LEFT
+    if( self().side() == LEFT
         && stadium().teamRight().enabled() )
     {
         opp_score = stadium().teamRight().point();
     }
-    else if( self().team()->side() == RIGHT
+    else if( self().side() == RIGHT
              && stadium().teamLeft().enabled() )
     {
         opp_score = stadium().teamLeft().point();
@@ -986,7 +988,7 @@ InitSenderOnlineCoachV7::sendChangedPlayers()
     {
         if ( (*p)->playerTypeId() == 0 ) continue;
 
-        if ( self().side() == (*p)->team()->side() )
+        if ( self().side() == (*p)->side() )
         {
             serializer().serializeChangedPlayer( transport(),
                                                  (*p)->unum(),

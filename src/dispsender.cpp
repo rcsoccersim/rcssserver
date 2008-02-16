@@ -201,7 +201,7 @@ DispSenderMonitorV1::sendShow()
         dinfo.body.show.pos[i+1].x = htons( (Int16)rint( players[i]->pos().x * SHOWINFO_SCALE ) );
         dinfo.body.show.pos[i+1].y = htons( (Int16)rint( players[i]->pos().y * SHOWINFO_SCALE ) );
         dinfo.body.show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( players[i]->angleBodyCommitted() ) );
-        dinfo.body.show.pos[i+1].side = htons( players[i]->team()->side() );
+        dinfo.body.show.pos[i+1].side = htons( players[i]->side() );
         dinfo.body.show.pos[i+1].unum = htons( players[i]->unum() );
     }
 
@@ -445,7 +445,7 @@ DispSenderMonitorV3::sendShow()
           ++p )
     {
         serializer().serializeShowPlayerBegin( ostr,
-                                               (*p)->team()->side(),
+                                               (*p)->side(),
                                                (*p)->unum(),
                                                (*p)->playerTypeId(),
                                                (*p)->state() );
@@ -481,7 +481,7 @@ DispSenderMonitorV3::sendShow()
              && (*p)->getFocusTarget() != NULL )
         {
             serializer().serializeShowPlayerFocus( ostr,
-                                                   (*p)->getFocusTarget()->team()->side(),
+                                                   (*p)->getFocusTarget()->side(),
                                                    (*p)->getFocusTarget()->unum() );
         }
 

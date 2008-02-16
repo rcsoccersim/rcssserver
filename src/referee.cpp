@@ -19,11 +19,16 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "referee.h"
 
 #include "field.h"
 #include "player.h"
 #include "team.h"
+#include "random.h"
 
 #include <limits>
 
@@ -552,7 +557,7 @@ Referee::placePlayersInTheirField()
     {
         if ( (*it)->state() == DISABLE ) continue;
 
-        switch ( (*it)->team()->side() ) {
+        switch ( (*it)->side() ) {
         case LEFT:
             if ( (*it)->pos().x > 0 )
             {
@@ -584,7 +589,7 @@ Referee::placePlayersInTheirField()
             break;
         }
 
-        if ( (*it)->team()->side() != M_stadium.kickOffSide() )
+        if ( (*it)->side() != M_stadium.kickOffSide() )
         {
             CArea expand_c( PVector( 0.0, 0.0 ),
                             ServerParam::KICK_OFF_CLEAR_DISTANCE + (*it)->size() );
@@ -630,7 +635,7 @@ Referee::clearPlayersFromBall( const Side side )
             }
 
             if ( side == NEUTRAL
-                 || (*it)->team()->side() == side )
+                 || (*it)->side() == side )
             {
                 if ( indirect
                      && std::fabs( (*it)->pos().x ) >= ServerParam::PITCH_LENGTH*0.5
@@ -892,7 +897,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
     double second = 0;
     double offside_line;
 
-    switch ( kicker.team()->side() ) {
+    switch ( kicker.side() ) {
     case LEFT:
         for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
               p != end;
@@ -903,7 +908,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
                 continue;
             }
 
-            if ( (*p)->team()->side() == RIGHT )
+            if ( (*p)->side() == RIGHT )
             {
                 if ( (*p)->pos().x > second )
                 {
@@ -934,7 +939,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
                 continue;
             }
 
-            if ( (*p)->team()->side() == LEFT
+            if ( (*p)->side() == LEFT
                  && (*p)->pos().x > offside_line
                  && (*p)->unum() != kicker.unum() )
             {
@@ -953,7 +958,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
                 continue;
             }
 
-            if ( (*p)->team()->side() == LEFT )
+            if ( (*p)->side() == LEFT )
             {
                 if ( (*p)->pos().x < second )
                 {
@@ -981,7 +986,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
         {
             if ( (*p)->state() == DISABLE )
                 continue;
-            if ( (*p)->team()->side() == RIGHT
+            if ( (*p)->side() == RIGHT
                  && (*p)->pos().x < offside_line
                  && (*p)->unum() != kicker.unum() )
             {
@@ -1044,7 +1049,7 @@ OffsideRef::callOffside()
         pos = M_offside_pos;
     }
 
-    if ( M_last_kicker->team()->side() == LEFT )
+    if ( M_last_kicker->side() == LEFT )
     {
         M_stadium.placeBall( PM_OffSide_Left, RIGHT, pos );
     }
@@ -1064,7 +1069,7 @@ OffsideRef::callOffside()
     }
 
     M_stadium.placePlayersInField();
-    clearPlayersFromBall( M_last_kicker->team()->side() );
+    clearPlayersFromBall( M_last_kicker->side() );
 }
 
 
@@ -1107,7 +1112,7 @@ OffsideRef::checkPlayerAfterOffside()
             continue;
         }
 
-        if ( (*p)->team()->side() == offsideside )
+        if ( (*p)->side() == offsideside )
         {
             if ( c.inArea( (*p)->pos() ) )
             {
@@ -1147,13 +1152,13 @@ FreeKickRef::kickTaken( const Player & kicker )
     if ( goalKick( M_stadium.playmode() ) )
     {
         if ( ( M_stadium.playmode() == PM_GoalKick_Left
-               && kicker.team()->side() != LEFT )
+               && kicker.side() != LEFT )
              || ( M_stadium.playmode() == PM_GoalKick_Right
-                  && kicker.team()->side() != RIGHT )
+                  && kicker.side() != RIGHT )
              )
         {
             // opponent player kicks tha ball while ball is in penalty areas.
-            awardGoalKick( (Side)( - kicker.team()->side() ), M_stadium.ball().pos() );
+            awardGoalKick( (Side)( - kicker.side() ), M_stadium.ball().pos() );
             M_goal_kick_count = -1;
             M_kick_taken = false;
             return;
@@ -1167,7 +1172,7 @@ FreeKickRef::kickTaken( const Player & kicker )
             {
                 if ( ServerParam::instance().properGoalKicks() )
                 {
-                    awardGoalKick( M_kick_taker->team()->side(),
+                    awardGoalKick( M_kick_taker->side(),
                                    M_stadium.ball().pos() );
                 }
             }
@@ -1175,15 +1180,15 @@ FreeKickRef::kickTaken( const Player & kicker )
             {
                 if ( ServerParam::instance().freeKickFaults() )
                 {
-                    M_stadium.setPlayerState( M_kick_taker->team()->side(),
+                    M_stadium.setPlayerState( M_kick_taker->side(),
                                               M_kick_taker->unum(),
                                               FREE_KICK_FAULT );
-                    callFreeKickFault( kicker.team()->side(),
+                    callFreeKickFault( kicker.side(),
                                        M_stadium.ball().pos() );
                 }
                 else if ( ServerParam::instance().properGoalKicks() )
                 {
-                    awardGoalKick( M_kick_taker->team()->side(),
+                    awardGoalKick( M_kick_taker->side(),
                                    M_stadium.ball().pos() );
                 }
             }
@@ -1212,10 +1217,10 @@ FreeKickRef::kickTaken( const Player & kicker )
             {
                 if ( M_kick_taker->dashCount() > M_kick_taker_dashes )
                 {
-                    M_stadium.setPlayerState( M_kick_taker->team()->side(),
+                    M_stadium.setPlayerState( M_kick_taker->side(),
                                               M_kick_taker->unum(),
                                               FREE_KICK_FAULT );
-                    callFreeKickFault( M_kick_taker->team()->side(),
+                    callFreeKickFault( M_kick_taker->side(),
                                        M_stadium.ball().pos() );
                 }
             }
@@ -1231,13 +1236,13 @@ void
 FreeKickRef::ballTouched( const Player & player )
 {
     if ( ( M_stadium.playmode() == PM_GoalKick_Left
-           && player.team()->side() != LEFT )
+           && player.side() != LEFT )
          || ( M_stadium.playmode() == PM_GoalKick_Right
-              && player.team()->side() != RIGHT )
+              && player.side() != RIGHT )
          )
     {
         // opponent player kicks tha ball while ball is in penalty area.
-        awardGoalKick( (Side)( - player.team()->side() ), M_stadium.ball().pos() );
+        awardGoalKick( (Side)( - player.side() ), M_stadium.ball().pos() );
         M_goal_kick_count = -1;
         M_kick_taken = false;
         return;
@@ -1250,10 +1255,10 @@ FreeKickRef::ballTouched( const Player & player )
         {
             if ( M_kick_taker->dashCount() > M_kick_taker_dashes )
             {
-                M_stadium.setPlayerState( M_kick_taker->team()->side(),
+                M_stadium.setPlayerState( M_kick_taker->side(),
                                           M_kick_taker->unum(),
                                           FREE_KICK_FAULT );
-                callFreeKickFault( M_kick_taker->team()->side(),
+                callFreeKickFault( M_kick_taker->side(),
                                    M_stadium.ball().pos() );
             }
             /// else do nothing yet as the player just colided with the ball instead of dashing into it
@@ -1313,12 +1318,12 @@ FreeKickRef::analyse()
                 {
                     if ( tooManyGoalKicks() )
                     {
-                        awardFreeKick( (Side)( -M_kick_taker->team()->side() ),
+                        awardFreeKick( (Side)( -M_kick_taker->side() ),
                                        M_stadium.ball().pos() );
                     }
                     else
                     {
-                        awardGoalKick( M_kick_taker->team()->side(),
+                        awardGoalKick( M_kick_taker->side(),
                                        M_stadium.ball().pos() );
                     }
                 }
@@ -1544,7 +1549,7 @@ FreeKickRef::placePlayersForGoalkick()
     {
         if ( (*p)->state() == DISABLE ) continue;
 
-        if ( (*p)->team()->side() == oppside )
+        if ( (*p)->side() == oppside )
         {
             const double size = (*p)->size();
             RArea expand_area( p_area->left - size,
@@ -1630,7 +1635,7 @@ TouchRef::analyseImpl()
             Side side = NEUTRAL;
             if ( M_last_touched != NULL )
             {
-                side = M_last_touched->team()->side();
+                side = M_last_touched->side();
             }
 
             if ( M_stadium.ball().pos().x
@@ -1683,7 +1688,7 @@ TouchRef::analyseImpl()
             Side side = NEUTRAL;
             if ( M_last_touched != NULL )
             {
-                side = M_last_touched->team()->side();
+                side = M_last_touched->side();
             }
 
             if ( side == NEUTRAL )
@@ -1789,7 +1794,7 @@ TouchRef::checkGoal()
 
 
     if ( ( ! M_stadium.ballCatcher()
-           || M_stadium.ballCatcher()->team()->side() == LEFT )
+           || M_stadium.ballCatcher()->side() == LEFT )
          && crossGoalLine( LEFT, M_prev_ball_pos )
          && ! isPenaltyShootOut( M_stadium.playmode() ) )
     {
@@ -1811,7 +1816,7 @@ TouchRef::checkGoal()
         return true;
     }
     else if ( ( ! M_stadium.ballCatcher()
-                || M_stadium.ballCatcher()->team()->side() == RIGHT )
+                || M_stadium.ballCatcher()->side() == RIGHT )
               && crossGoalLine( RIGHT, M_prev_ball_pos )
               && ! isPenaltyShootOut( M_stadium.playmode() )  )
     {
@@ -1905,11 +1910,11 @@ KeepawayRef::analyse()
                          && ppos.distance( M_stadium.ball().pos() )
                          < ServerParam::instance().kickableArea() )
                     {
-                        if ( (*p)->team()->side() == LEFT )
+                        if ( (*p)->side() == LEFT )
                         {
                             keeperPoss = true;
                         }
-                        else if ( (*p)->team()->side() == RIGHT )
+                        else if ( (*p)->side() == RIGHT )
                         {
                             keeperPoss = false;
                             M_take_time++;
@@ -1956,9 +1961,9 @@ KeepawayRef::playModeChange( PlayMode pm )
             {
                 if ( (*p)->state() != DISABLE )
                 {
-                    if ( (*p)->team()->side() == LEFT )
+                    if ( (*p)->side() == LEFT )
                         M_keepers++;
-                    else if ( (*p)->team()->side() == RIGHT )
+                    else if ( (*p)->side() == RIGHT )
                         M_takers++;
                 }
             }
@@ -2029,7 +2034,7 @@ KeepawayRef::resetField()
         if ( (*p)->state() != DISABLE )
         {
             double x, y;
-            if ( (*p)->team()->side() == LEFT )
+            if ( (*p)->side() == LEFT )
             {
                 switch( keeper_pos ) {
                 case 0:
@@ -2053,7 +2058,7 @@ KeepawayRef::resetField()
 
                 keeper_pos = ( keeper_pos + 1 ) % M_keepers;
             }
-            else if ( (*p)->team()->side() == RIGHT )
+            else if ( (*p)->side() == RIGHT )
             {
                 x = -ServerParam::instance().keepAwayLength() * 0.5 + drand( 0, 3 );
                 y = ServerParam::instance().keepAwayWidth() * 0.5 - drand( 0, 3 );
@@ -2082,11 +2087,11 @@ CatchRef::kickTaken( const Player & kicker )
 {
 //     if ( ! kicker.isGoalie() )
     {
-        if ( kicker.team()->side() == LEFT )
+        if ( kicker.side() == LEFT )
         {
             M_team_l_touched = true;
         }
-        else if ( kicker.team()->side() == RIGHT )
+        else if ( kicker.side() == RIGHT )
         {
             M_team_r_touched = true;
         }
@@ -2118,11 +2123,11 @@ CatchRef::ballTouched( const Player & player )
     // If ball is not kicked, back pass violation is never taken.
 //    if ( ! player.isGoalie() )
     {
-        if ( player.team()->side() == LEFT )
+        if ( player.side() == LEFT )
         {
             M_team_l_touched = true;
         }
-        else if ( player.team()->side() == RIGHT )
+        else if ( player.side() == RIGHT )
         {
             M_team_r_touched = true;
         }
@@ -2146,9 +2151,9 @@ CatchRef::ballCaught( const Player & catcher )
     if ( M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         && ! inPenaltyArea( catcher.team()->side(), M_stadium.ball().pos() ) )
+         && ! inPenaltyArea( catcher.side(), M_stadium.ball().pos() ) )
     {
-        callCatchFault( catcher.team()->side(), M_stadium.ball().pos() );
+        callCatchFault( catcher.side(), M_stadium.ball().pos() );
         return;
     }
 
@@ -2163,15 +2168,15 @@ CatchRef::ballCaught( const Player & catcher )
          && ServerParam::instance().backPasses() )
     {
         //M_last_back_passer->alive |= BACK_PASS;
-        M_stadium.setPlayerState( M_last_back_passer->team()->side(),
+        M_stadium.setPlayerState( M_last_back_passer->side(),
                                   M_last_back_passer->unum(),
                                   BACK_PASS );
-        callBackPass( catcher.team()->side() );
+        callBackPass( catcher.side() );
 
         return;
     }
 
-    awardFreeKick( catcher.team()->side(), M_stadium.ball().pos() );
+    awardFreeKick( catcher.side(), M_stadium.ball().pos() );
 }
 
 
@@ -2235,10 +2240,10 @@ CatchRef::analyse()
          && M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         && ! inPenaltyArea( M_stadium.ballCatcher()->team()->side(),
+         && ! inPenaltyArea( M_stadium.ballCatcher()->side(),
                              M_stadium.ball().pos() ) )
     {
-        callCatchFault( M_stadium.ballCatcher()->team()->side(),
+        callCatchFault( M_stadium.ballCatcher()->side(),
                         M_stadium.ball().pos() );
     }
 
@@ -2385,7 +2390,7 @@ PenaltyRef::analyseImpl()
               ++p )
         {
             if ( (*p)->state() != DISABLE
-                 && (*p)->team()->side() == side
+                 && (*p)->side() == side
                  && (*p)->isGoalie() )
             {
                 (*p)->moveTo( PVector( -M_pen_side
@@ -2628,7 +2633,7 @@ PenaltyRef::ballCaught( const Player & catcher )
     if ( M_stadium.playmode() == PM_PenaltyTaken_Left
          || M_stadium.playmode() == PM_PenaltyTaken_Right )
     {
-        if ( catcher.team()->side() == M_cur_pen_taker )
+        if ( catcher.side() == M_cur_pen_taker )
         {
             std::cerr << "catch by taker side goalie. foul "
                       << -M_cur_pen_taker
@@ -2657,7 +2662,7 @@ PenaltyRef::ballCaught( const Player & catcher )
     {
         std::cerr << "ball caught in ready mode. foul " << -M_cur_pen_taker
                   << std::endl;
-        penalty_foul( catcher.team()->side() );
+        penalty_foul( catcher.side() );
     }
 
     // freeze the ball
@@ -2689,13 +2694,13 @@ PenaltyRef::kickTaken( const Player & kicker )
     else if ( M_stadium.playmode() == PM_PenaltySetup_Left
               || M_stadium.playmode() == PM_PenaltySetup_Right )
     {
-        penalty_foul( kicker.team()->side() );
+        penalty_foul( kicker.side() );
     }
     // cannot kick second time after penalty was taken
     else if ( ServerParam::instance().penAllowMultiKicks() == false
               && ( M_stadium.playmode() == PM_PenaltyTaken_Left
                    || M_stadium.playmode() == PM_PenaltyTaken_Right )
-              && kicker.team()->side() == M_cur_pen_taker )
+              && kicker.side() == M_cur_pen_taker )
     {
         penalty_foul( M_cur_pen_taker );
     }
@@ -2706,7 +2711,7 @@ PenaltyRef::kickTaken( const Player & kicker )
     {
         if ( ( M_stadium.playmode() == PM_PenaltyReady_Left
                || M_stadium.playmode() == PM_PenaltyReady_Right )
-             && kicker.team()->side() == M_cur_pen_taker
+             && kicker.side() == M_cur_pen_taker
              && ( ( LEFT == M_cur_pen_taker
                     && M_sLeftPenTaken.find( kicker.unum() ) != M_sLeftPenTaken.end() )
                   || ( RIGHT == M_cur_pen_taker
@@ -2718,13 +2723,13 @@ PenaltyRef::kickTaken( const Player & kicker )
             penalty_foul( M_cur_pen_taker );
         }
         else if ( M_last_taker
-                  && M_last_taker->team()->side() == M_cur_pen_taker
+                  && M_last_taker->side() == M_cur_pen_taker
                   && M_last_taker != &kicker )
         {
             // not a taker player in the same team must not kick the ball.
             penalty_foul( M_cur_pen_taker );
         }
-        else if ( kicker.team()->side() != M_cur_pen_taker
+        else if ( kicker.side() != M_cur_pen_taker
                   && ! kicker.isGoalie() )
         {
             // field player in the defending team must not kick the ball.
@@ -3018,7 +3023,7 @@ PenaltyRef::penalty_check_players( const Side side )
     {
         if ( (*p)->state() == DISABLE ) continue;
 
-        if ( (*p)->team()->side() == side )
+        if ( (*p)->side() == side )
         {
             if ( (*p)->isGoalie() )
             {
@@ -3174,7 +3179,7 @@ PenaltyRef::placeTakerTeamPlayers()
     {
         if ( (*p)->state() == DISABLE ) continue;
 
-        if ( (*p)->team()->side() != M_cur_pen_taker ) continue;
+        if ( (*p)->side() != M_cur_pen_taker ) continue;
 
         if ( (*p) == taker )
         {
@@ -3233,7 +3238,7 @@ PenaltyRef::placeOtherTeamPlayers()
     {
         if ( (*p)->state() == DISABLE ) continue;
 
-        if ( (*p)->team()->side() == M_cur_pen_taker ) continue;
+        if ( (*p)->side() == M_cur_pen_taker ) continue;
 
         // only move goalie in case the penalty has not been started yet.
         if ( (*p)->isGoalie() )
@@ -3292,7 +3297,7 @@ PenaltyRef::getCandidateTaker()
     {
         if ( (*p)->state() == DISABLE ) continue;
 
-        if ( (*p)->team()->side() != M_cur_pen_taker ) continue;
+        if ( (*p)->side() != M_cur_pen_taker ) continue;
 
         if ( sPenTaken.find( (*p)->unum() )
              != sPenTaken.end() )

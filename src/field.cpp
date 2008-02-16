@@ -40,18 +40,21 @@
 #include "config.h"
 #endif
 
+#include "field.h"
+
 #include "audio.h"
 #include "clangmsg.h"
 #include "coach.h"
-#include "field.h"
 #include "landmarkreader.h"
 #include "monitor.h"
 #include "object.h"
 #include "param.h"
 #include "player.h"
+#include "heteroplayer.h"
 #include "random.h"
 #include "referee.h"
 #include "serverparam.h"
+#include "team.h"
 #include "types.h"
 #include "utility.h"
 #include "xpmholder.h"
@@ -871,7 +874,7 @@ Stadium::initOnlineCoach( const char * init_message,
         }
     }
 
-    OnlineCoach* olc = NULL;
+    OnlineCoach * olc = NULL;
 
     if ( ! M_team_l->name().empty()
          && M_team_l->name() == teamname )
@@ -1339,7 +1342,7 @@ Stadium::discard_player( const Side side,
     int i = 0;
     for ( i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->team()->side() == side
+        if ( M_players[i]->side() == side
              && M_players[i]->unum() == unum )
         {
             break;
@@ -1490,12 +1493,12 @@ void
 Stadium::substitute( const Player * player,
                      const int player_type_id )
 {
-    if ( player->team()->side() == LEFT )
+    if ( player->side() == LEFT )
     {
         M_team_l->substitute( player, player_type_id );
         broadcastSubstitution( LEFT, player->unum(), player_type_id );
     }
-    else if ( player->team()->side() == RIGHT )
+    else if ( player->side() == RIGHT )
     {
         M_team_r->substitute( player, player_type_id );
         broadcastSubstitution( RIGHT, player->unum(), player_type_id );
@@ -1763,7 +1766,7 @@ Stadium::ballCaught( const Player & catcher )
     if ( ! Referee::isPenaltyShootOut( playmode() ) )
     {
         std::string msg = "goalie_catch_ball_";
-        msg += SideStr( catcher.team()->side() );
+        msg += SideStr( catcher.side() );
         sendRefereeAudio( msg.c_str() );
     }
 
@@ -2282,14 +2285,14 @@ Stadium::doSendSenseBody()
         if ( (*it)->state() != DISABLE
              && (*it)->connected() )
         {
-            (*it)->sense_body();
+            (*it)->sendBody();
 
-            if ( ( (*it)->team()->side() == LEFT
+            if ( ( (*it)->side() == LEFT
                    && ServerParam::instance().fullstateLeft() )
-                 || ( (*it)->team()->side() == RIGHT
+                 || ( (*it)->side() == RIGHT
                       && ServerParam::instance().fullstateRight() ) )
             {
-                (*it)->send_fullstate_information();
+                (*it)->sendFullstate();
             }
         }
 

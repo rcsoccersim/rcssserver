@@ -26,14 +26,15 @@
 #include "logger.h"
 
 #include "player.h"
-#include "coach.h"
-#include "monitor.h"
-#include "field.h"
-#include "xpmholder.h"
-#include "serverparam.h"
-#include "playerparam.h"
-#include "heteroplayer.h"
 #include "clangmsg.h"
+#include "coach.h"
+#include "field.h"
+#include "heteroplayer.h"
+#include "monitor.h"
+#include "playerparam.h"
+#include "serverparam.h"
+#include "team.h"
+#include "xpmholder.h"
 
 #include "initsender.h"
 #include "serializercommonstdv8.h"
@@ -681,7 +682,7 @@ Logger::writeGameLogV1()
         disp.body.show.pos[i+1].x = htons( (Int16)rint( players[i]->pos().x * SHOWINFO_SCALE ) );
         disp.body.show.pos[i+1].y = htons( (Int16)rint( players[i]->pos().y * SHOWINFO_SCALE ) );
         disp.body.show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( players[i]->angleBodyCommitted() ) );
-        disp.body.show.pos[i+1].side = htons( players[i]->team()->side() );
+        disp.body.show.pos[i+1].side = htons( players[i]->side() );
         disp.body.show.pos[i+1].unum = htons( players[i]->unum() );
     }
 
@@ -739,7 +740,7 @@ Logger::writeGameLogV2()
         show.pos[i+1].x = htons( (Int16)rint( players[i]->pos().x * SHOWINFO_SCALE ) );
         show.pos[i+1].y = htons( (Int16)rint( players[i]->pos().y * SHOWINFO_SCALE ) );
         show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( players[i]->angleBodyCommitted() ) );
-        show.pos[i+1].side = htons( players[i]->team()->side() );
+        show.pos[i+1].side = htons( players[i]->side() );
         show.pos[i+1].unum = htons( players[i]->unum() );
     }
 
@@ -950,7 +951,7 @@ Logger::writeGameLogV4()
           ++p )
     {
         os << " (";
-        os << "(" << SideStr( (*p)->team()->side() )
+        os << "(" << SideStr( (*p)->side() )
            << ' ' << (*p)->unum()
            << ')';
         os << ' ' << (*p)->playerTypeId()
@@ -989,7 +990,7 @@ Logger::writeGameLogV4()
         if ( (*p)->state() != DISABLE
              && (*p)->getFocusTarget() != NULL )
         {
-            os << " (f " << SideStr( (*p)->getFocusTarget()->team()->side() )
+            os << " (f " << SideStr( (*p)->getFocusTarget()->side() )
                << ' ' << (*p)->getFocusTarget()->unum()
                << ')';
         }

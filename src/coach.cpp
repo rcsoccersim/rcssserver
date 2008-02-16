@@ -33,6 +33,7 @@
 #include "object.h"
 #include "player.h"
 #include "serializer.h"
+#include "team.h"
 #include "xpmholder.h"
 #include "initsender.h"
 #include "visual.h"
@@ -210,7 +211,7 @@ void
 Coach::parseMsg( const char * msg,
                  const size_t & len )
 {
-    char * str = (char*)msg;
+    char * str = const_cast< char * >( msg );
     if ( str[ len - 1 ] != 0 )
     {
         if ( version() >= 8.0 )
@@ -1242,7 +1243,7 @@ void
 OnlineCoach::parseMsg( const char * msg,
                        const size_t & len )
 {
-    char * str = (char*)msg;
+    char * str = const_cast< char * >( msg );
     if( str[ len - 1 ] != 0 )
     {
         if ( version() >= 8.0 )

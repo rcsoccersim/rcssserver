@@ -27,13 +27,16 @@
 
 #include "coach.h"
 #include "field.h"
+#include "team.h"
 #include "types.h"
 #include "random.h"
 #include "referee.h"
+#include "heteroplayer.h"
 #include "serverparam.h"
 #include "playerparam.h"
 #include "utility.h"
 
+#include "serializer.h"
 #include "initsender.h"
 #include "bodysender.h"
 #include "fullstatesender.h"
@@ -113,6 +116,7 @@ Player::Player( Stadium & stadium,
       M_body_observer( new rcss::BodyObserverPlayer ),
       M_fullstate_observer( new rcss::FullStateObserver ),
       M_team( team ),
+      M_side( team->side() ),
       M_unum( number ),
       M_stamina( ServerParam::instance().staminaMax() ),
       M_recovery( ServerParam::instance().recoverInit() ),
@@ -234,7 +238,7 @@ Player::init( const double & ver,
     std::snprintf( buf, 128, PLAYER_NAME_TOOFAR_FORMAT_SHORT );
     M_short_name_toofar = buf;
 
-    M_angle_body_committed = SideDirection( team()->side() );
+    M_angle_body_committed = SideDirection( side() );
 
     // pfr 8/14/00: for RC2000 evaluation
     double my_prand = ServerParam::instance().playerRand();
@@ -344,7 +348,7 @@ Player::disable()
 
     M_enable = false;
     M_state = DISABLE;
-    M_pos.x = -( unum() * 3 * team()->side() );
+    M_pos.x = -( unum() * 3 * side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
     M_vel.x = 0.0;
     M_vel.y = 0.0;
@@ -375,6 +379,40 @@ Player::discard()
 }
 
 void
+Player::parseMsg( const char * msg,
+                  const size_t & len )
+{
+    char * command = const_cast< char * >( msg );
+    if ( command[ len - 1 ] != 0 )
+    {
+        if ( version() >= 8.0 )
+        {
+            send( "(warning message_not_null_terminated)" );
+        }
+        command[ len ] = 0;
+    }
+    M_stadium.logger().writePlayerLog( *this, command, RECV );
+
+    /** Call the PlayerCommandParser */
+    if ( M_parser.parse( command ) != 0 )
+    {
+        send( "(error illegal_command_form)" );
+        std::cerr << "Error parsing >" << command << "<\n";
+    }
+}
+
+
+void
+Player::send( const char * msg )
+{
+    if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
+    {
+        M_stadium.logger().writePlayerLog( *this, msg, SEND );
+    }
+}
+
+
+void
 Player::dash( double power )
 {
     if ( ! M_command_done )
@@ -401,7 +439,7 @@ Player::dash( double power )
             * M_player_type->dashPowerRate();
         if ( pos().y < 0.0 )
         {
-            effective_dash_power /= ( team()->side() == LEFT
+            effective_dash_power /= ( side() == LEFT
                                       ? ServerParam::instance().slownessOnTopForLeft()
                                       : ServerParam::instance().slownessOnTopForRight() );
         }
@@ -753,8 +791,8 @@ Player::move( double x,
              M_stadium.playmode() == PM_AfterGoal_Left
              )
         {
-            M_pos.x = x * team()->side();
-            M_pos.y = y * team()->side();
+            M_pos.x = x * side();
+            M_pos.y = y * side();
             M_stadium.collisions();
         }
         else if ( ( M_stadium.playmode() == PM_FreeKick_Left
@@ -764,8 +802,8 @@ Player::move( double x,
             if ( ServerParam::instance().goalieMaxMoves() < 0
                  || M_goalie_moves_since_catch < ServerParam::instance().goalieMaxMoves() )
             {
-                M_pos.x = x * team()->side();
-                M_pos.y = y * team()->side();
+                M_pos.x = x * side();
+                M_pos.y = y * side();
                 ++M_goalie_moves_since_catch;
             }
             else
@@ -995,7 +1033,7 @@ Player::attentionto( bool on,
         }
         else if ( team_side == rcss::pcom::OPP )
         {
-            if ( team()->side() == LEFT )
+            if ( side() == LEFT )
             {
                 at_team = &( M_stadium.teamRight() );
             }
@@ -1248,32 +1286,32 @@ Player::ear( bool on,
              std::string team_name,
              rcss::pcom::EAR_MODE mode )
 {
-    Side side = NEUTRAL;
+    Side s = NEUTRAL;
     if ( team_side == rcss::pcom::OUR )
     {
-        side = team()->side();
+        s = side();
     }
     else if ( team_side == rcss::pcom::OPP )
     {
-        side = (Side)( - team()->side() );
+        s = static_cast< Side >( - side() );
     }
     else if ( team_side == rcss::pcom::LEFT_SIDE )
     {
-        side = LEFT;
+        s = LEFT;
     }
     else if ( team_side == rcss::pcom::RIGHT_SIDE )
     {
-        side = RIGHT;
+        s = RIGHT;
     }
     else if ( team_name.length() > 0 )
     {
         if ( team_name == M_stadium.teamLeft().name() )
         {
-            side = M_stadium.teamLeft().side();
+            s = M_stadium.teamLeft().side();
         }
         else if ( team_name == M_stadium.teamRight().name() )
         {
-            side = M_stadium.teamRight().side();
+            s = M_stadium.teamRight().side();
         }
         else
         {
@@ -1304,7 +1342,7 @@ Player::ear( bool on,
     //std::cerr << "\t\tPartial: " << partial << std::endl;
     //std::cerr << "\t\tComplete: " << complete << std::endl;
 
-    setEar( on, side, complete, partial );
+    setEar( on, s, complete, partial );
 }
 
 // 2008-02-09 akiyama
@@ -1379,7 +1417,7 @@ Player::sendSynchVisual()
 
 /* contributed by Artur Merke */
 void
-Player::send_fullstate_information()
+Player::sendFullstate()
 {
     M_fullstate_observer->sendFullState();
 }
@@ -1464,6 +1502,85 @@ Player::setSenders()
 
     return true;
 }
+
+void
+Player::turnImpl()
+{
+    M_angle_body_committed = this->M_angle_body;
+    M_angle_neck_committed = this->M_angle_neck;
+    M_vel.assign( 0.0, 0.0 );
+    M_accel.assign( 0.0, 0.0 );
+}
+
+void
+Player::updateAngle()
+{
+    M_angle_body_committed = this->M_angle_body;
+    M_angle_neck_committed = this->M_angle_neck;
+}
+
+void
+Player::collidedWithPost()
+{
+    addState( POST_COLLIDE );
+    M_post_collide = true;
+}
+
+double
+Player::maxAccel() const
+{
+    if ( pos().y < 0.0 )
+    {
+        return M_max_accel * ( M_team->side() == LEFT
+                               ? ServerParam::instance().slownessOnTopForLeft()
+                               : ServerParam::instance().slownessOnTopForRight() );
+    }
+    return M_max_accel;
+}
+
+double
+Player::maxSpeed() const
+{
+    if ( pos().y < 0.0 )
+    {
+        return M_max_speed * ( M_team->side() == LEFT
+                               ? ServerParam::instance().slownessOnTopForLeft()
+                               : ServerParam::instance().slownessOnTopForRight() );
+    }
+    return M_max_speed;
+}
+
+
+void
+Player::decrementHearCapacity( const Player & sender )
+{
+    if ( team() == sender.team() )
+    {
+        M_hear_capacity_from_teammate
+            -= ServerParam::instance().hearDecay();
+    }
+    else
+    {
+        M_hear_capacity_from_opponent
+            -= ServerParam::instance().hearDecay();
+    }
+}
+
+bool
+Player::canHearFullFrom( const Player & sender ) const
+{
+    if ( team() == sender.team() )
+    {
+        return M_hear_capacity_from_teammate
+            >= (int)ServerParam::instance().hearDecay();
+    }
+    else
+    {
+        return M_hear_capacity_from_opponent
+            >= (int)ServerParam::instance().hearDecay();
+    }
+}
+
 
 void
 Player::recoverAll()

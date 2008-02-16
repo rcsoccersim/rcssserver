@@ -19,10 +19,16 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "fullstatesender.h"
+
+#include "field.h"
 #include "player.h"
 #include "serializer.h"
-#include "field.h"
+#include "team.h"
 
 namespace rcss {
 
@@ -230,7 +236,7 @@ void
 FullStateSenderPlayerV5::sendPlayer( const Player & p )
 {
     const float quantize_step = .001;
-    char side = (p.team()->side() == LEFT) ? 'l' : 'r';
+    char side = ( p.side() == LEFT ? 'l' : 'r' );
     serializer().serializeFSPlayerBegin( transport(),
                                          side,
                                          p.unum(),
@@ -314,7 +320,7 @@ FullStateSenderPlayerV8::sendScore()
         right = stadium().teamRight().point();
     }
 
-    if ( self().team()->side() == RIGHT )
+    if ( self().side() == RIGHT )
     {
         std::swap( left, right );
     }
@@ -337,7 +343,7 @@ FullStateSenderPlayerV8::sendBall()
 void
 FullStateSenderPlayerV8::sendPlayer( const Player & p )
 {
-    char side = (p.team()->side() == LEFT) ? 'l' : 'r';
+    char side = ( p.team()->side() == LEFT ? 'l' : 'r' );
     serializer().serializeFSPlayerBegin( transport(),
                                          side,
                                          p.unum(),

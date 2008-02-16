@@ -28,6 +28,7 @@
 #include "field.h"
 #include "param.h"
 #include "player.h"
+#include "playerparam.h"
 
 Team::Team( Stadium * stad, const Side s )
     : M_stadium( stad ),

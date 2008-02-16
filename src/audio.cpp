@@ -135,7 +135,7 @@ bool
 AudioSenderPlayer::coachStdPredicate( const rcss::clang::Msg & msg ) const
 {
     return ( generalPredicate()
-             && M_listener.team()->side() == msg.getSide() );
+             && M_listener.side() == msg.getSide() );
 }
 
 
@@ -458,7 +458,7 @@ AudioSenderPlayerv8::sendNonSelfPlayerAudio( const Player & player,
 
     if ( ! M_left_complete
          && ! M_left_partial
-         && player.team()->side() == LEFT )
+         && player.side() == LEFT )
     {
         // if ear off all, messages are never cached
         return;
@@ -466,7 +466,7 @@ AudioSenderPlayerv8::sendNonSelfPlayerAudio( const Player & player,
 
     if ( ! M_right_complete
          && ! M_right_partial
-         && player.team()->side() == RIGHT )
+         && player.side() == RIGHT )
     {
         // if ear off all, messages are never cached
         return;
@@ -551,8 +551,8 @@ AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player & player,
     {
         if ( nonSelfPlayerFullPredicate( player ) )
         {
-            if ( ( player.team()->side() == LEFT && M_left_complete )
-                 || ( player.team()->side() == RIGHT && M_right_complete ) )
+            if ( ( player.side() == LEFT && M_left_complete )
+                 || ( player.side() == RIGHT && M_right_complete ) )
             {
                 int dir = Rad2IDeg( M_listener.angleFromBody( player ) );
                 if ( M_listener.team() == player.team() )
@@ -576,8 +576,8 @@ AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player & player,
         }
         else
         {
-            if ( ( player.team()->side() == LEFT && M_left_partial )
-                 || ( player.team()->side() == RIGHT && M_right_partial ) )
+            if ( ( player.side() == LEFT && M_left_partial )
+                 || ( player.side() == RIGHT && M_right_partial ) )
             {
                 if ( M_listener.team() == player.team() )
                 {

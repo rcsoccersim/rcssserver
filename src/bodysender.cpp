@@ -24,9 +24,10 @@
 #endif
 
 #include "bodysender.h"
+
+#include "field.h"
 #include "player.h"
 #include "serializer.h"
-#include "field.h"
 
 namespace rcss {
 
@@ -297,7 +298,7 @@ BodySenderPlayerV8::sendBodyData()
     else
     {
         serializer().serializeFocus( transport(),
-                                     ( self().getFocusTarget()->team()->side()
+                                     ( self().getFocusTarget()->side()
                                        == LEFT
                                        ? "l" : "r" ),
                                      self().getFocusTarget()->unum(),

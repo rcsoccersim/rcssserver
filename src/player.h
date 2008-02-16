@@ -24,19 +24,17 @@
 
 #include "arm.h"
 #include "audio.h"
-#include "field.h"
-#include "heteroplayer.h"
 #include "object.h"
-#include "team.h"
 #include "pcombuilder.h"
 #include "pcomparser.h"
-#include "playerparam.h"
-#include "random.h"
 #include "remoteclient.h"
-#include "serializer.h"
 #include "serverparam.h"
 
 #include <string>
+
+class Stadium;
+class HeteroPlayer;
+class Team;
 
 namespace rcss {
 class InitObserverPlayer;
@@ -59,6 +57,7 @@ private:
     rcss::FullStateObserver * M_fullstate_observer;
 
     Team * M_team;
+    const Side M_side;
     const int M_unum;  /* uniform number */
 
     std::string M_name_far;
@@ -182,18 +181,18 @@ public:
     void sendInit();
     void sendReconnect();
 
-    /** This function is called in the begin of each cycle
-     * and in case a player sends a sense_body command. */
-    void sense_body();
+    void parseMsg( const char * msg,
+                   const size_t & len );
 
+    void send( const char * msg );
+
+    void sendBody()
+      {
+          sense_body();
+      }
     void sendVisual();
     void sendSynchVisual();
-
-    /* contributed by Artur Merke */
-    void send_fullstate_information();
-
-    /** Inline-Deklarations */
-    inline void parseMsg( const char* msg, const size_t& len );
+    void sendFullstate(); /* contributed by Artur Merke */
 
     void incArmAge()
       {
@@ -217,8 +216,6 @@ public:
     //void setBackPasser() { M_alive |= BACK_PASS; }
     //void setFreeKickFaulter() { M_alive |= FREE_KICK_FAULT; }
 
-    inline void send( const char* msg );
-
     void place( const PVector & location );
     void place( const PVector & pos,
                 const double & angle,
@@ -231,6 +228,10 @@ public:
           return M_team;
       }
 
+    Side side() const
+      {
+          return M_side;
+      }
     int unum() const
       {
           return M_unum;
@@ -375,32 +376,8 @@ public:
           return M_done_received;
       }
 
-    void decrementHearCapacity( const Player & sender )
-      {
-          if ( team() == sender.team() )
-          {
-              M_hear_capacity_from_teammate
-                  -= ServerParam::instance().hearDecay();
-          }
-          else
-          {
-              M_hear_capacity_from_opponent
-                  -= ServerParam::instance().hearDecay();
-          }
-      }
-    bool canHearFullFrom( const Player & sender ) const
-      {
-          if ( team() == sender.team() )
-          {
-              return M_hear_capacity_from_teammate
-                  >= (int)ServerParam::instance().hearDecay();
-          }
-          else
-          {
-              return M_hear_capacity_from_opponent
-                  >= (int)ServerParam::instance().hearDecay();
-          }
-      }
+    void decrementHearCapacity( const Player & sender );
+    bool canHearFullFrom( const Player & sender ) const;
 
     int kickCount() const { return M_kick_count; }
     int dashCount() const { return M_dash_count; }
@@ -475,51 +452,15 @@ public:
 protected:
 
     virtual
-    void turnImpl()
-      {
-          M_angle_body_committed = this->M_angle_body;
-          M_angle_neck_committed = this->M_angle_neck;
-          M_vel.assign( 0.0, 0.0 );
-          M_accel.assign( 0.0, 0.0 );
-      }
-
+    void turnImpl();
     virtual
-    void updateAngle()
-      {
-          M_angle_body_committed = this->M_angle_body;
-          M_angle_neck_committed = this->M_angle_neck;
-      }
-
+    void updateAngle();
     virtual
-    void collidedWithPost()
-      {
-          addState( POST_COLLIDE );
-          M_post_collide = true;
-      }
-
+    void collidedWithPost();
     virtual
-    double maxAccel() const
-      {
-          if ( pos().y < 0.0 )
-          {
-              return M_max_accel * ( M_team->side() == LEFT
-                                     ? ServerParam::instance().slownessOnTopForLeft()
-                                     : ServerParam::instance().slownessOnTopForRight() );
-          }
-          return M_max_accel;
-      }
-
+    double maxAccel() const;
     virtual
-    double maxSpeed() const
-      {
-          if ( pos().y < 0.0 )
-          {
-              return M_max_speed * ( M_team->side() == LEFT
-                                     ? ServerParam::instance().slownessOnTopForLeft()
-                                     : ServerParam::instance().slownessOnTopForRight() );
-          }
-          return M_max_speed;
-      }
+    double maxSpeed() const;
 
 private:
     /** PlayerCommands */
@@ -529,6 +470,9 @@ private:
     void kick( double power, double dir );
     void goalieCatch( double dir );
     void say( std::string message );
+    /*! This function is called in the begin of each cycle
+      and in case a player sends a sense_body command. */
+    void sense_body();
     void score();
     void move( double x, double y );
     void change_view( rcss::pcom::VIEW_WIDTH viewWidth, rcss::pcom::VIEW_QUALITY viewQuality );
@@ -544,41 +488,5 @@ private:
     void synch_see();
 
 };
-
-
-/** Inline-Definitions */
-
-inline
-void
-Player::parseMsg( const char* msg, const size_t& len )
-{
-    char * command = const_cast< char * >( msg );
-    if ( command[ len - 1 ] != 0 )
-    {
-        if ( version() >= 8.0 )
-        {
-            send( "(warning message_not_null_terminated)" );
-        }
-        command[ len ] = 0;
-    }
-    M_stadium.logger().writePlayerLog( *this, command, RECV );
-
-    /** Call the PlayerCommandParser */
-    if ( M_parser.parse( command ) != 0 )
-    {
-        send( "(error illegal_command_form)" );
-        std::cerr << "Error parsing >" << command << "<\n";
-    }
-}
-
-inline
-void
-Player::send( const char * msg )
-{
-    if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
-    {
-        M_stadium.logger().writePlayerLog( *this, msg, SEND );
-    }
-}
 
 #endif

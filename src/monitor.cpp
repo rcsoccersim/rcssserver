@@ -26,12 +26,13 @@
 
 #include "monitor.h"
 
-#include "initsendermonitor.h"
 #include "dispsender.h"
+#include "initsendermonitor.h"
 #include "serializermonitor.h"
 
 #include "field.h"
 #include "player.h"
+#include "team.h"
 #include "types.h"
 
 #ifdef HAVE_NETINET_IN_H
@@ -233,7 +234,7 @@ Monitor::sendShow()
 //           ++p )
 //     {
 //         os << " (";
-//         os << "(" << SideStr( (*p)->team()->side() )
+//         os << "(" << SideStr( (*p)->side() )
 //            << ' ' << (*p)->unum()
 //            << ')';
 //         os << ' ' << (*p)->playerTypeId()
@@ -273,7 +274,7 @@ Monitor::sendShow()
 //         if ( (*p)->state() != DISABLE
 //              && (*p)->getFocusTarget() != NULL )
 //         {
-//             os << " (f " << SideStr( (*p)->getFocusTarget()->team()->side() )
+//             os << " (f " << SideStr( (*p)->getFocusTarget()->side() )
 //                << ' ' << (*p)->getFocusTarget()->unum()
 //                << ')';
 //         }

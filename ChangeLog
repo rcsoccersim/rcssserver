@@ -1,6 +1,22 @@
 2008-02-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/audio.cpp:
+	* src/bodysender.cpp:
+	* src/coach.cpp:
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/fullstatesender.cpp:
+	* src/initsender.cpp:
+	* src/logger.cpp:
+	* src/monitor.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/referee.cpp:
+	* src/remoteclient.h:
+	* src/team.cpp:
+	- added Player::side()
+
+	* src/audio.cpp:
 	* src/audio.h:
 	* src/coach.cpp:
 	* src/coach.h:
