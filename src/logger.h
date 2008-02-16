@@ -88,6 +88,10 @@ private:
     bool openTextLog();
     bool openKawayLog();
 
+    void closeGameLog();
+    void closeTextLog();
+    void closeKawayLog();
+
     void renameLogs();
 
 public:

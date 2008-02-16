@@ -79,17 +79,7 @@ Logger::Logger( Stadium & stadium )
 
 Logger::~Logger()
 {
-    if ( M_game_log )
-    {
-        delete M_game_log;
-        M_game_log = static_cast< std::ostream * >( 0 );
-    }
-
-    if ( M_text_log )
-    {
-        delete M_text_log;
-        M_text_log = static_cast< std::ostream * >( 0 );
-    }
+    this->close();
 }
 
 bool
@@ -128,21 +118,9 @@ Logger::close()
 {
     renameLogs();
 
-    if ( M_game_log )
-    {
-        M_game_log->flush();
-        delete M_game_log;
-        M_game_log = static_cast< std::ostream * >( 0 );
-    }
-
-    if ( M_text_log )
-    {
-        M_text_log->flush();
-        delete M_text_log;
-        M_text_log = static_cast< std::ostream * >( 0 );
-    }
-
-    M_kaway_log.close();
+    closeGameLog();
+    closeTextLogLog();
+    closeKawayLog();
 }
 
 bool
@@ -387,6 +365,35 @@ Logger::openKawayLog()
 }
 
 
+void closeGameLog()
+{
+    if ( M_game_log )
+    {
+        M_game_log->flush();
+        delete M_game_log;
+        M_game_log =  static_cast< std::ostream * >( 0 );
+    }
+}
+
+void closeTextLog()
+{
+    if ( M_text_log )
+    {
+        M_text_log->flush();
+        delete M_text_log;
+        M_text_log =  static_cast< std::ostream * >( 0 );
+    }
+}
+
+void closeKawayLog()
+{
+    if ( M_kaway_log.is_open() )
+    {
+        M_kaway_log.flush();
+        M_kaway_log.close();
+    }
+}
+
 void
 Logger::renameLogs()
 {
@@ -466,9 +473,7 @@ Logger::renameLogs()
             newname += ".gz";
         }
 
-        M_text_log->flush();
-        delete M_text_log;
-        M_text_log =  static_cast< std::ostream * >( 0 );
+        closeTextLog();
 
         if ( std::rename( M_text_log_name.c_str(),
                           newname.c_str() ) )
@@ -499,12 +504,10 @@ Logger::renameLogs()
             newname += ".gz";
         }
 
-        M_game_log->flush();
-        delete M_game_log;
-        M_game_log =  static_cast< std::ostream * >( 0 );
+        closeGameLog();
 
-        if( std::rename( M_game_log_name.c_str(),
-                         newname.c_str() ) )
+        if ( std::rename( M_game_log_name.c_str(),
+                          newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": error renaming " << M_game_log_name << std::endl;
@@ -527,7 +530,7 @@ Logger::renameLogs()
         newname += team_name_score;
         newname += Logger::DEF_KAWAY_SUFFIX;
 
-        M_kaway_log.close();
+        closeKawayLog();
 
         if( std::rename( M_kaway_log_name.c_str(),
                          newname.c_str() ) )

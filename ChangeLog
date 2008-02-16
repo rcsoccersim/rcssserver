@@ -1,5 +1,9 @@
 2008-02-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/logger.cpp:
+	* src/logger.h:
+	- added close*() methods.
+
 	* src/audio.cpp:
 	* src/bodysender.cpp:
 	* src/coach.cpp:
