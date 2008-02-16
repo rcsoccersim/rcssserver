@@ -1,6 +1,19 @@
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/Makefile.am:
+	* src/visualsendercoach.cpp:
+	* src/visualsendercoach.h:
+	* src/visualsenderplayer.cpp:
+	* src/visualsenderplayer.h:
+	* src/bodysender.cpp:
+	* src/coach.cpp:
+	* src/initsenderonlinecoach.cpp:
+	* src/player.cpp:
+	* src/visual.cpp:
+	* src/visual.h:
+	- split visualsender implementation.
+
+	* src/Makefile.am:
 	* src/initsendercoach.cpp:
 	* src/initsendercoach.h:
 	* src/initsenderonlinecoach.cpp:
@@ -11,7 +24,7 @@
 	* src/initsender.cpp:
 	* src/initsender.h:
 	* src/player.cpp:
-	- split the initsender implementation.
+	- split initsender implementation.
 
 	* src/initsender.cpp:
 	* src/initsender.h:

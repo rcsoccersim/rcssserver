@@ -241,7 +241,10 @@ referee.cpp \
 xpmholder.cpp \
 xpmholder.h \
 visual.h \
-visual.cpp \
+visualsenderplayer.h \
+visualsenderplayer.cpp \
+visualsendercoach.h \
+visualsendercoach.cpp \
 xpmholder.h \
 timer.h \
 timer.cpp \

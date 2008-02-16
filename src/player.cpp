@@ -40,7 +40,7 @@
 #include "initsenderplayer.h"
 #include "bodysender.h"
 #include "fullstatesender.h"
-#include "visual.h"
+#include "visualsenderplayer.h"
 
 #include <algorithm>
 #include <cassert>

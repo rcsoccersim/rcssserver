@@ -109,25 +109,25 @@ InitSenderLoggerV1::~InitSenderLoggerV1()
 void
 InitSenderLoggerV1::sendHeader()
 {
-    std::cerr << "InitSenderLoggerV1::sendHeader" << std::endl;
+
 }
 
 void
 InitSenderLoggerV1::sendServerParams()
 {
-    std::cerr << "InitSenderLoggerV1::sendServerParams" << std::endl;
+
 }
 
 void
 InitSenderLoggerV1::sendPlayerParams()
 {
-    std::cerr << "InitSenderLoggerV1::sendPlayerParams" << std::endl;
+
 }
 
 void
 InitSenderLoggerV1::sendPlayerTypes()
 {
-    std::cerr << "InitSenderLoggerV1::sendPlayerTypess" << std::endl;
+
 }
 
 void
@@ -177,7 +177,6 @@ InitSenderLoggerV2::~InitSenderLoggerV2()
 void
 InitSenderLoggerV2::sendHeader()
 {
-    std::cerr << "InitSenderLoggerV2::sendHeader" << std::endl;
     char header[5];
     header[0] = 'U';
     header[1] = 'L';
@@ -190,19 +189,19 @@ InitSenderLoggerV2::sendHeader()
 void
 InitSenderLoggerV2::sendServerParams()
 {
-    std::cerr << "InitSenderLoggerV2::sendServerParams" << std::endl;
+
 }
 
 void
 InitSenderLoggerV2::sendPlayerParams()
 {
-    std::cerr << "InitSenderLoggerV2::sendPlayerParams" << std::endl;
+
 }
 
 void
 InitSenderLoggerV2::sendPlayerTypes()
 {
-    std::cerr << "InitSenderLoggerV2::sendPlayerTypes" << std::endl;
+
 }
 
 void
@@ -251,7 +250,6 @@ InitSenderLoggerV3::~InitSenderLoggerV3()
 void
 InitSenderLoggerV3::sendHeader()
 {
-    std::cerr << "InitSenderLoggerV3::sendHeader" << std::endl;
     char header[5];
     header[0] = 'U';
     header[1] = 'L';
@@ -264,7 +262,6 @@ InitSenderLoggerV3::sendHeader()
 void
 InitSenderLoggerV3::sendServerParams()
 {
-    std::cerr << "InitSenderLoggerV3::sendServerParams" << std::endl;
     Int16 mode = htons( PARAM_MODE );
     server_params_t param = ServerParam::instance().convertToStruct();
 
@@ -277,7 +274,6 @@ InitSenderLoggerV3::sendServerParams()
 void
 InitSenderLoggerV3::sendPlayerParams()
 {
-    std::cerr << "InitSenderLoggerV3::sendPlayerParams" << std::endl;
     Int16 mode = htons( PPARAM_MODE );
     player_params_t param = PlayerParam::instance().convertToStruct();
 
@@ -290,7 +286,6 @@ InitSenderLoggerV3::sendPlayerParams()
 void
 InitSenderLoggerV3::sendPlayerTypes()
 {
-    std::cerr << "InitSenderLoggerV3::sendPlayerTypes" << std::endl;
     Int16 mode = htons( PT_MODE );
 
     for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
@@ -361,7 +356,7 @@ InitSenderLoggerV4::InitSenderLoggerV4( const Params & params )
                                                      true ) ) ) // new line
 {
     // The version of the common sender has to be "8".
-    // The client version is "999" in order to send all parameters.
+    // The client version is set to "999" in order to send all parameters.
 }
 
 InitSenderLoggerV4::InitSenderLoggerV4( const Params & params,
@@ -379,28 +374,24 @@ InitSenderLoggerV4::~InitSenderLoggerV4()
 void
 InitSenderLoggerV4::sendHeader()
 {
-    std::cerr << "InitSenderLoggerV4::sendHeader" << std::endl;
     transport() << "URG4" << std::endl;
 }
 
 void
 InitSenderLoggerV4::sendServerParams()
 {
-    std::cerr << "InitSenderLoggerV4::sendServerParams" << std::endl;
     commonSender().sendServerParams();
 }
 
 void
 InitSenderLoggerV4::sendPlayerParams()
 {
-    std::cerr << "InitSenderLoggerV4::sendPlayerParams" << std::endl;
     commonSender().sendPlayerParams();
 }
 
 void
 InitSenderLoggerV4::sendPlayerTypes()
 {
-    std::cerr << "InitSenderLoggerV4::sendPlayerTypes" << std::endl;
     commonSender().sendPlayerTypes();
 }
 

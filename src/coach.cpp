@@ -37,7 +37,7 @@
 #include "xpmholder.h"
 #include "initsendercoach.h"
 #include "initsenderonlinecoach.h"
-#include "visual.h"
+#include "visualsendercoach.h"
 
 #include <boost/lexical_cast.hpp>
 

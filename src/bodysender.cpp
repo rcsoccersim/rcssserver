@@ -298,9 +298,9 @@ BodySenderPlayerV8::sendBodyData()
     else
     {
         serializer().serializeFocus( transport(),
-                                     ( self().getFocusTarget()->side()
-                                       == LEFT
-                                       ? "l" : "r" ),
+                                     ( self().getFocusTarget()->side() == LEFT
+                                       ? "l"
+                                       : "r" ),
                                      self().getFocusTarget()->unum(),
                                      self().getFocusCount() );
     }

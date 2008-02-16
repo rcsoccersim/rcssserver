@@ -25,10 +25,10 @@
 
 #include "initsenderonlinecoach.h"
 
+#include "serializer.h"
 #include "coach.h"
 #include "player.h"
 #include "field.h"
-#include "serializer.h"
 
 namespace rcss {
 
