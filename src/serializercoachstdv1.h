@@ -37,39 +37,35 @@ public:
     virtual
     ~SerializerCoachStdv1();
 
-    static const SerializerCoachStdv1*
-    instance();
+    static
+    const
+    SerializerCoachStdv1 * instance();
 
     virtual
-    void
-    serializeRefAudio( std::ostream& strm,
-                       const int& time,
-                       const char* msg ) const;
+    void serializeRefereeAudio( std::ostream & strm,
+                                const int & time,
+                                const char * msg ) const;
 
     virtual
-    void
-    serializeCoachAudio( std::ostream& strm,
-                         const int& time,
-                         const std::string& name,
-                         const char* msg ) const;
+    void serializeCoachAudio( std::ostream & strm,
+                              const int & time,
+                              const std::string & name,
+                              const char * msg ) const;
 
     virtual
-    void
-    serializeCoachStdAudio( std::ostream& strm,
-                            const int& time,
-                            const std::string& name,
-                            const rcss::clang::Msg& msg ) const;
+    void serializeCoachStdAudio( std::ostream & strm,
+                                 const int & time,
+                                 const std::string & name,
+                                 const rcss::clang::Msg & msg ) const;
 
     virtual
-    void
-    serializePlayerAudio( std::ostream& strm,
-                          const int& time,
-                          const std::string& name,
-                          const char* msg ) const;
+    void serializePlayerAudio( std::ostream & strm,
+                               const int & time,
+                               const std::string& name,
+                               const char* msg ) const;
 
     virtual
-    void
-    serializeInit( std::ostream& ) const;
+    void serializeInit( std::ostream & ) const;
 
     virtual
     void serializeVisualBegin( std::ostream & strm,

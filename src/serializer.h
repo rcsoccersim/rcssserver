@@ -251,9 +251,9 @@ protected:
 public:
 
     virtual
-    void serializeRefAudio( std::ostream & strm,
-                            const int & time,
-                            const char * msg ) const = 0;
+    void serializeRefereeAudio( std::ostream & strm,
+                                const int & time,
+                                const char * msg ) const = 0;
     virtual
     void serializeCoachAudio( std::ostream & strm,
                               const int & time,
@@ -762,9 +762,9 @@ public:
 
     virtual
     void
-    serializeRefAudio( std::ostream &,
-                       const int &,
-                       const char * ) const = 0;
+    serializeRefereeAudio( std::ostream &,
+                           const int &,
+                           const char * ) const = 0;
 
     virtual
     void
@@ -895,10 +895,10 @@ public:
       }
 
     virtual
-    void serializeRefAudio( std::ostream &,
-                            const int &,
-                            const std::string &,
-                            const char * ) const = 0;
+    void serializeRefereeAudio( std::ostream &,
+                                const int &,
+                                const std::string &,
+                                const char * ) const = 0;
 
     virtual
     void serializePlayerAudio( std::ostream &,

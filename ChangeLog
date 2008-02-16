@@ -1,5 +1,30 @@
 2008-02-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/audio.cpp:
+	* src/audio.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/netif.cpp:
+	* src/param.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/referee.cpp:
+	* src/serializer.h:
+	* src/serializercoachstdv1.cpp:
+	* src/serializercoachstdv1.h:
+	* src/serializeronlinecoachstdv1.cpp:
+	* src/serializeronlinecoachstdv1.h:
+	* src/serializeronlinecoachstdv7.cpp:
+	* src/serializeronlinecoachstdv7.h:
+	* src/serializerplayerstdv1.cpp:
+	* src/serializerplayerstdv1.h:
+	- implemented Logger.
+	- cleaned up.
+
 	* src/Makefile.am:
 	* src/logger.cpp:
 	* src/logger.h:

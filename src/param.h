@@ -46,17 +46,20 @@
 /*
  *   for network
  */
-//#define MaxMesg					2048
-//pfr 06/14/01: this is probably the maximum UDP size allowed in most applications
-#define MaxMesg					8192
-//this must be smaller because it will eventually be sent out with other info
-#define MaxCoachMesg				(MaxMesg-38)
-//We actually compare with one of the times already present
-#define MaxCoachMesgWTime			(MaxCoachMesg + 6)
-#define SEND 1
-#define RECV 2
-#define SUBS 4
 
+//pfr 06/14/01: this is probably the maximum UDP size allowed in most applications
+#define MaxMesg 8192
+//this must be smaller because it will eventually be sent out with other info
+#define MaxCoachMesg (MaxMesg-38)
+//We actually compare with one of the times already present
+#define MaxCoachMesgWTime (MaxCoachMesg + 6)
+
+enum TextLogFlag {
+    LOG_TEXT = 0,
+    SEND = 1,
+    RECV = 2,
+    SUBS = 4,
+};
 
 /*
  *   Objects
@@ -237,15 +240,6 @@
 #define OLCOACH_NAME_L		"online_coach_left"
 #define OLCOACH_NAME_L_SHORT	"cl"
 #define COACH_NAME		"coach"
-
-//#define NormalizeDashPower(p)	(std::max(std::min((p),ServerParam::instance().maxp),ServerParam::instance().minp))
-//#define ReduceDashPower(p)	(p * player_type->dashPowerRate () / stadium->slowdownOnTop (pos, team->side) )
-//#define Sign(x)					(((x) > 0.0) ? 1.0:-1.0)
-//#define NormalizeKickPower(p) (std::max(std::min((p),ServerParam::instance().maxp),ServerParam::instance().minp))
-//#define NormalizeKickPower(p) (std::max(std::min((p),ServerParam::instance().maxp),ServerParam::instance().minp) * ServerParam::instance().kprate)
-//#define NormalizeMoment(p) Deg2Rad(std::max(std::min((p),ServerParam::instance().maxm),ServerParam::instance().minm))
-//#define NormalizeNeckMoment(p) Deg2Rad(std::max(std::min((p),ServerParam::instance().maxnm),ServerParam::instance().minnm))
-//#define NormalizeNeckAngle(p) (std::max(std::min((p),Deg2Rad(ServerParam::instance().maxn)),Deg2Rad(ServerParam::instance().minn)))
 
 
 #define LEFT_STR	"l"

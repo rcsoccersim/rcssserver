@@ -63,6 +63,25 @@ public:
     explicit
     Coach( Stadium & stadim );
 
+    void disable();
+
+    virtual
+    bool setSenders( const double & client_version );
+
+    virtual
+    void sendInit();
+
+    virtual
+    void send( const char * msg );
+
+    virtual
+    void parseMsg( const char * msg,
+                   const size_t & len );
+
+    virtual
+    void parse_command( const char *command );
+
+
     bool assigned() const
       {
           return M_assigned;
@@ -93,9 +112,6 @@ public:
           return M_done_received;
       }
 
-    virtual
-    void parse_command( const char *command );
-
 private:
     void parse_change_mode( const char * command );
     void parse_move( const char * command );
@@ -116,38 +132,12 @@ public:
 
     void send_visual_info();
 
-    virtual void send( const char* msg );
-
-    virtual
-    void
-    parseMsg( const char* msg, const size_t& len )
-      {
-          char* str = (char*)msg;
-          if( str[ len - 1 ] != 0 )
-          {
-              if( version() >= 8.0 )
-                  send( "(warning message_not_null_terminated)" );
-              str[ len ] = 0;
-          }
-          M_stadium.writeCoachLog( str, RECV );
-          parse_command( str );
-      }
-
-
-    void disable();
-
     void resetCommandFlags()
       {
           M_done_received = false;
       }
 
     void sendExternalMsg();
-
-    virtual
-    bool setSenders( const double & client_version );
-
-    virtual
-    void sendInit();
 
 protected:
 
@@ -198,13 +188,37 @@ public:
           M_side = side;
       }
 
+    virtual
+    bool setSenders( const double & client_version );
+
+    virtual
+    void sendInit();
+
+    virtual
+    void send( const char * msg );
+
+    virtual
+    void parseMsg( const char * msg,
+                   const size_t & len );
+
+    virtual
+    void parse_command( const char * command );
+
+
+    void setName( const std::string & name )
+      {
+          M_coach_name = name;
+      }
+    const
+    std::string & name() const
+      {
+          return M_coach_name;
+      }
+
     void awardFreeformMessageCount();
     bool canSendFreeform() const;
 
-    virtual
-    void parse_command( const char *command );
-
-    void say( char *message, bool standard = false );
+    void say( const char * message );
     void say( const rcss::clang::Msg & message );
 
 private:
@@ -224,65 +238,23 @@ public:
     //returns whether it updated anything
     bool update_messages_left( int time );
 
-    virtual
-    void send( const char* msg )
-      {
-          if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
-          {
-              M_stadium.writeOnlineCoachLog( *this, msg, SEND );
-          }
-          else
-          {
-              std::cerr << __FILE__ << ": " << __LINE__ << ": ";
-              perror( "Error sending to online coach" );
-          }
-      }
-
     void sendPlayerClangVer();
     void sendPlayerClangVer( const Player & player );
 
-    virtual
-    void
-    parseMsg( const char* msg, const size_t& len )
-      {
-          char* str = (char*)msg;
-          if( str[ len - 1 ] != 0 )
-          {
-              if( version() >= 8.0 )
-                  send( "(warning message_not_null_terminated)" );
-              str[ len ] = 0;
-          }
-          M_stadium.writeOnlineCoachLog( *this, str, RECV );
-          parse_command( str );
-      }
-
 private:
 
-    const rcss::SerializerOnlineCoach&
-    setSerializer( const rcss::SerializerOnlineCoach& ser )
-      { return *(M_serializer = &ser); }
-
-    const rcss::SerializerOnlineCoach&
-    getSerializer() const
-      { return *M_serializer; }
-
-public:
-    void setName( const std::string & name )
+    const
+    rcss::SerializerOnlineCoach & setSerializer( const rcss::SerializerOnlineCoach & ser )
       {
-          M_coach_name = name;
+          return *(M_serializer = &ser);
       }
 
     const
-    std::string & getName() const
+    rcss::SerializerOnlineCoach & getSerializer() const
       {
-          return M_coach_name;
+          return *M_serializer;
       }
 
-    virtual
-    bool setSenders( const double & client_version );
-
-    virtual
-    void sendInit();
 };
 
 #endif

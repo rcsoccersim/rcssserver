@@ -41,9 +41,9 @@ public:
     SerializerPlayerStdv1 * instance();
 
     virtual
-    void serializeRefAudio( std::ostream & strm,
-                            const int & time,
-                            const char * msg ) const;
+    void serializeRefereeAudio( std::ostream & strm,
+                                const int & time,
+                                const char * msg ) const;
 
     virtual
     void serializeCoachAudio( std::ostream & strm,

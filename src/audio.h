@@ -80,7 +80,7 @@ public:
       { }
 
     virtual
-    void sendRefAudio( const char * )
+    void sendRefereeAudio( const char * )
       { }
 
     virtual
@@ -165,7 +165,7 @@ public:
           BaseObserver< AudioSender >::setSender( sender );
       }
 
-    void sendRefAudio( const char * msg );
+    void sendRefereeAudio( const char * msg );
 
     void sendCoachAudio( const Coach & coach,
                          const char * msg );
@@ -318,7 +318,7 @@ public:
       { }
 
     virtual
-    void sendRefAudio( const char * msg );
+    void sendRefereeAudio( const char * msg );
 
     virtual
     void sendCoachAudio( const Coach & coach,
@@ -613,7 +613,7 @@ public:
       { }
 
     virtual
-    void sendRefAudio( const char * msg );
+    void sendRefereeAudio( const char * msg );
 
     virtual
     void sendCoachAudio( const Coach & coach,
@@ -709,7 +709,7 @@ public:
       { }
 
     virtual
-    void sendRefAudio( const char * msg );
+    void sendRefereeAudio( const char * msg );
 
     virtual
     void sendCoachAudio( const Coach & coach,

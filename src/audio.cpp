@@ -39,9 +39,9 @@
 namespace rcss {
 
 void
-Listener::sendRefAudio( const char * msg )
+Listener::sendRefereeAudio( const char * msg )
 {
-    sender().sendRefAudio( msg );
+    sender().sendRefereeAudio( msg );
 }
 
 void
@@ -185,11 +185,11 @@ AudioSenderPlayer::postNonSelfPlayer( const Player & player )
 
 
 void
-AudioSenderPlayerv1::sendRefAudio( const char * msg )
+AudioSenderPlayerv1::sendRefereeAudio( const char * msg )
 {
     if ( generalPredicate () )
     {
-        M_serializer.serializeRefAudio( transport(), M_stadium.time(), msg );
+        M_serializer.serializeRefereeAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
     }
 }
@@ -733,11 +733,11 @@ AudioSenderCoach::generalPredicate() const
 
 
 void
-AudioSenderCoachv1::sendRefAudio( const char * msg )
+AudioSenderCoachv1::sendRefereeAudio( const char * msg )
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializeRefAudio( transport(), M_stadium.time(), msg );
+        M_serializer.serializeRefereeAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
     }
 }
@@ -852,14 +852,14 @@ AudioSenderOnlineCoach::coachPredicate( const Coach & coach ) const
 
 
 void
-AudioSenderOnlineCoachv1::sendRefAudio( const char * msg )
+AudioSenderOnlineCoachv1::sendRefereeAudio( const char * msg )
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializeRefAudio( transport(),
-                                        M_stadium.time(),
-                                        REFEREE_NAME,
-                                        msg );
+        M_serializer.serializeRefereeAudio( transport(),
+                                            M_stadium.time(),
+                                            REFEREE_NAME,
+                                            msg );
         transport() << std::ends << std::flush;
     }
 }
@@ -870,10 +870,10 @@ AudioSenderOnlineCoachv1::sendCoachAudio( const Coach & coach,
 {
     if ( coachPredicate( coach ) )
     {
-        M_serializer.serializeRefAudio ( transport(),
-                                         M_stadium.time(),
-                                         REFEREE_NAME,
-                                         msg );
+        M_serializer.serializeRefereeAudio ( transport(),
+                                             M_stadium.time(),
+                                             REFEREE_NAME,
+                                             msg );
         transport() << std::ends << std::flush;
     }
 }

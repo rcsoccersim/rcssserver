@@ -44,17 +44,15 @@
 #include "object.h"
 #include "resultsaver.hpp"
 #include "serverparam.h"
+#include "logger.h"
 
 #include <rcssbase/gzip/gzfstream.hpp>
 
 #include <string>
-#include <fstream>
-#include <deque>
 #include <vector>
 #include <algorithm>
 #include <memory>
 #include <cstdio>
-//#include <sys/time.h>
 
 class HeteroPlayer;
 
@@ -68,11 +66,9 @@ class Referee;
 
 struct timeval;
 
-namespace rcss
-{
+namespace rcss {
 class Listener;
-namespace clang
-{
+namespace clang {
 class Msg;
 }
 }
@@ -152,6 +148,7 @@ protected:
     rcss::net::UDPSocket M_online_coach_socket;
 
     Field M_field;
+    Logger M_logger;
 
     PlayerCont  M_remote_players; //!< connected players
     OfflineCoachCont M_remote_offline_coaches; //!< connected trainers
@@ -182,24 +179,6 @@ protected:
     const Player * M_ball_catcher; /* goalie who has caught ball */
 
     Side M_kick_off_side;
-
-
-    static const std::string DEF_TEXT_NAME;
-    static const std::string DEF_TEXT_SUFFIX;
-    static const std::string DEF_GAME_NAME;
-    static const std::string DEF_GAME_SUFFIX;
-    static const std::string DEF_KAWAY_NAME;
-    static const std::string DEF_KAWAY_SUFFIX;
-
-    std::string M_text_log_name;
-    std::string M_game_log_name;
-    std::string M_kaway_log_name;
-
-    rcss::gz::gzofstream M_gz_text_log;
-    rcss::gz::gzofstream M_gz_game_log;
-    std::ofstream M_text_log; /* file for command log */
-    std::ofstream M_game_log;   /* file for recording the game */
-    std::ofstream M_kaway_log;  /* file for keepaway log */
 
     std::list< Referee * > M_referees;
 
@@ -233,6 +212,11 @@ public:
           return M_alive;
       }
 
+    Logger & logger()
+      {
+          return M_logger;
+      }
+
     PlayMode playmode() const
       {
           return M_playmode;
@@ -249,57 +233,16 @@ public:
       }
 
     const
+    tm & realTime() const
+      {
+          return m_real_time;
+      }
+
+    const
     Weather & weather() const
       {
           return M_weather;
       }
-
-    bool isTextLogOpen()
-      {
-          return ( M_text_log.is_open()
-                   || M_gz_text_log.is_open() );
-      }
-
-    std::ostream & textLogStream()
-      {
-          if ( ServerParam::instance().textLogCompression() > 0 )
-              return M_gz_text_log;
-          else
-              return M_text_log;
-      }
-
-    std::ostream & gameLogStream()
-      {
-          if ( ServerParam::instance().textLogCompression() > 0 )
-          {
-              return M_gz_game_log;
-          }
-          else
-          {
-              return M_game_log;
-          }
-      }
-
-    std::ostream & kawayLog()
-      {
-          return M_kaway_log;
-      }
-
-    bool isGameLogOpen()
-      {
-          return ( M_game_log.is_open()
-                   || M_gz_game_log.is_open() );
-      }
-
-    void flushLogs()
-      {
-          M_text_log.flush();
-          M_game_log.flush();
-          M_kaway_log.flush();
-          M_gz_text_log.flush();
-          M_gz_game_log.flush();
-      }
-
 
     const
     Field & field() const
@@ -408,10 +351,6 @@ public:
 private:
     void initObjects();
 
-    bool openTextLog();
-    bool openGameLog();
-    bool openKawayLog();
-
     template < class T >
     void recv( std::vector< T >& clients );
 
@@ -451,20 +390,6 @@ private:
     void incMovableObjects();
 
     void sendToMonitors();
-
-    std::ostream & writeGameLog( const char * str,
-                                 const std::streamsize n );
-
-    void writeMsgToGameLog( const BoardType board_type,
-                            const char * msg );
-
-    void writeCurrentGameLog();
-
-    void writeGameLogV1();
-    void writeGameLogV2();
-    void writeGameLogV3();
-    void writeGameLogV4();
-
 
     void move_caught_ball(); // [2000.07.21: I.Noda]
 
@@ -507,8 +432,6 @@ public:
 
     void change_play_mode( const PlayMode pm );
 
-    void say( const char *message, bool ref = true );
-
 private:
     //! diretcly send message to player client that has cli_addr
     void sendToPlayer( const char *msg,
@@ -519,13 +442,12 @@ private:
     //! diretcly send message to online coach client that has cli_addr
     void sendToOnlineCoach( const char *msg,
                             const rcss::net::Addr & cli_addr );
-
-    void sendRefAudio( const std::string & msg );
 public:
+    void sendRefereeAudio( const char * msg );
     void sendPlayerAudio( const Player & player,
-                          const std::string & msg );
+                          const char * msg );
     void sendCoachAudio( const Coach & coach,
-                         const std::string & msg );
+                         const char * msg );
     void sendCoachStdAudio( const OnlineCoach &,
                             const rcss::clang::Msg & msg );
 
@@ -539,24 +461,7 @@ public:
 
     BallPosInfo ballPosInfo();
 
-    void writeTextLog( const char * message,
-                       const int flag );
-
-    void writePlayerLog( const Player & p,
-                         const char * message,
-                         const int flag );
-    void writeCoachLog( const char * message,
-                        const int flag );
-    void writeOnlineCoachLog( const OnlineCoach & p,
-                              const char * message,
-                              const int flag );
 private:
-    void write_times( const timeval & tp_old,
-                      const timeval & tp_new );
-
-    void write_profile( const timeval & tv_start,
-                        const timeval & tv_end,
-                        const char * str );
 
     void assignPlayerTypes();
 public:
@@ -585,11 +490,6 @@ private:
     void calcBallCollPos( Player * p );
     void calcCollPos( MPObject * a,
                       MPObject * b );
-    const
-    tm & realTime() const
-      {
-          return m_real_time;
-      }
 
     void startTeams();
 
@@ -602,10 +502,6 @@ private:
     void saveResults();
 
     void disable();
-
-    void renameLogs();
-
-    void closeLogs();
 
 public:
     static

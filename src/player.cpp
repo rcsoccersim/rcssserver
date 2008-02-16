@@ -721,7 +721,7 @@ Player::goalieCatch( double dir )
 void
 Player::say( std::string message )
 {
-    if ( message.size() > ServerParam::instance().sayMsgSize() )
+    if ( message.length() > ServerParam::instance().sayMsgSize() )
     {
         return;
     }

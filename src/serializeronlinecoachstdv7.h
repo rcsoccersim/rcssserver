@@ -38,28 +38,25 @@ public:
     ~SerializerOnlineCoachStdv7();
 
     static
-    const SerializerOnlineCoachStdv7*
-    instance();
+    const
+    SerializerOnlineCoachStdv7 * instance();
 
     virtual
-    void
-    serializeRefAudio( std::ostream& strm,
-                       const int& time,
-                       const std::string& name,
-                       const char* msg ) const;
+    void serializeRefereeAudio( std::ostream & strm,
+                                const int & time,
+                                const std::string & name,
+                                const char * msg ) const;
 
     virtual
-    void
-    serializePlayerAudio( std::ostream& strm,
-                          const int& time,
-                          const std::string& name,
-                          const char* msg ) const;
+    void serializePlayerAudio( std::ostream & strm,
+                               const int & time,
+                               const std::string & name,
+                               const char * msg ) const;
 
     virtual
-    void
-    serializeChangedPlayer( std::ostream &,
-                            const int unum,
-                            const int type = -1 ) const;
+    void serializeChangedPlayer( std::ostream &,
+                                 const int unum,
+                                 const int type = -1 ) const;
 };
 }
 #endif

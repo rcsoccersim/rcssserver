@@ -196,6 +196,34 @@ Coach::sendOKEye()
     }
 }
 
+
+void
+Coach::send( const char* msg )
+{
+    if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
+    {
+        M_stadium.logger().writeCoachLog( msg, SEND );
+    }
+}
+
+void
+Coach::parseMsg( const char * msg,
+                 const size_t & len )
+{
+    char * str = (char*)msg;
+    if ( str[ len - 1 ] != 0 )
+    {
+        if ( version() >= 8.0 )
+        {
+            send( "(warning message_not_null_terminated)" );
+        }
+        str[ len ] = 0;
+    }
+    M_stadium.logger().writeCoachLog( str, RECV );
+    parse_command( str );
+}
+
+
 void
 Coach::parse_command( const char *command )
 {
@@ -245,7 +273,7 @@ Coach::parse_command( const char *command )
             return;
         }
         chop_last_parenthesis( msg, ServerParam::instance().freeformMsgSize() );
-        M_stadium.say( msg, false );
+        M_stadium.sendCoachAudio( *this, msg );
         send( "(ok say)" );
     }
     else if ( ! std::strcmp( com,"ear" ) )
@@ -312,15 +340,6 @@ Coach::parse_command( const char *command )
     }
 }
 
-
-void
-Coach::send( const char* msg )
-{
-    if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
-    {
-        M_stadium.writeCoachLog( msg, SEND );
-    }
-}
 
 void
 Coach::sendExternalMsg()
@@ -1112,7 +1131,7 @@ OnlineCoach::disable()
                   << ( side() == LEFT
                        ? M_stadium.teamLeft().name()
                        : M_stadium.teamRight().name() );
-        if ( ! getName().empty() ) std::cout <<  " " << getName();
+        if ( ! name().empty() ) std::cout <<  " " << name();
         std::cout << ")\n";
     }
 
@@ -1124,31 +1143,119 @@ OnlineCoach::disable()
     }
 }
 
-void
-OnlineCoach::awardFreeformMessageCount()
-{
-    if ( M_freeform_messages_allowed > 0 )
-    {
-        M_freeform_messages_allowed += ServerParam::instance().freeformCountMax();
-    }
-}
 
 bool
-OnlineCoach::canSendFreeform() const
+OnlineCoach::setSenders( const double & client_version )
 {
-    if ( M_stadium.playmode() != PM_PlayOn )
+    M_version = client_version;
+
+    rcss::SerializerOnlineCoach::Creator creator;
+
+    if ( ! rcss::SerializerOnlineCoach::factory().getCreator( creator,
+                                                              (int)client_version ) )
     {
-        return true;
+        return false;
     }
 
-    int playon_period = M_stadium.time() - M_stadium.lastPlayOnStart();
-    if ( playon_period > (int)ServerParam::instance().freeformWaitPeriod() )
+    const rcss::SerializerOnlineCoach* ser = creator();
+    if ( ! ser )
     {
-        playon_period %= ServerParam::instance().freeformWaitPeriod();
-        return playon_period < (int)ServerParam::instance().freeformSendPeriod();
+        return false;
     }
-    return false;
+    this->setSerializer( *ser );
+
+    // visual
+    rcss::VisualSenderCoach::Params visual_params( getTransport(),
+                                                   *this,
+                                                   ser->coachSerializer(),
+                                                   M_stadium );
+    rcss::VisualSenderCoach::Creator visual_cre;
+    if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
+                                                          (int)client_version ) )
+    {
+        return false;
+    }
+    M_observer->setVisualSender( visual_cre( visual_params ) );
+
+    // audio
+    rcss::AudioSenderOnlineCoach::Params audio_params( getTransport(),
+                                                       *this,
+                                                       *ser,
+                                                       M_stadium );
+    rcss::AudioSenderOnlineCoach::Creator audio_cre;
+    if ( ! rcss::AudioSenderOnlineCoach::factory().getCreator( audio_cre,
+                                                               (int)client_version ) )
+    {
+        return false;
+    }
+    this->setAudioSender( audio_cre( audio_params ) );
+
+    // init
+    rcss::InitSenderOnlineCoach::Params init_params( getTransport(),
+                                                     *this,
+                                                     *ser,
+                                                     M_stadium );
+    rcss::InitSenderOnlineCoach::Creator init_cre;
+    if ( ! rcss::InitSenderOnlineCoach::factory().getCreator( init_cre,
+                                                              (int)client_version ) )
+    {
+        return false;
+    }
+
+    M_init_observer_olcoach = new rcss::InitObserverOnlineCoach;
+    //rcss::InitSenderOnlineCoach::Ptr isoc = init_cre( init_params );
+    //rcss::InitObserver< rcss::InitSenderOnlineCoach >::setInitSender( isoc );
+    M_init_observer_olcoach->setInitSender( init_cre( init_params ) );
+
+    M_assigned = true;
+    return true;
 }
+
+
+void
+OnlineCoach::sendInit()
+{
+    M_init_observer_olcoach->sendInit();
+
+    M_init_observer_olcoach->sendServerParams();
+    M_init_observer_olcoach->sendPlayerParams();
+    M_init_observer_olcoach->sendPlayerTypes();
+    M_init_observer_olcoach->sendChangedPlayers();
+}
+
+void
+OnlineCoach::send( const char * msg )
+{
+    if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
+    {
+        M_stadium.logger().writeOnlineCoachLog( *this, msg, SEND );
+    }
+    else
+    {
+        std::cerr << __FILE__ << ": " << __LINE__ << ": ";
+        perror( "Error sending to online coach" );
+          }
+}
+
+
+void
+OnlineCoach::parseMsg( const char * msg,
+                       const size_t & len )
+{
+    char * str = (char*)msg;
+    if( str[ len - 1 ] != 0 )
+    {
+        if ( version() >= 8.0 )
+        {
+            send( "(warning message_not_null_terminated)" );
+        }
+        str[ len ] = 0;
+    }
+
+    M_stadium.logger().writeOnlineCoachLog( *this, str, RECV );
+    parse_command( str );
+}
+
 
 void
 OnlineCoach::parse_command( const char *command )
@@ -1430,6 +1537,34 @@ OnlineCoach::parse_command( const char *command )
     }
 }
 
+
+void
+OnlineCoach::awardFreeformMessageCount()
+{
+    if ( M_freeform_messages_allowed > 0 )
+    {
+        M_freeform_messages_allowed += ServerParam::instance().freeformCountMax();
+    }
+}
+
+bool
+OnlineCoach::canSendFreeform() const
+{
+    if ( M_stadium.playmode() != PM_PlayOn )
+    {
+        return true;
+    }
+
+    int playon_period = M_stadium.time() - M_stadium.lastPlayOnStart();
+    if ( playon_period > (int)ServerParam::instance().freeformWaitPeriod() )
+    {
+        playon_period %= ServerParam::instance().freeformWaitPeriod();
+        return playon_period < (int)ServerParam::instance().freeformSendPeriod();
+    }
+    return false;
+}
+
+
 void
 OnlineCoach::sendPlayerClangVer()
 {
@@ -1506,14 +1641,14 @@ OnlineCoach::check_message_queue( int time )
 
 
 void
-OnlineCoach::say( const rcss::clang::Msg& message )
+OnlineCoach::say( const rcss::clang::Msg & message )
 {
     M_stadium.sendCoachStdAudio( *this, message );
 }
 
 
 void
-OnlineCoach::say( char *message, bool )
+OnlineCoach::say( const char * message )
 {
     M_stadium.sendCoachAudio( *this, message );
 }
@@ -1693,83 +1828,4 @@ OnlineCoach::update_messages_left( int time )
     M_msg_left_update_time = time;
 
     return true;
-}
-
-
-bool
-OnlineCoach::setSenders( const double & client_version )
-{
-    M_version = client_version;
-
-    rcss::SerializerOnlineCoach::Creator creator;
-
-    if ( ! rcss::SerializerOnlineCoach::factory().getCreator( creator,
-                                                              (int)client_version ) )
-    {
-        return false;
-    }
-
-    const rcss::SerializerOnlineCoach* ser = creator();
-    if ( ! ser )
-    {
-        return false;
-    }
-    this->setSerializer( *ser );
-
-    // visual
-    rcss::VisualSenderCoach::Params visual_params( getTransport(),
-                                                   *this,
-                                                   ser->coachSerializer(),
-                                                   M_stadium );
-    rcss::VisualSenderCoach::Creator visual_cre;
-    if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
-                                                          (int)client_version ) )
-    {
-        return false;
-    }
-    M_observer->setVisualSender( visual_cre( visual_params ) );
-
-    // audio
-    rcss::AudioSenderOnlineCoach::Params audio_params( getTransport(),
-                                                       *this,
-                                                       *ser,
-                                                       M_stadium );
-    rcss::AudioSenderOnlineCoach::Creator audio_cre;
-    if ( ! rcss::AudioSenderOnlineCoach::factory().getCreator( audio_cre,
-                                                               (int)client_version ) )
-    {
-        return false;
-    }
-    this->setAudioSender( audio_cre( audio_params ) );
-
-    // init
-    rcss::InitSenderOnlineCoach::Params init_params( getTransport(),
-                                                     *this,
-                                                     *ser,
-                                                     M_stadium );
-    rcss::InitSenderOnlineCoach::Creator init_cre;
-    if ( ! rcss::InitSenderOnlineCoach::factory().getCreator( init_cre,
-                                                              (int)client_version ) )
-    {
-        return false;
-    }
-
-    M_init_observer_olcoach = new rcss::InitObserverOnlineCoach;
-    //rcss::InitSenderOnlineCoach::Ptr isoc = init_cre( init_params );
-    //rcss::InitObserver< rcss::InitSenderOnlineCoach >::setInitSender( isoc );
-    M_init_observer_olcoach->setInitSender( init_cre( init_params ) );
-
-    M_assigned = true;
-    return true;
-}
-
-void
-OnlineCoach::sendInit()
-{
-    M_init_observer_olcoach->sendInit();
-
-    M_init_observer_olcoach->sendServerParams();
-    M_init_observer_olcoach->sendPlayerParams();
-    M_init_observer_olcoach->sendPlayerTypes();
-    M_init_observer_olcoach->sendChangedPlayers();
 }

@@ -561,7 +561,7 @@ Player::parseMsg( const char* msg, const size_t& len )
         }
         command[ len ] = 0;
     }
-    M_stadium.writePlayerLog( *this, command, RECV );
+    M_stadium.logger().writePlayerLog( *this, command, RECV );
 
     /** Call the PlayerCommandParser */
     if ( M_parser.parse( command ) != 0 )
@@ -573,11 +573,11 @@ Player::parseMsg( const char* msg, const size_t& len )
 
 inline
 void
-Player::send( const char* msg )
+Player::send( const char * msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.writePlayerLog( *this, msg, SEND );
+        M_stadium.logger().writePlayerLog( *this, msg, SEND );
     }
 }
 

@@ -21,51 +21,62 @@
 
 #include "serializeronlinecoachstdv7.h"
 
-namespace rcss
-{
+namespace rcss {
 
 SerializerOnlineCoachStdv7::SerializerOnlineCoachStdv7( const SerializerCommon & common,
                                                         const SerializerCoach & coach )
     : SerializerOnlineCoachStdv6( common, coach )
-{}
+{
 
-SerializerOnlineCoachStdv7::~SerializerOnlineCoachStdv7() {}
+}
 
-const SerializerOnlineCoachStdv7*
+SerializerOnlineCoachStdv7::~SerializerOnlineCoachStdv7()
+{
+
+}
+
+const
+SerializerOnlineCoachStdv7 *
 SerializerOnlineCoachStdv7::instance()
 {
     rcss::SerializerCommon::Creator cre_common;
-    if( !rcss::SerializerCommon::factory().getCreator( cre_common, 7 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 7 ) )
+    {
         return NULL;
+    }
+
     rcss::SerializerCoach::Creator cre_coach;
-    if( !rcss::SerializerCoach::factory().getCreator( cre_coach, 7 ) )
+    if ( !rcss::SerializerCoach::factory().getCreator( cre_coach, 7 ) )
+    {
         return NULL;
+    }
+
     static SerializerOnlineCoachStdv7 ser( cre_common(), *cre_coach() );
     return &ser;
 }
 
 void
-SerializerOnlineCoachStdv7::serializeRefAudio( std::ostream& strm,
-                                               const int& time,
-                                               const std::string& name,
-                                               const char* msg ) const
+SerializerOnlineCoachStdv7::serializeRefereeAudio( std::ostream & strm,
+                                                   const int & time,
+                                                   const std::string & name,
+                                                   const char * msg ) const
 {
     strm << "(hear " << time << " " << name
          << " " << msg << ")";
 }
 
 void
-SerializerOnlineCoachStdv7::serializePlayerAudio( std::ostream& strm,
-                                                  const int& time,
-                                                  const std::string& name,
-                                                  const char* msg ) const
+SerializerOnlineCoachStdv7::serializePlayerAudio( std::ostream & strm,
+                                                  const int & time,
+                                                  const std::string & name,
+                                                  const char * msg ) const
 {
     strm << "(hear " << time << " " << name << " \""
          << msg << "\")";
 }
 
 void
-SerializerOnlineCoachStdv7::serializeChangedPlayer( std::ostream& strm,
+SerializerOnlineCoachStdv7::serializeChangedPlayer( std::ostream & strm,
                                                     const int unum,
                                                     const int type ) const
 {
@@ -75,12 +86,15 @@ SerializerOnlineCoachStdv7::serializeChangedPlayer( std::ostream& strm,
     strm << ")";
 }
 
-namespace
-{
-const SerializerOnlineCoach*
+namespace {
+const
+SerializerOnlineCoach *
 create()
-{ return SerializerOnlineCoachStdv7::instance(); }
+{
+    return SerializerOnlineCoachStdv7::instance();
+}
 
 lib::RegHolder v7 = SerializerOnlineCoach::factory().autoReg( &create, 7 );
+
 }
 }

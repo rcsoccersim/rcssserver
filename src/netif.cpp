@@ -45,6 +45,25 @@
 #include "config.h"
 #endif
 
+#include "field.h"
+
+#include "param.h"
+#include "types.h"
+#include "utility.h"
+#include "object.h"
+#include "coach.h"
+#include "player.h"
+
+#include "random.h"
+#include "serializer.h"
+#include "clangparser.h"
+#include "clangmsg.h"
+//#include "coach_lang_comp.h"
+#include "clangmsgbuilder.h"
+#include "xpmholder.h"
+#include "remoteclient.h"
+#include "monitor.h"
+
 #include <rcssbase/net/udpsocket.hpp>
 
 #include <cstdio>
@@ -57,31 +76,6 @@ extern "C" {
     int isnan (double);
 }
 #endif
-
-#include <iostream>
-#ifdef HAVE_SSTREAM
-#include <sstream>
-#else
-#include <strstream>
-#endif
-
-#include "param.h"
-#include "types.h"
-#include "utility.h"
-#include "object.h"
-#include "coach.h"
-#include "player.h"
-#include "field.h"
-
-#include "random.h"
-#include "serializer.h"
-#include "clangparser.h"
-#include "clangmsg.h"
-//#include "coach_lang_comp.h"
-#include "clangmsgbuilder.h"
-#include "xpmholder.h"
-#include "remoteclient.h"
-#include "monitor.h"
 
 
 /*
@@ -207,7 +201,7 @@ Stadium::parsePlayerInit( const char * message,
             Player * p = reconnectPlayer( message, cli_addr );
             if ( p )
             {
-                writePlayerLog( *p, message, RECV );
+                M_logger.writePlayerLog( *p, message, RECV );
             }
 				}
 		}
@@ -217,7 +211,7 @@ Stadium::parsePlayerInit( const char * message,
         Player * p = initPlayer( message, cli_addr );
         if ( p )
         {
-            writePlayerLog( *p, message, RECV );
+            M_logger.writePlayerLog( *p, message, RECV );
         }
     }
     else
@@ -397,7 +391,7 @@ Stadium::parseCoachInit( const char * message,
         {
             std::cout << "a new (v" << coach->version()
                       << ") offline coach connected" << std::endl;
-            writeCoachLog( message, RECV );
+            M_logger.writeCoachLog( message, RECV );
         }
     }
     else
@@ -405,7 +399,7 @@ Stadium::parseCoachInit( const char * message,
         _Start( *this ); // need to remove this line if we
         // dont want the server to start when the coach connects
         M_coach->parse_command( message );
-        writeCoachLog( message, RECV );
+        M_logger.writeCoachLog( message, RECV );
     }
 
     return true;
@@ -476,7 +470,7 @@ Stadium::parseOnlineCoachInit( const char * message,
         OnlineCoach * olc = initOnlineCoach( message, addr );
         if ( olc )
         {
-            writeOnlineCoachLog( *olc, message, RECV );
+            M_logger.writeOnlineCoachLog( *olc, message, RECV );
         }
     }
     else
@@ -485,59 +479,6 @@ Stadium::parseOnlineCoachInit( const char * message,
                            addr );
     }
 }
-
-void
-Stadium::say( const char *message, bool ref )
-{
-    if ( ref )
-    {
-        sendRefAudio( message );
-    }
-    else
-    {
-        sendCoachAudio( *M_coach, message );
-    }
-
-    //    send_audio_info(message, NULL, FALSE, standard) ;
-
-    if ( isTextLogOpen()
-         || isGameLogOpen()
-         || ServerParam::instance().sendComms() )
-	  {
-        char buf[max_message_length_for_display];
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       "(%s %s)",
-                       REFEREE_NAME, message );
-        // write to text log
-        if ( isTextLogOpen() )
-	      {
-            textLogStream() << time() << "\t" << buf << '\n';
-	      }
-
-        // send to monitors
-        if ( ServerParam::instance().sendComms() )
-        {
-            for ( MonitorCont::iterator i = M_monitors.begin();
-                  i != M_monitors.end();
-                  ++i )
-            {
-                (*i)->sendMsg( MSG_BOARD, buf );
-            }
-        }
-
-        // write to game log
-        if ( isGameLogOpen() )
-        {
-            if ( playmode() != PM_BeforeKickOff
-                 && playmode() != PM_TimeOver )
-            {
-                writeMsgToGameLog( MSG_BOARD, buf );
-            }
-        }
-	  }
-}
-
 
 void
 Stadium::sendToPlayer( const char * msg,
@@ -652,6 +593,5 @@ Stadium::broadcastSubstitution( const int side,
         (*i)->sendMsg( MSG_BOARD, buffer );
     }
 
-    std::strcat( buffer, "\n" );
-    writeTextLog( buffer, SUBS );
+    M_logger.writeTextLog( buffer, SUBS );
 }

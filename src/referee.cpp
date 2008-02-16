@@ -468,7 +468,7 @@ TimeRef::analyse()
             }
             else
             {
-                M_stadium.say( "time_up" );
+                M_stadium.sendRefereeAudio( "time_up" );
                 M_stadium.change_play_mode( PM_TimeOver );
                 return;
             }
@@ -480,13 +480,13 @@ TimeRef::analyse()
             if ( ! M_stadium.teamLeft().enabled()
                  || ! M_stadium.teamRight().enabled() )
             {
-                M_stadium.say( "time_up_without_a_team" );
+                M_stadium.sendRefereeAudio( "time_up_without_a_team" );
                 M_stadium.change_play_mode( PM_TimeOver );
                 return;
             }
             else if ( M_stadium.teamLeft().point() != M_stadium.teamRight().point() )
             {
-                M_stadium.say( "time_up" );
+                M_stadium.sendRefereeAudio( "time_up" );
                 M_stadium.change_play_mode( PM_TimeOver );
                 return;
             }
@@ -495,7 +495,7 @@ TimeRef::analyse()
                       )
             {
                 ++s_half_time_count;
-                M_stadium.say( "time_extended" );
+                M_stadium.sendRefereeAudio( "time_extended" );
                 Side kick_off_side = ( s_half_time_count % 2 == 0
                                        ? LEFT
                                        : RIGHT );
@@ -513,7 +513,7 @@ TimeRef::analyse()
             Side kick_off_side = ( s_half_time_count % 2 == 0
                                    ? LEFT
                                    : RIGHT );
-            M_stadium.say( "half_time" );
+            M_stadium.sendRefereeAudio( "half_time" );
             M_stadium.setHalfTime( kick_off_side, s_half_time_count );
             placePlayersInTheirField();
             return;
@@ -1843,7 +1843,7 @@ TouchRef::announceGoal( const Team & team )
 #ifdef HAVE_SSTREAM
     std::ostringstream msg;
     msg << "goal_" << SideStr( team.side() ) << "_" << team.point();
-    M_stadium.say( msg.str().c_str() );
+    M_stadium.sendRefereeAudio( msg.str().c_str() );
 #else
     std::ostrstream msg;
     msg << "goal_" << SideStr( team.side() ) << "_" << team.point() << std::ends;
@@ -1881,13 +1881,13 @@ KeepawayRef::analyse()
             if( !ballInKeepawayArea() )
             {
                 logEpisode( "o" );
-                M_stadium.say( trainingMsg );
+                M_stadium.sendRefereeAudio( trainingMsg );
                 resetField();
             }
             else if( M_take_time >= TURNOVER_TIME )
             {
                 logEpisode( "t" );
-                M_stadium.say( trainingMsg );
+                M_stadium.sendRefereeAudio( trainingMsg );
                 resetField();
             }
             else
@@ -1980,36 +1980,36 @@ KeepawayRef::ballInKeepawayArea()
 void
 KeepawayRef::logHeader()
 {
-    if ( M_stadium.kawayLog() )
+    if ( M_stadium.logger().kawayLog() )
     {
-        M_stadium.kawayLog() << "# Keepers: " << M_keepers << '\n'
-                             << "# Takers:  " << M_takers << '\n'
-                             << "# Region:  " << ServerParam::instance().keepAwayLength()
-                             << " x " << ServerParam::instance().keepAwayWidth() << std::endl;
-
-        M_stadium.kawayLog() << "#\n";
-
-        M_stadium.kawayLog() << "# Description of Fields:\n"
-                             << "# 1) Episode number\n"
-                             << "# 2) Start time in simulator steps (100ms)\n"
-                             << "# 3) End time in simulator steps (100ms)\n"
-                             << "# 4) Duration in simulator steps (100ms)\n"
-                             << "# 5) (o)ut of bounds / (t)aken away\n";
-
-        M_stadium.kawayLog() << "#\n";
+        M_stadium.logger().kawayLog() << "# Keepers: " << M_keepers << '\n'
+                                      << "# Takers:  " << M_takers << '\n'
+                                      << "# Region:  " << ServerParam::instance().keepAwayLength()
+                                      << " x " << ServerParam::instance().keepAwayWidth()
+                                      << '\n'
+                                      << "#\n"
+                                      << "# Description of Fields:\n"
+                                      << "# 1) Episode number\n"
+                                      << "# 2) Start time in simulator steps (100ms)\n"
+                                      << "# 3) End time in simulator steps (100ms)\n"
+                                      << "# 4) Duration in simulator steps (100ms)\n"
+                                      << "# 5) (o)ut of bounds / (t)aken away\n"
+                                      << "#\n"
+                                      << std::flush;
     }
 }
 
 void
 KeepawayRef::logEpisode( const char *endCond )
 {
-    if ( M_stadium.kawayLog() )
+    if ( M_stadium.logger().kawayLog() )
     {
-        M_stadium.kawayLog() << M_episode++ << "\t"
-                             << M_time << "\t"
-                             << M_stadium.time() << "\t"
-                             << M_stadium.time() - M_time << "\t"
-                             << endCond << std::endl;
+        M_stadium.logger().kawayLog() << M_episode++ << "\t"
+                                      << M_time << "\t"
+                                      << M_stadium.time() << "\t"
+                                      << M_stadium.time() - M_time << "\t"
+                                      << endCond
+                                      << std::endl;
     }
 
     M_time = M_stadium.time();
@@ -2026,13 +2026,12 @@ KeepawayRef::resetField()
           p != end;
           ++p )
     {
-        if( (*p)->state() != DISABLE )
+        if ( (*p)->state() != DISABLE )
         {
             double x, y;
             if ( (*p)->team()->side() == LEFT )
             {
-                switch( keeper_pos )
-                {
+                switch( keeper_pos ) {
                 case 0:
                     x = -ServerParam::instance().keepAwayLength() * 0.5 + drand( 0, 3 );
                     y = -ServerParam::instance().keepAwayWidth() * 0.5 + drand( 0, 3 );
@@ -2370,9 +2369,9 @@ PenaltyRef::analyseImpl()
             M_pen_side = RIGHT;
         }
 
-        M_stadium.say( M_pen_side == LEFT
-                       ? "penalty_onfield_l"
-                       : "penalty_onfield_r" );
+        M_stadium.sendRefereeAudio( M_pen_side == LEFT
+                                    ? "penalty_onfield_l"
+                                    : "penalty_onfield_r" );
         // choose at random who starts (note that in penalty_init, actually the
         // opposite player is chosen since there the playMode changes)
         M_cur_pen_taker = ( drand( 0, 1 ) < 0.5 ) ? LEFT : RIGHT;
@@ -2868,7 +2867,9 @@ PenaltyRef::penalty_foul( const Side side )
     if ( M_bDebug )
         std::cerr << "penalty_foul " << side << std::endl;
 
-    M_stadium.say( ( side == LEFT ) ?  "penalty_foul_l" : "penalty_foul_r" );
+    M_stadium.sendRefereeAudio( ( side == LEFT
+                                  ?  "penalty_foul_l"
+                                  : "penalty_foul_r" ) );
 
     // if team takes penalty and makes mistake -> miss, otherwise -> score
     if ( side == LEFT && M_cur_pen_taker == LEFT )
@@ -2913,11 +2914,11 @@ PenaltyRef::penalty_check_score()
             if ( M_stadium.teamLeft().penaltyPoint()
                  > M_stadium.teamRight().penaltyPoint() )
             {
-                M_stadium.say( "penalty_winner_l" );
+                M_stadium.sendRefereeAudio( "penalty_winner_l" );
             }
             else
             {
-                M_stadium.say( "penalty_winner_r" );
+                M_stadium.sendRefereeAudio( "penalty_winner_r" );
             }
             M_stadium.change_play_mode( PM_TimeOver );
         }
@@ -2934,20 +2935,20 @@ PenaltyRef::penalty_check_score()
         {
             if ( drand( 0, 1 ) < 0.5 )
             {
-                M_stadium.say( "penalty_winner_l" );
+                M_stadium.sendRefereeAudio( "penalty_winner_l" );
                 M_stadium.penaltyWinner( LEFT );
                 std::cerr << "Left team has won the coin toss!" << std::endl;
             }
             else
             {
-                M_stadium.say( "penalty_winner_r" );
+                M_stadium.sendRefereeAudio( "penalty_winner_r" );
                 M_stadium.penaltyWinner( RIGHT );
                 std::cerr << "Right team has won the coin toss!" << std::endl;
             }
         }
         else
         {
-            M_stadium.say( "penalty_draw" );
+            M_stadium.sendRefereeAudio( "penalty_draw" );
         }
         M_stadium.change_play_mode( PM_TimeOver );
     }
@@ -2977,7 +2978,7 @@ PenaltyRef::penalty_check_score()
             std::cerr << "Final score: "
                       << M_stadium.teamLeft().penaltyPoint() << "-"
                       << M_stadium.teamRight().penaltyPoint() << std::endl;
-            M_stadium.say( "penalty_winner_r" );
+            M_stadium.sendRefereeAudio( "penalty_winner_r" );
             M_stadium.change_play_mode( PM_TimeOver );
         }
         else if ( iMaxExtraRight < M_stadium.teamLeft().penaltyPoint() )
@@ -2985,7 +2986,7 @@ PenaltyRef::penalty_check_score()
             std::cerr << "Final score: "
                       << M_stadium.teamLeft().penaltyPoint() << "-"
                       << M_stadium.teamRight().penaltyPoint() << std::endl;
-            M_stadium.say( "penalty_winner_l" );
+            M_stadium.sendRefereeAudio( "penalty_winner_l" );
             M_stadium.change_play_mode( PM_TimeOver );
         }
     }

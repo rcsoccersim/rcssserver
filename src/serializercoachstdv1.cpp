@@ -53,9 +53,9 @@ SerializerCoachStdv1::instance()
 }
 
 void
-SerializerCoachStdv1::serializeRefAudio( std::ostream & strm,
-                                         const int & time,
-                                         const char * msg ) const
+SerializerCoachStdv1::serializeRefereeAudio( std::ostream & strm,
+                                             const int & time,
+                                             const char * msg ) const
 {
     strm << "(hear " << REFEREE_NAME << " " << time
          << " " << msg << ")";

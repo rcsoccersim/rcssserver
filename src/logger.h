@@ -39,6 +39,11 @@ class Stadium;
 class XPMHolder;
 struct timeval;
 
+namespace rcss {
+namespace clang {
+class Msg;
+}
+}
 
 class Logger {
 private:
@@ -51,7 +56,7 @@ private:
     static const std::string DEF_KAWAY_SUFFIX;
 
 
-    Stadium & M_stadium;
+    const Stadium & M_stadium;
 
     std::string M_game_log_name;
     std::string M_text_log_name;
@@ -59,7 +64,7 @@ private:
 
     std::ostream * M_game_log;
     std::ostream * M_text_log;
-    std::ofstream M_kaway_log;  /* file for keepaway log */
+    std::ofstream M_kaway_log;  //!< file for keepaway log
 
 
     PlayMode M_playmode;
@@ -76,9 +81,14 @@ public:
     ~Logger();
 
     bool open();
+    void close();
+
 private:
     bool openGameLog();
     bool openTextLog();
+    bool openKawayLog();
+
+    void renameLogs();
 
 public:
 
@@ -92,7 +102,7 @@ public:
           return ( M_text_log && M_text_log->good() );
       }
 
-    std::ostream & kawayLogStream()
+    std::ostream & kawayLog()
       {
           return M_kaway_log;
       }
@@ -123,16 +133,24 @@ private:
 public:
 
     void writeTextLog( const char * message,
-                       const int flag );
+                       const TextLogFlag flag );
 
     void writePlayerLog( const Player & player,
                          const char * message,
-                         const int flag );
+                         const TextLogFlag flag );
     void writeCoachLog( const char * message,
-                        const int flag );
+                        const TextLogFlag flag );
     void writeOnlineCoachLog( const OnlineCoach & coach,
                               const char * message,
-                              const int flag );
+                              const TextLogFlag flag );
+
+    void writeRefereeAudio( const char * msg );
+    void writePlayerAudio( const Player & player,
+                           const char * msg );
+    void writeCoachAudio( const Coach & coach,
+                          const char * msg );
+    void writeCoachStdAudio( const OnlineCoach & coach,
+                             const rcss::clang::Msg & msg );
 
     void writeTimes( const timeval &,
                      const timeval & );
