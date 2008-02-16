@@ -193,7 +193,7 @@ const int ServerParam::SEND_COMMS = false;
 
 const int ServerParam::TEXT_LOGGING = true;
 const int ServerParam::GAME_LOGGING = true;
-const int ServerParam::GAME_LOG_VERSION = 3;
+const int ServerParam::GAME_LOG_VERSION = DEFAULT_REC_VERSION;
 const char ServerParam::TEXT_LOG_DIR[] = "./";
 const char ServerParam::GAME_LOG_DIR[] = "./";
 const char ServerParam::TEXT_LOG_FIXED_NAME[] = "rcssserver";

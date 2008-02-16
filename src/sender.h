@@ -43,15 +43,20 @@ private:
     std::ostream & M_transport;
 
 protected:
+    Sender( std::ostream & transport )
+        : M_transport( transport )
+      { }
+
     std::ostream & transport()
       {
           return M_transport;
       }
 
 public:
-    Sender( std::ostream & transport )
-        : M_transport( transport )
+    virtual
+    ~Sender()
       { }
+
 };
 
 }

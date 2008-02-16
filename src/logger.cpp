@@ -37,7 +37,7 @@
 #include "xpmholder.h"
 
 #include "dispsender.h"
-#include "initsendermonitor.h"
+#include "initsenderlogger.h"
 #include "serializermonitor.h"
 
 #include "serializercommonstdv8.h"
@@ -68,7 +68,7 @@ const std::string Logger::DEF_KAWAY_SUFFIX = ".kwy";
 
 
 Logger::Logger( Stadium & stadium )
-    : M_init_observer( new rcss::InitObserverMonitor )
+    : M_init_observer( new rcss::InitObserverLogger )
     , M_stadium( stadium )
     , M_game_log( static_cast< std::ostream * >( 0 ) )
     , M_text_log( static_cast< std::ostream * >( 0 ) )
@@ -89,15 +89,31 @@ Logger::~Logger()
 bool
 Logger::setSenders()
 {
-#if 0
+#if 1
     if ( ! isGameLogOpen() )
     {
         return true;
     }
 
+    int log_version = ServerParam::instance().gameLogVersion();
+    int monitor_version = 3;
+    switch ( log_version ) {
+    case REC_VERSION_4:
+        monitor_version = 3;
+        break;
+    case REC_VERSION_3:
+        monitor_version = 2;
+        break;
+    case REC_VERSION_2:
+    case REC_OLD_VERSION:
+        monitor_version = 1;
+        break;
+    default:
+        return false;
+    }
+
     rcss::SerializerMonitor::Creator ser_cre;
-    if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre,
-                                                           ) )
+    if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre, monitor_version ) )
     {
         return false;
     }
@@ -116,9 +132,8 @@ Logger::setSenders()
                                                     *this,
                                                     *ser,
                                                     M_stadium );
-        rcss::InitSender::Creator init_cre;
-        if ( ! rcss::InitSenderLogger::factory().getCreator( init_cre,
-                                                             ServerParam::instance().gameLogVersion() ) )
+        rcss::InitSenderLogger::Creator init_cre;
+        if ( ! rcss::InitSenderLogger::factory().getCreator( init_cre, log_version ) )
         {
             return false;
         }
@@ -235,73 +250,16 @@ Logger::openGameLog()
 
     if ( ! setSenders() )
     {
+        std::cerr << __FILE__ << ": " << __LINE__
+                  << ": can't set senders " << M_game_log_name << std::endl;
         return false;
     }
 
-    if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
-    {
-        // write version information
-        char buf[6];
-        buf[0] = 'U';
-        buf[1] = 'L';
-        buf[2] = 'G';
-        if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
-        {
-            buf[3] = '4';
-            buf[4] = '\n';
-            writeToGameLog( buf, 5 );
-        }
-        else
-        {
-            buf[3] = ServerParam::instance().gameLogVersion();
-            writeToGameLog( buf, 4 );
-        }
-
-        if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
-        {
-            rcss::InitSenderCommonV8 init_sender( *M_game_log,
-                                                  rcss::SerializerCommonStdv8::instance(),
-                                                  M_stadium,
-                                                  999, // version number
-                                                  true ); // new line
-            init_sender.sendServerParams();
-            init_sender.sendPlayerParams();
-            init_sender.sendPlayerTypes();
-//             M_init_observer->sendServerParams();
-//             M_init_observer->sendPlayerParams();
-//             M_init_observer->sendPlayerTypes();
-        }
-        else if ( ServerParam::instance().gameLogVersion() == REC_VERSION_3 )
-        {
-            Int16 mode = htons( PARAM_MODE );
-            server_params_t stmp = ServerParam::instance().convertToStruct();
-            writeToGameLog( reinterpret_cast< const char * >( &mode ), sizeof( mode ) );
-            writeToGameLog( reinterpret_cast< const char * >( &stmp ), sizeof( stmp ) );
-
-            mode = htons( PPARAM_MODE );
-            player_params_t ptmp = PlayerParam::instance().convertToStruct();
-            writeToGameLog( reinterpret_cast< const char * >( &mode ), sizeof( mode ) );
-            writeToGameLog( reinterpret_cast< const char * >( &ptmp ), sizeof( ptmp ) );
-
-            mode = htons( PT_MODE );
-            for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
-            {
-                const HeteroPlayer * p = M_stadium.playerType( i );
-                if ( p )
-                {
-                    player_type_t pt_tmp = p->convertToStruct( i );
-                    writeToGameLog( reinterpret_cast< const char * >( &mode ), sizeof( mode ) );
-                    writeToGameLog( reinterpret_cast< const char * >( &pt_tmp ), sizeof( pt_tmp ) );
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        this->flush();
-    }
+    M_init_observer->sendHeader();
+    M_init_observer->sendServerParams();
+    M_init_observer->sendPlayerParams();
+    M_init_observer->sendPlayerTypes();
+    M_game_log->flush();
 
     return true;
 }

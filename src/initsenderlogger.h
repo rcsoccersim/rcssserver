@@ -36,18 +36,18 @@ class InitSenderLogger
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        const Logger & m_self;
-        const SerializerMonitor & m_ser;
+        std::ostream & M_transport;
+        const Logger & M_self;
+        const SerializerMonitor & M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
-                const Player & self,
+                const Logger & self,
                 const SerializerMonitor & serializer,
                 const Stadium & stadium )
-            : m_transport( transport )
-            , m_self( self )
-            , m_serializer( serializer )
+            : M_transport( transport )
+            , M_self( self )
+            , M_serializer( serializer )
             , M_stadium( stadium )
           { }
     };
@@ -60,7 +60,7 @@ private:
 
     const SerializerMonitor & M_serializer;
     /*:TODO: M_self needs to be replaced with a reference to a
-      BodyObserver and BodyObserver should have virtual functions for
+      InitObserver and InitObserver should have virtual functions for
       stuff like velocity, stamina, etc */
     const Logger & M_self;
     const Stadium & M_stadium;
@@ -74,8 +74,8 @@ public:
 
 protected:
 
-    InitSenderLogger( Params & params,
-                      const boost::shared_ptr< InitSenderCommon >& common );
+    InitSenderLogger( const Params & params,
+                      const boost::shared_ptr< InitSenderCommon > common );
 
     const
     SerializerMonitor & serializer() const
@@ -119,7 +119,7 @@ public:
 /*!
   \class InitObserverLogger
  */
-class InitgObserverLogger
+class InitObserverLogger
     : protected BaseObserver< InitSenderLogger > {
 public:
 
@@ -130,7 +130,7 @@ public:
         : BaseObserver< InitSenderLogger >( sender )
       { }
 
-    ~IntiSenderLogger()
+    ~InitObserverLogger()
       { }
 
     void setInitSender( InitSenderLogger & sender )
@@ -158,9 +158,9 @@ public:
           BaseObserver< InitSenderLogger >::sender().sendPlayerParams();
       }
 
-    void sendPlaeyerTypes()
+    void sendPlayerTypes()
       {
-          BaseObserver< InitSenderLogger >::sender().sendPlayeTypes();
+          BaseObserver< InitSenderLogger >::sender().sendPlayerTypes();
       }
 
     void sendPlayMode()

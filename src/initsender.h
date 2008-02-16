@@ -322,19 +322,19 @@ class InitSenderPlayer
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        const Player & m_self;
-        const SerializerPlayer & m_ser;
-        const Stadium & m_stadium;
+        std::ostream & M_transport;
+        const Player & M_self;
+        const SerializerPlayer & M_serializer;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const SerializerPlayer & ser,
+                const SerializerPlayer & serializer,
                 const Stadium & stadium )
-            : m_transport( transport )
-            , m_self( self )
-            , m_ser( ser )
-            , m_stadium( stadium )
+            : M_transport( transport )
+            , M_self( self )
+            , M_serializer( serializer )
+            , M_stadium( stadium )
           { }
     };
 
@@ -566,19 +566,19 @@ class InitSenderOnlineCoach
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        const OnlineCoach & m_self;
-        const SerializerOnlineCoach & m_ser;
-        const Stadium & m_stadium;
+        std::ostream & M_transport;
+        const OnlineCoach & M_self;
+        const SerializerOnlineCoach & M_serializer;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const OnlineCoach & self,
-                const SerializerOnlineCoach & ser,
+                const SerializerOnlineCoach & serializer,
                 const Stadium & stadium )
-            : m_transport( transport )
-            , m_self( self )
-            , m_ser( ser )
-            , m_stadium( stadium )
+            : M_transport( transport )
+            , M_self( self )
+            , M_serializer( serializer )
+            , M_stadium( stadium )
           { }
     };
 

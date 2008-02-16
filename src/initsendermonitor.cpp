@@ -212,7 +212,7 @@ InitSenderMonitorV2::sendPlayerTypes()
 {
     dispinfo_t2 disp;
 
-    disp.mode = htons ( PT_MODE );
+    disp.mode = htons( PT_MODE );
     for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
     {
         const HeteroPlayer * p = stadium().playerType( i );

@@ -262,6 +262,8 @@ initsender.h \
 initsender.cpp \
 initsendermonitor.h \
 initsendermonitor.cpp \
+initsenderlogger.h \
+initsenderlogger.cpp \
 observer.h \
 sender.h
 
