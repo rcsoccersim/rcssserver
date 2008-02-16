@@ -1,9 +1,9 @@
 // -*-c++-*-
 
 /***************************************************************************
-                          player.cc  -  A class for field players and
-                                        goalies
-                             -------------------
+                             player.cc
+               A class for field players and goalies
+                          -------------------
     begin                : 26-NOV-2001
     copyright            : (C) 2001, 2002 by The RoboCup Soccer Server
                            Maintenance Group.
@@ -37,7 +37,7 @@
 #include "utility.h"
 
 #include "serializer.h"
-#include "initsender.h"
+#include "initsenderplayer.h"
 #include "bodysender.h"
 #include "fullstatesender.h"
 #include "visual.h"

@@ -35,7 +35,8 @@
 #include "serializer.h"
 #include "team.h"
 #include "xpmholder.h"
-#include "initsender.h"
+#include "initsendercoach.h"
+#include "initsenderonlinecoach.h"
 #include "visual.h"
 
 #include <boost/lexical_cast.hpp>

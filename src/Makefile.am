@@ -260,6 +260,12 @@ fullstatesender.h \
 fullstatesender.cpp \
 initsender.h \
 initsender.cpp \
+initsenderplayer.h \
+initsenderplayer.cpp \
+initsendercoach.h \
+initsendercoach.cpp \
+initsenderonlinecoach.h \
+initsenderonlinecoach.cpp \
 initsendermonitor.h \
 initsendermonitor.cpp \
 initsenderlogger.h \
