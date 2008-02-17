@@ -348,6 +348,8 @@ player_params_t PlayerParam::convertToStruct() const
     tmp.new_dash_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * new_dash_power_rate_delta_max ) ) ) );
     tmp.new_stamina_inc_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * new_stamina_inc_max_delta_factor ) ) ) );
 
+    tmp.allow_mult_default_type = htons( static_cast< Int16 >( M_allow_mult_default_type ) );
+
     return tmp;
 }
 

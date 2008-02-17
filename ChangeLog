@@ -1,5 +1,10 @@
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/types.h:
+	- added allow_mult_default_type to player_params_t.
+
 	* src/dispsender.cpp:
 	* src/field.cpp:
 	* src/initsenderlogger.cpp:

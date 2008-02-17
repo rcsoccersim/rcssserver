@@ -28,8 +28,8 @@
  *EndCopyright:
  */
 
-#ifndef _PLAYER_PARAM_H_
-#define _PLAYER_PARAM_H_
+#ifndef RCSSSERVR_PLAYER_PARAM_H
+#define RCSSSERVR_PLAYER_PARAM_H
 
 #include "rcssserverconfig.hpp"
 
@@ -73,8 +73,7 @@ public:
 
 protected:
 
-    void
-    addParams();
+    void addParams();
 
 private:
     boost::shared_ptr< rcss::conf::Builder > m_builder;
@@ -90,22 +89,19 @@ public:
 protected:
 
     template< typename P >
-    void
-    addParam( const std::string & name,
-              P & param,
-              const std::string & desc,
-              int version );
+    void addParam( const std::string & name,
+                   P & param,
+                   const std::string & desc,
+                   int version );
 
     template< typename S, typename G >
-    void
-    addParam( const std::string & name,
-              const S & setter,
-              const G & getter,
-              const std::string & desc,
-              int version );
+    void addParam( const std::string & name,
+                   const S & setter,
+                   const G & getter,
+                   const std::string & desc,
+                   int version );
 
-    void
-    setDefaults();
+    void setDefaults();
 
 public:
 

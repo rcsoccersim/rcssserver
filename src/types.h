@@ -543,7 +543,8 @@ struct player_params_t {
     Int32 sparelong9;
     Int32 sparelong10;
 
-    Int16 spareshort1;
+    Int16 allow_mult_default_type;
+
     Int16 spareshort2;
     Int16 spareshort3;
     Int16 spareshort4;
