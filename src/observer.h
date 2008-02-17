@@ -44,24 +44,24 @@ class BaseObserver {
 public:
     typedef S Sender;
 private:
-    Sender* M_sender;
+    Sender * M_sender;
     bool M_owns_sender;
 
 public:
     BaseObserver()
         : M_sender( NULL ),
           M_owns_sender( false )
-      {}
+      { }
 
     BaseObserver( Sender & sender )
         : M_sender( &sender ),
           M_owns_sender( false )
-      {}
+      { }
 
     BaseObserver( std::auto_ptr< Sender > sender )
         : M_sender( sender.release() ),
           M_owns_sender( true )
-      {}
+      { }
 
 
     ~BaseObserver()

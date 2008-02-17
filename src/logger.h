@@ -41,6 +41,7 @@ struct timeval;
 
 namespace rcss {
 class InitObserverLogger;
+class ObserverLogger;
 namespace clang {
 class Msg;
 }
@@ -57,6 +58,7 @@ private:
     static const std::string DEF_KAWAY_SUFFIX;
 
     rcss::InitObserverLogger * M_init_observer;
+    rcss::ObserverLogger * M_observer;
 
     const Stadium & M_stadium;
 
@@ -133,6 +135,8 @@ public:
      */
     void writeGameLog();
 private:
+    void writeGameLogImpl();
+
     void writeGameLogV1();
     void writeGameLogV2();
     void writeGameLogV3();

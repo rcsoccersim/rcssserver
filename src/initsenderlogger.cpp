@@ -319,7 +319,7 @@ void
 InitSenderLoggerV3::sendTeam()
 {
     Int16 mode = htons( TEAM_MODE );
-    team_t teams[1];
+    team_t teams[2];
 
     std::strncpy( teams[0].name,
                   stadium().teamLeft().name().c_str(),

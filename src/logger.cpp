@@ -69,6 +69,7 @@ const std::string Logger::DEF_KAWAY_SUFFIX = ".kwy";
 
 Logger::Logger( Stadium & stadium )
     : M_init_observer( new rcss::InitObserverLogger )
+    , M_observer( new rcss::ObserverLogger )
     , M_stadium( stadium )
     , M_game_log( static_cast< std::ostream * >( 0 ) )
     , M_text_log( static_cast< std::ostream * >( 0 ) )
@@ -89,7 +90,6 @@ Logger::~Logger()
 bool
 Logger::setSenders()
 {
-#if 1
     if ( ! isGameLogOpen() )
     {
         return true;
@@ -140,7 +140,20 @@ Logger::setSenders()
         M_init_observer->setInitSender( init_cre( init_params ) );
     }
 
-#endif
+    // disp sender
+    {
+        rcss::DispSenderLogger::Params disp_params( *M_game_log,
+                                                    *this,
+                                                    *ser,
+                                                    M_stadium );
+        rcss::DispSenderLogger::Creator disp_cre;
+        if ( ! rcss::DispSenderLogger::factory().getCreator( disp_cre, log_version ) )
+        {
+            return false;
+        }
+        M_observer->setDispSender( disp_cre( disp_params ) );
+    }
+
     return true;
 }
 
@@ -643,47 +656,88 @@ Logger::writeGameLog()
         return;
     }
 
+
     if ( M_stadium.playmode() != PM_BeforeKickOff
          && M_stadium.playmode() != PM_TimeOver )
     {
-        switch ( ServerParam::instance().gameLogVersion() ) {
-        case REC_VERSION_4:
-            writeGameLogV4();
-            break;
-        case REC_VERSION_3:
-            writeGameLogV3();
-            break;
-        case REC_VERSION_2:
-            writeGameLogV2();
-            break;
-        case REC_OLD_VERSION:
-            writeGameLogV1();
-            break;
-        default:
-            break;
-        }
+        writeGameLogImpl();
+//         switch ( ServerParam::instance().gameLogVersion() ) {
+//         case REC_VERSION_4:
+//             writeGameLogV4();
+//             break;
+//         case REC_VERSION_3:
+//             writeGameLogV3();
+//             break;
+//         case REC_VERSION_2:
+//             writeGameLogV2();
+//             break;
+//         case REC_OLD_VERSION:
+//             writeGameLogV1();
+//             break;
+//         default:
+//             break;
+//         }
     }
     else if ( M_stadium.playmode() == PM_TimeOver
               && ! wrote_final_cycle )
     {
-        switch ( ServerParam::instance().gameLogVersion() ) {
-        case REC_VERSION_4:
-            writeGameLogV4();
-            break;
-        case REC_VERSION_3:
-            writeGameLogV3();
-            break;
-        case REC_VERSION_2:
-            writeGameLogV2();
-            break;
-        case REC_OLD_VERSION:
-            writeGameLogV1();
-            break;
-        default:
-            break;
-        }
+        writeGameLogImpl();
+//         switch ( ServerParam::instance().gameLogVersion() ) {
+//         case REC_VERSION_4:
+//             writeGameLogV4();
+//             break;
+//         case REC_VERSION_3:
+//             writeGameLogV3();
+//             break;
+//         case REC_VERSION_2:
+//             writeGameLogV2();
+//             break;
+//         case REC_OLD_VERSION:
+//             writeGameLogV1();
+//             break;
+//         default:
+//             break;
+//         }
         wrote_final_cycle = true;
     }
+}
+
+void
+Logger::writeGameLogImpl()
+{
+    static PlayMode pm = PM_Null;
+    static std::string team_l_name, team_r_name;
+    static int team_l_score = 0, team_r_score = 0;
+    static int team_l_pen_taken = 0, team_r_pen_taken = 0;
+
+   // if playmode has changed wirte playmode
+    if ( pm != M_stadium.playmode() )
+    {
+        pm = M_stadium.playmode();
+        M_init_observer->sendPlayMode();
+    }
+
+    // if teams or score has changed, write teams and score
+    if ( team_l_score != M_stadium.teamLeft().point()
+         || team_r_score != M_stadium.teamRight().point()
+         || team_l_pen_taken != M_stadium.teamLeft().penaltyTaken()
+         || team_r_pen_taken != M_stadium.teamRight().penaltyTaken()
+         || M_stadium.teamLeft().name() != team_l_name
+         || M_stadium.teamRight().name() != team_r_name
+         )
+    {
+        team_l_name = M_stadium.teamLeft().name();
+        team_r_name = M_stadium.teamRight().name();
+        team_l_score = M_stadium.teamLeft().point();
+        team_r_score = M_stadium.teamRight().point();
+        team_l_pen_taken = M_stadium.teamLeft().penaltyTaken();
+        team_r_pen_taken = M_stadium.teamRight().penaltyTaken();
+
+        M_init_observer->sendTeam();
+    }
+
+
+    M_observer->sendShow();
 }
 
 // TODO: replaced with DispSender
@@ -915,7 +969,7 @@ Logger::writeGameLogV4()
     static PlayMode pm = PM_Null;
     static std::string team_l_name, team_r_name;
     static int team_l_score = 0, team_r_score = 0;
-    static int team_l_pen_score = 0, team_r_pen_score = 0;
+    static int team_l_pen_taken = 0, team_r_pen_taken = 0;
 
     const double prec = 0.0001;
     const double dprec = 0.001;
@@ -933,9 +987,9 @@ Logger::writeGameLogV4()
 
     // if teams or score has changed, write teams and score
     if ( team_l_score != M_stadium.teamLeft().point()
-         || team_l_pen_score != M_stadium.teamLeft().penaltyPoint()
          || team_r_score != M_stadium.teamRight().point()
-         || team_r_pen_score != M_stadium.teamRight().penaltyPoint()
+         || team_l_pen_taken != M_stadium.teamLeft().penaltyTaken()
+         || team_r_pen_taken != M_stadium.teamRight().penaltyTaken()
          || M_stadium.teamLeft().name() != team_l_name
          || M_stadium.teamRight().name() != team_r_name
          )
@@ -944,21 +998,20 @@ Logger::writeGameLogV4()
         team_r_name = M_stadium.teamRight().name();
         team_l_score = M_stadium.teamLeft().point();
         team_r_score = M_stadium.teamRight().point();
-        team_l_pen_score = M_stadium.teamLeft().penaltyPoint();
-        team_r_pen_score = M_stadium.teamRight().penaltyPoint();
+        team_l_pen_taken = M_stadium.teamLeft().penaltyTaken();
+        team_r_pen_taken = M_stadium.teamRight().penaltyTaken();
 
         os << "(team " << M_stadium.time()
            << ' ' << ( team_l_name.empty() ? "null" : team_l_name.c_str() )
            << ' ' << ( team_r_name.empty() ? "null" : team_r_name.c_str() )
            << ' ' << team_l_score
            << ' ' << team_r_score;
-        if ( M_stadium.teamLeft().penaltyTaken() > 0
-             || M_stadium.teamRight().penaltyTaken() > 0 )
+        if ( team_l_pen_taken > 0 || team_r_pen_taken > 0 )
         {
-            os << ' ' << team_l_pen_score
-               << ' ' << M_stadium.teamLeft().penaltyTaken() - team_l_pen_score
-               << ' ' << team_r_pen_score
-               << ' ' << M_stadium.teamLeft().penaltyTaken() - team_r_pen_score;
+            os << ' ' << M_stadium.teamLeft().penaltyPoint()
+               << ' ' << team_l_pen_taken - M_stadium.teamLeft().penaltyPoint()
+               << ' ' << M_stadium.teamRight().penaltyPoint()
+               << ' ' << team_r_pen_taken - M_stadium.teamRight().penaltyPoint();
         }
         os << ")\n";
     }

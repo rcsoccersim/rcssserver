@@ -520,7 +520,58 @@ DispSenderLoggerV1::~DispSenderLoggerV1()
 void
 DispSenderLoggerV1::sendShow()
 {
+    dispinfo_t disp;
 
+    disp.mode = htons( SHOW_MODE );
+
+    disp.body.show.time = htons( stadium().time() );
+
+    disp.body.show.pmode = static_cast< char >( stadium().playmode() );
+
+    disp.body.show.pos[0].x = htons( (Int16)rint( ( stadium().ball().pos().x * SHOWINFO_SCALE ) ) );
+    disp.body.show.pos[0].y = htons( (Int16)rint( ( stadium().ball().pos().y * SHOWINFO_SCALE ) ) );
+
+    const Stadium::PlayerCont & players = stadium().players();
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        disp.body.show.pos[i+1].enable = htons( players[i]->state() );
+        disp.body.show.pos[i+1].x = htons( (Int16)rint( players[i]->pos().x * SHOWINFO_SCALE ) );
+        disp.body.show.pos[i+1].y = htons( (Int16)rint( players[i]->pos().y * SHOWINFO_SCALE ) );
+        disp.body.show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( players[i]->angleBodyCommitted() ) );
+        disp.body.show.pos[i+1].side = htons( players[i]->side() );
+        disp.body.show.pos[i+1].unum = htons( players[i]->unum() );
+    }
+
+    if ( ! stadium().teamLeft().name().empty() )
+    {
+        std::strncpy( disp.body.show.team[0].name,
+                      stadium().teamLeft().name().c_str(),
+                      std::min( stadium().teamLeft().name().length() + 1, size_t( 16 ) ) );
+        disp.body.show.team[0].score = htons( stadium().teamLeft().point() );
+    }
+    else
+    {
+        std::memset( &disp.body.show.team[0].name,
+                     0,
+                     sizeof( disp.body.show.team[0].name ) );
+    }
+
+    if ( ! stadium().teamRight().name().empty() )
+    {
+        std::strncpy( disp.body.show.team[1].name,
+                      stadium().teamRight().name().c_str(),
+                      std::min( stadium().teamRight().name().length() + 1, size_t( 16 ) ) );
+        disp.body.show.team[1].score = htons( stadium().teamRight().point() );
+    }
+    else
+    {
+        std::memset( &disp.body.show.team[1].name,
+                     0,
+                     sizeof( disp.body.show.team[1].name ) );
+    }
+
+    transport().write( reinterpret_cast< const char * >( &disp ),
+                       sizeof( dispinfo_t ) );
 }
 
 void
@@ -556,7 +607,63 @@ DispSenderLoggerV2::~DispSenderLoggerV2()
 void
 DispSenderLoggerV2::sendShow()
 {
+    Int16 mode = htons( SHOW_MODE );
 
+    showinfo_t show;
+
+    show.time = htons( stadium().time() );
+
+    show.pmode = static_cast< char >( stadium().playmode() );
+
+    show.pos[0].x = htons( (Int16)rint( ( stadium().ball().pos().x * SHOWINFO_SCALE ) ) );
+    show.pos[0].y = htons( (Int16)rint( ( stadium().ball().pos().y * SHOWINFO_SCALE ) ) );
+
+    const Stadium::PlayerCont & players = stadium().players();
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        show.pos[i+1].enable = htons( players[i]->state() );
+        show.pos[i+1].x = htons( (Int16)rint( players[i]->pos().x * SHOWINFO_SCALE ) );
+        show.pos[i+1].y = htons( (Int16)rint( players[i]->pos().y * SHOWINFO_SCALE ) );
+        show.pos[i+1].angle = htons( (Int16)Rad2IDegRound( players[i]->angleBodyCommitted() ) );
+        show.pos[i+1].side = htons( players[i]->side() );
+        show.pos[i+1].unum = htons( players[i]->unum() );
+    }
+
+    if ( ! stadium().teamLeft().name().empty() )
+    {
+        std::strncpy( show.team[0].name,
+                      stadium().teamLeft().name().c_str(),
+                      std::min( stadium().teamLeft().name().length() + 1, size_t( 16 ) ) );
+        show.team[0].score = htons( stadium().teamLeft().point() );
+    }
+    else
+    {
+        std::memset( &show.team[0].name,
+                     0,
+                     sizeof( show.team[0].name ) );
+        show.team[0].score = htons( 0 );
+    }
+
+    if ( ! stadium().teamRight().name().empty() )
+    {
+        std::strncpy( show.team[1].name,
+                      stadium().teamRight().name().c_str(),
+                      std::min( stadium().teamRight().name().length() + 1, size_t( 16 ) ) );
+        show.team[1].score = htons( stadium().teamRight().point() );
+    }
+    else
+    {
+        std::memset( &show.team[1].name,
+                     0,
+                     sizeof( show.team[1].name ) );
+        show.team[1].score = htons( 0 );
+    }
+
+    // write a show struct
+    transport().write( reinterpret_cast< const char * >( &mode ),
+                       sizeof( Int16 ) );
+    transport().write( reinterpret_cast< const char * >( &show ),
+                       sizeof( showinfo_t ) );
 }
 
 void
@@ -591,7 +698,50 @@ DispSenderLoggerV3::~DispSenderLoggerV3()
 void
 DispSenderLoggerV3::sendShow()
 {
+    Int16 mode = htons( SHOW_MODE );
 
+    short_showinfo_t2 show;
+
+    show.time = htons( stadium().time() );
+
+    show.ball.x = htonl( (Int32)rint( ( stadium().ball().pos().x * SHOWINFO_SCALE2 ) ) );
+    show.ball.y = htonl( (Int32)rint( ( stadium().ball().pos().y * SHOWINFO_SCALE2 ) ) );
+    show.ball.deltax = htonl( (Int32)rint( ( stadium().ball().vel().x * SHOWINFO_SCALE2 ) ) );
+    show.ball.deltay = htonl( (Int32)rint( ( stadium().ball().vel().y * SHOWINFO_SCALE2) ) );
+
+    const Stadium::PlayerCont & players = stadium().players();
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        show.pos[i].mode = htons( players[i]->state() );
+        show.pos[i].type = htons( players[i]->playerTypeId() );
+
+        show.pos[i].x = htonl( (Int32)rint( players[i]->pos().x * SHOWINFO_SCALE2 ) );
+        show.pos[i].y = htonl( (Int32)rint( players[i]->pos().y * SHOWINFO_SCALE2 ) );
+        show.pos[i].deltax = htonl( (Int32)rint( players[i]->vel().x * SHOWINFO_SCALE2 ) );
+        show.pos[i].deltay = htonl( (Int32)rint( players[i]->vel().y * SHOWINFO_SCALE2 ) );
+        show.pos[i].body_angle = htonl( (Int32)rint( players[i]->angleBodyCommitted() * SHOWINFO_SCALE2 ) );
+        show.pos[i].head_angle = htonl( (Int32)rint( players[i]->angleNeckCommitted() * SHOWINFO_SCALE2 ) );
+        show.pos[i].view_width = htonl( (Int32)rint( players[i]->visibleAngle() * SHOWINFO_SCALE2 ) );
+        show.pos[i].view_quality = htons( (Int16)rint( players[i]->highquality() ) );
+
+        show.pos[i].stamina = htonl( (Int32)rint( players[i]->stamina() * SHOWINFO_SCALE2 ) );
+        show.pos[i].effort = htonl( (Int32)rint( players[i]->effort() * SHOWINFO_SCALE2 ) );
+        show.pos[i].recovery = htonl( (Int32)rint( players[i]->recovery() * SHOWINFO_SCALE2 ) );
+
+        show.pos[i].kick_count = htons( players[i]->kickCount() );
+        show.pos[i].dash_count = htons( players[i]->dashCount() );
+        show.pos[i].turn_count = htons( players[i]->turnCount() );
+        show.pos[i].say_count = htons( players[i]->sayCount() );
+        show.pos[i].tneck_count = htons( players[i]->turnNeckCount() );
+        show.pos[i].catch_count = htons( players[i]->catchCount() );
+        show.pos[i].move_count = htons( players[i]->moveCount() );
+        show.pos[i].chg_view_count = htons( players[i]->changeViewCount() );
+    }
+
+    transport().write( reinterpret_cast< const char * >( &mode ),
+                       sizeof( mode ) );
+    transport().write( reinterpret_cast< const char * >( &show ),
+                       sizeof( short_showinfo_t2 ) );
 }
 
 void
@@ -625,7 +775,30 @@ DispSenderLoggerV4::~DispSenderLoggerV4()
 void
 DispSenderLoggerV4::sendShow()
 {
+    serializer().serializeShowBegin( transport(),
+                                     stadium().time() );
 
+    serializer().serializeBall( transport(),
+                                stadium().ball() );
+
+    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
+    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
+          p != end;
+          ++p )
+    {
+        serializer().serializePlayerBegin( transport(), **p );
+        serializer().serializePlayerPos( transport(), **p );
+        serializer().serializePlayerArm( transport(), **p );
+        serializer().serializePlayerViewMode( transport(), **p );
+        serializer().serializePlayerStamina( transport(), **p );
+        serializer().serializePlayerFocus( transport(), **p );
+        serializer().serializePlayerCounts( transport(), **p );
+        serializer().serializePlayerEnd( transport() );
+    }
+
+    serializer().serializeShowEnd( transport() );
+
+    transport() << std::endl;
 }
 
 void
@@ -659,7 +832,7 @@ create( const DispSenderLogger::Params & params )
 lib::RegHolder vl1 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV1 >, 1 );
 lib::RegHolder vl2 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV2 >, 2 );
 lib::RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 3 );
-lib::RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 4 );
+lib::RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 4 );
 
 }
 }

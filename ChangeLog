@@ -1,5 +1,13 @@
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/initsenderlogger.cpp:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/observer.h:
+	- implemented DispSenderLogger.
+
 	* src/Makefile.am:
 	* src/visualsendercoach.cpp:
 	* src/visualsendercoach.h:

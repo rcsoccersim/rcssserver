@@ -1081,13 +1081,6 @@ Stadium::sendToMonitors()
           ++i )
     {
         (*i)->sendShow();
-
-        // v.2
-        // (*i)->RemoteClient::send( reinterpret_cast< const char * >( &dinfo2 ),
-        //                           sizeof( dispinfo_t2 ) );
-        // v.1
-        // (*i)->RemoteClient::send( reinterpret_cast< const char * >( &dinfo ),
-        //                           sizeof( dispinfo_t ) );
     }
 }
 
