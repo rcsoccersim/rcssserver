@@ -5,11 +5,11 @@
 /*
  *Copyright:
 
-    Copyright (C) 1996-2000 Electrotechnical Laboratory. 
+    Copyright (C) 1996-2000 Electrotechnical Laboratory.
     	Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
     Copyright (C) 2000 - 2002 RoboCup Soccer Server Maintainance Group.
     	Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
-	Mikhail Prokopenko, Jan Wendler 
+	Mikhail Prokopenko, Jan Wendler
 
     This file is a part of SoccerServer.
 
@@ -32,6 +32,4 @@
 
 
 char Copyright[] = "Copyright (C) 1995, 1996, 1997, 1998, 1999 Electrotechnical Laboratory.\n\
-2000 - 2007 RoboCup Soccer Simulator Maintenance Group.\n";
-
-
+2000 - 2008 RoboCup Soccer Simulator Maintenance Group.\n";

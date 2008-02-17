@@ -1,5 +1,8 @@
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/version.h:
+	- updated copyright notice.
+
 	* src/playerparam.cpp:
 	* src/playerparam.h:
 	* src/types.h:
