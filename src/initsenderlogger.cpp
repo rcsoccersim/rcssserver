@@ -374,7 +374,7 @@ InitSenderLoggerV4::~InitSenderLoggerV4()
 void
 InitSenderLoggerV4::sendHeader()
 {
-    transport() << "URG4" << std::endl;
+    transport() << "ULG4" << std::endl;
 }
 
 void
