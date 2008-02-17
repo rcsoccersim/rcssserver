@@ -1007,6 +1007,10 @@ Stadium::step()
             M_olcoaches[1]->awardFreeformMessageCount();
         }
     }
+    else if ( playmode() == PM_TimeOver )
+    {
+        ++M_stoppage_time;
+    }
 
     stepEnd();
 }

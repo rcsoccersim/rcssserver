@@ -430,7 +430,7 @@ DispSenderMonitorV3::sendShow()
                                       stadium().playmode() );
     serializer().serializeScore( ostr,
                                  stadium().teamLeft(),
-                                     stadium().teamRight() );
+                                 stadium().teamRight() );
 
     serializer().serializeBall( ostr,
                                 stadium().ball() );

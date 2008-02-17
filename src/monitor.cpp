@@ -213,8 +213,8 @@ Monitor::sendTeamGraphic( const Side,
 void
 Monitor::sendShow()
 {
-    sendPlayMode();
-    sendScore();
+//     sendPlayMode();
+//     sendScore();
 
     M_observer->sendShow();
 

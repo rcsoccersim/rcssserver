@@ -1,3 +1,11 @@
+2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/monitor.cpp:
+	* src/serializermonitor.cpp:
+	- fixed show data format.
+
 2008-02-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/version.h:

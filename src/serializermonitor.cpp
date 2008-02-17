@@ -192,7 +192,9 @@ SerializerMonitorStdv3::serializeScore( std::ostream & os,
                                         const Team & team_l,
                                         const Team & team_r ) const
 {
-    os << " (score "
+    os << " (tm "
+       << ' ' << ( team_l.name().empty() ? "null" : team_l.name().c_str() )
+       << ' ' << ( team_r.name().empty() ? "null" : team_r.name().c_str() )
        << ' ' << team_l.point()
        << ' ' << team_r.point();
 
