@@ -382,14 +382,13 @@ private:
 
     void removeDisconnectedClients();
 
-    void stepBegin();
     void step();
-    void stepEnd();
+
 
     void turnMovableObjects();
     void incMovableObjects();
 
-    void sendToMonitors();
+    void sendDisp();
 
     void move_caught_ball(); // [2000.07.21: I.Noda]
 

@@ -1,5 +1,10 @@
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/field.cpp:
+	* src/field.h:
+	- cleaned up
+	- add a profiling code for logging.
+
 	* src/dispsender.cpp:
 	* src/field.cpp:
 	* src/monitor.cpp:

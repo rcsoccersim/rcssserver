@@ -938,7 +938,7 @@ Stadium::initOnlineCoach( const char * init_message,
 }
 
 void
-Stadium::stepBegin()
+Stadium::step()
 {
     const PlayerCont::iterator end = M_players.end();
     for ( PlayerCont::iterator p = M_players.begin();
@@ -957,13 +957,10 @@ Stadium::stepBegin()
     }
 
     M_coach->resetCommandFlags();
-}
 
-void
-Stadium::step()
-{
-    stepBegin();
-
+    //
+    // update objects
+    //
     if ( playmode() == PM_BeforeKickOff )
     {
         turnMovableObjects();
@@ -1012,16 +1009,9 @@ Stadium::step()
         ++M_stoppage_time;
     }
 
-    stepEnd();
-}
-
-void
-Stadium::stepEnd()
-{
     //
     // update stamina
     //
-    const PlayerCont::iterator end = M_players.end();
     for ( PlayerCont::iterator p = M_players.begin();
           p != end;
           ++p )
@@ -1032,12 +1022,19 @@ Stadium::stepEnd()
         (*p)->updateCapacity();
     }
 
-    sendToMonitors();
-    M_logger.writeGameLog();
+    //
+    // send to monitor and write game log
+    //
+    sendDisp();
 
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    //
+    // reset player state
+    //
+    for ( PlayerCont::iterator p = M_players.begin();
+          p != end;
+          ++p )
     {
-        M_players[i]->resetState();
+        (*p)->resetState();
     }
 }
 
@@ -1077,8 +1074,16 @@ Stadium::incMovableObjects()
 }
 
 void
-Stadium::sendToMonitors()
+Stadium::sendDisp()
 {
+    timeval tv_start, tv_end;
+
+    if ( M_logger.isTextLogOpen()
+         && ServerParam::instance().profile() )
+    {
+        gettimeofday( &tv_start, NULL );
+    }
+
     // send to displays
     for ( MonitorCont::iterator i = M_monitors.begin();
           i != M_monitors.end();
@@ -1086,6 +1091,17 @@ Stadium::sendToMonitors()
     {
         (*i)->sendShow();
     }
+
+    // record game log
+    M_logger.writeGameLog();
+
+    if ( M_logger.isTextLogOpen()
+         && ServerParam::instance().profile() )
+    {
+        gettimeofday( &tv_end, NULL );
+        M_logger.writeProfile( tv_start, tv_end, "DISP" );
+    }
+
 }
 
 void
