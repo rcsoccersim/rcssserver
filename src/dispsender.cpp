@@ -798,7 +798,8 @@ DispSenderLoggerV4::sendShow()
 
     serializer().serializeShowEnd( transport() );
 
-    transport() << std::endl;
+    //transport() << std::endl;
+    transport() << '\n';
 }
 
 void

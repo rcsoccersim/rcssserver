@@ -1,5 +1,9 @@
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/dispsender.cpp:
+	* src/logger.cpp:
+	- reduced the log flushing operation.
+
 	* NEWS:
 	* configure.ac:
 	- updated a version number string. Official release 12.0.0.
