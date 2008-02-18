@@ -1,6 +1,6 @@
 [12.0.0]
   * Supported the monitor protocol version 3 and the game log format
-	version 4. Now, these are used by default.
+    version 4. Now, these are used by default.
 
   * Fixed a build problem on some platforms.
 
