@@ -1,5 +1,15 @@
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a version number string. Official release 12.0.0.
+
+	* src/player.cpp:
+	- fixed a compilation problem on gcc 3.3.
+
+	* src/field.cpp:
+	- changed profile string.
+
 	* src/Makefile.am:
 	- fixed source file list.
 

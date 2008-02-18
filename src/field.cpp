@@ -2396,7 +2396,7 @@ Stadium::doSendSynchVisuals()
          && ServerParam::instance().profile() )
     {
         gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "SVIS" );
+        M_logger.writeProfile( tv_start, tv_end, "VIS_S" );
     }
 }
 

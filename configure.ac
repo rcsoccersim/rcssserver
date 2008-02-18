@@ -1,11 +1,11 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([RCSSServer], 12.0.0_pre, sserver-admin@users.sf.net, rcssserver)
+AC_INIT([RCSSServer], 12.0.0, sserver-admin@users.sf.net, rcssserver)
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 
-AC_CONFIG_SRCDIR([src/types.h])
 #AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news])
+AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AC_PROG_MAKE_SET
 
@@ -17,6 +17,9 @@ dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
 ACX_PTHREAD([LIBS="$PTHREAD_LIBS $LIBS"
              CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
              CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
@@ -35,13 +38,11 @@ if test "$use_sstream" = "yes"; then
 fi
 
 dnl Checks for header files.
+AC_FUNC_ALLOCA
 AC_HEADER_STDC
-AC_CHECK_HEADERS(pwd.h)
-AC_CHECK_HEADERS(sys/time.h)
-AC_CHECK_HEADERS(sys/types.h)
-AC_CHECK_HEADERS(netinet/in.h)
-AC_CHECK_HEADERS(winsock2.h)
-AC_HEADER_TIME
+AC_CHECK_HEADERS([inttypes.h libintl.h libintl.h malloc.h netdb.h])
+AC_CHECK_HEADERS([netinet/in.h pwd.h stddef.h stdlib.h sys/param.h])
+AC_CHECK_HEADERS([sys/time.h sys/types.h unistd.h winsock2.h])
 
 AC_CHECK_FUNCS([memset], [], [
   echo "************** ERROR ****************"
@@ -51,10 +52,26 @@ AC_CHECK_FUNCS([memset], [], [
 ])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
 AC_C_CONST
 AC_C_INLINE
+#AC_TYPE_INT16_T
+#AC_TYPE_INT32_T
+#AC_TYPE_INT8_T
+#AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+#AC_TYPE_UINT16_T
+#AC_TYPE_UINT32_T
+#AC_TYPE_UINT8_T
 
 dnl Checks for library functions.
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_TYPE_SIGNAL
+AC_FUNC_STRFTIME
+AC_CHECK_FUNCS([floor gettimeofday memset mkdir pow rint sqrt strdup strerror])
 
 #AC_ARG_WITH(mysql,
 #        AS_HELP_STRING(--with-mysql,use mysql to store results in a database (default=yes)),

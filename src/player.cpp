@@ -674,13 +674,14 @@ Player::goalieCatch( double dir )
         // 2008-02-08 akiyama
         // TEST version catch model based on the Sebastian Marian's proposal
 
-        const RArea catch_area( PVector( ServerParam::instance().catchAreaLength()*0.5,
-                                         0.0 ),
-                                PVector( ServerParam::instance().catchAreaLength(),
+        // 2008-02-18 akiyama: catch_area_l variables should be used for gcc-3.3.6
+        const double catch_area_l = ServerParam::instance().catchAreaLength();
+        const double reliable_catch_area_l = ServerParam::instance().reliableCatchAreaLength();
+        const RArea catch_area( PVector( catch_area_l * 0.5, 0.0 ),
+                                PVector( catch_area_l,
                                          ServerParam::instance().catchAreaWidth() ) );
-        const RArea reliable_catch_area( PVector( ServerParam::instance().reliableCatchAreaLength()*0.5,
-                                                  0.0 ),
-                                         PVector( ServerParam::instance().reliableCatchAreaLength(),
+        const RArea reliable_catch_area( PVector( reliable_catch_area_l * 0.5, 0.0 ),
+                                         PVector( reliable_catch_area_l,
                                                   ServerParam::instance().catchAreaWidth() ) );
         PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
         rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
@@ -698,9 +699,9 @@ Player::goalieCatch( double dir )
 
         if ( ! reliable_catch_area.inArea( rotated_pos ) )
         {
-            double diagonal = std::sqrt( std::pow( ServerParam::instance().catchAreaLength(), 2.0 )
+            double diagonal = std::sqrt( std::pow( catch_area_l, 2.0 )
                                          + std::pow( ServerParam::instance().catchAreaWidth()*0.5, 2.0 ) );
-            double reliable_diagonal = std::sqrt( std::pow( ServerParam::instance().reliableCatchAreaLength(), 2.0 )
+            double reliable_diagonal = std::sqrt( std::pow( reliable_catch_area_l, 2.0 )
                                                   + std::pow( ServerParam::instance().catchAreaWidth()*0.5, 2.0 ) );
             double ball_dist = rotated_pos.r();
 
