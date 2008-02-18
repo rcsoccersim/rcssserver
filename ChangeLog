@@ -1,5 +1,8 @@
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/Makefile.am:
+	- fixed source file list.
+
 	* src/field.cpp:
 	* src/field.h:
 	- cleaned up

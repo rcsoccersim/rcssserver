@@ -329,7 +329,7 @@ AM_FLEXFLEX=@AM_FLEXFLAGS@
 EXTRA_PROGRAMS = rcssclient
 
 rcssclient_SOURCES = \
-client.cc \
+client.cpp \
 client.h \
 compress.h
 
