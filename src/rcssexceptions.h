@@ -8,7 +8,7 @@
     copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -35,17 +35,17 @@
 #include <exception>
 #include <string>
 
-namespace rcss
-{
-  namespace util
-  {
-    class NullErr
-         : public std::exception
-    {
-    protected:
-      std::string M_msg;
-    public:
-      NullErr ( const char* file, const int& line, const char* msg )
+namespace rcss {
+namespace util {
+
+class NullErr
+    : public std::exception {
+protected:
+    std::string M_msg;
+public:
+    NullErr ( const char * file,
+              const int & line,
+              const char * msg )
       {
 #ifdef HAVE_SSTREAM
           std::ostringstream tmp;
@@ -58,17 +58,18 @@ namespace rcss
           tmp.freeze( false );
 #endif
       }
-    
-    ~NullErr () throw ()
-    {
-    }
-    
-    const char*
-    what () const throw ()
-    { return M_msg.c_str (); }
-        
-    };
-  }
+
+    ~NullErr() throw()
+      { }
+
+    const char *
+    what() const throw()
+      {
+          return M_msg.c_str();
+      }
+
+};
+
+}
 }
 #endif
-    

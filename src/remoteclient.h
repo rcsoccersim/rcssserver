@@ -22,21 +22,25 @@
 #ifndef _REMOTECLIENT_H_
 #define _REMOTECLIENT_H_
 
+#include "compress.h"
+#include "param.h"
+#include "rcssexceptions.h"
+
 #include <rcssbase/net/udpsocket.hpp>
 #include <rcssbase/net/socketstreambuf.hpp>
 #include <rcssbase/gzip/gzstream.hpp>
-#include "compress.h"
-#include "param.h"
+
 #include <map>
 #include <cerrno>
-#include <rcssexceptions.h>
 
-class RemoteClient
-{
+
+class RemoteClient {
+
 private:
     rcss::net::UDPSocket M_socket;
-    rcss::net::SocketStreamBuf* M_socket_buf;
-    rcss::gz::gzostream* M_transport;
+    rcss::net::SocketStreamBuf * M_socket_buf;
+    rcss::gz::gzostream * M_transport;
+    //std::ostream * M_transport;
     int M_comp_level;
 
 #ifdef HAVE_LIBZ
@@ -166,6 +170,7 @@ public:
     int setCompressionLevel( const int& level )
       {
 #ifdef HAVE_LIBZ
+          //#if 0
           M_transport->setLevel( level );
 //           if( level < 0 )
 //               M_comp.reset();
@@ -248,6 +253,7 @@ public:
 
           M_socket_buf = new rcss::net::SocketStreamBuf( M_socket );
           M_transport = new rcss::gz::gzostream( *M_socket_buf );
+          //M_transport = new std::ostream( M_socket_buf );
           M_transport->setLevel( M_comp_level );
           return 0;
       }
