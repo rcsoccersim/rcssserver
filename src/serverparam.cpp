@@ -808,36 +808,8 @@ ServerParam::addParams()
 void
 ServerParam::setSynchMode( bool value )
 {
-    if ( synch_mode != value
-         // || !timer_loaded
-         )
+    if ( synch_mode != value )
     {
-//         if ( value )
-//         {
-//             rcss::lib::Loader module;
-//             if ( module.open( "librcsssynctimer" ) )
-//             {
-//                 m_builder->manageModule( module );
-//                 timer_loaded = true;
-//             }
-//             else
-//             {
-//                 std::cerr << "Could not load synctimer" << std::endl;
-//             }
-//         }
-//         else
-//         {
-//             rcss::lib::Loader module;
-//             if ( module.open( "librcssstdtimer" ) )
-//             {
-//                 m_builder->manageModule( module );
-//                 timer_loaded = true;
-//             }
-//             else
-//             {
-//                 std::cerr << "Could not load stdtimer" << std::endl;
-//             }
-//         }
         synch_mode = value;
         lcm_st = lcm( sim_st,
                       lcm( send_st,
