@@ -1,3 +1,18 @@
+2008-02-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/team.cpp:
+	- fixed coding style.
+	- tested automatic player assignment.
+
+	* src/Makefile.am:
+	* src/remoteclient.cpp:
+	* src/remoteclient.h:
+	* src/main.cpp:
+	- added remoteclient.cpp
+	- impreved the performance of socketstream.
+
 2008-02-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/dispsender.cpp:

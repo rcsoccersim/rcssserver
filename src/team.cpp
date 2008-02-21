@@ -125,42 +125,8 @@ Team::newPlayer( const double & version,
 
     ++M_size;
 
-#if 1
     ++M_ptype_count[ 0 ];
     ++M_ptype_used_count[ 0 ];
-#else
-    if ( goalie_flag
-         || PlayerParam::instance().allowMultDefaultType() )
-    {
-        ++M_ptype_count[ 0 ];
-        ++M_ptype_used_count[ 0 ];
-    }
-    else
-    {
-        bool substituted = false;
-        for ( int type = 1; type < PlayerParam::instance().playerTypes(); ++type )
-        {
-            if ( M_ptype_used_count[type] >= PlayerParam::instance().ptMax() )
-            {
-                continue;
-            }
-
-            substituted = true;
-            p->substitute( type );
-            ++M_ptype_count[ type ];
-            ++M_ptype_used_count[ type ];
-
-            M_stadium->broadcastSubstitution( M_side, p->unum(), type );
-            break;
-        }
-
-        if ( ! substituted )
-        {
-            ++M_ptype_count[ 0 ];
-            ++M_ptype_used_count[ 0 ];
-        }
-    }
-#endif
 
     return p;
 }
@@ -182,6 +148,7 @@ Team::assignCoach( OnlineCoach * coach )
     M_olcoach = coach;
 }
 
+// automatic player type assignment
 void
 Team::assignPlayerTypes()
 {
@@ -191,6 +158,13 @@ Team::assignPlayerTypes()
     {
         return;
     }
+
+//     std::cout << "first assignment table: " << this->name() << "\n   ";
+//     for ( int i = 0; i < size(); ++i )
+//     {
+//         std::cout << " (" << i+1 << "-" << M_players[i]->playerTypeId() << ')';
+//     }
+//     std::cout << std::endl;
 
     for ( int i = 0; i < size(); ++i )
     {
@@ -231,6 +205,13 @@ Team::assignPlayerTypes()
             break;
         }
     }
+
+//     std::cout << "final assignment table: " << this->name() << "\n   ";
+//     for ( int i = 0; i < size(); ++i )
+//     {
+//         std::cout << " (" << i+1 << "-" << M_players[i]->playerTypeId() << ')';
+//     }
+//     std::cout << std::endl;
 }
 
 int

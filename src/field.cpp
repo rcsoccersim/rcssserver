@@ -1450,7 +1450,7 @@ Stadium::movePlayer( const Side side,
 }
 
 void
-Stadium::_Start( Stadium& stad )
+Stadium::_Start( Stadium & stad )
 {
     if ( stad.time() % ServerParam::instance().halfTime() == 0 )
     {

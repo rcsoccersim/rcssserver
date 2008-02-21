@@ -5,7 +5,7 @@
                   Classes for sending display messages
                              -------------------
     begin                : 2008-02-14
-    copyright            : (C) 2007 by The RoboCup Soccer Simulator
+    copyright            : (C) 2008 by The RoboCup Soccer Simulator
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/

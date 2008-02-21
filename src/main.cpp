@@ -48,6 +48,7 @@
 //#include <dirent.h>
 
 #include <csignal>
+#include <cerrno>
 
 #include <sys/types.h>
 #include <sys/stat.h>

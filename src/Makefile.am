@@ -189,6 +189,7 @@ coach.cpp \
 coach.h \
 compress.h \
 remoteclient.h \
+remoteclient.cpp \
 pcombuilder.h \
 pcomparser.h \
 player_command_parser.ypp \
