@@ -417,13 +417,13 @@ ServerParam::init( const int & argc,
     }
 
 
-    {
-        rcss::lib::Loader loader;
-        if ( loader.open( "libstdoutsaver" ) )
-        {
-            instance().m_builder->manageModule( loader );
-        }
-    }
+//     {
+//         rcss::lib::Loader loader;
+//         if ( loader.open( "libstdoutsaver" ) )
+//         {
+//             instance().m_builder->manageModule( loader );
+//         }
+//     }
 
 //     {
 //         std::string module_opts;

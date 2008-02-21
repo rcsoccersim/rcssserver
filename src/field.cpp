@@ -308,23 +308,35 @@ Stadium::init()
         //std::cout << *(M_player_types[i]) << std::endl;
 		}
 
-    if ( M_player_socket.bind( rcss::net::Addr( ServerParam::instance().playerPort() ) )
-         && M_offline_coach_socket.bind( rcss::net::Addr( ServerParam::instance().offlineCoachPort() ) )
-         && M_online_coach_socket.bind( rcss::net::Addr( ServerParam::instance().onlineCoachPort() ) ) )
+    if ( ! M_player_socket.bind( rcss::net::Addr( ServerParam::instance().playerPort() )  ) )
     {
-        if ( M_player_socket.setNonBlocking() == -1
-             || M_offline_coach_socket.setNonBlocking() == -1
-             || M_online_coach_socket.setNonBlocking() == -1 )
-        {
-            std::cerr << "Error setting sockets non-blocking: "
-                      << strerror( errno ) << std::endl;
-            disable();
-            return false;
-        }
+        std::cerr << "Error initializing sockets: port=" << ServerParam::instance().playerPort()
+                  << ". " << strerror( errno ) << std::endl;
+        disable();
+        return false;
     }
-    else
+
+    if ( ! M_offline_coach_socket.bind( rcss::net::Addr( ServerParam::instance().offlineCoachPort() ) ) )
     {
-        std::cerr << "Error initializing sockets: "
+        std::cerr << "Error initializing sockets: port=" << ServerParam::instance().offlineCoachPort()
+                  << ". " << strerror( errno ) << std::endl;
+        disable();
+        return false;
+    }
+
+    if ( ! M_online_coach_socket.bind( rcss::net::Addr( ServerParam::instance().onlineCoachPort() ) ) )
+    {
+        std::cerr << "Error initializing sockets: port=" << ServerParam::instance().onlineCoachPort()
+                  << ". " << strerror( errno ) << std::endl;
+        disable();
+        return false;
+    }
+
+    if ( M_player_socket.setNonBlocking() == -1
+         || M_offline_coach_socket.setNonBlocking() == -1
+         || M_online_coach_socket.setNonBlocking() == -1 )
+    {
+        std::cerr << "Error setting sockets non-blocking: "
                   << strerror( errno ) << std::endl;
         disable();
         return false;

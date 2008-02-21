@@ -1,5 +1,11 @@
 2008-02-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/field.cpp:
+	- improved error message.
+
+	* src/serverparam.cpp:
+	- disabled libstdoutsaver.
+
 	* src/dispsender.cpp:
 	* src/field.cpp:
 	* src/team.cpp:
