@@ -40,11 +40,6 @@ namespace rcss {
 //===================================================================
 */
 
-// const double VisualSenderPlayer::UNUM_FAR_LENGTH = 20.0;
-// const double VisualSenderPlayer::UNUM_TOOFAR_LENGTH = 40.0;
-// const double VisualSenderPlayer::TEAM_FAR_LENGTH = 40.0;
-// const double VisualSenderPlayer::TEAM_TOOFAR_LENGTH = 60.0;
-
 VisualSenderPlayer::Factory &
 VisualSenderPlayer::factory()
 {
@@ -52,16 +47,20 @@ VisualSenderPlayer::factory()
     return rval;
 }
 
-VisualSenderPlayer::VisualSenderPlayer( const Params& params )
-    : VisualSender( params.m_transport ),
-      m_ser( params.m_ser ),
-      m_self( params.m_self ),
-      m_stadium( params.m_stadium ),
-      m_sendcnt( 0 )
-{}
+VisualSenderPlayer::VisualSenderPlayer( const Params & params )
+    : VisualSender( params.M_transport ),
+      M_serializer( params.M_serializer ),
+      M_self( params.M_self ),
+      M_stadium( params.M_stadium ),
+      M_sendcnt( 0 )
+{
+
+}
 
 VisualSenderPlayer::~VisualSenderPlayer()
-{}
+{
+
+}
 
 /*!
 //===================================================================

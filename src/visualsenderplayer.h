@@ -50,29 +50,35 @@ class VisualSenderPlayer
     : public VisualSender {
 public:
 
-    static const double UNUM_FAR_LENGTH;
-    static const double UNUM_TOOFAR_LENGTH;
-    static const double TEAM_FAR_LENGTH;
-    static const double TEAM_TOOFAR_LENGTH;
-
     class Params {
     public:
-        std::ostream & m_transport;
-        const Player & m_self;
-        const SerializerPlayer & m_ser;
-        const Stadium & m_stadium;
+        std::ostream & M_transport;
+        const Player & M_self;
+        const SerializerPlayer & M_serializer;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const SerializerPlayer & ser,
+                const SerializerPlayer & serializer,
                 const Stadium & stadium )
-            : m_transport( transport )
-            , m_self( self )
-            , m_ser( ser )
-            , m_stadium( stadium )
+            : M_transport( transport )
+            , M_self( self )
+            , M_serializer( serializer )
+            , M_stadium( stadium )
           { }
     };
 
+
+private:
+    const SerializerPlayer & M_serializer;
+
+    /*:TODO: M_self needs to be replaced with a reference to a
+      Observer and Observer should have virtual functions for
+      stuff like velocity, stamina, etc */
+    const Player & M_self;
+    const Stadium & M_stadium;
+
+    int M_sendcnt;
 
 public:
     typedef std::auto_ptr< VisualSenderPlayer > Ptr;
@@ -90,46 +96,36 @@ protected:
     const
     SerializerPlayer & serializer() const
       {
-          return m_ser;
+          return M_serializer;
       }
 
     const
     Player & self() const
       {
-          return m_self;
+          return M_self;
       }
 
     const
     Stadium & stadium() const
       {
-          return m_stadium;
+          return M_stadium;
       }
 
     int sendCount() const
       {
-          return m_sendcnt;
+          return M_sendcnt;
       }
 
     void incSendCount()
       {
-          ++m_sendcnt;
+          ++M_sendcnt;
       }
 
     void resetSendCount()
       {
-          m_sendcnt = 0;
+          M_sendcnt = 0;
       }
 
-private:
-    const SerializerPlayer& m_ser;
-
-    /*:TODO: M_self needs to be replaced with a reference to a
-      Observer and Observer should have virtual functions for
-      stuff like velocity, stamina, etc */
-    const Player & m_self;
-    const Stadium & m_stadium;
-
-    int m_sendcnt;
 };
 
 
