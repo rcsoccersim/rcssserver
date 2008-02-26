@@ -178,7 +178,7 @@ private:
     void getData( char * buffer,
                   int size )
       {
-          static int compression_wait = false;
+          static bool compression_wait = false;
 
           doGetData( buffer, size );
           if ( compression_wait )
@@ -190,12 +190,14 @@ private:
           {
               rcss::thread::SharedVar< bool >::Lock lock( M_cycle_is_clean );
               displayError( "Got lock\n" );
-              while( !M_cycle_is_clean.get( lock ) )
+              while ( ! M_cycle_is_clean.get( lock ) )
+              {
                   M_cycle_is_clean.wait( lock );
+              }
               M_cycle_is_clean = false;
           }
 
-          if ( strncmp( "(compression", buffer, 12 ) == 0 )
+          if ( std::strncmp( "(compression", buffer, 12 ) == 0 )
           {
               compression_wait = true;
           }
