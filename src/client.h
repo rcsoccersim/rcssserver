@@ -56,30 +56,26 @@
 #include <ncurses.h>
 #endif
 
-class Client
-{
+class Client {
 private:
     //friend
-    class ServerReader
-    {
+    class ServerReader {
     private:
         Client& M_client;
-        std::istream& M_src;
+        std::istream & M_src;
     public:
-        ServerReader( Client& client,
-                      std::istream& src
-                      )
+        ServerReader( Client & client,
+                      std::istream & src )
             : M_client( client ),
               M_src( src )
-          {}
+          { }
 
         ~ServerReader()
-          {}
+          { }
 
-        void
-        operator()()
+        void operator()()
           {
-              while( M_src.good() )
+              while ( M_src.good() )
               {
                   char buffer[ 8192 ];
                   M_src.getline( buffer, 8192, 0 );
@@ -90,25 +86,24 @@ private:
     };
 
     //friend
-    class ServerWriter
-    {
+    class ServerWriter {
     private:
-        Client& M_client;
-        std::ostream& M_dest;
+        Client & M_client;
+        std::ostream & M_dest;
     public:
-        ServerWriter( Client& client,
-                      std::ostream& dest )
+        ServerWriter( Client & client,
+                      std::ostream & dest )
             : M_client( client ),
               M_dest( dest )
-          {}
+          { }
 
         ~ServerWriter()
-          {}
+          { }
 
         void
         operator()()
           {
-              while( M_dest.good() )
+              while ( M_dest.good() )
               {
                   char buffer[ 8192 ];
                   M_client.getData( buffer, 8192 );
@@ -131,23 +126,24 @@ private:
     ServerReader M_server_reader;
     rcss::thread::Thread M_server_reader_thread;
 
-    void
-    setCompression( int level )
+    void setCompression( int level )
       {
           M_write_strm.setLevel( level );
           M_read_strm.setLevel( level );
           M_level.queueMessage( level );
       }
 
-    void
-    waitForCompressionChange( long seconds, long nanoseconds = 0 )
+    void waitForCompressionChange( long seconds, long nanoseconds = 0 )
       {
-          try { M_level.getNext( seconds, nanoseconds ); }
-          catch(...) {}
+          try
+          {
+              M_level.getNext( seconds, nanoseconds );
+          }
+          catch ( ... )
+          { }
       }
 
-    void
-    processInput( const char* buffer )
+    void processInput( const char * buffer )
       {
           doProcessInput( buffer );
           { // limit the scope of the lock
@@ -161,22 +157,26 @@ private:
                   M_cycle_is_clean.signal();
               }
           }
+
           if ( ! std::strncmp( buffer, "(ok compression", 15 ) )
           {
               int level;
               if ( std::sscanf( buffer, "(ok compression %d)", &level ) == 1 )
+              {
                   setCompression( level );
+              }
           }
           else if ( ! std::strncmp( buffer, "(warning compression_unsupported)", 34 ) )
+          {
               setCompression( -1 );
+          }
       }
 
     virtual
-    void
-    doProcessInput( const char* buffer ) = 0;
+    void doProcessInput( const char * buffer ) = 0;
 
-    void
-    getData( char* buffer, int size )
+    void getData( char * buffer,
+                  int size )
       {
           static int compression_wait = false;
 
@@ -186,6 +186,7 @@ private:
               waitForCompressionChange( 5 );
               compression_wait = false;
           }
+
           {
               rcss::thread::SharedVar< bool >::Lock lock( M_cycle_is_clean );
               displayError( "Got lock\n" );
@@ -193,21 +194,24 @@ private:
                   M_cycle_is_clean.wait( lock );
               M_cycle_is_clean = false;
           }
+
           if ( strncmp( "(compression", buffer, 12 ) == 0 )
+          {
               compression_wait = true;
+          }
       }
 
     virtual
-    void
-    doGetData( char* buffer, int size ) = 0;
+    void doGetData( char * buffer,
+                    int size ) = 0;
 
-    void
-    displayError( const char* msg )
-      { doDisplayError( msg ); }
+    void displayError( const char * msg )
+      {
+          doDisplayError( msg );
+      }
 
     virtual
-    void
-    doDisplayError( const char* msg ) = 0;
+    void doDisplayError( const char * msg ) = 0;
 
 public:
     Client( const rcss::net::Addr dest )
@@ -242,26 +246,29 @@ public:
 
 
 class NoGuiClient
-    : public Client
-{
+    : public Client {
 private:
     virtual
-    void
-    doProcessInput( const char* buffer )
-      { std::cout << buffer << std::endl; }
+    void doProcessInput( const char * buffer )
+      {
+          std::cout << buffer << std::endl;
+      }
 
     virtual
-    void
-    doGetData( char* buffer, int size )
-      { std::cin.getline( buffer, size ); }
+    void doGetData( char * buffer,
+                    int size )
+      {
+          std::cin.getline( buffer, size );
+      }
 
     virtual
-    void
-    doDisplayError( const char* msg )
-      { std::cerr << msg << std::endl; }
+    void doDisplayError( const char * msg )
+      {
+          std::cerr << msg << std::endl;
+      }
 
 public:
-    NoGuiClient( const rcss::net::Addr& dest )
+    NoGuiClient( const rcss::net::Addr & dest )
         : Client( dest )
       {
           std::cout << "Sending to " << dest << std::endl;
@@ -269,15 +276,14 @@ public:
 
     virtual
     ~NoGuiClient()
-      {}
+      { }
 };
 
 
 
 #ifdef HAVE_LIBNCURSES
 class NCursesClient
-    : public Client
-{
+    : public Client {
 private:
     int M_height;
     int M_width;
@@ -290,8 +296,7 @@ private:
     WINDOW* M_input_header;
 
     virtual
-    void
-    doProcessInput( const char* buffer )
+    void doProcessInput( const char * buffer )
       {
           int size = std::strlen( buffer );
           if ( size >= 4 && strncmp( buffer, "(see", 4 ) == 0 )
@@ -315,8 +320,8 @@ private:
       }
 
     virtual
-    void
-    doGetData( char* buffer, int size )
+    void doGetData( char * buffer,
+                    int size )
       {
           int idx = 0;
           char curr;
@@ -359,8 +364,7 @@ private:
       }
 
     virtual
-    void
-    doDisplayError( const char* msg )
+    void doDisplayError( const char * msg )
       {
           wclear( M_other_win );
           mvwaddstr( M_other_win, 0, 0, msg );
@@ -368,7 +372,7 @@ private:
       }
 
 public:
-    NCursesClient( const rcss::net::Addr& dest )
+    NCursesClient( const rcss::net::Addr & dest )
         : Client( dest )
       {
           initscr();

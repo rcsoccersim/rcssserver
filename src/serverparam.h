@@ -36,12 +36,12 @@
 
 #include "utility.h"
 #include "types.h"
+
 #include <rcssbase/net/udpsocket.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <map>
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 
 namespace rcss {
@@ -601,10 +601,9 @@ private:
     double getHalfTimeScaler() const
       {
           double value = 1000.0 / (sim_st / slow_down_factor);
-          if( value != 0.0 )
-              return value;
-          else
-              return EPS;
+          return ( value != 0.0
+                   ? value
+                   : EPS );
       }
 
     //Have to be careful with integer math, see bug # 800540
