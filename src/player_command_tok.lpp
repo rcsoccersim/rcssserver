@@ -34,6 +34,7 @@
 
 %option nomain
 %option noyywrap
+%option full
 %option c++
 %option prefix="RCSSPCom"
 %option yyclass="RCSSPComLexer"

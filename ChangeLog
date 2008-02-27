@@ -1,3 +1,9 @@
+2008-02-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach_lang_tok.lpp:
+	* src/player_command_tok.lpp:
+	- set "%option full"
+
 2008-02-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:

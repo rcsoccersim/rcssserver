@@ -29,39 +29,41 @@
 int
 main ( int argc, char **argv )
 {
-    const char *server = "localhost";
+    const char * server = "localhost";
     int port = 6000;
     bool use_ncurses = true;
 
-    for( int i = 0; i < argc; ++i )
+    for ( int i = 0; i < argc; ++i )
     {
-        if( std::strcmp( argv[ i ], "-server" ) == 0 )
+        if ( std::strcmp( argv[ i ], "-server" ) == 0 )
         {
-            if( i + 1 < argc )
+            if ( i + 1 < argc )
             {
                 server = argv[ i + 1 ];
                 ++i;
             }
         }
-        else if( std::strcmp( argv[ i ], "-port" ) == 0 )
+        else if ( std::strcmp( argv[ i ], "-port" ) == 0 )
         {
-            if( i + 1 < argc )
+            if ( i + 1 < argc )
             {
-                port = atoi( argv[ i + 1 ] );
+                port = std::atoi( argv[ i + 1 ] );
                 ++i;
             }
         }
-        else if( std::strcmp( argv[ i ], "-nogui" ) == 0 )
+        else if ( std::strcmp( argv[ i ], "-nogui" ) == 0 )
+        {
             use_ncurses = false;
+        }
     }
 
 
     rcss::net::Addr dest( port );
-    if( dest.setHost( server ) )
+    if ( dest.setHost( server ) )
     {
-        Client* client;
+        Client * client;
 #ifdef HAVE_LIBNCURSES
-        if( use_ncurses )
+        if ( use_ncurses )
             client = new NCursesClient( dest );
         else
 #endif

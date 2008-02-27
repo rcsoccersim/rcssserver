@@ -3,7 +3,7 @@
  *Copyright:
 
     Copyright (C) 2001 RoboCup Soccer Server Maintainance Group.
-    	Patrick Riley, Tom Howard, Itsuki Noda,	Mikhail Prokopenko, Jan Wendler 
+    	Patrick Riley, Tom Howard, Itsuki Noda,	Mikhail Prokopenko, Jan Wendler
 
     This file is part of SoccerServer.
 
@@ -35,6 +35,7 @@
 
 %option nomain
 %option noyywrap
+%option full
 %option c++
 %option prefix="RCSSCLangFlexLexer"
 %option yyclass="RCSSCLangLexer"
@@ -222,7 +223,7 @@ direc     { return RCSS_CLANG_DIREC; }
 /*       YY_BUFFER_STATE yybuffstateCurr;*/
 
 /*       yybuffstateCurr = yy_scan_string(s);*/
-    
+
 /*       int ret = RCSS_CLANG_parse( (void*)&param );*/
 /*       yy_delete_buffer(yybuffstateCurr);*/
 /*       return ret;*/
