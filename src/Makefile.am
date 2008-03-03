@@ -330,9 +330,7 @@ AM_FLEXFLEX=@AM_FLEXFLAGS@
 EXTRA_PROGRAMS = rcssclient
 
 rcssclient_SOURCES = \
-client.cpp \
-client.h \
-compress.h
+client.cpp
 
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
 -lrcssnet \

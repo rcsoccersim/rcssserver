@@ -1,3 +1,10 @@
+2008-03-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	* src/client.h:
+	* src/client.cpp:
+	- removed client.h.
+
 2008-02-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach_lang_tok.lpp:
