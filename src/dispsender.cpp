@@ -422,6 +422,10 @@ DispSenderMonitorV3::sendShow()
 
     message.erase();
 
+    //
+    // creage new data
+    //
+
     std::ostringstream ostr;
 
     serializer().serializeShowBegin( ostr,
