@@ -1056,7 +1056,10 @@ Logger::writeGameLogV4()
 //                                          arm_dest ) )
 //             {
 //                 os << ' ' << Quantize( arm_dest.getMag(), prec )
-//                    << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), dprec );
+//                    << ' ' << Quantize( Rad2Deg( normalize_angle( arm_dest.getHead()
+//                                                                  + (*p)->angleBodyCommitted()
+//                                                                  + (*p)->angleNeckCommitted() ) ),
+//                                        dprec );
 //             }
         }
 

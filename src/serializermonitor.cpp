@@ -265,7 +265,10 @@ SerializerMonitorStdv3::serializePlayerArm( std::ostream & os,
 //                                       arm_dest ) )
 //         {
 //             os << ' ' << Quantize( arm_dest.getMag(), PREC )
-//                << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), DPREC );
+//                << ' ' << Quantize( Rad2Deg( normalize_angle( arm_dest.getHead()
+//                                                              + player.angleBodyCommitted()
+//                                                              + player.angleNeckCommitted() ) ),
+//                                    DPREC );
 //         }
     }
 }
