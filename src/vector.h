@@ -43,267 +43,272 @@ public:
     typedef const value*        const_iterator;
     typedef std::size_t         size_type;
 
-    enum index
-        {
-            X,
-            Y,
-            DIM
-        };
-
+    enum index {
+        X,
+        Y,
+        DIM
+    };
 
 protected:
 
-    value M_data [ DIM ];
+    value M_data[ DIM ];
 
 public:
 
     explicit
-    Vector2D ( const_reference a, const_reference b )
+    Vector2D ( const_reference a,
+               const_reference b )
       {
-          M_data [ X ] = a;
-          M_data [ Y ] = b;
+          M_data[ X ] = a;
+          M_data[ Y ] = b;
       }
 
     explicit
     Vector2D ()
-      { null (); }
+      {
+          null();
+      }
 
-    explicit Vector2D ( const value vec[ DIM ] )
+    explicit
+    Vector2D ( const value vec[ DIM ] )
       {
           for ( size_type i = X; i < DIM; ++i )
           {
-              M_data [ i ] = vec [ i ];
+              M_data[ i ] = vec [ i ];
           }
       }
 
-    inline void null ()
+    void null()
       {
           for ( size_type i = X; i < DIM; ++i )
-              M_data [ i ] = 0.0;
+          {
+              M_data[ i ] = 0.0;
+          }
       }
 
-    inline iterator begin()
+    iterator begin()
       {
           return M_data;
       }
 
-    inline const_iterator begin() const
+    const_iterator begin() const
       {
           return M_data;
       }
 
-    inline iterator end()
+    iterator end()
       {
           return M_data + DIM;
       }
 
-    inline const_iterator end() const
+    const_iterator end() const
       {
           return M_data + DIM;
       }
 
-    inline reference operator[] ( const index& i )
+    reference operator[]( const index & i )
       {
-          return M_data [ i ];
+          return M_data[ i ];
       }
 
-    inline const_reference operator[] ( const index& i ) const
+    const_reference operator[]( const index & i ) const
       {
-          return M_data [ i ];
+          return M_data[ i ];
       }
 
-    inline Vector2D operator+ () const
+    Vector2D operator+() const
       {
           return *this;
       }
 
-    inline Vector2D operator- () const
+    Vector2D operator-() const
       {
           Vector2D rval ( *this );
           for ( size_type i = X; i < DIM; ++i )
           {
-              rval.M_data [ i ] = -M_data [ i ];
+              rval.M_data[ i ] = -M_data[ i ];
           }
           return rval;
       }
 
-
-    inline Vector2D& operator+= ( const Vector2D& vec )
+    Vector2D & operator+=( const Vector2D & vec )
       {
           for ( size_type i = X; i < DIM; ++i )
           {
-              M_data [ i ] += vec.M_data [ i ];
+              M_data[ i ] += vec.M_data[ i ];
           }
           return *this;
       }
 
-    inline Vector2D& operator-= ( const Vector2D& vec )
+    Vector2D & operator-=( const Vector2D & vec )
       {
           return *this += -vec;
       }
 
-
-    inline Vector2D& operator*= ( const_reference scaler )
+    Vector2D & operator*=( const_reference scaler )
       {
           for ( size_type i = X; i < DIM; ++i )
           {
-              M_data [ i ] *= scaler;
+              M_data[ i ] *= scaler;
           }
           return *this;
       }
 
-
-    inline Vector2D& operator/= ( const_reference scaler )
+    Vector2D & operator/=( const_reference scaler )
       {
           for ( size_type i = X; i < DIM; ++i )
           {
-              M_data [ i ] /= scaler;
+              M_data[ i ] /= scaler;
           }
           return *this;
       }
 
-    inline value getMag () const
+    value getMag() const
       {
           value sum = 0.0;
           for ( size_type i = X; i < DIM; ++i )
           {
-              sum += pow ( M_data [ i ], 2 );
+              sum += pow ( M_data[ i ], 2 );
           }
           return sqrt ( sum );
       }
 
+    void setMag( const_reference mag );
 
-    void
-    setMag ( const_reference mag );
-
-    inline
-    value
-    getHead () const
-      { return atan2 ( M_data [ Y ], M_data [ X ] ); }
-
-    void
-    setHead ( const_reference head );
-
-    Vector2D
-    getNorm () const;
-
-    inline reference getX ()
+    value getHead() const
       {
-          return M_data [ X ];
+          return std::atan2( M_data[ Y ], M_data[ X ] );
       }
 
-    inline const_reference getX () const
+    void setHead( const_reference head );
+
+    Vector2D getNorm() const;
+
+    reference getX()
       {
-          return M_data [ X ];
+          return M_data[ X ];
       }
 
-    inline reference getY ()
+    const_reference getX() const
       {
-          return M_data [ Y ];
+          return M_data[ X ];
       }
 
-    inline const_reference getY () const
+    reference getY()
       {
-          return M_data [ Y ];
+          return M_data[ Y ];
       }
 
-    inline Vector2D& rotate ( const_reference ang )
+    const_reference getY() const
       {
-          setHead ( getHead () + ang );
+          return M_data[ Y ];
+      }
+
+    Vector2D & rotate( const_reference ang )
+      {
+          setHead( getHead () + ang );
           return *this;
       }
 }; // end class Vector2D
-};
-};
 
-inline bool operator== ( const rcss::geom::Vector2D& a,
-                         const rcss::geom::Vector2D& b )
+}
+}
+
+inline
+bool
+operator==( const rcss::geom::Vector2D & a,
+            const rcss::geom::Vector2D & b )
 {
     return std::equal( a.begin(), a.end(), b.begin() );
 }
 
-inline bool operator!= ( const rcss::geom::Vector2D& a,
-                         const rcss::geom::Vector2D& b )
+inline
+bool
+operator!=( const rcss::geom::Vector2D & a,
+            const rcss::geom::Vector2D & b )
 {
-    return !( a == b );
+    return ! ( a == b );
 }
 
-inline std::ostream& operator<< ( std::ostream& o,
-                                  const rcss::geom::Vector2D& data )
+inline
+std::ostream &
+operator<<( std::ostream & o,
+            const rcss::geom::Vector2D & data )
 {
-    return o << "rcs::geom::Vector2D( "
+    return o << "rcss::geom::Vector2D( "
              << data.getX () << ", "
              << data.getY () << " )";
 }
 
-
 inline
 rcss::geom::Vector2D
-operator+ ( const rcss::geom::Vector2D& a,
-            const rcss::geom::Vector2D& b )
+operator+( const rcss::geom::Vector2D & lhs,
+           const rcss::geom::Vector2D & rhs )
 {
-    rcss::geom::Vector2D rval ( a );
-    return rval += b;
+    return rcss::geom::Vector2D( lhs ) += rhs;
 }
 
 inline
 rcss::geom::Vector2D
-operator- ( const rcss::geom::Vector2D& a,
-            const rcss::geom::Vector2D& b )
+operator-( const rcss::geom::Vector2D & lhs,
+           const rcss::geom::Vector2D & rhs )
 {
-    rcss::geom::Vector2D rval ( a );
-    return rval -= b;
+    return rcss::geom::Vector2D( lhs ) -= rhs;
 }
 
 inline
 rcss::geom::Vector2D
-operator* ( const rcss::geom::Vector2D& vec,
-            rcss::geom::Vector2D::const_reference scaler )
+operator*( const rcss::geom::Vector2D & vec,
+           rcss::geom::Vector2D::const_reference scaler )
 {
-    rcss::geom::Vector2D rval ( vec );
-    return rval *= scaler;
+    return rcss::geom::Vector2D( vec ) *= scaler;
 }
 
 inline
 rcss::geom::Vector2D
-operator* ( rcss::geom::Vector2D::const_reference scaler,
-            const rcss::geom::Vector2D& vec )
-{ return vec * scaler; }
-
+operator*( rcss::geom::Vector2D::const_reference scaler,
+           const rcss::geom::Vector2D & vec )
+{
+    return vec * scaler;
+}
 
 inline
 rcss::geom::Vector2D
-operator/ ( const rcss::geom::Vector2D& vec,
-            rcss::geom::Vector2D::const_reference scaler )
+operator/( const rcss::geom::Vector2D & vec,
+           rcss::geom::Vector2D::const_reference scaler )
 {
-    rcss::geom::Vector2D rval ( vec );
-    return rval /= scaler;
+    return rcss::geom::Vector2D( vec ) /= scaler;
 }
 
 
-namespace rcss
-{
-namespace geom
-{
-inline
-void
-Vector2D::setMag ( const_reference mag )
-{ *this = getNorm () * mag; }
+namespace rcss {
+namespace geom {
 
 inline
 void
-Vector2D::setHead ( const_reference head )
-{ *this = Vector2D ( cos ( head ), sin ( head ) ) * getMag (); }
+Vector2D::setMag( const_reference mag )
+{
+    *this = getNorm() * mag;
+}
+
+inline
+void
+Vector2D::setHead( const_reference head )
+{
+    *this = Vector2D( std::cos( head ), std::sin( head ) ) * getMag();
+}
 
 inline
 Vector2D
-Vector2D::getNorm () const
-{ return *this / getMag (); }
+Vector2D::getNorm() const
+{
+    return *this / getMag();
+}
 
 inline
 Vector2D::value
-dot ( const Vector2D& vec1,
-      const Vector2D& vec2 )
+dot( const Vector2D & vec1,
+     const Vector2D & vec2 )
 {
     return vec1.getX () * vec2.getX ()
         + vec1.getY () * vec2.getY ();
@@ -311,46 +316,49 @@ dot ( const Vector2D& vec1,
 
 inline
 Vector2D::value
-absAngle ( const Vector2D& a,
-           const Vector2D& b )
-{ return acos ( dot ( a.getNorm (), b.getNorm () ) ); }
+absAngle( const Vector2D & a,
+          const Vector2D & b )
+{
+    return std::acos( dot( a.getNorm(), b.getNorm() ) );
+}
 
 inline
 Vector2D::value
-angle ( const Vector2D& a,
-        const Vector2D& b )
-{ return normalize_angle ( b.getHead () - a.getHead () ) ; }
-
+angle( const Vector2D & a,
+       const Vector2D & b )
+{
+    return normalize_angle( b.getHead() - a.getHead() );
+}
 
 inline
 Vector2D
-unitVector2D ( Vector2D::const_reference head )
+unitVector2D( Vector2D::const_reference head )
 {
     Vector2D tmp;
-    tmp.getX () = cos ( head );
-    tmp.getY () = sin ( head );
+    tmp.getX() = std::cos( head );
+    tmp.getY() = std::sin( head );
     return tmp;
 }
 
 inline
 Vector2D
-polarVector2D ( Vector2D::const_reference mag,
-                Vector2D::const_reference head )
+polarVector2D( Vector2D::const_reference mag,
+               Vector2D::const_reference head )
 {
-    Vector2D tmp = unitVector2D ( head );
-    tmp.setMag ( mag );
+    Vector2D tmp = unitVector2D( head );
+    tmp.setMag( mag );
     return tmp;
 }
 
 inline
 Vector2D::value
-dist (  const Vector2D& a,
-        const Vector2D& b )
+dist( const Vector2D & a,
+      const Vector2D & b )
 {
-    return ( a - b ).getMag ();
+    return ( a - b ).getMag();
 }
-}; // end namespace geom
-}; // end namespace rcs
 
+} // end namespace geom
+} // end namespace rcs
 
 #endif

@@ -37,23 +37,29 @@ protected:
 
 public:
 
-    Arm ( const unsigned int& min_point_duration,
-          const unsigned int& max_point_duration )
+    Arm( const unsigned int & min_point_duration,
+          const unsigned int & max_point_duration )
         : M_timer ( max_point_duration ),
           M_min_point_duration ( min_point_duration ),
           M_max_point_duration ( max_point_duration ),
           M_count ( 0 )
+      { }
+
+    ~Arm()
+      { }
+
+    const
+    rcss::geom::Vector2D & dest() const
       {
+          return M_dest;
       }
 
-    ~Arm () {}
-
-    bool isMovable () const
+    bool isMovable() const
       {
           return M_timer >= M_min_point_duration;
       }
 
-    bool isPointing () const
+    bool isPointing() const
       {
           return M_timer < M_max_point_duration;
       }
@@ -63,28 +69,27 @@ public:
           ++M_timer;
       }
 
-    bool pointTo ( const rcss::geom::Vector2D& origin,
-                   const double& orientation,
-                   const rcss::geom::Vector2D& rel_dest )
+    bool pointTo( const rcss::geom::Vector2D & origin,
+                  const double & orientation,
+                  const rcss::geom::Vector2D & rel_dest )
       {
-          if ( isMovable () )
+          if ( isMovable() )
           {
               M_dest = rel_dest;
-              M_dest.rotate ( orientation );
+              M_dest.rotate( orientation );
               M_dest += origin;
               M_timer = 0;
               M_count++;
               return true;
           }
-          else
-              return false;
+          return false;
       }
 
-    bool stopPointing ()
+    bool stopPointing()
       {
-          if ( isMovable () )
+          if ( isMovable() )
           {
-              M_dest.null ();
+              M_dest.null();
               M_timer = M_max_point_duration;
               M_count++;
               return true;
@@ -92,52 +97,49 @@ public:
           return false;
       }
 
-    bool getRelDest ( const rcss::geom::Vector2D& origin,
-                      const double& orientation,
-                      rcss::geom::Vector2D& rel_dest ) const
+    bool getRelDest( const rcss::geom::Vector2D & origin,
+                     const double & orientation,
+                     rcss::geom::Vector2D & rel_dest ) const
       {
-          if ( isPointing () )
+          if ( isPointing() )
           {
               rel_dest = M_dest;
               rel_dest -= origin;
               rel_dest.rotate ( -orientation );
               return true;
           }
-          else
-              return false;
+          return false;
       }
 
-    bool getRelDir ( const rcss::geom::Vector2D& origin,
-                     const double& orientation,
-                     double& rel_dir ) const
+    bool getRelDir( const rcss::geom::Vector2D & origin,
+                    const double & orientation,
+                    double & rel_dir ) const
       {
           rcss::geom::Vector2D rel_dest;
-          if ( getRelDest ( origin, orientation, rel_dest ) )
+          if ( getRelDest( origin, orientation, rel_dest ) )
           {
               rel_dir = rel_dest.getHead ();
               return true;
           }
-          else
-              return false;
+          return false;
       }
 
-    unsigned int getCyclesTillExpiry () const
+    unsigned int getCyclesTillExpiry() const
       {
           return ( isPointing () ? M_max_point_duration - M_timer : 0 );
       }
 
-    unsigned int getCyclesTillMovable () const
+    unsigned int getCyclesTillMovable() const
       {
           return ( isMovable () ? 0 : M_min_point_duration - M_timer );
       }
 
-    unsigned int getCounter () const
+    unsigned int getCounter() const
       {
           return M_count;
       }
 
-    class State
-    {
+    class State {
     protected:
         unsigned int M_cycles_till_movable;
         unsigned int M_cycles_till_expires;
@@ -149,7 +151,7 @@ public:
         State ( const rcss::geom::Vector2D& origin,
                 const double& orientation,
                 const Arm& arm )
-            : M_cycles_till_movable ( arm.getCyclesTillMovable () ),
+             : M_cycles_till_movable ( arm.getCyclesTillMovable () ),
               M_cycles_till_expires ( arm.getCyclesTillExpiry () ),
               M_dist ( 0 ),
               M_head ( 0 ),
@@ -161,21 +163,20 @@ public:
               M_head = rint ( Rad2Deg ( target.getHead () ) * 10.0 ) * 0.1;
           }
 
-        ~State () {}
+        ~State()
+          { }
 
         unsigned int cyclesTillMovable () const { return M_cycles_till_movable; }
         unsigned int cyclesTillExpires () const { return M_cycles_till_expires; }
         double dist () const { return M_dist; }
         double head () const { return M_head; }
         unsigned int count () const { return M_count; }
-
     };
 
-
-    State getState ( const rcss::geom::Vector2D& origin,
-                     const double& orientation ) const
+    State getState( const rcss::geom::Vector2D & origin,
+                    const double & orientation ) const
       {
-          return State ( origin, orientation, *this );
+          return State( origin, orientation, *this );
       }
 
 };

@@ -269,16 +269,8 @@ Monitor::sendShow()
 //            << ' ' << Quantize( Rad2Deg( (*p)->angleNeckCommitted() ), dprec );
 //         if ( (*p)->arm().isPointing() )
 //         {
-//             rcss::geom::Vector2D arm_dest;
-//             if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
-//                                                                (*p)->pos().y ),
-//                                          (*p)->angleBodyCommitted()
-//                                          + (*p)->angleNeckCommitted(),
-//                                          arm_dest ) )
-//             {
-//                 os << ' ' << Quantize( arm_dest.getMag(), prec )
-//                    << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), dprec );
-//             }
+//             os << ' ' << Quantize( (*p)->arm().dest().getX(), prec )
+//                << ' ' << Quantize( (*p)->arm().dest().getY(), prec );
 //         }
 
 //         os << " (v "

@@ -1,3 +1,13 @@
+2008-03-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/arm.h:
+	* src/logger.cpp:
+	* src/monitor.cpp:
+	* src/serializermonitor.cpp:
+	* src/vector.h:
+	- changed arm information in the monitor protocol and game log
+	format.
+
 2008-03-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/Makefile.am:

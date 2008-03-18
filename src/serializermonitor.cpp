@@ -256,15 +256,17 @@ SerializerMonitorStdv3::serializePlayerArm( std::ostream & os,
 {
     if ( player.arm().isPointing() )
     {
-        rcss::geom::Vector2D arm_dest;
-        if ( player.arm().getRelDest( rcss::geom::Vector2D( player.pos().x,
-                                                            player.pos().y ),
-                                      player.angleBodyCommitted() + player.angleNeckCommitted(),
-                                      arm_dest ) )
-        {
-            os << ' ' << Quantize( arm_dest.getMag(), PREC )
-               << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), DPREC );
-        }
+        os << ' ' << Quantize( player.arm().dest().getX(), PREC )
+           << ' ' << Quantize( player.arm().dest().getY(), PREC );
+//         rcss::geom::Vector2D arm_dest;
+//         if ( player.arm().getRelDest( rcss::geom::Vector2D( player.pos().x,
+//                                                             player.pos().y ),
+//                                       player.angleBodyCommitted() + player.angleNeckCommitted(),
+//                                       arm_dest ) )
+//         {
+//             os << ' ' << Quantize( arm_dest.getMag(), PREC )
+//                << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), DPREC );
+//         }
     }
 }
 
