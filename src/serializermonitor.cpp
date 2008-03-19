@@ -261,14 +261,11 @@ SerializerMonitorStdv3::serializePlayerArm( std::ostream & os,
 //         rcss::geom::Vector2D arm_dest;
 //         if ( player.arm().getRelDest( rcss::geom::Vector2D( player.pos().x,
 //                                                             player.pos().y ),
-//                                       player.angleBodyCommitted() + player.angleNeckCommitted(),
+//                                       0.0,
 //                                       arm_dest ) )
 //         {
 //             os << ' ' << Quantize( arm_dest.getMag(), PREC )
-//                << ' ' << Quantize( Rad2Deg( normalize_angle( arm_dest.getHead()
-//                                                              + player.angleBodyCommitted()
-//                                                              + player.angleNeckCommitted() ) ),
-//                                    DPREC );
+//                << ' ' << Quantize( Rad2Deg( arm_dest.getHead() ), DPREC );
 //         }
     }
 }
