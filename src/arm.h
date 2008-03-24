@@ -148,19 +148,19 @@ public:
         unsigned int M_count;
 
     public:
-        State ( const rcss::geom::Vector2D& origin,
-                const double& orientation,
-                const Arm& arm )
-             : M_cycles_till_movable ( arm.getCyclesTillMovable () ),
-              M_cycles_till_expires ( arm.getCyclesTillExpiry () ),
-              M_dist ( 0 ),
-              M_head ( 0 ),
-              M_count ( arm.getCounter () )
+        State ( const rcss::geom::Vector2D & origin,
+                const double & orientation,
+                const Arm & arm )
+             : M_cycles_till_movable( arm.getCyclesTillMovable() )
+             , M_cycles_till_expires( arm.getCyclesTillExpiry() )
+             , M_dist( 0 )
+             , M_head( 0 )
+             , M_count( arm.getCounter() )
           {
               rcss::geom::Vector2D target;
-              arm.getRelDest ( origin, orientation, target );
-              M_dist = rint ( target.getMag () * 10.0 ) * 0.1;
-              M_head = rint ( Rad2Deg ( target.getHead () ) * 10.0 ) * 0.1;
+              arm.getRelDest( origin, orientation, target );
+              M_dist = rint( target.getMag() * 10.0 ) * 0.1;
+              M_head = rint( Rad2Deg( target.getHead() ) * 10.0 ) * 0.1;
           }
 
         ~State()

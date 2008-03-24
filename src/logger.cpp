@@ -1034,7 +1034,7 @@ Logger::writeGameLogV4()
            << ' ' << (*p)->unum()
            << ')';
         os << ' ' << (*p)->playerTypeId()
-           << std::hex << std::showbase
+           << ' ' << std::hex << std::showbase
            << (*p)->state() // include goalie flag
            << std::dec << std::noshowbase;
 
