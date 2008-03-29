@@ -1,3 +1,9 @@
+2008-03-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/monitor.cpp:
+	* src/serverparam.h:
+	- fixed a defect of trainer command handling.
+
 2008-03-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/arm.h:

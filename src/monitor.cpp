@@ -280,7 +280,8 @@ Monitor::parseCommand( const char * message )
     {
         return dispfoul( message );
     }
-    else if ( ServerParam::instance().coachMode() )
+    else if ( ServerParam::instance().coachMode()
+              || ServerParam::instance().coachWithRefereeMode() )
     {
         if ( ! std::strncmp( message, "(start)", 7 ) )
         {
@@ -486,7 +487,7 @@ Monitor::coach_move( const char * command )
 
         if ( n == 3 || n == 4 )
         {
-            M_stadium.set_ball( LEFT, PVector( x, y ) );
+            M_stadium.set_ball( NEUTRAL, PVector( x, y ) );
         }
         else if ( n == 6 )
         {
