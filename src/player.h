@@ -326,7 +326,7 @@ public:
     double distQStep() const
       {
 #ifndef NEW_QSTEP
-          return ServerParam::instance().distQStep();
+          return ServerParam::instance().quantizeStep();
 #else
           return dist_qstep_player;
 #endif
@@ -335,7 +335,7 @@ public:
     double landDistQStep() const
       {
 #ifndef NEW_QSTEP
-          return ServerParam::instance().landQStep();
+          return ServerParam::instance().landmarkQuantizeStep();
 #else
           return land_qstep_player;
 #endif

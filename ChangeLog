@@ -1,3 +1,13 @@
+2008-03-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/audio.cpp:
+	* src/initsender.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- fixed coding style.
+
 2008-03-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/monitor.cpp:

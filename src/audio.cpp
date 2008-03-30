@@ -148,7 +148,7 @@ AudioSenderPlayer::nonSelfPlayerPredicate( const Player & player ) const
     {
         if ( M_listener.canHearFullFrom( player )
              && player.pos().distance( M_listener.pos() )
-             <= ServerParam::instance().audioDist() )
+             <= ServerParam::instance().audioCutDist() )
         {
             return true;
         }
@@ -395,7 +395,7 @@ AudioSenderPlayerv8::nonSelfPlayerPredicate( const Player & player ) const
 {
     return ( generalPredicate()
              && ( player.pos().distance( M_listener.pos() )
-                  <= ServerParam::instance().audioDist() ) );
+                  <= ServerParam::instance().audioCutDist() ) );
 }
 
 bool

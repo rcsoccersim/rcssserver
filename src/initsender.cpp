@@ -139,7 +139,7 @@ InitSenderCommonV7::sendServerParams()
     serializer().serializeParam( transport(),
                                  ServerParam::instance().controlRadius() );
     serializer().serializeParam( transport(),
-                                 ServerParam::instance().CtlRadiusWidth() );
+                                 ServerParam::instance().controlRadiusWidth() );
     serializer().serializeParam( transport(),
                                  ServerParam::instance().maxPower() );
     serializer().serializeParam( transport(),
@@ -157,7 +157,7 @@ InitSenderCommonV7::sendServerParams()
     serializer().serializeParam( transport(),
                                  ServerParam::instance().minNeckAngle() );
     serializer().serializeParam( transport(),
-                                 ServerParam::instance().visAngleDeg() );
+                                 ServerParam::instance().visibleAngleDegree() );
     serializer().serializeParam( transport(),
                                  ServerParam::instance().visibleDistance() );
     serializer().serializeParam( transport(),
@@ -235,11 +235,11 @@ InitSenderCommonV7::sendServerParams()
     serializer().serializeParam( transport(),
                                  ServerParam::instance().offsideKickMargin() );
     serializer().serializeParam( transport(),
-                                 ServerParam::instance().audioDist() );
+                                 ServerParam::instance().audioCutDist() );
     serializer().serializeParam( transport(),
-                                 ServerParam::instance().distQStep() );
+                                 ServerParam::instance().quantizeStep() );
     serializer().serializeParam( transport(),
-                                 ServerParam::instance().landQStep() );
+                                 ServerParam::instance().landmarkQuantizeStep() );
 #ifdef NEW_QSTEP
     serializer().serializeParam( transport(),
                                  ServerParam::instance().dirQStep() );
