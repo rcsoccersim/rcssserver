@@ -827,9 +827,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
                      rcss::pcom::VIEW_QUALITY viewQuality )
 {
     if ( M_synch_see
-         && ( viewWidth == rcss::pcom::NARROW
-              || viewQuality != rcss::pcom::HIGH  )
-         )
+         && viewQuality != rcss::pcom::HIGH  )
     {
         return;
     }
@@ -1347,7 +1345,7 @@ Player::ear( bool on,
 }
 
 // 2008-02-09 akiyama
-// comand to change the semme message timer
+// comand to change the see message timer
 void
 Player::synch_see()
 {
@@ -1374,7 +1372,7 @@ Player::synch_see()
     M_synch_see = true;
     M_highquality = true;
 
-    // TODO move to the Observer
+    // TODO: move to the Observer
     send( "(ok synch_see)" );
 }
 
