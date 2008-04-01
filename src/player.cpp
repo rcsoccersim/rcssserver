@@ -827,8 +827,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
                      rcss::pcom::VIEW_QUALITY viewQuality )
 {
     if ( M_synch_see
-         && ( viewWidth == rcss::pcom::NARROW
-              || viewQuality != rcss::pcom::HIGH  )
+         && ( viewQuality != rcss::pcom::HIGH  )
          )
     {
         return;
