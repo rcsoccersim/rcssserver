@@ -385,10 +385,12 @@ Stadium::startTeams()
 
 
 int
-Stadium::startTeam( const std::string& start )
+Stadium::startTeam( const std::string & start )
 {
     if ( start.empty() )
+    {
         return 0;
+    }
 
     std::cout << "Starting \"/bin/sh -c "
               << start.c_str() << "\"\n";

@@ -1,13 +1,13 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                  main.cc
+                                  main.cpp
                            Main for rcssserver
                              -------------------
     begin                : 1996
     copyright            : (C) 1996-2000 Electrotechnical Laboratory.
                            Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
-                           (C) 2001-2002 by The RoboCup Soccer Server
+                           (C) 2001- by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
