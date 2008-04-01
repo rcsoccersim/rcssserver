@@ -1,7 +1,16 @@
 2008-04-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* README:
+	- added slightly detailed installation instruction.
+
+	* NEWS:
+	* configure.ac:
+	- updated a version number string. Official release 12.0.1.
+
 	* src/player.cpp:
-	- fixed a bug of change_view command in the synchronous mode.
+	- fixed a change_view command bug in the synchronous see
+	mode. This bug causes the broken of the change_view command
+	that contains view quality after players sent synch_see.
 
 2008-03-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

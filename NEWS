@@ -1,3 +1,8 @@
+[12.0.1]
+  * fixed a change_view command bug in the synchronous mode. Thanks go
+    to Tobias Springenbergr for reporting the problem and providing
+    the patch.
+
 [12.0.0]
   * Supported the monitor protocol version 3 and the game log format
     version 4. Now, these are used by default.

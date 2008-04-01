@@ -9,6 +9,35 @@ simulated autonomous robotic players to play soccer (football).
 ===========
 QUICK START
 ===========
+
+These are the main installation steps to install the soccer simulator:
+
+Mainly three packages should be downloaded and installed: rcssbase,
+rcssserver, rcssmonitor. Create a folder, put all packages onto that
+and extract them there. (filenames which have .tar.gz or .tar.bz2 at
+the end of them, usually represent a zipped package, extracting them
+is as simple as right clicking on them, and selecting "extract here"
+menu)
+
+After that, do these steps one by one in order for all the packages,
+first rcssbase, then rcssserver and last rcssmonitor:
+
+1- Go to the extracted directory
+2- Open a terminal at that directory (it is usually the F4 key, if not
+   find a menu item for "Open Terminal Here")
+3- Type this: "./configure"
+4- Type this if ./configure showed no error: "make"
+5- and at last type this: "make install"
+
+Do this for all the packages.
+
+An important note: You should login as root to be able to install the
+packages, after installation, there is no need to login as root. -->
+There is only one administrator user in linux and its name is root, so
+you can only install stuff when u have logged in as root. If any of
+the commands showed an error, mail the mailing list with the exact
+error message, sure someone would be able to help.
+
 From the rcssserver directory execute:
 
 `./configure'
