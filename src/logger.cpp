@@ -257,7 +257,7 @@ Logger::openGameLog()
     if ( ! isGameLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open record_file " << M_game_log_name << std::endl;
+                  << ": can't open the game log file " << M_game_log_name << std::endl;
         return false;
     }
 
@@ -332,7 +332,7 @@ Logger::openTextLog()
     if ( ! isTextLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open log_file " << M_text_log_name << std::endl;
+                  << ": can't open the text log file " << M_text_log_name << std::endl;
         return false;
     }
 
