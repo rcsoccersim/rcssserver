@@ -33,7 +33,6 @@
 
  *EndCopyright:
  */
-
 
 // [2000/01/14:I.Noda]
 //  escape prototype of recvfrom
@@ -92,7 +91,7 @@ Stadium::recv( std::vector< T >& clients )
                          irand ); //rcss::random::UniformRNG::instance() );
 
     for ( typename std::vector< T >::iterator i = clients.begin();
-         i != clients.end(); )
+          i != clients.end(); )
     {
         if ( (*i)->recv() == -1 )
         {
@@ -188,24 +187,24 @@ void
 Stadium::parsePlayerInit( const char * message,
                           const rcss::net::Addr & cli_addr )
 {
-		if ( ! std::strncmp( message, "(reconnect ", std::strlen( "(reconnect " ) ) )
-		{
+    if ( ! std::strncmp( message, "(reconnect ", std::strlen( "(reconnect " ) ) )
+    {
         //              std::cerr << "Got reconnect" << std::endl;
-				// a player reconnects to the server
-				if ( playmode() == PM_PlayOn )
+        // a player reconnects to the server
+        if ( playmode() == PM_PlayOn )
         {
             sendToPlayer( "(error cannot_reconnect_while_playon)", cli_addr );
         }
-				else
-				{
+        else
+        {
             Player * p = reconnectPlayer( message, cli_addr );
             if ( p )
             {
                 M_logger.writePlayerLog( *p, message, RECV );
             }
-				}
-		}
-		else if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
+        }
+    }
+    else if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
     {
         // a new player connects to the server
         Player * p = initPlayer( message, cli_addr );

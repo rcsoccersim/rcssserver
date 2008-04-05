@@ -303,10 +303,10 @@ Stadium::init()
     M_player_types.push_back( new HeteroPlayer( 0 ) );
     //std::cout << *(M_player_types[ 0 ]) << std::endl;
     for ( int i = 1; i < PlayerParam::instance().playerTypes(); i++ )
-		{
-				M_player_types.push_back( new HeteroPlayer() );
+    {
+        M_player_types.push_back( new HeteroPlayer() );
         //std::cout << *(M_player_types[i]) << std::endl;
-		}
+    }
 
     if ( ! M_player_socket.bind( rcss::net::Addr( ServerParam::instance().playerPort() )  ) )
     {
@@ -794,11 +794,11 @@ Stadium::initOnlineCoach( const char * init_message,
 
     const char * msg = init_message;
 
-		const double default_olcoach_version = 5.0;
+    const double default_olcoach_version = 5.0;
 
-		char teamname[16];
+    char teamname[16];
     char coachname[128];
-		double version = default_olcoach_version;
+    double version = default_olcoach_version;
 
     std::memset( teamname, 0, 16 );
     std::memset( coachname, 0, 128 );
@@ -1722,7 +1722,7 @@ Stadium::placeBall( const PlayMode pm,
     if ( Referee::isPenaltyShootOut( playmode() )
          && ( pm == PM_PlayOn || pm ==  PM_Drop_Ball ) )
     {
-       ; // never change pm to play_on in penalty mode
+        ; // never change pm to play_on in penalty mode
     }
     else
     {
@@ -1827,9 +1827,9 @@ Stadium::ballCatchFailed()
 
 void
 Stadium::addTeamGraphic( const Side side,
-                          const unsigned int x,
-                          const unsigned int y,
-                          std::auto_ptr< XPMHolder > holder )
+                         const unsigned int x,
+                         const unsigned int y,
+                         std::auto_ptr< XPMHolder > holder )
 {
     if ( side == LEFT )
     {
@@ -2067,7 +2067,7 @@ Stadium::sendCoachAudio( const Coach & coach,
     M_logger.writeCoachAudio( coach, msg );
 
     if ( ServerParam::instance().sendComms() )
-	  {
+    {
         char buf[max_message_length_for_display];
         char format[40];
         std::snprintf( format, 40, "(%%s %%.%ds)",
