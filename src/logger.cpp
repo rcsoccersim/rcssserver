@@ -590,7 +590,8 @@ Logger::writeToGameLog( const char * str,
 
 void
 Logger::writeMsgToGameLog( const BoardType board_type,
-                           const char * msg )
+                           const char * msg,
+                           const bool team_graphic )
 {
     if ( ! isGameLogOpen() )
     {
@@ -599,15 +600,20 @@ Logger::writeMsgToGameLog( const BoardType board_type,
 
     if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
     {
-        if ( ServerParam::instance().recordMessages() )
+        if ( team_graphic
+             || ServerParam::instance().recordMessages() )
         {
+            std::string str( msg );
+            std::replace( str.begin(), str.end(), '\n', ' ' );
+
             *M_game_log << "(msg " << M_stadium.time()
-                        << ' ' << board_type << " \"" << msg << "\")\n";
+                        << ' ' << board_type << " \"" << str << "\")\n";
         }
     }
     else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
     {
-        if ( ServerParam::instance().recordMessages() )
+        if ( team_graphic
+             || ServerParam::instance().recordMessages() )
         {
             Int16 mode = htons( MSG_MODE );
             writeToGameLog( reinterpret_cast< const char * >( &mode ),

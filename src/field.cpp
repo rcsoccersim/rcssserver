@@ -1873,7 +1873,7 @@ Stadium::sendTeamGraphic( const Side side,
     data << "(team_graphic_"
          << ( side == LEFT ? "l" : "r" )
          << " (" << x << " " << y << " "
-         << *holder << ")" << std::endl;
+         << *holder << ")";
 
 #ifndef HAVE_SSTREAM
     data << std::ends;
@@ -1892,7 +1892,7 @@ Stadium::sendTeamGraphic( const Side side,
         (*i)->sendMsg( MSG_BOARD, msg.c_str() );
     }
 
-    M_logger.writeMsgToGameLog( MSG_BOARD, msg.c_str() );
+    M_logger.writeMsgToGameLog( MSG_BOARD, msg.c_str(), true );
 }
 
 

@@ -1,3 +1,13 @@
+2008-04-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/logger.cpp:
+	* src/logger.h:
+	- fixed a defect of game logging for text data. Now, when server
+	records the text data to game logs, all new line charachters in
+	text data are replace with white space.
+	- Now, team_graphic message is always recorded to game log files.
+
 2008-04-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* README:
