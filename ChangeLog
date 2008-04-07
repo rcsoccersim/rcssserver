@@ -15,9 +15,11 @@
 
 	* NEWS:
 	* configure.ac:
+	- merged with 12.0.x branch.
 	- updated a version number string. Official release 12.0.1.
 
 	* src/player.cpp:
+	- merged with 12.0.x branch.
 	- fixed a change_view command bug in the synchronous see
 	mode. This bug causes the broken of the change_view command
 	that contains view quality after players sent synch_see.
