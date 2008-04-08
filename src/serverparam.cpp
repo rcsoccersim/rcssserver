@@ -609,7 +609,7 @@ ServerParam::addParams()
     addParam( "wind_random", M_wind_random, "", 7 );
     addParam( "half_time",
               rcss::conf::makeSetter( this, &ServerParam::setHalfTime ),
-              rcss::conf::makeGetter( this, &ServerParam::getRawHalfTime ),
+              rcss::conf::makeGetter( this, &ServerParam::halfTime ),
               "",
               7 );
     addParam( "drop_ball_time", M_drop_ball_time, "", 7 );
