@@ -205,6 +205,13 @@ enum DispInfoMode {
     PPARAM_MODE = 9,
 };
 
+enum DrawMode {
+    DrawClear = 0,
+    DrawPoint = 1,
+    DrawCircle = 2,
+    DrawLine = 3,
+};
+
 enum BoardType {
     MSG_BOARD = 1,
     LOG_BOARD = 2,
