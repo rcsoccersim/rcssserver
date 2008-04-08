@@ -1,3 +1,10 @@
+2008-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/logger.cpp:
+	* src/logger.h:
+	- Now, game date and result are recorded at the end of game log as
+	msg info.
+
 2008-04-08  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/types.h:

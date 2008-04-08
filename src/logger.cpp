@@ -490,6 +490,23 @@ Logger::renameLogs()
         team_name_score += "null";
     }
 
+    //
+    // write result
+    //
+    if ( isGameLogOpen() )
+    {
+        char time_stamp[32];
+        std::strftime( time_stamp, 32,
+                       "%Y%m%d%H%M",
+                       &( M_stadium.realTime() ) );
+        char msg[256];
+        std::snprintf( msg, 256, "(result %s %s)", time_stamp, team_name_score.c_str() );
+        writeMsgToGameLog( MSG_BOARD, msg, true );
+    }
+
+    //
+    // rename text log
+    //
     if ( isTextLogOpen()
          && ! ServerParam::instance().textLogFixed() )
     {
@@ -520,6 +537,9 @@ Logger::renameLogs()
         M_text_log_name = newname;
     }
 
+    //
+    // rename game log
+    //
     if ( isGameLogOpen()
          && ! ServerParam::instance().gameLogFixed() )
     {
@@ -533,7 +553,6 @@ Logger::renameLogs()
             newname += time_str;
         }
         newname += team_name_score;
-
         newname += Logger::DEF_GAME_SUFFIX;
         if ( ServerParam::instance().gameLogCompression() > 0 )
         {
@@ -551,6 +570,9 @@ Logger::renameLogs()
         M_game_log_name = newname;
     }
 
+    //
+    // rename keepaway log
+    //
     if ( M_kaway_log.is_open()
          && ! ServerParam::instance().kawayLogFixed() )
     {
@@ -591,7 +613,7 @@ Logger::writeToGameLog( const char * str,
 void
 Logger::writeMsgToGameLog( const BoardType board_type,
                            const char * msg,
-                           const bool team_graphic )
+                           const bool compulsion )
 {
     if ( ! isGameLogOpen() )
     {
@@ -600,7 +622,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
 
     if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
     {
-        if ( team_graphic
+        if ( compulsion
              || ServerParam::instance().recordMessages() )
         {
             std::string str( msg );
@@ -612,7 +634,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
     }
     else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
     {
-        if ( team_graphic
+        if ( compulsion
              || ServerParam::instance().recordMessages() )
         {
             Int16 mode = htons( MSG_MODE );
