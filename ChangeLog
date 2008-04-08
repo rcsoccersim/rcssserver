@@ -1,5 +1,9 @@
 2008-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/referee.cpp:
+	* src/referee.h:
+	- Now, final penalty status is recorded.
+
 	* src/serverparam.cpp:
 	- fixed recorded value of half_time.
 

@@ -511,8 +511,7 @@ private:
 /*--------------------------------------------------------*/
 
 class PenaltyRef
-    : public Referee
-{
+    : public Referee {
 private:
     int M_timer;
     int M_pen_nr_taken;
@@ -525,16 +524,19 @@ private:
     const Player * M_last_taker;
 
     PVector M_prev_ball_pos;
+
+    bool M_timeover;
 public:
     PenaltyRef( Stadium& stadium )
-        : Referee( stadium ),
-          M_timer( -1 ),
-          M_pen_nr_taken( 0 ),
-          M_bDebug( false ),
-          M_cur_pen_taker( NEUTRAL ),
-          M_last_taker( NULL ),
-          M_prev_ball_pos( 0.0, 0.0 )
-      {}
+        : Referee( stadium )
+        , M_timer( -1 )
+        , M_pen_nr_taken( 0 )
+        , M_bDebug( false )
+        , M_cur_pen_taker( NEUTRAL )
+        , M_last_taker( NULL )
+        , M_prev_ball_pos( 0.0, 0.0 )
+        , M_timeover( false )
+      { }
 
     virtual
     ~PenaltyRef()

@@ -2408,6 +2408,12 @@ PenaltyRef::analyseImpl()
         return;
     }
 
+    if ( M_timeover )
+    {
+        M_stadium.change_play_mode( PM_TimeOver );
+        return;
+    }
+
     const PlayMode pm = M_stadium.playmode();
 
     bool bCheckLeft  = penalty_check_players( LEFT );
@@ -2925,7 +2931,8 @@ PenaltyRef::penalty_check_score()
             {
                 M_stadium.sendRefereeAudio( "penalty_winner_r" );
             }
-            M_stadium.change_play_mode( PM_TimeOver );
+            //M_stadium.change_play_mode( PM_TimeOver );
+            M_timeover = true;
         }
     }
     // if both players have taken nr_kicks and max_extra_kicks penalties -> quit
@@ -2955,7 +2962,8 @@ PenaltyRef::penalty_check_score()
         {
             M_stadium.sendRefereeAudio( "penalty_draw" );
         }
-        M_stadium.change_play_mode( PM_TimeOver );
+        //M_stadium.change_play_mode( PM_TimeOver );
+        M_timeover = true;
     }
     // during normal kicks, check whether one team cannot win anymore
     else
@@ -2992,7 +3000,8 @@ PenaltyRef::penalty_check_score()
                       << M_stadium.teamLeft().penaltyPoint() << "-"
                       << M_stadium.teamRight().penaltyPoint() << std::endl;
             M_stadium.sendRefereeAudio( "penalty_winner_l" );
-            M_stadium.change_play_mode( PM_TimeOver );
+            //M_stadium.change_play_mode( PM_TimeOver );
+            M_timeover = true;
         }
     }
 }
