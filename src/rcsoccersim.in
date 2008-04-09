@@ -21,6 +21,17 @@ if test $? -eq 1; then
     exit 1
 fi
 
+LIBLOAD="load=libstdoutsaver"
+which rcssmodtest 2> /dev/null
+if test $? -eq 1; then
+    LIBLOAD=""
+else
+    rcssmodtest @prefix@/lib/@PACKAGE@/modules/libstdoutsaver > /dev/null 2&>1
+    if test $? -eq 1; then
+        LIBLOAD=""
+    fi
+fi
+
 if test $# -eq 0; then
     if test "$RCSSMONITOR"; then
         MON=`which "$RCSSMONITOR" 2> /dev/null`
@@ -44,35 +55,42 @@ if test $# -eq 0; then
             fi
         fi
     fi
-elif test $# -eq 1; then
-    case "$1" in
-        -frameview)
-        MON=`which rcssmonitor 2> /dev/null`
-        if test $? -eq 1; then
-            echo "Error: rcssmonitor found in your PATH"
-            echo ""
-            exit 1
-        fi
-        ;;
-        -classic)
-        MON=`which rcssmonitor_classic 2> /dev/null`
-        if test $? -eq 1; then
-            echo "Error: rcssmonitor_classic found in your PATH"
-            echo ""
-            exit 1
-        fi
-        ;;
-    esac
 else
-    echo "Error: too many options"
-    echo "Usage: $0 [(-frameview)|(-classic)]"
-    echo ""
+    while [ $# -gt 0 ]
+    do
+        case $1 in
+            -frameview)
+            MON=`which rcssmonitor 2> /dev/null`
+            if test $? -eq 1; then
+                echo "Error: rcssmonitor found in your PATH"
+                echo ""
+                exit 1
+            fi
+            ;;
+
+            -classic)
+            MON=`which rcssmonitor_classic 2> /dev/null`
+            if test $? -eq 1; then
+                echo "Error: rcssmonitor_classic found in your PATH"
+                echo ""
+                exit 1
+            fi
+            ;;
+
+            -nostdoutsaver)
+            LIBLOAD=""
+            ;;
+
+            *)
+            echo "Error: unsupported option"
+            echo "Usage: $0 [(-frameview)|(-classic)][(-nostdoutsaver)]"
+            echo ""
+            ;;
+        esac
+
+        shift 1
+    done
 fi
-
-
-
-
-
 
 #--------------------------------------------------
 # set handler
@@ -84,7 +102,7 @@ trap kill_server INT
 # start server
 #
 
-$SERV &
+$SERV $LIBLOAD &
 PID=$!
 
 #--------------------------------------------------

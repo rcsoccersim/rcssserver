@@ -100,7 +100,7 @@ const double ServerParam::CORNER_KICK_MARGIN = 1.0;
 const double ServerParam::KEEPAWAY_LENGTH = 20.0;
 const double ServerParam::KEEPAWAY_WIDTH = 20.0;
 
-const double ServerParam::BALL_SIZE	= 0.085;
+const double ServerParam::BALL_SIZE = 0.085;
 const double ServerParam::BALL_DECAY = 0.94;
 const double ServerParam::BALL_RAND = 0.05;
 const double ServerParam::BALL_WEIGHT = 0.2;
@@ -148,7 +148,7 @@ const double ServerParam::VISIBLE_DISTANCE = 3.0;
 const double ServerParam::AUDIO_CUT_OFF_DIST = 50.0;
 
 const double ServerParam::DASHPOWERRATE = 0.006;
-const double ServerParam::KICKPOWERRATE	= 0.027;
+const double ServerParam::KICKPOWERRATE = 0.027;
 const double ServerParam::MAXPOWER = 100.0;
 const double ServerParam::MINPOWER = -100.0;
 
