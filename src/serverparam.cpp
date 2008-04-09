@@ -1169,7 +1169,7 @@ ServerParam::convertToStruct() const
     tmp.clang_info_win = htons( static_cast< Int16 >( M_clang_info_win ) );
     tmp.clang_mess_delay = htons( static_cast< Int16 >( M_clang_mess_delay ) );
     tmp.clang_mess_per_cycle = htons( static_cast< Int16 >( M_clang_mess_per_cycle ) );
-    tmp.half_time = htons( static_cast< Int16 >( M_half_time ) );
+    tmp.half_time = htons( static_cast< Int16 >( M_raw_half_time ) );
     tmp.sim_st = htons( static_cast< Int16 >( M_simulator_step ) );
     tmp.send_st = htons( static_cast< Int16 >( M_send_step ) );
     tmp.recv_st = htons( static_cast< Int16 >( M_recv_step ) );
