@@ -4,9 +4,6 @@
 	* src/referee.h:
 	- Now, final penalty status is recorded.
 
-	* src/serverparam.cpp:
-	- fixed recorded value of half_time.
-
 	* src/logger.cpp:
 	* src/logger.h:
 	- Now, game date and result are recorded at the end of game log as
