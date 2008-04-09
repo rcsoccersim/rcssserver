@@ -395,10 +395,433 @@ Player::parseMsg( const char * msg,
 
     /** Call the PlayerCommandParser */
     if ( M_parser.parse( command ) != 0 )
+    //if ( ! parseCommand( command ) )
     {
         send( "(error illegal_command_form)" );
         std::cerr << "Error parsing >" << command << "<\n";
     }
+}
+
+bool
+Player::parseCommand( const char * command )
+{
+    const char * buf = command;
+    int n_read = 0;
+
+    int count = 0;
+    while ( *buf != '\0' )
+    {
+        while ( *buf == ' ' || *buf == '\t' || *buf == '\n' ) ++buf;
+        if ( *buf == '\0' ) break;
+
+        if ( ! std::strncmp( buf, "(turn ", 6 ) )
+        {
+            double moment = 0.0;
+            if ( std::sscanf( buf, "(turn %lf) %n",
+                              &moment, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            turn( moment );
+        }
+        else if ( ! std::strncmp( buf, "(dash ", 6 ) )
+        {
+            double power = 0.0;
+            if ( std::sscanf( buf, "(dash %lf) %n",
+                              &power, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            dash( power );
+        }
+        else if ( ! std::strncmp( buf, "(turn_neck ", 11 ) )
+        {
+            double moment = 0.0;
+            if ( std::sscanf( buf, "(turn_neck %lf) %n",
+                              &moment, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            turn_neck( moment );
+        }
+        else if ( ! std::strncmp( buf, "(say ", 5 ) )
+        {
+            buf += 5;
+            char msg[MaxMesg];
+            if ( *buf == '"'
+                 && std::sscanf( buf, "\"%[-0-9a-zA-Z ().+*/?<>_]\") %n",
+                                 msg, &n_read ) == 1 )
+            {
+                buf += n_read;
+                say( msg );
+                return true;
+            }
+            else if ( std::sscanf( buf, "%[-0-9a-zA-Z ().+*/?<>_]",
+                                   msg ) == 1 )
+            {
+                int l = std::strlen( msg );
+                if ( msg[l-1] == ')')
+                {
+                    msg[l-1] = '\0';
+                }
+                else
+                {
+                    std::cerr << "Error parsing >" << buf << "<\n";
+                    return false;
+                }
+
+                say( msg );
+
+                // the say command consumes the rest of the
+                // command string so no point trying to parse
+                // subsequent commands.
+                return true;
+            }
+
+            std::cerr << "Error parsing >" << buf << "<\n";
+            return false;
+        }
+        else if ( ! std::strncmp( buf, "(attentionto ", 13 ) )
+        {
+            if ( ! std::strncmp( buf, "(attentionto off)", 17 ) )
+            {
+                buf += 17;
+                attentionto( false, rcss::pcom::UNKNOWN_TEAM, std::string(), 0 );
+            }
+            else
+            {
+                bool on = true;
+                rcss::pcom::TEAM at_side = rcss::pcom::UNKNOWN_TEAM;
+                char at_team_name[256];
+                int at_unum = 0;
+                if ( std::sscanf( buf, "(attentionto %s %d) %n",
+                                  at_team_name, &at_unum, &n_read ) != 2 )
+                {
+                    std::cerr << "Error parsing attentionto >" << buf << "<\n";
+                    return false;
+                }
+                buf += n_read;
+
+                if ( ! std::strcmp( at_team_name, "our" ) )
+                {
+                    at_side = rcss::pcom::OUR;
+                }
+                else if ( ! std::strcmp( at_team_name, "opp" ) )
+                {
+                    at_side = rcss::pcom::OPP;
+                }
+                else if ( ! std::strcmp( at_team_name, "l" ) )
+                {
+                    at_side = rcss::pcom::LEFT_SIDE;
+                }
+                else if ( ! std::strcmp( at_team_name, "l" ) )
+                {
+                    at_side = rcss::pcom::RIGHT_SIDE;
+                }
+
+                attentionto( on, at_side, std::string( at_team_name ), at_unum );
+            }
+        }
+        else if ( ! std::strncmp( buf, "(kick ", 6 ) )
+        {
+            double power = 0.0;
+            double dir = 0.0;
+            if ( std::sscanf( buf, "(kick %lf %lf) %n",
+                              &power, &dir, &n_read ) != 2 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            kick( power, dir );
+        }
+        else if ( ! std::strncmp( buf, "(tackle ", 8 ) )
+        {
+            double power_or_dir = 0.0;
+            if ( std::sscanf( buf, "(tackle %lf) %n",
+                              &power_or_dir, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            tackle( power_or_dir );
+        }
+        else if ( ! std::strncmp( buf, "(pointto ", 9 ) )
+        {
+            if ( ! std::strncmp( buf, "(pointto off)", 13 ) )
+            {
+                buf += 13;
+                pointto( false, 0.0, 0.0 );
+            }
+            else
+            {
+                double dist, head;
+                if ( std::sscanf( buf, "(pointto %lf %lf) %n",
+                                  &dist, &head, &n_read ) != 2 )
+                {
+                    std::cerr << "Error parsing >" << buf << "<\n";
+                    return false;
+                }
+                buf += n_read;
+
+                pointto( true, dist, head );
+            }
+        }
+        else if ( ! std::strncmp( buf, "(catch ", 7 ) )
+        {
+            double dir = 0.0;
+            if ( std::sscanf( buf, "(catch %lf) %n",
+                              &dir, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            goalieCatch( dir );
+        }
+        else if ( ! std::strncmp( buf, "(move ", 6 ) )
+        {
+            double x, y;
+            if ( std::sscanf( buf, "(move %lf %lf) %n",
+                              &x, &y, &n_read ) != 2
+                 && std::sscanf( buf, "(move ( %lf %lf ) ) %n",
+                                 &x, &y, &n_read ) != 2 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            move( x, y );
+        }
+        else if ( ! std::strncmp( buf, "(change_view ", 13 ) )
+        {
+            rcss::pcom::VIEW_WIDTH vwidth = rcss::pcom::NORMAL;
+            rcss::pcom::VIEW_QUALITY vquality = rcss::pcom::HIGH;
+
+            char width[16], quality[16];
+            std::memset( width, 0, 16 );
+            std::memset( quality, 0, 16 );
+
+            if ( std::sscanf( buf, "(change_view %15[^ )] %15[^ )]) %n",
+                              width, quality, &n_read ) != 2
+                 && std::sscanf( buf, "(change_view %15[^ )]) %n",
+                                 width, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            if ( ! std::strcmp( width, "narrow" ) ) vwidth = rcss::pcom::NARROW;
+            else if ( ! std::strcmp( width, "normal" ) ) vwidth = rcss::pcom::NORMAL;
+            else if ( ! std::strcmp( width, "wide" ) ) vwidth = rcss::pcom::WIDE;
+            else
+            {
+                std::cerr << "Error parsing view width >" << buf << "< width=" << width << "\n";
+                return false;
+            }
+
+            if ( ! std::strcmp( quality, "low" ) ) vquality = rcss::pcom::LOW;
+            else if ( ! std::strcmp( quality, "high" ) ) vquality = rcss::pcom::HIGH;
+            else if ( std::strlen( quality ) == 0 ) vquality = rcss::pcom::HIGH;
+            else
+            {
+                std::cerr << "Error parsing view quality >" << buf << "<\n";
+                return false;
+            }
+
+            change_view( vwidth, vquality );
+        }
+        else if ( ! std::strncmp( buf, "(compression ", 13 ) )
+        {
+            int level = 0;
+            if ( std::sscanf( buf, "(compression %d) %n",
+                              &level, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            compression( level );
+        }
+        else if ( ! std::strncmp( buf, "(sense_body)", 12 ) )
+        {
+            buf += 12;
+            sense_body();
+        }
+        else if ( ! std::strncmp( buf, "(score)", 7 ) )
+        {
+            buf += 7;
+            score();
+        }
+        else if ( ! std::strncmp( buf, "(bye)", 5 ) )
+        {
+            buf += 5;
+            bye();
+        }
+        else if ( ! std::strncmp( buf, "(done)", 6 ) )
+        {
+            buf += 6;
+            done();
+        }
+        else if ( ! std::strncmp( buf, "(clang ", 7 ) )
+        {
+            int min_ver, max_ver;
+            if ( std::sscanf( buf, "(clang (ver %d %d) ) %n",
+                              &min_ver, &max_ver, &n_read ) != 2 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            clang( min_ver, max_ver );
+        }
+        else if ( ! std::strncmp( buf, "(ear ", 5 ) )
+        {
+            int n = parseEar( buf );
+            if ( n == 0 )
+            {
+                std::cerr << "Error parsing ear >" << buf << "<\n";
+                return false;
+            }
+            buf += n;
+        }
+        else if ( ! std::strncmp( buf, "(synch_see)", 11 ) )
+        {
+            buf += 11;
+            synch_see();
+        }
+        else
+        {
+            std::cerr << "Error parsing >" << buf << "<\n";
+            return false;
+        }
+
+        ++count;
+    }
+
+
+    return ( count > 0 );
+}
+
+int
+Player::parseEar( const char * command )
+{
+    int n_read = 0;
+
+    char onoff[16];
+    char team_str[256];
+    char mode_str[16];
+
+    rcss::pcom::TEAM team_side = rcss::pcom::UNKNOWN_TEAM;
+    rcss::pcom::EAR_MODE mode = rcss::pcom::UNKNOWN_EAR_MODE;
+
+    if ( std::sscanf( command, "(ear (%15[^ )] %255[^ )] %15[^ )])) %n",
+                      onoff, team_str, mode_str, &n_read ) == 3 )
+    {
+        bool on = false;
+        if( ! std::strcmp( onoff, "on" ) ) on = true;
+        else if( ! std::strcmp( onoff, "off" ) ) on = false;
+        else return 0;
+
+        if ( ! std::strcmp( team_str, "our" ) )
+        {
+            team_side = rcss::pcom::OUR;
+        }
+        else if ( ! std::strcmp( team_str, "opp" ) )
+        {
+            team_side = rcss::pcom::OPP;
+        }
+        else if( ! std::strcmp( team_str, "left" ) || ! std::strcmp( team_str, "l" ) )
+        {
+            team_side = rcss::pcom::LEFT_SIDE;
+        }
+        else if( ! std::strcmp( team_str, "right" ) || ! std::strcmp( team_str, "r" ) )
+        {
+            team_side = rcss::pcom::RIGHT_SIDE;
+        }
+
+        if ( ! std::strcmp( mode_str, "partial" ) || ! std::strcmp( mode_str, "p" ) )
+        {
+            mode = rcss::pcom::PARTIAL;
+        }
+        else if( ! std::strcmp( mode_str, "complete" ) || ! std::strcmp( mode_str, "c" ) )
+        {
+            mode = rcss::pcom::COMPLETE;
+        }
+        else
+        {
+            return 0;
+        }
+
+        ear( on, team_side, team_str, mode );
+        return n_read;
+    }
+    else if ( std::sscanf( command, "(ear (%[^ )] %[^ )])) %n",
+                           onoff, team_str, &n_read ) == 2 )
+    {
+        bool on;
+        if ( ! std::strcmp( onoff, "on" ) ) on = true;
+        else if( ! std::strcmp( onoff, "off" ) ) on = false;
+        else return 0;
+
+        if ( ! std::strcmp( team_str, "our" ) )
+        {
+            team_side = rcss::pcom::OUR;
+        }
+        else if ( ! std::strcmp( team_str, "opp" ) )
+        {
+            team_side = rcss::pcom::OPP;
+        }
+        else if ( ! std::strcmp( team_str, "left" ) || ! std::strcmp( team_str, "l" ) )
+        {
+            team_side = rcss::pcom::LEFT_SIDE;
+        }
+        else if ( ! std::strcmp( team_str, "right" ) || ! std::strcmp( team_str, "r" ) )
+        {
+            team_side = rcss::pcom::RIGHT_SIDE;
+        }
+        else if ( ! std::strcmp( mode_str, "partial" ) || ! std::strcmp( mode_str, "p" ) )
+        {
+            mode = rcss::pcom::PARTIAL;
+        }
+        else if( ! std::strcmp( mode_str, "complete" ) || ! std::strcmp( mode_str, "c" ) )
+        {
+            mode = rcss::pcom::COMPLETE;
+        }
+
+        ear( on, team_side, team_str, mode );
+        return n_read;
+    }
+    else if ( std::sscanf( command, "(ear (%[^ )])) %n",
+                           onoff, &n_read ) == 1 )
+    {
+        bool on;
+        if ( ! std::strcmp( onoff, "on" ) ) on = true;
+        else if( ! std::strcmp( onoff, "off" ) ) on = false;
+        else return 0;
+
+        ear( on, rcss::pcom::UNKNOWN_TEAM, std::string(), rcss::pcom::UNKNOWN_EAR_MODE );
+        return n_read;
+    }
+
+    return 0;
 }
 
 

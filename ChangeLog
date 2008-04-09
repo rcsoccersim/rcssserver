@@ -1,3 +1,11 @@
+2008-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/player.cpp:
+	* src/player.h:
+	- reimplemented a hand-coded player command parser in order to
+	measure the performance. This hand-coded parser is not used in
+	the official release.
+
 2008-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/serverparam.cpp:

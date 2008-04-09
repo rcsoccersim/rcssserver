@@ -463,6 +463,9 @@ protected:
     double maxSpeed() const;
 
 private:
+    bool parseCommand( const char * command );
+    int parseEar( const char * command );
+
     /** PlayerCommands */
     void dash( double power );
     void turn( double moment );
