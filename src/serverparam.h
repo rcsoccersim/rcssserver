@@ -913,8 +913,8 @@ public:
     int clangRuleWin() const { return M_clang_rule_win; }
 
     bool autoMode() const { return M_auto_mode; }
-    int kickOffWait() const { return M_kick_off_wait * M_simulator_step / M_recv_step; }
-    int connectWait() const { return M_connect_wait * M_simulator_step / M_recv_step; }
+    int kickOffWait() const { return M_kick_off_wait; }
+    int connectWait() const { return M_connect_wait; }
     int gameOverWait() const { return M_game_over_wait; }
     const std::string & teamLeftStart() const { return M_team_l_start; }
     const std::string & teamRightStart() const { return M_team_r_start; }

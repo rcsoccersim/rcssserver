@@ -490,8 +490,8 @@ private:
     void calcCollPos( MPObject * a,
                       MPObject * b );
 
+    void checkAutoMode();
     void startTeams();
-
     int startTeam( const std::string & start );
 
     bool teamConnected( const Side side );

@@ -362,12 +362,96 @@ Stadium::init()
 }
 
 void
+Stadium::checkAutoMode()
+{
+    if ( ! ServerParam::instance().autoMode() )
+    {
+        return;
+    }
+
+    //
+    // check kick off for the auto mode
+    //
+    if ( playmode() == PM_BeforeKickOff
+         && time() < ( ServerParam::instance().halfTime()
+                       * ( ServerParam::instance().nrNormalHalfs()
+                           + ServerParam::instance().nrExtraHalfs() ) )
+         )
+    {
+        if ( M_remote_players.size() == MAX_PLAYER*2 || time() > 0 )
+        {
+            if ( M_kick_off_wait == ServerParam::instance().kickOffWait() )
+            {
+                std::cout << "Waiting to kick off\n";
+            }
+
+            if ( M_kick_off_wait > 0 )
+            {
+                --M_kick_off_wait;
+            }
+        }
+        else
+        {
+            if ( M_connect_wait == ServerParam::instance().connectWait() )
+            {
+                std::cout << "Waiting for players to connect\n";
+            }
+
+            if ( M_connect_wait > 0 )
+            {
+                --M_connect_wait;
+            }
+        }
+
+        if ( M_kick_off_wait <= 0 || M_connect_wait <= 0 )
+        {
+            _Start( *this );
+        }
+    }
+    else
+    {
+        M_kick_off_wait = std::max( 0, ServerParam::instance().kickOffWait() );
+        M_connect_wait = std::max( 0, ServerParam::instance().connectWait() );
+    }
+
+    //
+    // check time over for the auto mode
+    //
+    if ( ServerParam::instance().autoMode() )
+    {
+        if ( playmode() == PM_TimeOver )
+        {
+            if( M_game_over_wait == ServerParam::instance().gameOverWait() )
+            {
+                std::cout << "Waiting after end of match\n";
+            }
+
+            if ( M_game_over_wait > 0 )
+            {
+                --M_game_over_wait;
+            }
+
+            if ( M_game_over_wait <= 0 )
+            {
+                finalize( "Game Over. Exiting..." );
+                return;
+            }
+        }
+        else
+        {
+            M_game_over_wait = ServerParam::instance().gameOverWait();
+        }
+    }
+
+}
+
+void
 Stadium::startTeams()
 {
     if ( playmode() != PM_PlayOn )
     {
-        if( M_left_child == 0
-            && ! ServerParam::instance().teamLeftStart().empty() )
+        if ( M_left_child == 0
+             && ! ServerParam::instance().teamLeftStart().empty() )
         {
             M_left_child = startTeam( ServerParam::instance().teamLeftStart() );
         }
@@ -2157,60 +2241,6 @@ Stadium::doRecvFromClients()
 
     removeDisconnectedClients();
 
-    if ( ServerParam::instance().autoMode() )
-    {
-        if ( playmode() == PM_BeforeKickOff
-             && time() < ( ServerParam::instance().halfTime()
-                           * ( ServerParam::instance().nrNormalHalfs()
-                               + ServerParam::instance().nrExtraHalfs() ) )
-             )
-        {
-            if ( M_remote_players.size() == MAX_PLAYER*2 || time() > 0 )
-            {
-                if ( M_kick_off_wait == ServerParam::instance().kickOffWait() )
-                {
-                    std::cout << "Waiting to kick off\n";
-                }
-
-                if ( M_kick_off_wait > 0 )
-                {
-                    if ( ServerParam::instance().synchMode() )
-                    {
-                        M_kick_off_wait -= ( ( ServerParam::instance().simStep()
-                                               / ServerParam::instance().slowDownFactor() )
-                                             / ServerParam::instance().recvStep() );
-                    }
-                    else
-                    {
-                        --M_kick_off_wait;
-                    }
-                }
-            }
-            else
-            {
-                if ( M_connect_wait == ServerParam::instance().connectWait() )
-                {
-                    std::cout << "Waiting for players to connect\n";
-                }
-
-                if ( M_connect_wait > 0 )
-                {
-                    --M_connect_wait;
-                }
-            }
-
-            if ( M_kick_off_wait <= 0 || M_connect_wait <= 0 )
-            {
-                _Start( *this );
-            }
-        }
-        else
-        {
-            M_kick_off_wait = ServerParam::instance().kickOffWait();
-            M_connect_wait = ServerParam::instance().connectWait();
-        }
-    }
-
     if ( M_logger.isTextLogOpen()
          && ServerParam::instance().profile() )
     {
@@ -2249,35 +2279,7 @@ Stadium::doNewSimulatorStep()
     //
     step();
     startTeams();
-
-    //
-    // check time over for the auto mode
-    //
-    if ( ServerParam::instance().autoMode() )
-    {
-        if ( playmode() == PM_TimeOver )
-        {
-            if( M_game_over_wait == ServerParam::instance().gameOverWait() )
-            {
-                std::cout << "Waiting after end of match\n";
-            }
-
-            if ( M_kick_off_wait > 0 )
-            {
-                M_game_over_wait--;
-            }
-
-            if ( M_game_over_wait == 0 )
-            {
-                finalize( "Game Over. Exiting..." );
-                return;
-            }
-        }
-        else
-        {
-            M_game_over_wait = ServerParam::instance().gameOverWait();
-        }
-    }
+    checkAutoMode();
 
     if ( M_logger.isTextLogOpen()
          && ServerParam::instance().profile() )
@@ -2502,6 +2504,7 @@ Stadium::doSendThink()
     {
         wait_players[i] = ! ( M_players[i]->state() == DISABLE );
     }
+
     for ( int i = 0; i < 2; ++i )
     {
         waitCoach[i] = M_olcoaches[i]->isEyeOn();
@@ -2512,7 +2515,9 @@ Stadium::doSendThink()
     for ( int i = 0; i < MAX_PLAYER*2; ++i )
     {
         if ( wait_players[i] && M_players[i]->connected() )
+        {
             M_players[i]->send( think_command );
+        }
     }
 
     for ( int i = 0; i < 2; ++i )
@@ -2593,7 +2598,7 @@ Stadium::doSendThink()
             done = DS_TRUE_BUT_INCOMPLETE;
             if ( time() > 0 )
             {
-                cycles_missed++;
+                ++cycles_missed;
                 std::cerr << "Someone missed a cycle at " << time() << std::endl;
             }
             if ( cycles_missed > max_cycles_missed )

@@ -1,5 +1,22 @@
+[12.1.0]
+  * Slightly changed the game log format version 4. Now, players'
+    pointing points are recorded by the global value of rectangular
+    coordinate system.
+
+  * Now, team_graphic messages are always recorded in the game log
+    file.
+
+  * Now, the game date and result are recorded at the end of game log
+    as msg info.
+
+  * Disabled the stdoutsaver by default. Instead, the rcsoccersim
+    script will try to load the stdoutsaver module.
+
+  * Fixed an incorrect result message of penalty shootouts in
+    stdoutsaver.
+
 [12.0.1]
-  * fixed a change_view command bug in the synchronous mode. Thanks go
+  * Fixed a change_view command bug in the synchronous mode. Thanks go
     to Tobias Springenbergr for reporting the problem and providing
     the patch.
 

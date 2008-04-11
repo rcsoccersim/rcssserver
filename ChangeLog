@@ -1,10 +1,19 @@
+2008-04-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a minor version. Official release 12.1.0.
+
 2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/field.h:
+	* src/serverparam.h:
+	- fixed a defect of kick_off_wait when both auto_mode and
+	synch_mode are enabled.
 
 	* src/Makefile.am:
 	- added MAINTAINERCLEANFILES target.
-
-	* src/rcsoccersim.in:
-	- fixed redirect destination.
 
 	* src/coach.cpp:
 	* src/field.cpp:
@@ -19,13 +28,13 @@
 2008-04-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/rcsoccersim.in:
-	- Now, libstdoutsaver can be called from rcsoccersim script.
+	- Now, the rcsoccersim script try to load libstdoutsaver.
 
 	* src/player.cpp:
 	* src/player.h:
 	- reimplemented a hand-coded player command parser in order to
-	measure the performance. This hand-coded parser is not used in
-	the official release.
+	measure the performance of flex/bison. This hand-coded parser is
+	not used in the official release.
 
 2008-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
