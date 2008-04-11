@@ -23,6 +23,14 @@ moduletest.sh
 DISTCLEANILES = \
 rcsoccersim
 
+MAINTAINERCLEANFILES = \
+coach_lang_par.cpp \
+coach_lang_par.h \
+coach_lang_tok.cpp \
+player_command_parser.cpp \
+player_command_parser.h \
+player_command_tok.cpp
+
 lib_LTLIBRARIES = \
 librcssresultsaver.la \
 librcssclangparser.la

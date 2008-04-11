@@ -1,5 +1,11 @@
 2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/Makefile.am:
+	- added MAINTAINERCLEANFILES target.
+
+	* src/rcsoccersim.in:
+	- fixed redirect destination.
+
 	* src/coach.cpp:
 	* src/field.cpp:
 	* src/fullstatesender.cpp:
