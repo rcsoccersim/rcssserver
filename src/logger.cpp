@@ -162,19 +162,19 @@ Logger::open()
 {
     if ( ServerParam::instance().gameLogging() )
     {
-				if ( ! openGameLog() )
+        if ( ! openGameLog() )
         {
             return false;
         }
     }
 
     if ( ServerParam::instance().textLogging() )
-		{
+    {
         if ( ! openTextLog() )
         {
             return false;
         }
-		}
+    }
 
     if ( ServerParam::instance().keepAwayMode()
          && ServerParam::instance().kawayLogging() )
@@ -992,7 +992,7 @@ Logger::writeGameLogV3()
 void
 Logger::writeGameLogV4()
 {
-    static char * playmode_strings[] = PLAYMODE_STRINGS;
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
     static PlayMode pm = PM_Null;
     static std::string team_l_name, team_r_name;
@@ -1227,7 +1227,7 @@ Logger::writeRefereeAudio( const char * msg )
          || ( isGameLogOpen()
               && M_stadium.playmode() != PM_BeforeKickOff
               && M_stadium.playmode() != PM_TimeOver ) )
-	  {
+    {
         char buf[max_message_length_for_display];
         std::snprintf( buf,
                        max_message_length_for_display,
@@ -1235,9 +1235,9 @@ Logger::writeRefereeAudio( const char * msg )
                        REFEREE_NAME, msg );
 
         if ( isTextLogOpen() )
-	      {
+        {
             writeTextLog( buf, LOG_TEXT );
-	      }
+        }
 
         if ( isGameLogOpen() )
         {

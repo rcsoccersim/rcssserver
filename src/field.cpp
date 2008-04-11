@@ -1272,7 +1272,7 @@ Stadium::placePlayersInField()
 void
 Stadium::change_play_mode( const PlayMode pm )
 {
-    static char * playmode_strings[] = PLAYMODE_STRINGS;
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
     M_playmode = pm;
 
@@ -2476,7 +2476,7 @@ Stadium::doSendThink()
     timeval tv_start, tv_now;
     //  const int        max_alrms_wait = 25;
     const int max_msec_waited = 25 * 50;
-    char* think_command = "(think)";
+    const char * think_command = "(think)";
     static int cycles_missed = 0; //number of cycles where someone missed
     const int max_cycles_missed = 20;
 

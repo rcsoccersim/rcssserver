@@ -32,7 +32,7 @@
 
 #include <limits>
 
-char* KeepawayRef::trainingMsg = "training Keepaway 1";
+const char * KeepawayRef::trainingMsg = "training Keepaway 1";
 const int KeepawayRef::TURNOVER_TIME = 4;
 
 PVector
@@ -1780,7 +1780,7 @@ TouchRef::checkGoal()
     }
 
     // FIFA rules:  Ball has to be completely outside of the pitch to be considered out
-    //  	static RArea pt( PVector(0.0,0.0),
+    //    static RArea pt( PVector(0.0,0.0),
     //                       PVector( ServerParam::PITCH_LENGTH
     //                                + ServerParam::instance().ballSize() * 2,
     //                                ServerParam::PITCH_WIDTH
@@ -2349,7 +2349,7 @@ PenaltyRef::analyse()
 void
 PenaltyRef::analyseImpl()
 {
-    static char * playmode_strings[] = PLAYMODE_STRINGS;
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
     static bool bFirstTime = true;
 
     // if normal and extra time are over -> start the penalty procedure or quit

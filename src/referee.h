@@ -397,7 +397,7 @@ class KeepawayRef
     : public Referee
 {
 private:
-    static char* trainingMsg;
+    static const char * trainingMsg;
     static const int TURNOVER_TIME;
     int M_episode;
     int M_keepers, M_takers;

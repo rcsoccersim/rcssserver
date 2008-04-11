@@ -137,7 +137,7 @@ FullStateSenderPlayerV5::~FullStateSenderPlayerV5()
 void
 FullStateSenderPlayerV5::sendFullState()
 {
-    static char * playmode_string[] = PLAYMODE_STRINGS;
+    static const char * playmode_string[] = PLAYMODE_STRINGS;
 
     // send begining of FS
     serializer().serializeFSBegin( transport(), stadium().time() );

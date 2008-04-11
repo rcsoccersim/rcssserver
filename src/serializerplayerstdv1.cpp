@@ -24,7 +24,7 @@
 #include "clangmsg.h"
 
 
-static char * playmode_strings[] = PLAYMODE_STRINGS;
+static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
 namespace rcss {
 

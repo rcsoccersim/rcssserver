@@ -58,7 +58,7 @@ namespace {
 PlayMode
 play_mode_id( const char * mode )
 {
-    static char * playmode_strings[] = PLAYMODE_STRINGS;
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
     for ( int n = 0; n < PM_MAX; ++n )
     {
@@ -1082,7 +1082,7 @@ Coach::check_ball()
     std::ostrstream ost;
 #endif
 
-    static char* BallPosInfoStr[] = BALL_POS_INFO_STRINGS;
+    static const char * BallPosInfoStr[] = BALL_POS_INFO_STRINGS;
     BallPosInfo info = M_stadium.ballPosInfo();
 
     ost << "(ok check_ball " << M_stadium.time() << " " ;
