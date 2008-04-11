@@ -4,6 +4,9 @@
 	* configure.ac:
 	- updated a minor version. Official release 12.1.0.
 
+	* src/dispsender.cpp:
+	- added missing log flush operations.
+
 2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:
