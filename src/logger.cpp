@@ -239,21 +239,18 @@ Logger::openGameLog()
     if ( ServerParam::instance().gameLogCompression() > 0 )
     {
         M_game_log_name += ".gz";
-        rcss::gz::gzofstream * f = new rcss::gz::gzofstream( M_game_log_name.c_str(),
-                                                             ServerParam::instance().gameLogCompression() );
+        rcss::gz::gzofstream * f
+            = new rcss::gz::gzofstream( M_game_log_name.c_str(),
+                                        ServerParam::instance().gameLogCompression() );
         M_game_log = f;
     }
     else
     {
-        // file open mode : output && discard current content [&& binary]
-        std::ios_base::openmode open_mode = ( std::ofstream::out
-                                              | std::ofstream::trunc );
-        if ( ServerParam::instance().gameLogVersion() <= REC_VERSION_3 )
-        {
-            open_mode |= std::ofstream::binary;
-        }
-        std::ofstream * f = new std::ofstream( M_game_log_name.c_str(),
-                                               open_mode );
+        std::ofstream * f
+            = new std::ofstream( M_game_log_name.c_str(),
+                                 ( std::ofstream::binary
+                                   | std::ofstream::out
+                                   | std::ofstream::trunc ) );
         M_game_log = f;
     }
 

@@ -1,8 +1,5 @@
 2008-04-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
-	* src/logger.cpp:
-	- fixed a open mode for game log.
-
 	* src/coach.cpp:
 	* src/field.cpp:
 	* src/fullstatesender.cpp:
