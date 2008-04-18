@@ -23,8 +23,8 @@
 #include "clangmsg.h"
 #include "object.h"
 
-namespace rcss
-{
+namespace rcss {
+
 SerializerCoachStdv7::SerializerCoachStdv7( const SerializerCommon & common )
     : SerializerCoachStdv1( common )
 {
@@ -37,43 +37,46 @@ SerializerCoachStdv7::~SerializerCoachStdv7()
 }
 
 const
- SerializerCoachStdv7*
-SerializerCoachStdv7::instance ()
+SerializerCoachStdv7 *
+SerializerCoachStdv7::instance()
 {
     rcss::SerializerCommon::Creator cre;
-    if( !rcss::SerializerCommon::factory().getCreator( cre, 7 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 7 ) )
+    {
         return NULL;
+    }
+
     static SerializerCoachStdv7 ser( cre() );
     return &ser;
 }
 
 void
-SerializerCoachStdv7::serializeCoachAudio( std::ostream& strm,
-                                           const int& time,
-                                           const std::string& name,
-                                           const char* msg ) const
+SerializerCoachStdv7::serializeCoachAudio( std::ostream & strm,
+                                           const int time,
+                                           const std::string & name,
+                                           const char * msg ) const
 {
-    strm << "(hear " << time << " "  << name
+    strm << "(hear " << time << ' ' << name
          << " \"" << msg << "\")";
 }
 
 void
-SerializerCoachStdv7::serializeCoachStdAudio( std::ostream& strm,
-                                              const int& time,
-                                              const std::string& name,
-                                              const rcss::clang::Msg& msg ) const
+SerializerCoachStdv7::serializeCoachStdAudio( std::ostream & strm,
+                                              const int time,
+                                              const std::string & name,
+                                              const rcss::clang::Msg & msg ) const
 {
-    strm << "(hear " << time << " " << name
+    strm << "(hear " << time << ' ' << name
          << " \"" << msg << "\")";
 }
 
 void
-SerializerCoachStdv7::serializePlayerAudio( std::ostream& strm,
-                                            const int& time,
-                                            const std::string& name,
-                                            const char* msg ) const
+SerializerCoachStdv7::serializePlayerAudio( std::ostream & strm,
+                                            const int time,
+                                            const std::string & name,
+                                            const char * msg ) const
 {
-    strm << "(hear " << time << " " << name
+    strm << "(hear " << time << ' ' << name
          << " \"" << msg << "\")";
 }
 
@@ -95,19 +98,23 @@ SerializerCoachStdv7::serializeVisualObject( std::ostream & strm,
                                              const int neck ) const
 {
     strm << " (" << name
-         << " " << pos.x << " " << pos.y
-         << " " << vel.x << " " << vel.y
-         << " " << body
-         << " " << neck
-         << ")";
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << vel.x << ' ' << vel.y
+         << ' ' << body
+         << ' ' << neck
+         << ')';
 }
 
-namespace
-{
-const SerializerCoach*
+namespace {
+
+const
+SerializerCoach *
 create()
-{ return SerializerCoachStdv7::instance(); }
+{
+    return SerializerCoachStdv7::instance();
+}
 
 lib::RegHolder v7 = SerializerCoach::factory().autoReg( &create, 7 );
+
 }
 }

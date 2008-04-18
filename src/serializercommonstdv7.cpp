@@ -75,42 +75,42 @@ SerializerCommonStdv7::serializePlayerTypeBegin( std::ostream & strm ) const
 void
 SerializerCommonStdv7::serializePlayerTypeEnd( std::ostream & strm ) const
 {
-    strm << ")";
+    strm << ')';
 }
 
 void
 SerializerCommonStdv7::serializeParam( std::ostream & strm,
                                        const int param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
 SerializerCommonStdv7::serializeParam( std::ostream & strm,
                                        const unsigned int param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
 SerializerCommonStdv7::serializeParam( std::ostream & strm,
                                        const bool param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
 SerializerCommonStdv7::serializeParam( std::ostream & strm,
                                        const double & param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
 SerializerCommonStdv7::serializeParam( std::ostream & strm,
                                        const std::string & param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 namespace {

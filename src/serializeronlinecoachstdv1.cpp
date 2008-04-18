@@ -57,30 +57,32 @@ SerializerOnlineCoachStdv1::instance()
 
 void
 SerializerOnlineCoachStdv1::serializeRefereeAudio( std::ostream & strm,
-                                                   const int & time,
+                                                   const int time,
                                                    const std::string & name,
                                                    const char* msg ) const
 {
-    strm << "(hear " << time << " " << name
-         << " " << msg << ")";
+    strm << "(hear " << time << ' ' << name
+         << ' ' << msg << ')';
 }
 
 void
 SerializerOnlineCoachStdv1::serializePlayerAudio( std::ostream & strm,
-                                                  const int & time,
+                                                  const int time,
                                                   const std::string & name,
                                                   const char * msg ) const
 {
-    strm << "(hear " << time << " " << name << " "
-         << msg << ")";
+    strm << "(hear " << time << ' ' << name << ' '
+         << msg << ')';
 }
 
 void
 SerializerOnlineCoachStdv1::serializePlayerClangVer( std::ostream & ,
                                                      const std::string &,
-                                                     const unsigned int &,
-                                                     const unsigned int & ) const
-{}
+                                                     const unsigned int,
+                                                     const unsigned int ) const
+{
+
+}
 
 void
 SerializerOnlineCoachStdv1::serializeInit( std::ostream & strm,
@@ -93,7 +95,9 @@ void
 SerializerOnlineCoachStdv1::serializeChangedPlayer( std::ostream &,
                                                     const int,
                                                     const int ) const
-{}
+{
+
+}
 
 namespace {
 

@@ -24,11 +24,10 @@
 
 #include "serializeronlinecoachstdv1.h"
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerOnlineCoachStdv6
-    : public SerializerOnlineCoachStdv1
-{
+    : public SerializerOnlineCoachStdv1 {
 protected:
     SerializerOnlineCoachStdv6( const SerializerCommon & common,
                                 const SerializerCoach & coach );
@@ -38,13 +37,15 @@ public:
     ~SerializerOnlineCoachStdv6();
 
     static
-    const SerializerOnlineCoachStdv6*
-    instance();
+    const
+    SerializerOnlineCoachStdv6 * instance();
 
     virtual
     void
-    serializeInit( std::ostream&,
+    serializeInit( std::ostream &,
                    const int side = 0 ) const;
 };
+
 }
+
 #endif

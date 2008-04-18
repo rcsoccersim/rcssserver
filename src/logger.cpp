@@ -1129,7 +1129,8 @@ Logger::writeTextLog( const char * message,
     {
         if ( isTextLogOpen() )
         {
-            *M_text_log << M_stadium.time() << "\t" << message << '\n';
+            *M_text_log << M_stadium.time() << ',' << M_stadium.stoppageTime()
+                        << "\t" << message << '\n';
         }
     }
 
@@ -1332,7 +1333,8 @@ Logger::writeTimes( const timeval & old_time,
         double diff = (new_time.tv_sec - old_time.tv_sec) * 1000
             + (double)(new_time.tv_usec - old_time.tv_usec) / 1000;
 
-        *M_text_log << M_stadium.time() << "\tCYCLE_TIMES: " << diff << '\n';
+        *M_text_log << M_stadium.time() << ',' << M_stadium.stoppageTime()
+                    << "\tCYCLE_TIMES: " << diff << '\n';
     }
 }
 
@@ -1347,6 +1349,7 @@ Logger::writeProfile( const timeval & start_time,
         double diff = (end_time.tv_sec - start_time.tv_sec) * 1000
             + (double)(end_time.tv_usec - start_time.tv_usec) / 1000;
 
-        *M_text_log << M_stadium.time() << "\t" << str << ": " << diff << '\n';
+        *M_text_log << M_stadium.time() << ',' << M_stadium.stoppageTime()
+                    << "\t" << str << ": " << diff << '\n';
     }
 }

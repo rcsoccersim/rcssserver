@@ -42,21 +42,21 @@ public:
 
     virtual
     void serializeRefereeAudio( std::ostream & strm,
-                                const int & time,
+                                const int time,
                                 const std::string & name,
                                 const char * msg ) const;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
-                               const int & time,
+                               const int time,
                                const std::string & name,
                                const char * msg ) const;
 
     virtual
     void serializePlayerClangVer( std::ostream & strm,
                                   const std::string & name,
-                                  const unsigned int & min,
-                                  const unsigned int & max ) const;
+                                  const unsigned int min,
+                                  const unsigned int max ) const;
 
     virtual
     void serializeInit( std::ostream &,
@@ -66,7 +66,6 @@ public:
     void serializeChangedPlayer( std::ostream &,
                                  const int unum,
                                  const int type = -1 ) const;
-
 
 };
 

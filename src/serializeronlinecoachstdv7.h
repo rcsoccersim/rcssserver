@@ -24,11 +24,10 @@
 
 #include "serializeronlinecoachstdv6.h"
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerOnlineCoachStdv7
-    : public SerializerOnlineCoachStdv6
-{
+    : public SerializerOnlineCoachStdv6 {
 protected:
     SerializerOnlineCoachStdv7( const SerializerCommon & common,
                                 const SerializerCoach & coach );
@@ -43,13 +42,13 @@ public:
 
     virtual
     void serializeRefereeAudio( std::ostream & strm,
-                                const int & time,
+                                const int time,
                                 const std::string & name,
                                 const char * msg ) const;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
-                               const int & time,
+                               const int time,
                                const std::string & name,
                                const char * msg ) const;
 
@@ -58,5 +57,7 @@ public:
                                  const int unum,
                                  const int type = -1 ) const;
 };
+
 }
+
 #endif

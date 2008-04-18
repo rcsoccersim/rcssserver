@@ -24,43 +24,38 @@
 
 #include "serializercoachstdv1.h"
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerCoachStdv7
-    : public SerializerCoachStdv1
-{
+    : public SerializerCoachStdv1 {
 protected:
     SerializerCoachStdv7( const SerializerCommon & common );
-
 
 public:
     virtual
     ~SerializerCoachStdv7();
 
     static
-    const SerializerCoachStdv7*
-    instance();
+    const
+    SerializerCoachStdv7 * instance();
 
     virtual
-    void
-    serializeCoachAudio( std::ostream& strm,
-                         const int& time,
-                         const std::string& name,
-                         const char* msg ) const;
+    void serializeCoachAudio( std::ostream & strm,
+                              const int time,
+                              const std::string & name,
+                              const char * msg ) const;
 
     virtual
-    void
-    serializeCoachStdAudio( std::ostream& strm,
-                            const int& time,
-                            const std::string& name,
-                            const rcss::clang::Msg& msg ) const;
+    void serializeCoachStdAudio( std::ostream & strm,
+                                 const int time,
+                                 const std::string & name,
+                                 const rcss::clang::Msg & msg ) const;
 
     virtual
-    void
-    serializePlayerAudio( std::ostream& strm,
-                          const int& time,
-                          const std::string& name,
-                          const char* msg ) const;
+    void serializePlayerAudio( std::ostream & strm,
+                               const int time,
+                               const std::string & name,
+                               const char * msg ) const;
 
     virtual
     void serializeVisualBegin( std::ostream & strm,
@@ -74,6 +69,7 @@ public:
                                 const int body,
                                 const int neck ) const;
 };
+
 }
 
 #endif

@@ -37,8 +37,8 @@ protected:
 
 public:
 
-    Arm( const unsigned int & min_point_duration,
-          const unsigned int & max_point_duration )
+    Arm( const unsigned int min_point_duration,
+         const unsigned int max_point_duration )
         : M_timer ( max_point_duration ),
           M_min_point_duration ( min_point_duration ),
           M_max_point_duration ( max_point_duration ),

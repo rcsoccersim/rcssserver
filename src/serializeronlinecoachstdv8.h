@@ -24,11 +24,10 @@
 
 #include "serializeronlinecoachstdv7.h"
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerOnlineCoachStdv8
-    : public SerializerOnlineCoachStdv7
-{
+    : public SerializerOnlineCoachStdv7 {
 protected:
     SerializerOnlineCoachStdv8( const SerializerCommon & common,
                                 const SerializerCoach & coach );
@@ -38,16 +37,16 @@ public:
     ~SerializerOnlineCoachStdv8();
 
     static
-    const SerializerOnlineCoachStdv8*
-    instance();
+    const
+    SerializerOnlineCoachStdv8 * instance();
 
     virtual
-    void
-    serializePlayerClangVer( std::ostream& strm,
-                             const std::string& name,
-                             const unsigned int& min,
-                             const unsigned int& max ) const;
+    void serializePlayerClangVer( std::ostream & strm,
+                                  const std::string & name,
+                                  const unsigned int min,
+                                  const unsigned int max ) const;
 };
+
 }
 
 #endif

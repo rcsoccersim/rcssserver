@@ -146,7 +146,7 @@ public:
                  int & value ) const;
 
     bool getBool( const std::string & param,
-             bool & value ) const;
+                  bool & value ) const;
 
     bool getDoub( const std::string & param,
                   double & value ) const;

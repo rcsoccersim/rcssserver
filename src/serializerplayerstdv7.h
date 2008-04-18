@@ -24,13 +24,10 @@
 
 #include "serializerplayerstdv1.h"
 
-namespace rcss
-{
-
+namespace rcss {
 
 class SerializerPlayerStdv7
-    : public SerializerPlayerStdv1
-{
+    : public SerializerPlayerStdv1 {
 protected:
     SerializerPlayerStdv7( const SerializerCommon & common );
 
@@ -44,24 +41,24 @@ public:
 
     virtual
     void serializeCoachAudio( std::ostream & strm,
-                              const int & time,
+                              const int time,
                               const std::string & name,
                               const char * msg ) const;
 
     virtual
     void serializeCoachStdAudio( std::ostream & strm,
-                                 const int & time,
+                                 const int time,
                                  const std::string & name,
                                  const rcss::clang::Msg & msg ) const;
 
     virtual
     void serializeSelfAudio( std::ostream& strm,
-                             const int & time,
+                             const int time,
                              const char * msg ) const;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
-                               const int & time,
+                               const int time,
                                const double & dir,
                                const char * msg ) const;
 

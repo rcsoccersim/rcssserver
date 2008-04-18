@@ -62,7 +62,7 @@ SerializerCommonStdv8::serializeParam( std::ostream & strm,
                                        const std::string & name,
                                        const int param ) const
 {
-    strm << "(" << name << " " << param << ")";
+    strm << "(" << name << ' ' << param << ')';
 }
 
 void
@@ -70,7 +70,7 @@ SerializerCommonStdv8::serializeParam( std::ostream & strm,
                                        const std::string & name,
                                        const bool param ) const
 {
-    strm << "(" << name << " " << param << ")";
+    strm << "(" << name << ' ' << param << ')';
 }
 
 void
@@ -78,7 +78,7 @@ SerializerCommonStdv8::serializeParam( std::ostream & strm,
                                        const std::string & name,
                                        const double & param ) const
 {
-    strm << "(" << name << " " << param << ")";
+    strm << "(" << name << ' ' << param << ')';
 }
 
 void

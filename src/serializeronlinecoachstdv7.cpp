@@ -46,7 +46,7 @@ SerializerOnlineCoachStdv7::instance()
     }
 
     rcss::SerializerCoach::Creator cre_coach;
-    if ( !rcss::SerializerCoach::factory().getCreator( cre_coach, 7 ) )
+    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 7 ) )
     {
         return NULL;
     }
@@ -57,21 +57,21 @@ SerializerOnlineCoachStdv7::instance()
 
 void
 SerializerOnlineCoachStdv7::serializeRefereeAudio( std::ostream & strm,
-                                                   const int & time,
+                                                   const int time,
                                                    const std::string & name,
                                                    const char * msg ) const
 {
-    strm << "(hear " << time << " " << name
-         << " " << msg << ")";
+    strm << "(hear " << time << ' ' << name
+         << ' ' << msg << ')';
 }
 
 void
 SerializerOnlineCoachStdv7::serializePlayerAudio( std::ostream & strm,
-                                                  const int & time,
+                                                  const int time,
                                                   const std::string & name,
                                                   const char * msg ) const
 {
-    strm << "(hear " << time << " " << name << " \""
+    strm << "(hear " << time << ' ' << name << " \""
          << msg << "\")";
 }
 
@@ -81,12 +81,13 @@ SerializerOnlineCoachStdv7::serializeChangedPlayer( std::ostream & strm,
                                                     const int type ) const
 {
     strm << "(change_player_type " << unum;
-    if( type >= 0 )
-        strm << " " << type;
-    strm << ")";
+    if ( type >= 0 )
+        strm << ' ' << type;
+    strm << ')';
 }
 
 namespace {
+
 const
 SerializerOnlineCoach *
 create()

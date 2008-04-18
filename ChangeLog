@@ -1,3 +1,37 @@
+2008-04-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/arm.h:
+	* src/playerparam.h:
+	* src/serializer.h:
+	* src/serializercoachstdv1.cpp:
+	* src/serializercoachstdv1.h:
+	* src/serializercoachstdv7.cpp:
+	* src/serializercoachstdv7.h:
+	* src/serializercoachstdv8.cpp:
+	* src/serializercoachstdv8.h:
+	* src/serializercommonstdv7.cpp:
+	* src/serializercommonstdv8.cpp:
+	* src/serializeronlinecoachstdv1.cpp:
+	* src/serializeronlinecoachstdv1.h:
+	* src/serializeronlinecoachstdv6.cpp:
+	* src/serializeronlinecoachstdv6.h:
+	* src/serializeronlinecoachstdv7.cpp:
+	* src/serializeronlinecoachstdv7.h:
+	* src/serializeronlinecoachstdv8.cpp:
+	* src/serializeronlinecoachstdv8.h:
+	* src/serializerplayerstdv1.cpp:
+	* src/serializerplayerstdv1.h:
+	* src/serializerplayerstdv7.cpp:
+	* src/serializerplayerstdv7.h:
+	* src/serializerplayerstdv8.cpp:
+	- fixed coding style.
+	- replaced 1 length string to 1 character.
+
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/logger.cpp:
+	- changed the timing of log flushing.
+
 2008-04-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

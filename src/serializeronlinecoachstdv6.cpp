@@ -21,25 +21,36 @@
 
 #include "serializeronlinecoachstdv6.h"
 
-namespace rcss
-{
+namespace rcss {
 
 SerializerOnlineCoachStdv6::SerializerOnlineCoachStdv6( const SerializerCommon & common,
                                                         const SerializerCoach & coach )
     : SerializerOnlineCoachStdv1( common, coach )
-{}
+{
 
-SerializerOnlineCoachStdv6::~SerializerOnlineCoachStdv6() {}
+}
 
-const SerializerOnlineCoachStdv6*
+SerializerOnlineCoachStdv6::~SerializerOnlineCoachStdv6()
+{
+
+}
+
+const
+SerializerOnlineCoachStdv6 *
 SerializerOnlineCoachStdv6::instance()
 {
     rcss::SerializerCommon::Creator cre_common;
-    if( !rcss::SerializerCommon::factory().getCreator( cre_common, 6 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 6 ) )
+    {
         return NULL;
+    }
+
     rcss::SerializerCoach::Creator cre_coach;
-    if( !rcss::SerializerCoach::factory().getCreator( cre_coach, 6 ) )
+    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 6 ) )
+    {
         return NULL;
+    }
+
     static SerializerOnlineCoachStdv6 ser( cre_common(), *cre_coach() );
     return &ser;
 }
@@ -53,12 +64,16 @@ SerializerOnlineCoachStdv6::serializeInit( std::ostream& strm,
          << " ok)";
 }
 
-namespace
-{
-const SerializerOnlineCoach*
+namespace {
+
+const
+SerializerOnlineCoach *
 create()
-{ return SerializerOnlineCoachStdv6::instance(); }
+{
+    return SerializerOnlineCoachStdv6::instance();
+}
 
 lib::RegHolder v6 = SerializerOnlineCoach::factory().autoReg( &create, 6 );
+
 }
 }

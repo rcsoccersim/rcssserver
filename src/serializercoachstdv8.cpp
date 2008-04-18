@@ -37,11 +37,12 @@ SerializerCoachStdv8::~SerializerCoachStdv8()
 
 }
 
-const SerializerCoachStdv8*
-SerializerCoachStdv8::instance ()
+const
+SerializerCoachStdv8 *
+SerializerCoachStdv8::instance()
 {
     rcss::SerializerCommon::Creator cre;
-    if ( !rcss::SerializerCommon::factory().getCreator( cre, 8 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 8 ) )
     {
         return NULL;
     }
@@ -61,49 +62,53 @@ SerializerCoachStdv8::serializeVisualObject( std::ostream & strm,
                                              const bool tackling ) const
 {
     strm << " (" << name
-         << " " << pos.x << " " << pos.y
-         << " " << vel.x << " " << vel.y
-         << " " << body
-         << " " << neck
-         << " " << point_dir;
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << vel.x << ' ' << vel.y
+         << ' ' << body
+         << ' ' << neck
+         << ' ' << point_dir;
     if ( tackling )
     {
         strm << " t";
     }
-    strm << ")";
+    strm << ')';
 }
 
 void
 SerializerCoachStdv8::serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const PVector & pos,
-                                const PVector & vel,
-                                const int body,
-                                const int neck,
-                                const bool tackling ) const
+                                             const std::string & name,
+                                             const PVector & pos,
+                                             const PVector & vel,
+                                             const int body,
+                                             const int neck,
+                                             const bool tackling ) const
 {
     strm << " (" << name
-         << " " << pos.x << " " << pos.y
-         << " " << vel.x << " " << vel.y
-         << " " << body
-         << " " << neck;
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << vel.x << ' ' << vel.y
+         << ' ' << body
+         << ' ' << neck;
     if ( tackling )
     {
         strm << " t";
     }
-    strm << ")";
+    strm << ')';
 }
 
-namespace
-{
-const SerializerCoach*
+namespace {
+
+const
+SerializerCoach *
 create()
-{ return SerializerCoachStdv8::instance(); }
+{
+    return SerializerCoachStdv8::instance();
+}
 
 lib::RegHolder v8 = SerializerCoach::factory().autoReg( &create, 8 );
 lib::RegHolder v9 = SerializerCoach::factory().autoReg( &create, 9 );
 lib::RegHolder v10 = SerializerCoach::factory().autoReg( &create, 10 );
 lib::RegHolder v11 = SerializerCoach::factory().autoReg( &create, 11 );
 lib::RegHolder v12 = SerializerCoach::factory().autoReg( &create, 12 );
+
 }
 }

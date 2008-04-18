@@ -1190,6 +1190,7 @@ Stadium::sendDisp()
 
     // record game log
     M_logger.writeGameLog();
+    M_logger.flush();
 
     if ( M_logger.isTextLogOpen()
          && ServerParam::instance().profile() )
@@ -2445,6 +2446,7 @@ Stadium::doSendCoachMessages()
         M_logger.writeProfile( tv_start, tv_end, "COACH" );
     }
 
+#if 0
     // At each cycle we flush to logs otherwise the buffers
     // buildup and the server will pause while they are flushed
     // automatically.  It's better to flush them often at this point in
@@ -2469,6 +2471,7 @@ Stadium::doSendCoachMessages()
     // logging.  Maybe later, when we already have a thread for each
     // client it will seem like less of a hurdle.
     M_logger.flush();
+#endif
 }
 
 bool

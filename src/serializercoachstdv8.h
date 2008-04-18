@@ -24,11 +24,10 @@
 
 #include "serializercoachstdv7.h"
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerCoachStdv8
-    : public SerializerCoachStdv7
-{
+    : public SerializerCoachStdv7 {
 protected:
     SerializerCoachStdv8( const SerializerCommon & common );
 
@@ -38,7 +37,8 @@ public:
     ~SerializerCoachStdv8();
 
     static
-    const SerializerCoachStdv8* instance();
+    const
+    SerializerCoachStdv8 * instance();
 
     virtual
     void serializeVisualObject( std::ostream &,
@@ -59,6 +59,7 @@ public:
                                 const int,
                                 const bool ) const;
 };
+
 }
 
 #endif

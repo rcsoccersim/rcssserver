@@ -24,11 +24,10 @@
 
 #include "serializer.h"
 
-namespace rcss
-{
+namespace rcss {
+
 class SerializerPlayerStdv1
-    : public SerializerPlayer
-{
+    : public SerializerPlayer {
 protected:
     SerializerPlayerStdv1( const SerializerCommon & common );
 
@@ -42,29 +41,29 @@ public:
 
     virtual
     void serializeRefereeAudio( std::ostream & strm,
-                                const int & time,
+                                const int time,
                                 const char * msg ) const;
 
     virtual
     void serializeCoachAudio( std::ostream & strm,
-                              const int & time,
+                              const int time,
                               const std::string & name,
                               const char * msg ) const;
 
     virtual
     void serializeCoachStdAudio( std::ostream & strm,
-                                 const int & time,
+                                 const int time,
                                  const std::string & name,
                                  const rcss::clang::Msg & msg ) const;
 
     virtual
     void serializeSelfAudio( std::ostream & strm,
-                             const int & time,
+                             const int time,
                              const char * msg ) const;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
-                               const int & time,
+                               const int time,
                                const double & dir,
                                const char * msg ) const;
 
@@ -75,81 +74,6 @@ public:
     virtual
     void serializeVisualEnd( std::ostream & strm ) const;
 
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const int dir ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir,
-//                                 const double & dist_chg,
-//                                 const double & dir_chg ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir,
-//                                 const double & dist_chg,
-//                                 const double & dir_chg,
-//                                 const double & body_dir ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir,
-//                                 const double & dist_chg,
-//                                 const double & dir_chg,
-//                                 const double & body_dir,
-//                                 const double & head_dir ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir,
-//                                 const bool tackling ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir,
-//                                 const int point_dir,
-//                                 const bool tackling ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir,
-//                                 const double & dist_chg,
-//                                 const double & dir_chg,
-//                                 const int body_dir,
-//                                 const int head_dir,
-//                                 const bool tackling ) const;
-
-//     virtual
-//     void serializeVisualObject( std::ostream & strm,
-//                                 const std::string & name,
-//                                 const double & dist,
-//                                 const int dir,
-//                                 const double & dist_chg,
-//                                 const double & dir_chg,
-//                                 const int body_dir,
-//                                 const int head_dir,
-//                                 const int point_dir,
-//                                 const bool tackling ) const;
 
     virtual
     void serializeBodyBegin( std::ostream & strm,

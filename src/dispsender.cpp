@@ -576,7 +576,7 @@ DispSenderLoggerV1::sendShow()
 
     transport().write( reinterpret_cast< const char * >( &disp ),
                        sizeof( dispinfo_t ) );
-    transport().flush();
+    //transport().flush();
 }
 
 void
@@ -669,7 +669,7 @@ DispSenderLoggerV2::sendShow()
                        sizeof( Int16 ) );
     transport().write( reinterpret_cast< const char * >( &show ),
                        sizeof( showinfo_t ) );
-    transport().flush();
+    //transport().flush();
 }
 
 void
@@ -748,7 +748,7 @@ DispSenderLoggerV3::sendShow()
                        sizeof( mode ) );
     transport().write( reinterpret_cast< const char * >( &show ),
                        sizeof( short_showinfo_t2 ) );
-    transport().flush();
+    //transport().flush();
 }
 
 void
@@ -805,8 +805,7 @@ DispSenderLoggerV4::sendShow()
 
     serializer().serializeShowEnd( transport() );
 
-    //transport() << std::endl;
-    transport() << std::endl;;
+    transport() << '\n';
 }
 
 void

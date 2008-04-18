@@ -35,7 +35,8 @@ SerializerPlayerStdv7::~SerializerPlayerStdv7()
 
 }
 
-const SerializerPlayerStdv7*
+const
+SerializerPlayerStdv7 *
 SerializerPlayerStdv7::instance()
 {
     rcss::SerializerCommon::Creator cre;
@@ -43,59 +44,60 @@ SerializerPlayerStdv7::instance()
     {
         return NULL;
     }
+
     static SerializerPlayerStdv7 ser( cre() );
     return &ser;
 }
 
 void
-SerializerPlayerStdv7::serializeCoachAudio( std::ostream& strm,
-                                            const int& time,
-                                            const std::string& name,
-                                            const char* msg ) const
+SerializerPlayerStdv7::serializeCoachAudio( std::ostream & strm,
+                                            const int time,
+                                            const std::string & name,
+                                            const char * msg ) const
 {
-    strm << "(hear " << time << " "
+    strm << "(hear " << time << ' '
          << name << " \"" << msg << "\")";
 }
 
 void
-SerializerPlayerStdv7::serializeCoachStdAudio( std::ostream& strm,
-                                               const int& time,
-                                               const std::string& name,
-                                               const rcss::clang::Msg& msg ) const
+SerializerPlayerStdv7::serializeCoachStdAudio( std::ostream & strm,
+                                               const int time,
+                                               const std::string & name,
+                                               const rcss::clang::Msg & msg ) const
 {
-    strm << "(hear " << time << " "
-         << name << " " << msg << ")";
+    strm << "(hear " << time << ' '
+         << name << ' ' << msg << ')';
 }
 
 void
-SerializerPlayerStdv7::serializeSelfAudio( std::ostream& strm,
-                                           const int& time,
-                                           const char* msg ) const
+SerializerPlayerStdv7::serializeSelfAudio( std::ostream & strm,
+                                           const int time,
+                                           const char * msg ) const
 {
     strm << "(hear " << time << " self \""
          << msg << "\")";
 }
 
 void
-SerializerPlayerStdv7::serializePlayerAudio( std::ostream& strm,
-                                             const int& time,
-                                             const double& dir,
-                                             const char* msg ) const
+SerializerPlayerStdv7::serializePlayerAudio( std::ostream & strm,
+                                             const int time,
+                                             const double & dir,
+                                             const char * msg ) const
 {
-    strm << "(hear " << time << " "
+    strm << "(hear " << time << ' '
          << dir << " \"" << msg << "\")";
 }
 
 void
-SerializerPlayerStdv7::serializeServerParamBegin( std::ostream& strm ) const
+SerializerPlayerStdv7::serializeServerParamBegin( std::ostream & strm ) const
 {
     strm << "(server_param";
 }
 
 void
-SerializerPlayerStdv7::serializeServerParamEnd( std::ostream& strm ) const
+SerializerPlayerStdv7::serializeServerParamEnd( std::ostream & strm ) const
 {
-    strm << ")";
+    strm << ')';
 }
 
 void
@@ -105,73 +107,73 @@ SerializerPlayerStdv7::serializePlayerParamBegin( std::ostream& strm ) const
 }
 
 void
-SerializerPlayerStdv7::serializePlayerParamEnd( std::ostream& strm ) const
+SerializerPlayerStdv7::serializePlayerParamEnd( std::ostream & strm ) const
 {
     strm << ")";
 }
 
 void
-SerializerPlayerStdv7::serializePlayerTypeBegin( std::ostream& strm ) const
+SerializerPlayerStdv7::serializePlayerTypeBegin( std::ostream & strm ) const
 {
     strm << "(player_type";
 }
 
 void
-SerializerPlayerStdv7::serializePlayerTypeEnd( std::ostream& strm ) const
+SerializerPlayerStdv7::serializePlayerTypeEnd( std::ostream & strm ) const
 {
-    strm << ")";
+    strm << ')';
 }
 
 void
-SerializerPlayerStdv7::serializeParam( std::ostream& strm,
+SerializerPlayerStdv7::serializeParam( std::ostream & strm,
                                        const int param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
-SerializerPlayerStdv7::serializeParam( std::ostream& strm,
+SerializerPlayerStdv7::serializeParam( std::ostream & strm,
                                        const unsigned int param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
-SerializerPlayerStdv7::serializeParam( std::ostream& strm,
+SerializerPlayerStdv7::serializeParam( std::ostream & strm,
                                        const bool param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
-SerializerPlayerStdv7::serializeParam( std::ostream& strm,
+SerializerPlayerStdv7::serializeParam( std::ostream & strm,
                                        const double & param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
-SerializerPlayerStdv7::serializeParam( std::ostream& strm,
-                                       const std::string& param ) const
+SerializerPlayerStdv7::serializeParam( std::ostream & strm,
+                                       const std::string & param ) const
 {
-    strm << " " << param;
+    strm << ' ' << param;
 }
 
 void
-SerializerPlayerStdv7::serializeChangePlayer( std::ostream& strm,
+SerializerPlayerStdv7::serializeChangePlayer( std::ostream & strm,
                                               const int unum ) const
 {
     strm << "(change_player_type "
-         << unum << ")";
+         << unum << ')';
 }
 
 void
-SerializerPlayerStdv7::serializeChangePlayer( std::ostream& strm,
+SerializerPlayerStdv7::serializeChangePlayer( std::ostream & strm,
                                               const int unum,
                                               const int type ) const
 {
     strm << "(change_player_type "
-         << unum << " " << type << ")";
+         << unum << ' ' << type << ')';
 }
 
 namespace {

@@ -32,18 +32,17 @@ SerializerCoachStdv1::SerializerCoachStdv1( const SerializerCommon & common )
 
 }
 
-
 SerializerCoachStdv1::~SerializerCoachStdv1()
 {
 
 }
 
 const
-SerializerCoachStdv1*
+SerializerCoachStdv1 *
 SerializerCoachStdv1::instance()
 {
     rcss::SerializerCommon::Creator cre;
-    if ( !rcss::SerializerCommon::factory().getCreator( cre, 1 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 1 ) )
     {
         return NULL;
     }
@@ -54,41 +53,41 @@ SerializerCoachStdv1::instance()
 
 void
 SerializerCoachStdv1::serializeRefereeAudio( std::ostream & strm,
-                                             const int & time,
+                                             const int time,
                                              const char * msg ) const
 {
-    strm << "(hear " << REFEREE_NAME << " " << time
-         << " " << msg << ")";
+    strm << "(hear " << REFEREE_NAME << ' ' << time
+         << ' ' << msg << ')';
 }
 
 void
 SerializerCoachStdv1::serializeCoachAudio( std::ostream & strm,
-                                           const int & time,
+                                           const int time,
                                            const std::string & name,
                                            const char * msg ) const
 {
-    strm << "(hear " << name << " " << time
-         << " " << msg << ")";
+    strm << "(hear " << name << ' ' << time
+         << ' ' << msg << ')';
 }
 
 void
 SerializerCoachStdv1::serializeCoachStdAudio( std::ostream & strm,
-                                              const int & time,
+                                              const int time,
                                               const std::string & name,
                                               const rcss::clang::Msg & msg ) const
 {
-    strm << "(hear " << name << " " << time
-         << " " << msg << ")";
+    strm << "(hear " << name << ' ' << time
+         << ' ' << msg << ')';
 }
 
 void
 SerializerCoachStdv1::serializePlayerAudio( std::ostream & strm,
-                                            const int& time,
+                                            const int time,
                                             const std::string & name,
                                             const char * msg ) const
 {
-    strm << "(hear " << name << " " << time
-         << " " << msg << ")";
+    strm << "(hear " << name << ' ' << time
+         << ' ' << msg << ')';
 }
 
 void
@@ -109,7 +108,7 @@ SerializerCoachStdv1::serializeVisualBegin( std::ostream & strm,
 void
 SerializerCoachStdv1::serializeVisualEnd( std::ostream & strm ) const
 {
-    strm << ")";
+    strm << ')';
 }
 
 
@@ -123,7 +122,7 @@ SerializerCoachStdv1::serializeLookBegin( std::ostream & strm,
 void
 SerializerCoachStdv1::serializeLookEnd( std::ostream & strm ) const
 {
-    strm << ")";
+    strm << ')';
 }
 
 void
@@ -131,7 +130,7 @@ SerializerCoachStdv1::serializeVisualObject( std::ostream & strm,
                                              const std::string & name,
                                              const PVector & pos ) const
 {
-    strm << " (" << name << " " << pos.x << " " << pos.y << ")";
+    strm << " (" << name << ' ' << pos.x << ' ' << pos.y << ')';
 }
 
 void
@@ -141,9 +140,9 @@ SerializerCoachStdv1::serializeVisualObject( std::ostream & strm,
                                              const PVector & vel ) const
 {
     strm << " (" << name
-         << " " << pos.x << " " << pos.y
-         << " " << vel.x << " " << vel.y
-         << ")";
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << vel.x << ' ' << vel.y
+         << ')';
 }
 
 
@@ -156,11 +155,11 @@ SerializerCoachStdv1::serializeVisualObject( std::ostream & strm,
                                 const int neck ) const
 {
     strm << " (" << name
-         << " " << pos.x << " " << pos.y
-         << " " << body
-         << " " << neck
-         << " " << vel.x << " " << vel.y
-         << ")";
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << body
+         << ' ' << neck
+         << ' ' << vel.x << ' ' << vel.y
+         << ')';
 }
 
 void
@@ -169,7 +168,7 @@ SerializerCoachStdv1::serializeOKEye( std::ostream & strm,
 {
     strm << "(ok eye "
          << ( on ? "on" : "off" )
-         << ")";
+         << ')';
 }
 
 

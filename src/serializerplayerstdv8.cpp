@@ -55,7 +55,7 @@ SerializerPlayerStdv8::serializeAllyAudioFull( std::ostream & strm,
                                                const int unum,
                                                const char* msg ) const
 {
-    strm << "(hear " << time << " "
+    strm << "(hear " << time << ' '
          << dir << " our " << unum
          << " \"" << msg << "\")";
 }
@@ -66,7 +66,7 @@ SerializerPlayerStdv8::serializeOppAudioFull( std::ostream & strm,
                                               const double & dir,
                                               const char* msg ) const
 {
-    strm << "(hear " << time << " "
+    strm << "(hear " << time << ' '
          << dir << " opp \"" << msg << "\")";
 }
 
@@ -74,12 +74,16 @@ void
 SerializerPlayerStdv8::serializeAllyAudioShort( std::ostream & strm,
                                                 const int time,
                                                 const int unum ) const
-{ strm << "(hear " << time << " our " << unum << ")"; }
+{
+    strm << "(hear " << time << " our " << unum << ')';
+}
 
 void
 SerializerPlayerStdv8::serializeOppAudioShort( std::ostream & strm,
                                                const int time ) const
-{ strm << "(hear " << time << " opp)"; }
+{
+    strm << "(hear " << time << " opp)";
+}
 
 
 void
@@ -90,11 +94,11 @@ SerializerPlayerStdv8::serializeFSBall( std::ostream & strm,
                                         const double & vel_y ) const
 {
     strm << " ((b)"
-         << " " << x
-         << " " << y
-         << " " << vel_x
-         << " " << vel_y
-         << ")";
+         << ' ' << x
+         << ' ' << y
+         << ' ' << vel_x
+         << ' ' << vel_y
+         << ')';
 }
 
 void
@@ -112,7 +116,7 @@ SerializerPlayerStdv8::serializeFSPlayerBegin( std::ostream & strm,
 
 {
     strm << " ((p " << side
-         << " " << unum;
+         << ' ' << unum;
 
     if ( goalie )
     {
@@ -120,15 +124,15 @@ SerializerPlayerStdv8::serializeFSPlayerBegin( std::ostream & strm,
     }
     else
     {
-        strm << " " << type; // hetro player type
+        strm << ' ' << type; // hetro player type
     }
 
     strm << ") " << x
-         << " " << y
-         << " " << vel_x
-         << " " << vel_y
-         << " " << body_dir
-         << " " << neck_dir;
+         << ' ' << y
+         << ' ' << vel_x
+         << ' ' << vel_y
+         << ' ' << body_dir
+         << ' ' << neck_dir;
 }
 
 void
@@ -136,8 +140,8 @@ SerializerPlayerStdv8::serializeFSPlayerArm( std::ostream & strm,
                                              const double & mag,
                                              const double & head ) const
 {
-    strm << " " << mag
-         << " " << head;
+    strm << ' ' << mag
+         << ' ' << head;
 }
 
 void
@@ -147,8 +151,8 @@ SerializerPlayerStdv8::serializeFSPlayerEnd( std::ostream & strm,
                                              const double & recovery ) const
 {
     strm << " (stamina " << stamina
-         << " " << effort
-         << " " << recovery
+         << ' ' << effort
+         << ' ' << recovery
          << "))";
 }
 
@@ -164,14 +168,14 @@ SerializerPlayerStdv8::serializeFSCounts( std::ostream & strm,
                                           const int count_say ) const
 {
     strm << " (count "
-         << count_kick << " "
-         << count_dash << " "
-         << count_turn << " "
-         << count_catch << " "
-         << count_move << " "
-         << count_turn_neck << " "
-         << count_change_view << " "
-         << count_say << ")";
+         << count_kick << ' '
+         << count_dash << ' '
+         << count_turn << ' '
+         << count_catch << ' '
+         << count_move << ' '
+         << count_turn_neck << ' '
+         << count_change_view << ' '
+         << count_say << ')';
 }
 
 void
@@ -197,7 +201,7 @@ SerializerPlayerStdv8::serializeParam( std::ostream & strm,
                                        const std::string & name,
                                        const int param ) const
 {
-    strm << "(" << name << " " << param << ")";
+    strm << "(" << name << ' ' << param << ')';
 }
 
 void
@@ -205,7 +209,7 @@ SerializerPlayerStdv8::serializeParam( std::ostream & strm,
                                        const std::string & name,
                                        const bool param ) const
 {
-    strm << "(" << name << " " << param << ")";
+    strm << "(" << name << ' ' << param << ')';
 }
 
 void
@@ -213,7 +217,7 @@ SerializerPlayerStdv8::serializeParam( std::ostream & strm,
                                        const std::string & name,
                                        const double & param ) const
 {
-    strm << "(" << name << " " << param << ")";
+    strm << "(" << name << ' ' << param << ')';
 }
 
 void
