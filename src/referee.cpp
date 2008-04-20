@@ -2100,6 +2100,19 @@ CatchRef::kickTaken( const Player & kicker )
         {
             M_last_back_passer = NULL;
         }
+        else if ( kicker.isGoalie() )
+        {
+            if ( M_last_back_passer
+                 && M_last_back_passer->side() != kicker.side() )
+            {
+
+            }
+            else
+            {
+                M_last_back_passer = &kicker;
+                M_last_back_passer_time = M_stadium.time();
+            }
+        }
         else
         {
             M_last_back_passer = &kicker;
@@ -2161,7 +2174,7 @@ CatchRef::ballCaught( const Player & catcher )
     if ( M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         && M_stadium.time() != M_last_back_passer_time
+         //&& M_stadium.time() != M_last_back_passer_time
          && M_last_back_passer != NULL
          //&& M_last_back_passer != &catcher
          && M_last_back_passer->team() == catcher.team()

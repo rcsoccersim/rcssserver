@@ -1,3 +1,8 @@
+2008-04-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/referee.cpp:
+	- fixed a defect of back pass rule.
+
 2008-04-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/arm.h:
