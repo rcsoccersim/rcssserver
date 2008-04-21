@@ -2189,6 +2189,8 @@ CatchRef::ballCaught( const Player & catcher )
         return;
     }
 
+    M_last_back_passer = NULL;
+
     awardFreeKick( catcher.side(), M_stadium.ball().pos() );
 }
 
