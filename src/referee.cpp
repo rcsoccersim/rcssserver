@@ -1449,6 +1449,13 @@ FreeKickRef::playModeChange( PlayMode pm )
     {
         M_timer = -1;
     }
+
+    if ( pm == PM_Free_Kick_Fault_Left
+         || pm == PM_Free_Kick_Fault_Right )
+    {
+        M_stadium.clearBallCatcher();
+        M_after_free_kick_fault_time = 0;
+    }
 }
 
 
@@ -2270,6 +2277,20 @@ CatchRef::playModeChange( PlayMode pmode )
     if ( pmode != PM_PlayOn )
     {
         M_last_back_passer = NULL;
+    }
+
+    if ( pmode == PM_Back_Pass_Left
+         || pmode == PM_Back_Pass_Left )
+    {
+        M_stadium.clearBallCatcher();
+        M_last_back_passer = NULL;
+        M_after_back_pass_time = 0;
+    }
+    else if ( pmode == PM_CatchFault_Left
+              || pmode == PM_CatchFault_Left )
+    {
+        M_stadium.clearBallCatcher();
+        M_after_catch_fault_time = 0;
     }
 }
 
