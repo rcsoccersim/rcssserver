@@ -7,14 +7,14 @@
 2008-04-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:
-	- fixed a defect of back pass rule when defenter kick the ball
-	just after goalie's catch in the same cycle..
+	- fixed a defect of back pass rule when defenter holds the ball
+	and kick the ball just after goalie's catch in the same cycle.
 
 2008-04-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:
 	- fixed a defect of back pass rule when goalie caches the ball
-	after his kick but last back passer is an opponent player..
+	after his kick but the last back passer is an opponent player.
 
 2008-04-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

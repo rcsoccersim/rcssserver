@@ -2120,7 +2120,7 @@ CatchRef::kickTaken( const Player & kicker )
                 M_last_back_passer_time = M_stadium.time();
             }
         }
-        else
+        else if ( M_last_back_passer != &kicker )
         {
             M_last_back_passer = &kicker;
             M_last_back_passer_time = M_stadium.time();
@@ -2181,7 +2181,7 @@ CatchRef::ballCaught( const Player & catcher )
     if ( M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         //&& M_stadium.time() != M_last_back_passer_time
+         && M_stadium.time() != M_last_back_passer_time
          && M_last_back_passer != NULL
          //&& M_last_back_passer != &catcher
          && M_last_back_passer->team() == catcher.team()
@@ -3313,7 +3313,7 @@ PenaltyRef::placeOtherTeamPlayers()
                           - (*p)->size()
                           //- ServerParam::instance().pspeed_max
                           );
-            if( ! center.inArea( (*p)->pos() ) )
+            if ( ! center.inArea( (*p)->pos() ) )
             {
                 // place other players in circle in penalty area
                 //(*p)->moveTo( PVector::fromPolar( 6.5, Deg2Rad( i*15 ) ) );
