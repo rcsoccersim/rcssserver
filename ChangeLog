@@ -1,3 +1,13 @@
+2008-05-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version. Official release 12.1.1.
+
+	* src/object.cpp:
+	- fixed a endless loop bug in the check of collision with goal
+	posts. Thanks go to Alexander Burger for reporting the problem.
+
 2008-04-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:
@@ -7,8 +17,8 @@
 2008-04-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:
-	- fixed a defect of back pass rule when defenter holds the ball
-	and kick the ball just after goalie's catch in the same cycle.
+	- fixed a defect of back pass rule when defender holds the ball
+	and kicks the ball just after goalie's catch in the same cycle.
 
 2008-04-20  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
@@ -49,7 +59,6 @@
 	* src/field.cpp:
 	* src/logger.cpp:
 	- changed the timing of log flushing.
-	- changed the format of time info in text log.
 
 2008-04-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

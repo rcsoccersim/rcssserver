@@ -1,3 +1,20 @@
+[12.1.1]
+  * Fixed a endless loop bug in the collision check with goal
+    posts. Thanks go to Alexander Burger for reporting the
+    problem.
+
+  * Fixed defects of the back pass rule.
+    - Now, the back pass rule does not apply if goalie catches the
+      ball after his own kick but the previous ball kicker is an
+      opponent player and both kicks are performed within the same
+      play_on period.
+
+    - Now, the back pass rule applies if a teammate player holds the
+      ball and kicks the ball just after goalie's catch in the same
+      cycle.
+
+    - Fixed a defect of timer count when trainer changes the playmode.
+
 [12.1.0]
   * Slightly changed the game log format version 4. Now, players'
     pointing points are recorded by the global value of left-hand

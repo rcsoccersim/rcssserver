@@ -1129,7 +1129,8 @@ Logger::writeTextLog( const char * message,
     {
         if ( isTextLogOpen() )
         {
-            *M_text_log << M_stadium.time() << ',' << M_stadium.stoppageTime()
+            *M_text_log << M_stadium.time()
+                //<< ',' << M_stadium.stoppageTime()
                         << "\t" << message << '\n';
         }
     }

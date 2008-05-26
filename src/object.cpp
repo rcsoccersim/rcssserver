@@ -75,7 +75,8 @@ PVector::rotate(const double & ang)
 }
 
 bool
-PVector::between( const PVector& begin, const PVector& end ) const
+PVector::between( const PVector & begin,
+                  const PVector & end ) const
 {
     if( begin.x > end.x )
         return between( end, begin );
@@ -198,12 +199,12 @@ intersect( const PVector & begin,
         double dy = end.y - begin.y;
         //          std::cout << dx << endl;
         //          std::cout << dy << endl;
-        double dr = sqrt( dx*dx + dy*dy );
+        double dr = std::sqrt( dx*dx + dy*dy );
         //          std::cout << dr << endl;
         double D = begin.x * end.y - end.x * begin.y;
         double descrim = circle.radius() * circle.radius() * dr*dr - D*D;
         //          std::cout << descrim << endl;
-        if( descrim <= 0.0 )
+        if ( descrim <= 0.0 )
         {
             // no collision of tagent
             //              std::cout << "Descrim < 0\n";
@@ -234,8 +235,8 @@ intersect( const PVector & begin,
                 second = PVector( x2, y2 );
             }
 
-            if( ! first.between( begin, end )
-                && ! second.between( begin, end ) )
+            if ( ! first.between( begin, end )
+                 && ! second.between( begin, end ) )
             {
                 // intersections are not between the end points
                 //                  std::cout << "Coll outside of end points\n"
@@ -521,9 +522,7 @@ MPObject::_inc()
         PVector diff = pos() - post.center();
         if ( diff == PVector() )
         {
-            //boost::uniform_real<> dir( -M_PI, +M_PI );
             diff = PVector::fromPolar( post.radius(),
-                                       //dir( rcss::random::DefaultRNG::instance() ) );
                                        drand( -M_PI, +M_PI ) );
         }
         else
@@ -549,9 +548,11 @@ MPObject::_inc()
         }
 
         post = nearestPost( pos(), M_size );
-        //          std::cout << "pos = " << pos << endl;
-        //          std::cout << "nearest post = " << post << endl;
-        //          std::cout << "dist = " << (pos - post.center).r() << endl;
+        std::cout << M_stadium.time() << ": Colliding with post\n"
+                  << "  pos = " << pos() << '\n'
+                  << "  vel = " << vel() << '\n'
+                  << "  nearest post = " << post.center() << '\n'
+                  << "  dist = " << ( pos() - post.center() ).r() << std::endl;
 
         collidedWithPost();
     }
@@ -563,7 +564,7 @@ MPObject::_inc()
 
     //      std::cout << "vel = " << vel << endl;
     //      std::cout << "new_pos = " << new_pos << endl;
-
+    //int loop_count = 0;
     while ( pos() != new_pos
             && ( ( intersect( pos(), new_pos, post, inter ) )
                  || ( post != second_post
@@ -572,13 +573,14 @@ MPObject::_inc()
                  )
             )
     {
-        //          std::cout << "Collision:\n"
-        //                    << pos << std::endl;
+        //         ++loop_count;
+        //         std::cout << M_stadium.time() <<": Collision: " << loop_count << "\n"
+        //                   << "  pos=" << pos() << '\n';
 
         // handle collision
         M_pos = inter;
 
-        //          std::cout << pos << std::endl;
+        //         std::cout << "  intersect=" << pos() << '\n';
 
         PVector rem = new_pos - pos();
         PVector coll_2_circle;
@@ -591,29 +593,35 @@ MPObject::_inc()
             coll_2_circle = post.center() - pos();
         }
 
-        //          std::cout << "rem = " << rem << endl;
+        // 2008-05-22 akiyama
+        // fixed endless-loop bug.
+        // If this small vector is not added to M_pos, intersect() may still
+        // return pos() as the intersect point.
+        M_pos += PVector::fromPolar( EPS, coll_2_circle.th() + 180.0 );
+
+        //         std::cout << "  rem = " << rem << '\n';
 
         rem.rotate( -coll_2_circle.th() );
         rem.x = -rem.x;
         rem.rotate( coll_2_circle.th() );
 
         new_pos = pos() + rem;
-        //          std::cout << "rem = " << rem << endl;
-
+        //         std::cout << "  rem = " << rem << '\n';
 
         // setup post and second post for next loop
         post = nearestPost( pos(), M_size );
         second_post = nearestPost( new_pos, M_size );
-        //         std::cout << "pos = " << pos << endl;
-        //          std::cout << "new_pos = " << new_pos << endl;
-        //          std::cout << "nearest post = " << post << endl;
-        //          std::cout << "dist = " << (pos - post.center).r() << endl;
+
+        //         std::cout << "  pos = " << pos() << '\n'
+        //                   << "  new_pos = " << new_pos << '\n'
+        //                   << "  nearest post = " << post.center() << '\n'
+        //                   << "  dist = " << ( pos() - post.center() ).r() << '\n';
 
         // setup vel so it will decay normally.  The collisions are
         // elastic, so the maginitude does not change, but the heading
         // does
         M_vel = PVector::fromPolar( M_vel.r(), rem.th() );
-        //          std::cout << "vel = " << vel << endl;
+        //         std::cout << "  vel = " << vel() << std::endl;
 
         second = false;
 

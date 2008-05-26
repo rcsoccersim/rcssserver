@@ -148,7 +148,7 @@ home directory for the configuration files:
 
 `~/.rcssserver/server.conf'
 `~/.rcssserver/palyer.conf'
-`~/.rcssserver-landmark.xml'
+`~/.rcssserver-landmark.xml' (optional)
 
 If these files do not exist they will be created and populated with default
 values.
