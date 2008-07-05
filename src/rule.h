@@ -25,6 +25,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <memory>
 #include "hasa.h"
 
 

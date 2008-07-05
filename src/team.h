@@ -26,6 +26,7 @@
 
 #include <string>
 #include <map>
+#include <memory>
 
 class Stadium;
 class Player;

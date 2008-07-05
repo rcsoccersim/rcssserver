@@ -32,6 +32,7 @@
 #include <rcssbase/gzip/gzstream.hpp>
 
 #include <cerrno>
+#include <cstring>
 
 
 RemoteClient::RemoteClient()

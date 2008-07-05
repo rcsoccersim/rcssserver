@@ -1,3 +1,17 @@
+2008-07-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version. Official release 12.1.2.
+
+	* src/client.cpp:
+	* src/coach_lang_tok.h:
+	* src/remoteclient.cpp:
+	* src/rule.h:
+	* src/team.h:
+	* src/xpmholder.cpp:
+	- patched rcssserver-12.1.1-gcc43fix.patch
+
 2008-05-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
