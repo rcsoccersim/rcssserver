@@ -47,13 +47,13 @@
 
 #include "types.h"
 #include "utility.h"
-#include "xpmholder.h"
 
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <memory>
 #include <map>
+#include <iostream>
 #include <cmath>
 
 /*

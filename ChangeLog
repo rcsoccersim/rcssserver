@@ -6,11 +6,15 @@
 
 	* src/client.cpp:
 	* src/coach_lang_tok.h:
+	* src/object.h:
 	* src/remoteclient.cpp:
 	* src/rule.h:
 	* src/team.h:
 	* src/xpmholder.cpp:
+	* src/xpmholder.h:
 	- patched rcssserver-12.1.1-gcc43fix.patch
+	- fixed gcc-4.3 warnings.
+	- fixed include dependency.
 
 2008-05-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

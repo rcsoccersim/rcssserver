@@ -29,6 +29,7 @@
 #include "param.h"
 #include "player.h"
 #include "playerparam.h"
+#include "xpmholder.h"
 
 Team::Team( Stadium * stad, const Side s )
     : M_stadium( stad ),
