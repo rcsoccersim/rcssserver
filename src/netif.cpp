@@ -523,8 +523,8 @@ Stadium::broadcastSubstitution( const int side,
 {
     char allies[64];
     char enemies[64];
-    std::snprintf( allies, 64, "(change_player_type %d %d)", unum, player_type );
-    std::snprintf( enemies, 64, "(change_player_type %d)", unum );
+    snprintf( allies, 64, "(change_player_type %d %d)", unum, player_type );
+    snprintf( enemies, 64, "(change_player_type %d)", unum );
 
     // tell players
     for ( int i = 0 ; i < MAX_PLAYER * 2; ++i )
@@ -582,10 +582,10 @@ Stadium::broadcastSubstitution( const int side,
     // TODO: send to offline coach
 
     char buffer[64];
-    std::snprintf( buffer, 64,
-                   "(change_player_type %s %d %d)",
-                   ( side == LEFT ? "l" : "r" ),
-                   unum, player_type );
+    snprintf( buffer, 64,
+              "(change_player_type %s %d %d)",
+              ( side == LEFT ? "l" : "r" ),
+              unum, player_type );
     for ( MonitorCont::iterator i = M_monitors.begin();
           i != M_monitors.end(); ++i )
     {

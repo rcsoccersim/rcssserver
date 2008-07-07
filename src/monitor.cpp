@@ -223,9 +223,9 @@ Monitor::sendMsg( const BoardType board,
     if ( version() >= 3.0 )
     {
         char buf[MaxMesg];
-        std::snprintf( buf, MaxMesg,
-                       "(msg %d %d \"%s\")",
-                       M_stadium.time(), board, msg );
+        snprintf( buf, MaxMesg,
+                  "(msg %d %d \"%s\")",
+                  M_stadium.time(), board, msg );
         return RemoteClient::send( buf, std::strlen( buf ) + 1 );
     }
     else if ( version() >= 2.0 )
@@ -642,9 +642,9 @@ Monitor::coach_change_player_type( const char * command )
     M_stadium.substitute( player, player_type );
 
     char buf[64];
-    std::snprintf( buf, 64,
-                   "(ok change_player_type %s %d %d)",
-                   teamname, unum, player_type );
+    snprintf( buf, 64,
+              "(ok change_player_type %s %d %d)",
+              teamname, unum, player_type );
 
     sendMsg( MSG_BOARD, buf );
 

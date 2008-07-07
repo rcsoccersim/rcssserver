@@ -500,7 +500,7 @@ Logger::renameLogs()
                        "%Y%m%d%H%M",
                        &( M_stadium.realTime() ) );
         char msg[256];
-        std::snprintf( msg, 256, "(result %s %s)", time_stamp, team_name_score.c_str() );
+        snprintf( msg, 256, "(result %s %s)", time_stamp, team_name_score.c_str() );
         writeMsgToGameLog( MSG_BOARD, msg, true );
     }
 
@@ -1174,12 +1174,12 @@ Logger::writePlayerLog( const Player & player,
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
-        std::snprintf( tmp, MaxMesg,
-                       "%s %s_%d: %s",
-                       ( flag == SEND ? "Send" : "Recv" ),
-                       player.team()->name().c_str(),
-                       player.unum(),
-                       message );
+        snprintf( tmp, MaxMesg,
+                  "%s %s_%d: %s",
+                  ( flag == SEND ? "Send" : "Recv" ),
+                  player.team()->name().c_str(),
+                  player.unum(),
+                  message );
         writeTextLog( tmp, flag );
     }
 }
@@ -1193,10 +1193,10 @@ Logger::writeCoachLog( const char * message,
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
-        std::snprintf( tmp, MaxMesg,
-                       "%s Coach: %s",
-                       ( flag == SEND ? "Send" : "Recv" ),
-                       message ) ;
+        snprintf( tmp, MaxMesg,
+                  "%s Coach: %s",
+                  ( flag == SEND ? "Send" : "Recv" ),
+                  message ) ;
         writeTextLog( tmp, flag );
     }
 }
@@ -1211,13 +1211,13 @@ Logger::writeOnlineCoachLog( const OnlineCoach & coach,
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
-        std::snprintf( tmp, MaxMesg,
-                       "%s %s_Coach: %s",
-                       ( flag == SEND ? "Send" : "Recv" ),
-                       ( coach.side() == LEFT
-                         ? M_stadium.teamLeft().name().c_str()
-                         : M_stadium.teamRight().name().c_str() ),
-                       message );
+        snprintf( tmp, MaxMesg,
+                  "%s %s_Coach: %s",
+                  ( flag == SEND ? "Send" : "Recv" ),
+                  ( coach.side() == LEFT
+                    ? M_stadium.teamLeft().name().c_str()
+                    : M_stadium.teamRight().name().c_str() ),
+                  message );
         writeTextLog( tmp, flag );
     }
 }
@@ -1231,10 +1231,10 @@ Logger::writeRefereeAudio( const char * msg )
               && M_stadium.playmode() != PM_TimeOver ) )
     {
         char buf[max_message_length_for_display];
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       "(%s %s)",
-                       REFEREE_NAME, msg );
+        snprintf( buf,
+                  max_message_length_for_display,
+                  "(%s %s)",
+                  REFEREE_NAME, msg );
 
         if ( isTextLogOpen() )
         {
@@ -1259,10 +1259,10 @@ Logger::writePlayerAudio( const Player & player,
          && M_stadium.playmode() != PM_TimeOver )
     {
         char buf[max_message_length_for_display];
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       "(%s %s)",
-                       player.name().c_str(), msg );
+        snprintf( buf,
+                  max_message_length_for_display,
+                  "(%s %s)",
+                  player.name().c_str(), msg );
 
         writeMsgToGameLog( MSG_BOARD, buf );
     }
@@ -1279,17 +1279,17 @@ Logger::writeCoachAudio( const Coach & coach,
     {
         char buf[max_message_length_for_display];
         char format[40];
-        std::snprintf( format, 40, "(%%s %%.%ds)",
-                       max_message_length_for_display - (MaxMesg - MaxCoachMesg) );
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       format,
-                       ( coach.side() == RIGHT
-                         ? OLCOACH_NAME_R
-                         : coach.side() == LEFT
-                         ? OLCOACH_NAME_L
-                         : REFEREE_NAME ),
-                       msg );
+        snprintf( format, 40, "(%%s %%.%ds)",
+                  max_message_length_for_display - (MaxMesg - MaxCoachMesg) );
+        snprintf( buf,
+                  max_message_length_for_display,
+                  format,
+                  ( coach.side() == RIGHT
+                    ? OLCOACH_NAME_R
+                    : coach.side() == LEFT
+                    ? OLCOACH_NAME_L
+                    : REFEREE_NAME ),
+                  msg );
 
         writeMsgToGameLog( MSG_BOARD, buf );
     }
@@ -1311,13 +1311,13 @@ Logger::writeCoachStdAudio( const OnlineCoach & coach,
 
         char buf[max_message_length_for_display];
         char format[40];
-        std::snprintf( format, 40, "(%%s %%.%ds)",
-                       max_message_length_for_display - (MaxMesg - MaxCoachMesg));
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       format,
-                       (coach.side() == RIGHT) ? OLCOACH_NAME_R : OLCOACH_NAME_L,
-                       coach_mess.str().c_str() );
+        snprintf( format, 40, "(%%s %%.%ds)",
+                  max_message_length_for_display - (MaxMesg - MaxCoachMesg));
+        snprintf( buf,
+                  max_message_length_for_display,
+                  format,
+                  (coach.side() == RIGHT) ? OLCOACH_NAME_R : OLCOACH_NAME_L,
+                  coach_mess.str().c_str() );
 
         writeMsgToGameLog( MSG_BOARD, buf );
     }

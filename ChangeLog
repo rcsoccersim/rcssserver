@@ -1,8 +1,18 @@
-2008-07-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+2008-07-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
 	* configure.ac:
 	- updated a point version. Official release 12.1.2.
+
+	* src/coach.cpp:
+	* src/field.cpp:
+	* src/logger.cpp:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	* src/player.cpp:
+	- fixed gcc-4.4 warnings.
+
+2008-07-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/client.cpp:
 	* src/coach_lang_tok.h:
