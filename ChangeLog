@@ -1,3 +1,31 @@
+2008-07-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version. Official release 12.1.2.
+
+	* src/coach.cpp:
+	* src/field.cpp:
+	* src/logger.cpp:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	* src/player.cpp:
+	- fixed gcc-4.4 warnings.
+
+2008-07-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/client.cpp:
+	* src/coach_lang_tok.h:
+	* src/object.h:
+	* src/remoteclient.cpp:
+	* src/rule.h:
+	* src/team.h:
+	* src/xpmholder.cpp:
+	* src/xpmholder.h:
+	- patched rcssserver-12.1.1-gcc43fix.patch
+	- fixed gcc-4.3 warnings.
+	- fixed include dependency.
+
 2008-05-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

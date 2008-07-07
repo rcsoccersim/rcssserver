@@ -1,3 +1,9 @@
+[12.1.2]
+  * Fixed gcc 4.3 compilation problems.Thanks go to Hedayat Vatankhah
+  for providing the patch.
+
+  * Fixed gcc 4.4 warnings.
+
 [12.1.1]
   * Fixed a endless loop bug in the collision check with goal
     posts. Thanks go to Alexander Burger for reporting the

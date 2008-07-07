@@ -32,6 +32,7 @@
 #endif
 
 #include <cstring>
+#include <cstdlib>
 
 XPMHolder::XPMHolder( const char * str )
     : M_data( NULL ),

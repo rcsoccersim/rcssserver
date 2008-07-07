@@ -221,21 +221,21 @@ Player::init( const double & ver,
 
     {
         char lname[128], sname[128];
-        std::snprintf( lname, 128, PLAYER_NAME_FORMAT, team()->name().c_str(), unum() );
-        std::snprintf( sname, 128, PLAYER_NAME_FORMAT_SHORT, team()->name().c_str(), unum(),
-                       isGoalie() ? GOALIE_VISUAL_STRING : "" );
+        snprintf( lname, 128, PLAYER_NAME_FORMAT, team()->name().c_str(), unum() );
+        snprintf( sname, 128, PLAYER_NAME_FORMAT_SHORT, team()->name().c_str(), unum(),
+                  isGoalie() ? GOALIE_VISUAL_STRING : "" );
         setName( lname, sname );
     }
 
     char buf[128];
-    std::snprintf( buf, 128, PLAYER_NAME_FAR_FORMAT, team()->name().c_str() );
+    snprintf( buf, 128, PLAYER_NAME_FAR_FORMAT, team()->name().c_str() );
     M_name_far = buf;
-    std::snprintf( buf, 128, PLAYER_NAME_TOOFAR_FORMAT );
+    snprintf( buf, 128, PLAYER_NAME_TOOFAR_FORMAT );
     M_name_toofar = buf;
 
-    std::snprintf( buf, 128, PLAYER_NAME_FAR_FORMAT_SHORT, team()->name().c_str() );
+    snprintf( buf, 128, PLAYER_NAME_FAR_FORMAT_SHORT, team()->name().c_str() );
     M_short_name_far = buf;
-    std::snprintf( buf, 128, PLAYER_NAME_TOOFAR_FORMAT_SHORT );
+    snprintf( buf, 128, PLAYER_NAME_TOOFAR_FORMAT_SHORT );
     M_short_name_toofar = buf;
 
     M_angle_body_committed = SideDirection( side() );

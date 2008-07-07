@@ -1410,7 +1410,7 @@ Stadium::referee_get_foul( const double & x, const double & y,
 
     char msg[8];
 
-    std::snprintf( msg, 8, "foul_%s", SideStr( -side ) );
+    snprintf( msg, 8, "foul_%s", SideStr( -side ) );
     sendRefereeAudio( msg );
     M_ball_catcher = NULL;
 
@@ -2083,10 +2083,10 @@ Stadium::sendRefereeAudio( const char * msg )
     if ( ServerParam::instance().sendComms() )
     {
         char buf[max_message_length_for_display];
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       "(%s %s)",
-                       REFEREE_NAME, msg );
+        snprintf( buf,
+                  max_message_length_for_display,
+                  "(%s %s)",
+                  REFEREE_NAME, msg );
 
         for ( MonitorCont::iterator i = M_monitors.begin();
               i != M_monitors.end();
@@ -2118,10 +2118,10 @@ Stadium::sendPlayerAudio( const Player & player,
     if ( ServerParam::instance().sendComms() )
     {
         char buf[max_message_length_for_display];
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       "(%s %s)",
-                       player.name().c_str(), msg );
+        snprintf( buf,
+                  max_message_length_for_display,
+                  "(%s %s)",
+                  player.name().c_str(), msg );
 
         // send to monitors
         for ( Stadium::MonitorCont::iterator i = monitors().begin();
@@ -2155,17 +2155,16 @@ Stadium::sendCoachAudio( const Coach & coach,
     {
         char buf[max_message_length_for_display];
         char format[40];
-        std::snprintf( format, 40, "(%%s %%.%ds)",
-                       max_message_length_for_display - (MaxMesg - MaxCoachMesg) );
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       format,
-                       ( coach.side() == RIGHT
-                         ? OLCOACH_NAME_R
-                         : coach.side() == LEFT
-                         ? OLCOACH_NAME_L
-                         : REFEREE_NAME ),
-                       msg );
+        snprintf( format, 40, "(%%s %%.%ds)",
+                  max_message_length_for_display - (MaxMesg - MaxCoachMesg) );
+        snprintf( buf,
+                  max_message_length_for_display,
+                  format,
+                  ( coach.side() == RIGHT
+                    ? OLCOACH_NAME_R
+                    : coach.side() == LEFT
+                    ? OLCOACH_NAME_L: REFEREE_NAME ),
+                  msg );
 
         for ( MonitorCont::iterator i = monitors().begin();
               i != monitors().end();
@@ -2202,13 +2201,13 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
 
         char buf[max_message_length_for_display];
         char format[40];
-        std::snprintf( format, 40, "(%%s %%.%ds)",
-                       max_message_length_for_display - (MaxMesg - MaxCoachMesg));
-        std::snprintf( buf,
-                       max_message_length_for_display,
-                       format,
-                       (coach.side() == RIGHT) ? OLCOACH_NAME_R : OLCOACH_NAME_L,
-                       coach_mess.str().c_str() );
+        snprintf( format, 40, "(%%s %%.%ds)",
+                  max_message_length_for_display - (MaxMesg - MaxCoachMesg));
+        snprintf( buf,
+                  max_message_length_for_display,
+                  format,
+                  (coach.side() == RIGHT) ? OLCOACH_NAME_R : OLCOACH_NAME_L,
+                  coach_mess.str().c_str() );
 
         for ( MonitorCont::iterator i = monitors().begin();
               i != monitors().end();
@@ -2622,7 +2621,7 @@ Stadium::doSendThink()
          && ServerParam::instance().logTimes() )
     {
         char buf[32];
-        std::snprintf( buf, 32, "Num sleeps called: %d", num_sleeps );
+        snprintf( buf, 32, "Num sleeps called: %d", num_sleeps );
         M_logger.writeTextLog( buf, LOG_TEXT );
     }
 

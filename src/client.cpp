@@ -41,6 +41,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 // #include <cerrno>
 // #include <netdb.h>

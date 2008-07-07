@@ -27,6 +27,7 @@
 #include "clangutil.h"
 
 #include <rcssbase/rcssbaseconfig.hpp>
+#include <cstring>
 
 #undef yyFlexLexer
 #define yyFlexLexer RCSSCLangFLexLexer

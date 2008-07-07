@@ -880,8 +880,8 @@ OnlineCoach::change_player_types( const char * command )
             else if ( it->second > PlayerParam::instance().ptMax() )
             {
                 char err_msg[128];
-                std::snprintf( err_msg, 128, "(warning max_of_type_%d_on_field)",
-                               it->first );
+                snprintf( err_msg, 128, "(warning max_of_type_%d_on_field)",
+                          it->first );
                 send( err_msg );
                 return;
             }
@@ -911,8 +911,8 @@ OnlineCoach::change_player_types( const char * command )
         M_stadium.substitute( it->first, it->second );
 
         char buf[64];
-        std::snprintf( buf, 64, "(ok change_player_type %d %d)",
-                       it->first->unum(), it->second );
+        snprintf( buf, 64, "(ok change_player_type %d %d)",
+                  it->first->unum(), it->second );
         send( buf );
     }
 
@@ -968,8 +968,8 @@ Coach::change_player_type( const std::string & team_name,
     M_stadium.substitute( player, player_type );
 
     char buf[64];
-    std::snprintf ( buf, 64, "(ok change_player_type %s %d %d)",
-                    team_name.c_str(), unum, player_type );
+    snprintf ( buf, 64, "(ok change_player_type %s %d %d)",
+               team_name.c_str(), unum, player_type );
 
     send( buf );
 }
@@ -1754,8 +1754,8 @@ OnlineCoach::change_player_type( int unum,
     M_stadium.substitute( player, player_type );
 
     char buf[64];
-    std::snprintf( buf, 64, "(ok change_player_type %d %d)",
-                   unum, player_type );
+    snprintf( buf, 64, "(ok change_player_type %d %d)",
+              unum, player_type );
     send( buf );
 }
 

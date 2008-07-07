@@ -50,7 +50,7 @@ public:
 
     void clear();
 
-    char ** const getXPM() const
+    const char * const * getXPM() const
       {
           return ( valid()
                    ? M_data
