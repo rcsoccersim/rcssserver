@@ -1,3 +1,13 @@
+2008-07-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	* src/coach.cpp:
+	* src/field.cpp:
+	* src/referee.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- added server::extra_half_time parameter.
+
 2008-07-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

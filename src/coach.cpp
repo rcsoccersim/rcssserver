@@ -723,9 +723,12 @@ OnlineCoach::change_player_types( const char * command )
         send( "(warning only_before_kick_off)" );
         return;
     }
-    else if ( M_stadium.time() >= ServerParam::instance().halfTime() *
-              ( ServerParam::instance().nrNormalHalfs() +
-                ServerParam::instance().nrExtraHalfs() ) )
+    else if ( M_stadium.time()
+              >= ( ( ServerParam::instance().halfTime()
+                     * ServerParam::instance().nrNormalHalfs() )
+                   + ( ServerParam::instance().extraHalfTime()
+                       * ServerParam::instance().nrExtraHalfs() ) )
+              )
     {
         send( "(warning no_subs_left)" );
         return;
@@ -1666,9 +1669,12 @@ OnlineCoach::change_player_type( int unum,
     }
 
     // when time elapsed, do not allow substitutions anymore (for penalties)
-    else if ( M_stadium.time() >= ServerParam::instance().halfTime() *
-              ( ServerParam::instance().nrNormalHalfs() +
-                ServerParam::instance().nrExtraHalfs() ) )
+    else if ( M_stadium.time()
+              >= ( ( ServerParam::instance().halfTime()
+                     * ServerParam::instance().nrNormalHalfs() )
+                   + ( ServerParam::instance().extraHalfTime()
+                       * ServerParam::instance().nrExtraHalfs() ) )
+              )
     {
         send( "(warning no_subs_left)" );
         return;

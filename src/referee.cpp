@@ -457,16 +457,20 @@ TimeRef::analyse()
         return;
     }
 
+    const ServerParam & param = ServerParam::instance();
+
     /* if a value of half_time is negative, then ignore time. */
-    if ( ServerParam::instance().halfTime() > 0 )
+    if ( param.halfTime() > 0 )
     {
+        int maximum_time = ( param.halfTime() * param.nrNormalHalfs()
+                             + param.extraHalfTime() * param.nrExtraHalfs() );
+        int normal_time = param.halfTime() * param.nrNormalHalfs();
+        int extra_count = s_half_time_count - param.nrNormalHalfs();
+
         /* check for penalty shoot-outs, half_time and extra_time. */
-        if ( M_stadium.time() >= ( ServerParam::instance().halfTime()
-                                   * ( ServerParam::instance().nrNormalHalfs()
-                                       + ServerParam::instance().nrExtraHalfs() ) )
-             )
+        if ( M_stadium.time() >= maximum_time )
         {
-            if ( ServerParam::instance().penaltyShootOuts()
+            if ( param.penaltyShootOuts()
                  && M_stadium.teamLeft().point() == M_stadium.teamRight().point() )
             {
                 return; // handled by PenaltyRef
@@ -478,9 +482,7 @@ TimeRef::analyse()
                 return;
             }
         }
-        else if ( M_stadium.time() >= ( ServerParam::instance().halfTime()
-                                        * ServerParam::instance().nrNormalHalfs() )
-                  )
+        else if ( M_stadium.time() >= normal_time )
         {
             if ( ! M_stadium.teamLeft().enabled()
                  || ! M_stadium.teamRight().enabled() )
@@ -495,9 +497,10 @@ TimeRef::analyse()
                 M_stadium.change_play_mode( PM_TimeOver );
                 return;
             }
-            else if ( M_stadium.time() >= ( ServerParam::instance().halfTime()
-                                            * ( s_half_time_count + 1 ) )
-                      )
+            else if ( M_stadium.time() >= ( normal_time
+                                            + ( param.extraHalfTime()
+                                                * ( extra_count + 1 ) ) )
+                        )
             {
                 ++s_half_time_count;
                 M_stadium.sendRefereeAudio( "time_extended" );
@@ -510,9 +513,7 @@ TimeRef::analyse()
             }
         }
         // if not in overtime, check whether halfTime() cycles have been passed
-        else if ( M_stadium.time() >= ( ServerParam::instance().halfTime()
-                                        * ( s_half_time_count + 1 ) )
-                  )
+        else if ( M_stadium.time() >= param.halfTime() * ( s_half_time_count + 1 ) )
         {
             ++s_half_time_count;
             Side kick_off_side = ( s_half_time_count % 2 == 0
@@ -2394,9 +2395,11 @@ PenaltyRef::analyseImpl()
          && ( ( ServerParam::instance().halfTime() < 0
                 && ( ServerParam::instance().nrNormalHalfs()
                      + ServerParam::instance().nrExtraHalfs() == 0 ) )
-              || ( M_stadium.time() >= ServerParam::instance().halfTime()
-                   * ( ServerParam::instance().nrNormalHalfs()
-                       + ServerParam::instance().nrExtraHalfs() ) )
+              || ( M_stadium.time() >=
+                   ( ( ServerParam::instance().halfTime()
+                       * ServerParam::instance().nrNormalHalfs() )
+                     + ( ServerParam::instance().extraHalfTime()
+                         * ServerParam::instance().nrExtraHalfs() ) ) )
               )
          && M_stadium.teamLeft().point() == M_stadium.teamRight().point()
          && M_stadium.playmode() != PM_BeforeKickOff )
