@@ -79,7 +79,7 @@ const int ServerParam::SENSE_BODY_INTERVAL_MSEC = 100;
 const int ServerParam::SEND_VISUALINFO_INTERVAL_MSEC = 100;
 
 const int ServerParam::HALF_TIME = 300;
-const int ServerParam::EXTRA_HALF_TIME = 100;
+const int ServerParam::EXTRA_HALF_TIME = 300;
 const int ServerParam::DROP_TIME = 200;
 
 const double ServerParam::PITCH_LENGTH = 105.0;

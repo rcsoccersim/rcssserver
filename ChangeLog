@@ -1,5 +1,9 @@
 2008-07-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a point version. Official release 12.1.3.
+
 	* configure.ac:
 	* src/coach.cpp:
 	* src/field.cpp:
