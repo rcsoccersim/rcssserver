@@ -523,7 +523,7 @@ Player::parseCommand( const char * command )
                 {
                     at_side = rcss::pcom::LEFT_SIDE;
                 }
-                else if ( ! std::strcmp( at_team_name, "l" ) )
+                else if ( ! std::strcmp( at_team_name, "r" ) )
                 {
                     at_side = rcss::pcom::RIGHT_SIDE;
                 }
