@@ -1,5 +1,14 @@
+[12.1.3]
+  * This release is the version for the final round of RoboCup2008.
+
+  * Added new parameter, server::extra_half_time(default: 300). This
+    parameter changes the length of each extra half. Please note that,
+    at least in this release, rcssserver never send
+    server::extra_half_time to v.12 or older clients via the
+    server_param message.
+
 [12.1.2]
-  * Fixed gcc 4.3 compilation problems.Thanks go to Hedayat Vatankhah
+  * Fixed gcc 4.3 compilation problems. Thanks go to Hedayat Vatankhah
   for providing the patch.
 
   * Fixed gcc 4.4 warnings.

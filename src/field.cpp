@@ -373,9 +373,10 @@ Stadium::checkAutoMode()
     // check kick off for the auto mode
     //
     if ( playmode() == PM_BeforeKickOff
-         && time() < ( ServerParam::instance().halfTime()
-                       * ( ServerParam::instance().nrNormalHalfs()
-                           + ServerParam::instance().nrExtraHalfs() ) )
+         && time() < ( ( ServerParam::instance().halfTime()
+                         * ServerParam::instance().nrNormalHalfs() )
+                       + ( ServerParam::instance().extraHalfTime()
+                           * ServerParam::instance().nrExtraHalfs() ) )
          )
     {
         if ( M_remote_players.size() == MAX_PLAYER*2 || time() > 0 )
@@ -1279,10 +1280,25 @@ void
 Stadium::setHalfTime( const Side kick_off_side,
                       const int half_time_count )
 {
+    std::cerr << time() << ": setHalfTime  count=" << half_time_count
+              << std::endl;
+
     M_ball_catcher = NULL;
     set_ball( kick_off_side, PVector( 0.0, 0.0 ) );
     change_play_mode( PM_BeforeKickOff );
-    M_time = ServerParam::instance().halfTime() * half_time_count;
+
+    if ( half_time_count < ServerParam::instance().nrNormalHalfs() )
+    {
+        M_time = ServerParam::instance().halfTime() * half_time_count;
+    }
+    else
+    {
+        int extra_count = half_time_count - ServerParam::instance().nrNormalHalfs();
+        M_time
+            = ServerParam::instance().halfTime() * ServerParam::instance().nrNormalHalfs()
+            + ServerParam::instance().extraHalfTime() * extra_count;
+    }
+
     M_weather.wind_vector.x *= -1;
     M_weather.wind_vector.y *= -1;
 }
@@ -1549,9 +1565,26 @@ Stadium::movePlayer( const Side side,
 void
 Stadium::_Start( Stadium & stad )
 {
-    if ( stad.time() % ServerParam::instance().halfTime() == 0 )
+    const ServerParam & param = ServerParam::instance();
+
+    //if ( stad.time() % param.halfTime() == 0 )
+    int normal_time = param.halfTime() * param.nrNormalHalfs();
+    if ( param.halfTime() < 0
+         || ( stad.time() <= normal_time
+              && stad.time() % param.halfTime() == 0 )
+         || ( stad.time() > normal_time
+              && ( stad.time() - normal_time )% param.extraHalfTime() == 0 )
+         )
     {
-        if ( ( stad.time() / ServerParam::instance().halfTime() ) % 2 == 0 )
+        int time = stad.time();
+        int half_time = param.halfTime();
+        if ( time > normal_time )
+        {
+            time -= normal_time;
+            half_time = param.extraHalfTime();
+        }
+
+        if ( ( time / half_time ) % 2 == 0 )
         {
             if ( ServerParam::instance().nrNormalHalfs() >= 0
                  && stad.time() < ( ServerParam::instance().halfTime()
@@ -1560,15 +1593,18 @@ Stadium::_Start( Stadium & stad )
             {
                 stad.recoveryPlayers();
             }
+
             stad.set_ball( LEFT, PVector( 0.0, 0.0 ) );
+
             if ( stad.time() == 0 )
             {
                 stad.assignPlayerTypes();
             }
+
             stad.change_play_mode( PM_KickOff_Left );
             std::cout << "Kick_off_left" << std::endl;
         }
-        else if ( ( stad.time() / ServerParam::instance().halfTime() ) % 2 == 1 )
+        else // if ( ( time / half_time ) % 2 == 1 )
         {
             if ( ServerParam::instance().nrNormalHalfs() >= 0
                  && stad.time() < ( ServerParam::instance().halfTime()
@@ -1577,6 +1613,7 @@ Stadium::_Start( Stadium & stad )
             {
                 stad.recoveryPlayers();
             }
+
             stad.set_ball( RIGHT, PVector( 0.0, 0.0 ) );
             stad.change_play_mode( PM_KickOff_Right );
             std::cout << "Kick_off_right" << std::endl;

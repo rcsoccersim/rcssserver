@@ -124,6 +124,7 @@ private:
     static const int SEND_VISUALINFO_INTERVAL_MSEC; /* milli-sec */
 
     static const int HALF_TIME;
+    static const int EXTRA_HALF_TIME;
     static const int DROP_TIME;
 
 public:
@@ -406,6 +407,9 @@ private:
     int M_raw_half_time; /* half time */
     int M_half_time; /* half time */
 
+    int M_raw_extra_half_time; /* extra half time */
+    int M_extra_half_time; /* extra half time */
+
     int M_drop_ball_time; /* cycles for dropping
                              the ball after a free kick,
                              corner kick message and
@@ -615,6 +619,20 @@ private:
           return M_raw_half_time;
       }
 
+    //Have to be careful with integer math, see bug # 800540
+    void setExtraHalfTime( int value )
+      {
+          M_raw_extra_half_time = value;
+          M_extra_half_time = static_cast< int >( value * getHalfTimeScaler() + 0.5 );
+      }
+
+    int getRawExtraHalfTime() const
+      {
+          //Have to be careful with integer math, see bug # 800540
+          //return static_cast< int >( M_half_time / getHalfTimeScaler() + 0.5 );
+          return M_raw_extra_half_time;
+      }
+
     int getRawSimStep() const
       {
           return M_simulator_step / M_slow_down_factor;
@@ -773,6 +791,7 @@ public:
     int clangMessPerCycle() const{ return M_clang_mess_per_cycle; }
 
     int halfTime() const { return M_half_time; }
+    int extraHalfTime() const { return M_extra_half_time; }
     int dropTime() const { return M_drop_ball_time; }
     int nrNormalHalfs() const { return M_nr_normal_halfs; }
     int nrExtraHalfs() const { return M_nr_extra_halfs; }

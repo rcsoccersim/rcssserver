@@ -79,6 +79,7 @@ const int ServerParam::SENSE_BODY_INTERVAL_MSEC = 100;
 const int ServerParam::SEND_VISUALINFO_INTERVAL_MSEC = 100;
 
 const int ServerParam::HALF_TIME = 300;
+const int ServerParam::EXTRA_HALF_TIME = 300;
 const int ServerParam::DROP_TIME = 200;
 
 const double ServerParam::PITCH_LENGTH = 105.0;
@@ -449,6 +450,7 @@ void
 ServerParam::setSlowDownFactor()
 {
     M_half_time = static_cast< int >( M_raw_half_time * getHalfTimeScaler() + 0.5 );
+    M_extra_half_time = static_cast< int >( M_raw_extra_half_time * getHalfTimeScaler() + 0.5 );
 
     M_simulator_step *= M_slow_down_factor;
     M_sense_body_step *= M_slow_down_factor;
@@ -612,6 +614,11 @@ ServerParam::addParams()
               rcss::conf::makeGetter( this, &ServerParam::getRawHalfTime ),
               "",
               7 );
+    addParam( "extra_half_time",
+              rcss::conf::makeSetter( this, &ServerParam::setExtraHalfTime ),
+              rcss::conf::makeGetter( this, &ServerParam::getRawExtraHalfTime ),
+              "",
+              999 );
     addParam( "drop_ball_time", M_drop_ball_time, "", 7 );
     addParam( "port", M_port, "", 8 );
     addParam( "coach_port", M_coach_port, "", 8 );
@@ -1079,6 +1086,7 @@ ServerParam::setDefaults()
 
 
     setHalfTime( HALF_TIME );
+    setExtraHalfTime( EXTRA_HALF_TIME );
     setSlowDownFactor();
 
     M_kickable_area = M_player_size + M_kickable_margin + M_ball_size;
