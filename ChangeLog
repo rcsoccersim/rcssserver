@@ -61,7 +61,7 @@
 	- updated a point version. Official release 12.1.1.
 
 	* src/object.cpp:
-	- fixed a endless loop bug in the check of collision with goal
+	- fixed an endless loop bug in the check of collision with goal
 	posts. Thanks go to Alexander Burger for reporting the problem.
 
 2008-04-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>

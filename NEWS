@@ -14,7 +14,7 @@
   * Fixed gcc 4.4 warnings.
 
 [12.1.1]
-  * Fixed a endless loop bug in the collision check with goal
+  * Fixed an endless loop bug in the collision check with goal
     posts. Thanks go to Alexander Burger for reporting the
     problem.
 
