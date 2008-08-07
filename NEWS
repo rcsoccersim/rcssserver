@@ -35,6 +35,9 @@
     pointing points are recorded by the global value of left-hand
     coordinate system.
 
+  * The size of team_graphic image can be smaller than 256x64. Any xpm
+    graphic that the size is 8*m x 8*n (0<m<=32,0<n<=8) is acceptable.
+
   * Now, team_graphic messages are always recorded in the game log
     file as msg info.
 
