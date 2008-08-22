@@ -695,7 +695,7 @@ MsgBuilder::add( RuleID rid )
 void
 MsgBuilder::emptyStack()
 {
-    while( !M_items.empty() )
+    while ( ! M_items.empty() )
     {
         M_items.top().clear();
         M_items.pop();
@@ -733,7 +733,8 @@ MsgBuilder::onNotEmpty() const
 
 MsgBuilder::MsgBuilder()
     : M_min_ver( (unsigned int)-1 ),
-      M_max_ver( 0 )
+      M_max_ver( 0 ),
+      M_freeform_msg_size( 128 )
 {
 
 }
@@ -783,7 +784,7 @@ MsgBuilder::setMsg( Msg* msg )
 
 
 void
-MsgBuilder::setTime( const int& time )
+MsgBuilder::setTime( const int & time )
 {
     if ( M_msg.get() != NULL )
     {
@@ -793,7 +794,7 @@ MsgBuilder::setTime( const int& time )
 
 
 void
-MsgBuilder::setSide( const int& side )
+MsgBuilder::setSide( const int & side )
 {
     if ( M_msg.get() != NULL )
     {
@@ -802,7 +803,7 @@ MsgBuilder::setSide( const int& side )
 }
 
 void
-MsgBuilder::setTimeRecv( const int& time )
+MsgBuilder::setTimeRecv( const int & time )
 {
     if ( M_msg.get() != NULL )
     {
@@ -813,10 +814,10 @@ MsgBuilder::setTimeRecv( const int& time )
 
 
 void
-MsgBuilder::setVer( const unsigned int& min,
-                    const unsigned int& max )
+MsgBuilder::setVer( const unsigned int & min,
+                    const unsigned int & max )
 {
-    if( min == max )
+    if ( min == max )
     {
         // Then the version is restriced to min/max
         if ( min < M_max_ver )
@@ -860,6 +861,17 @@ MsgBuilder::setVer( const unsigned int& min,
     }
 }
 
+void
+MsgBuilder::setFreeformMsgSize( const unsigned int len )
+{
+    M_freeform_msg_size = len;
+}
+
+unsigned int
+MsgBuilder::freeformMsgSize() const
+{
+    return M_freeform_msg_size;
+}
 
 
 void

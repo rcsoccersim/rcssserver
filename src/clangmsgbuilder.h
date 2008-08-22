@@ -61,6 +61,7 @@ private:
     std::auto_ptr< Msg > M_msg;
     unsigned int M_min_ver;
     unsigned int M_max_ver;
+    unsigned int M_freeform_msg_size;
 
 public:
     typedef std::list< Cond* > CondList;
@@ -205,6 +206,12 @@ public:
     virtual
     void setVer( const unsigned int & min,
                  const unsigned int & max );
+
+    virtual
+    void setFreeformMsgSize( const unsigned int len );
+
+    virtual
+    unsigned int freeformMsgSize() const;
 
     virtual
     void setTime( const int & time );

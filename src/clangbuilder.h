@@ -70,6 +70,12 @@ public:
                  const unsigned int & max ) = 0;
 
     virtual
+    void setFreeformMsgSize( const unsigned int len ) = 0;
+
+    virtual
+    unsigned int freeformMsgSize() const = 0;
+
+    virtual
     void setTime( const int & time ) = 0;
 
     virtual

@@ -1,5 +1,16 @@
 2008-08-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/coach_lang_par.ypp:
+	* src/Makefile.am:
+	* src/clangbuilder.h:
+	* src/clangmsgbuilder.cpp:
+	* src/clangmsgbuilder.h:
+	* src/coach.cpp:
+	* src/coach_lang_parser.ypp:
+	* src/coach_lang_tok.lpp:
+	- fixed the library dependency between clang parser and ServerParam
+	- renamed coach_lang_par.* with coach_lang_parser.*.
+
 	* src/Makefile.am:
 	* src/clangaction.cpp:
 	* src/clangaction.h:

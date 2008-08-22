@@ -24,8 +24,8 @@ DISTCLEANILES = \
 rcsoccersim
 
 MAINTAINERCLEANFILES = \
-coach_lang_par.cpp \
-coach_lang_par.h \
+coach_lang_parser.cpp \
+coach_lang_parser.h \
 coach_lang_tok.cpp \
 player_command_parser.cpp \
 player_command_parser.h \
@@ -90,10 +90,9 @@ clangdefmsg.h \
 clangaction.h \
 coach_lang_comp.h \
 region.h \
-coach_lang_par.h \
+coach_lang_parser.h \
 vector.h \
 clangutil.h \
-tuple.h \
 cond.h \
 compop.h \
 arithop.h \
@@ -140,7 +139,7 @@ clangadvicemsg.cpp \
 clangdefmsg.cpp \
 clangaction.cpp \
 coach_lang_comp.cpp \
-coach_lang_par.ypp \
+coach_lang_parser.ypp \
 coach_lang_tok.cpp \
 region.cpp \
 clangutil.cpp \
@@ -157,7 +156,7 @@ bin_SCRIPTS = rcsoccersim
 
 
 BUILT_SOURCES = libimports.cpp \
-coach_lang_par.h \
+coach_lang_parser.h \
 coach_lang_tok.cpp \
 player_command_tok.cpp \
 player_command_parser.h

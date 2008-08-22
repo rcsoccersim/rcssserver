@@ -1294,6 +1294,8 @@ OnlineCoach::parse_command( const char *command )
             /* parsing for new coach language */
 
             rcss::clang::MsgBuilder builder;
+            builder.setFreeformMsgSize( ServerParam::instance().freeformMsgSize() );
+
             rcss::clang::Parser parser( builder );
 
             int ret = parser.parse( command );
@@ -1302,7 +1304,7 @@ OnlineCoach::parse_command( const char *command )
                 //succeful parse
                 bool should_queue = false;
 
-                rcss::clang::Msg* msg = builder.detatchMsg().release();
+                rcss::clang::Msg * msg = builder.detatchMsg().release();
 
                 msg->setTimeRecv( M_stadium.time() );
 
