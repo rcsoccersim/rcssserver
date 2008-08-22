@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangadvicemsg.h  
+                                clangadvicemsg.h
                        Class for CLang Advice messages
                              -------------------
     begin                : 28-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -23,60 +23,54 @@
 #define CLANGADVICEMSG_H
 
 #include "clangmsg.h"
-#include "hasa.h"
 #include "coach_lang_comp.h"
 
-namespace rcss
-{
-  namespace clang
-  {
-    class AdviceMsg 
-      : public Msg
-    {
-    public:
-      typedef std::list< Token* > Storage;
+namespace rcss {
+namespace clang {
 
-      AdviceMsg();
+class AdviceMsg
+    : public Msg {
+public:
+    typedef std::list< Token * > Storage;
 
-      AdviceMsg( const Storage& tokens );
+    AdviceMsg();
+private:
+    AdviceMsg( const Storage & tokens );
+public:
 
-      virtual
-      ~AdviceMsg();
+    virtual
+    ~AdviceMsg();
 
-      virtual
-      std::auto_ptr< Msg >
-      deepCopy() const;
+    virtual
+    std::auto_ptr< Msg > deepCopy() const;
 
-//       virtual
-//       void
-//       accept( Visitor& v );
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-//       virtual
-//       void
-//       accept( ConstVisitor& v ) const;
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-      virtual
-      std::ostream&
-      print( std::ostream& out ) const;
-      
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
-
-      const Storage& 
-      getTokens() const;
-
-      Storage& 
-      getTokens();
+    const Storage & getTokens() const
+      {
+          return M_tokens;
+      }
+    Storage & getTokens()
+      {
+          return M_tokens;
+      }
 
 	virtual
-	Types
-	getType() const { return ADVICE; }
+	Types getType() const
+      {
+          return ADVICE;
+      }
 
-    private:
-	Storage m_tokens;
-    };
-  }
+private:
+	Storage M_tokens;
+};
+
+}
 }
 
 #endif

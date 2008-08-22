@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangdefmsg.h  
+                                clangdefmsg.h
                        Class for CLang Define messages
                              -------------------
     begin                : 28-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -23,61 +23,56 @@
 #define CLANGDEFMSG_H
 
 #include "clangmsg.h"
-#include "hasa.h"
 #include "coach_lang_comp.h"
 
-namespace rcss
-{
-  namespace clang
-  {
-    class DefineMsg
-      : public Msg
-    {
-    public:
-      typedef std::list< Def* > Storage;
+namespace rcss {
+namespace clang {
 
-      DefineMsg();
-      
-      DefineMsg( const Storage& defs );
+class DefineMsg
+    : public Msg {
+public:
+    typedef std::list< Def* > Storage;
 
-      virtual
-      ~DefineMsg();
+    DefineMsg();
+private:
+    DefineMsg( const Storage & defs );
+public:
 
-      virtual
-      std::auto_ptr< Msg >
-      deepCopy() const;
+    virtual
+    ~DefineMsg();
 
-//       virtual
-//       void
-//       accept( Visitor& v );
+    virtual
+    std::auto_ptr< Msg > deepCopy() const;
 
-//       virtual
-//       void
-//       accept( ConstVisitor& v ) const;
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-      virtual
-      std::ostream& 
-      print( std::ostream& out ) const;
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
-     
-      const Storage& 
-      getDefs() const;
+    const Storage & getDefs() const
+      {
+          return M_defs;
+      }
 
-	Storage& 
-	getDefs();
+    Storage & getDefs()
+      {
+          return M_defs;
+      }
 
 	virtual
-	Types
-	getType() const { return DEFINE; }
+	Types getType() const
+      {
+          return DEFINE;
+      }
 
-    private:
-	Storage m_defs;
+private:
+	Storage M_defs;
 
-    };
-  }
+};
+
+}
 }
 
 #endif

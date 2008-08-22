@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangdelmsg.h  
+                                clangdelmsg.h
                        Class for CLang Delete messages
                              -------------------
     begin                : 28-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -23,62 +23,54 @@
 #define CLANGDELMSG_H
 
 #include "clangmsg.h"
-#include "hasa.h"
 #include "rule.h"
 
-namespace rcss
-{
-  namespace clang
-  {
-    class DelMsg 
-      : public Msg
-    {
-    public:
+namespace rcss {
+namespace clang {
 
-      DelMsg();
+class DelMsg
+    : public Msg {
+public:
 
-      DelMsg( const RuleIDList& list );
+    DelMsg();
+private:
+    DelMsg( const RuleIDList & list );
+public:
 
-      virtual
-      ~DelMsg();
+    virtual
+    ~DelMsg();
 
-      virtual
-      std::auto_ptr< Msg >
-      deepCopy() const;
+    virtual
+    std::auto_ptr< Msg > deepCopy() const;
 
-//       virtual
-//       void
-//       accept( Visitor& v );
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-//       virtual
-//       void
-//       accept( ConstVisitor& v ) const;
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-      virtual
-      std::ostream&
-      print( std::ostream& out ) const;
+    const RuleIDList & getList() const
+      {
+          return M_rids;
+      }
 
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
-
-      const RuleIDList&
-      getList() const;    
-
-	void
-	set( const RuleIDList& rids )
-	    {
-		m_rids = rids;
-	    }
+	void set( const RuleIDList & rids )
+      {
+          M_rids = rids;
+      }
 
 	virtual
-	Types
-	getType() const { return DEL; }
+	Types getType() const
+      {
+          return DEL;
+      }
 
-    private:
-	RuleIDList m_rids;
-    };
-  }
+private:
+	RuleIDList M_rids;
+};
+
+}
 }
 
 #endif

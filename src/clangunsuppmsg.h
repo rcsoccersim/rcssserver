@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangunsuppmsg.h  
+                                clangunsuppmsg.h
                        Class for CLang unsupported messages
                              -------------------
     begin                : 28-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -24,45 +24,36 @@
 
 #include "clangmsg.h"
 
-namespace rcss
-{
-  namespace clang
-  {
-    class UnsuppMsg 
-      : public Msg 
-    {
-    public:
-      UnsuppMsg();
+namespace rcss {
+namespace clang {
 
-      virtual
-      ~UnsuppMsg();
+class UnsuppMsg
+    : public Msg  {
+public:
+    UnsuppMsg();
 
-      virtual
-      std::auto_ptr< Msg >
-      deepCopy() const;
+    virtual
+    ~UnsuppMsg();
 
-//       virtual
-//       void
-//       accept( Visitor& v );
+    virtual
+    std::auto_ptr< Msg > deepCopy() const;
 
-//       virtual
-//       void
-//       accept( ConstVisitor& v ) const;
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-      virtual
-      std::ostream&
-      print( std::ostream& out ) const;
-
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
 	virtual
-	Types
-	getType() const { return UNSUP; }
+	Types getType() const
+      {
+          return UNSUP;
+      }
 
-    };
-  }
+};
+
+}
 }
 
 #endif

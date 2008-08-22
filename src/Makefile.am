@@ -92,13 +92,11 @@ coach_lang_comp.h \
 region.h \
 coach_lang_par.h \
 vector.h \
-visitor.h \
 clangutil.h \
 tuple.h \
 cond.h \
 compop.h \
 arithop.h \
-hasa.h \
 rule.h \
 rcssexceptions.h \
 rcssserverconfig.hpp \
@@ -128,6 +126,7 @@ librcssclangparser_la_LDFLAGS = -version-info 3:0:1
 
 
 librcssclangparser_la_SOURCES = \
+clangbuilder.cpp \
 clangmsgbuilder.cpp \
 clangparser.cpp \
 clangmsg.cpp \
@@ -144,7 +143,6 @@ coach_lang_comp.cpp \
 coach_lang_par.ypp \
 coach_lang_tok.cpp \
 region.cpp \
-visitor.cpp \
 clangutil.cpp \
 cond.cpp \
 compop.cpp \

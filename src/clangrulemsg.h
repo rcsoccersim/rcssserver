@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangrulemsg.h  
+                                clangrulemsg.h
                        Class for CLang Rule messages
                              -------------------
     begin                : 28-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -23,64 +23,58 @@
 #define CLANGRULEMSG_H
 
 #include "clangmsg.h"
-#include "hasa.h"
 #include <list>
 
 
-namespace rcss
-{
-  namespace clang
-  {
-    class ActivateRules;
+namespace rcss {
+namespace clang {
 
-    class RuleMsg 
-      : public Msg
-    {
-    public:
-      typedef std::list< ActivateRules > Storage;
+class ActivateRules;
 
-      RuleMsg();
+class RuleMsg
+    : public Msg {
+public:
+    typedef std::list< ActivateRules > Storage;
 
-      RuleMsg( const Storage& list );
+    RuleMsg();
+private:
+    RuleMsg( const Storage & list );
+public:
+    virtual
+    ~RuleMsg();
 
-      virtual
-      ~RuleMsg();
+    virtual
+    std::auto_ptr< Msg > deepCopy() const;
 
-      virtual
-      std::auto_ptr< Msg >
-      deepCopy() const;
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-//       virtual
-//       void
-//       accept( Visitor& v );
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-//       virtual
-//       void
-//       accept( ConstVisitor& v ) const;
+    const Storage & getList() const
+      {
+          return M_active;
+      }
 
-      virtual
-      std::ostream&
-      print( std::ostream& out ) const;
-
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
-
-      const Storage&
-      getList() const;
-
-	Storage&
-      getList();
+	Storage & getList()
+      {
+          return M_active;
+      }
 
 	virtual
-	Types
-	getType() const { return RULE; }
+	Types getType() const
+      {
+          return RULE;
+      }
 
-    private:
-	Storage m_active;
+private:
+	Storage M_active;
 
-    };
-  }
+};
+
+}
 }
 
 #endif

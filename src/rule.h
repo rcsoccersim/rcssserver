@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                    rule.h  
+                                    rule.h
                            Classes for clang rules
                              -------------------
     begin                : 25-APR-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -19,224 +19,182 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _RULE_H_
-#define _RULE_H_
+#ifndef CLANG_RULE_H
+#define CLANG_RULE_H
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #include <list>
 #include <memory>
-#include "hasa.h"
 
+namespace rcss {
+namespace clang {
 
-namespace rcss
+typedef std::string RuleID;
+
+// If the rule list is empty then it counts a containing all
+// rules.  This also means that there is no support for an empty
+// rule ID list, but that is just the way we want it.
+class RuleIDList
+//    : public std::list< RuleID >
 {
-  namespace clang
-  {
-    typedef std::string RuleID;
+// private:
+//     bool empty() const;
+public:
+    bool all() const;
+    bool unary() const;
 
-    // If the rule list is empty then it counts a containing all
-    // rules.  This also means that there is no support for an empty
-    // rule ID list, but that is just the way we want it.
-    class RuleIDList
-      : public std::list< RuleID >
-    {
-    private:
-      bool
-      empty() const;
-    public:
-      bool
-      all() const;
+    void push_front( const RuleID & id )
+      {
+          M_list.push_front( id );
+      }
 
-      bool
-      unary() const;
+    std::ostream & print( std::ostream & o ) const;
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+private:
+    std::list< RuleID > M_list;
+};
 
-      std::ostream&
-      print( std::ostream& o ) const;
+class ActivateRules {
+public:
+    ActivateRules();
+    ActivateRules( const bool on,
+                   const RuleIDList & list );
+    ~ActivateRules();
 
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
-    };
+    bool on() const;
+    bool all() const;
+    bool unary() const;
+    const RuleIDList & getList() const;
 
-    class ActivateRules
-    {
-    public:
+    void set( const bool on );
+    void set( const RuleIDList & rids );
 
-      ActivateRules();
+    std::ostream & print( std::ostream & o ) const;
+    std::ostream & printPretty( std::ostream & o,
+                                const std::string & line_header ) const;
+private:
+	bool M_on;
+	RuleIDList M_rids;
+};
 
-      ActivateRules( const bool& on, const RuleIDList& list );
+class Cond;
+class Dir;
 
-      ~ActivateRules();
+class Rule {
+public:
+    virtual
+    ~Rule();
 
-      bool
-      on() const;
+    virtual
+    std::auto_ptr< Rule > deepCopy() const = 0;
 
-      bool
-      all() const;
+    virtual
+    std::ostream & print( std::ostream & out ) const = 0;
 
-      bool
-      unary() const;
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const = 0;
+};
 
-      const RuleIDList&
-      getList() const;
-
-      void
-      set( const bool& on );
-
-      void
-      set( const RuleIDList& rids );
-
-      std::ostream&
-      print( std::ostream& o ) const;
-
-      std::ostream&
-      printPretty( std::ostream& o, const std::string& line_header ) const;
-
-    private:
-	bool m_on;
-	RuleIDList m_rids;
-    };
-
-    class Cond;
-    class Dir;
-
-    class Rule
-    {
-    public:
-      virtual
-      ~Rule();
-
-      virtual
-      std::auto_ptr< Rule >
-      deepCopy() const = 0;
-
-      virtual
-      std::ostream& 
-      print( std::ostream& out ) const = 0;
-      
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out,
-                   const std::string& line_header ) const = 0;
-    };
-
-    class CondRule
-      : public Rule
-    {
-    public:
+class CondRule
+    : public Rule {
+public:
 
 	CondRule( std::auto_ptr< Cond > cond );
-	
+
 	virtual
 	~CondRule();
-	
-	const Cond*
-	getCond() const;
-	
-	std::auto_ptr< Cond >
-	detachCond();
-	
-    private:
-	std::auto_ptr< Cond > m_cond;
-   };
 
-    
-    class SimpleRule
-      : public CondRule
-    {
-    public:
-      typedef std::list< Dir* > Storage;
+	const Cond * getCond() const;
 
-      SimpleRule( std::auto_ptr< Cond > cond );
-      
-      SimpleRule( std::auto_ptr< Cond > cond,
-                  const Storage& dirs );
+	std::auto_ptr< Cond > detachCond();
 
-      virtual
-      ~SimpleRule();
+private:
+	std::auto_ptr< Cond > M_cond;
+};
 
-      virtual
-      std::ostream& 
-      print( std::ostream& out ) const;
-      
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
 
-      virtual
-      std::auto_ptr< Rule >
-      deepCopy() const;
+class SimpleRule
+    : public CondRule {
+public:
+    typedef std::list< Dir * > Storage;
 
-      const Storage&
-      getDirs() const;
+    SimpleRule( std::auto_ptr< Cond > cond );
+    SimpleRule( std::auto_ptr< Cond > cond,
+                const Storage & dirs );
+    ~SimpleRule();
 
-    private:
-	Storage m_dirs;
-    };
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-    class NestedRule
-      : public CondRule
-    {
-    public:
-      typedef std::list< Rule* > Storage;
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-      NestedRule( std::auto_ptr< Cond > cond );
-      
-      NestedRule( std::auto_ptr< Cond > cond,
-                  const Storage& rules );
+    virtual
+    std::auto_ptr< Rule > deepCopy() const;
 
-      virtual
-      ~NestedRule();
+    const Storage & getDirs() const;
 
-      virtual
-      std::ostream& 
-      print( std::ostream& out ) const;
-      
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
+private:
+	Storage M_dirs;
+};
 
-      virtual
-      std::auto_ptr< Rule >
-      deepCopy() const;
-      
-      const Storage&
-      getRules() const;
 
-    private:
-	Storage m_rules;
-    };
+class NestedRule
+    : public CondRule {
+public:
+    typedef std::list< Rule * > Storage;
 
-    class IDListRule
-      : public Rule
-    {
-    public:
+    NestedRule( std::auto_ptr< Cond > cond );
 
-      IDListRule();
-      
-      IDListRule( const RuleIDList& rules );
+    NestedRule( std::auto_ptr< Cond > cond,
+                const Storage & rules );
 
-      virtual
-      ~IDListRule();
+    virtual
+    ~NestedRule();
 
-      virtual
-      std::ostream& 
-      print( std::ostream& out ) const;
-      
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-      virtual
-      std::auto_ptr< Rule >
-      deepCopy() const;
-      
-      const RuleIDList&
-      getIDList() const;
-	
-    private:
-	RuleIDList m_rids;
-    };
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    std::auto_ptr< Rule > deepCopy() const;
+
+    const Storage & getRules() const;
+
+private:
+	Storage M_rules;
+};
+
+class IDListRule
+    : public Rule {
+public:
+
+    IDListRule();
+    IDListRule( const RuleIDList & rules );
+    ~IDListRule();
+
+    virtual
+    std::ostream & print( std::ostream & out ) const;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    std::auto_ptr< Rule > deepCopy() const;
+
+    const RuleIDList & getIDList() const;
+
+private:
+	RuleIDList M_rids;
+};
 
 
 std::ostream&
@@ -248,7 +206,7 @@ operator<<( std::ostream& o, const rcss::clang::ActivateRules& activ_rules );
 std::ostream&
 operator<<( std::ostream & os, const rcss::clang::Rule& r );
 
-  }
 }
- 
+}
+
 #endif

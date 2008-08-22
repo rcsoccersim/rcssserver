@@ -1,3 +1,51 @@
+2008-08-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	* src/clangaction.cpp:
+	* src/clangaction.h:
+	* src/clangadvicemsg.cpp:
+	* src/clangadvicemsg.h:
+	* src/clangbuilder.cpp:
+	* src/clangbuilder.h:
+	* src/clangdefmsg.cpp:
+	* src/clangdefmsg.h:
+	* src/clangdelmsg.cpp:
+	* src/clangdelmsg.h:
+	* src/clangfreeformmsg.cpp:
+	* src/clangfreeformmsg.h:
+	* src/clanginfomsg.cpp:
+	* src/clanginfomsg.h:
+	* src/clangmetamsg.cpp:
+	* src/clangmetamsg.h:
+	* src/clangmsg.cpp:
+	* src/clangmsg.h:
+	* src/clangmsgbuilder.cpp:
+	* src/clangmsgbuilder.h:
+	* src/clangparser.cpp:
+	* src/clangparser.h:
+	* src/clangrulemsg.cpp:
+	* src/clangrulemsg.h:
+	* src/clangunsuppmsg.cpp:
+	* src/clangunsuppmsg.h:
+	* src/clangutil.cpp:
+	* src/clangutil.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/coach_lang_comp.cpp:
+	* src/coach_lang_comp.h:
+	* src/cond.h:
+	* src/region.cpp:
+	* src/region.h:
+	* src/rule.cpp:
+	* src/rule.h:
+	- fixed coding style.
+
+	* src/Makefile.am:
+	* src/hasa.h:
+	* src/visitor.cpp:
+	* src/visitor.h:
+	- removed unused files.
+
 2008-07-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* ChangeLog:

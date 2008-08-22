@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangrulemsg.cc  
+                                clangrulemsg.cc
                        Class for CLang Rule messages
                              -------------------
     begin                : 28-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -23,72 +23,69 @@
 #include "rule.h"
 #include "types.h"
 
-namespace rcss
+namespace rcss {
+namespace clang {
+
+RuleMsg::RuleMsg()
+    : Msg()
 {
-  namespace clang
-  {
-    RuleMsg::RuleMsg()
-      : Msg()
-    {}
 
-    RuleMsg::RuleMsg( const Storage& list )
+}
+
+RuleMsg::RuleMsg( const Storage & list )
 	: Msg(),
-	  m_active( list )
-    {}
-    
-    RuleMsg::~RuleMsg()
+	  M_active( list )
+{
+
+}
+
+RuleMsg::~RuleMsg()
+{
+
+}
+
+std::auto_ptr< Msg >
+RuleMsg::deepCopy() const
+{
+	return std::auto_ptr< Msg >( new RuleMsg( *this ) );
+}
+
+std::ostream &
+RuleMsg::print( std::ostream & out ) const
+{
+    out << "(rule ";
+    for ( Storage::const_iterator i = M_active.begin();
+          i != M_active.end();
+          ++i )
     {
-    }
-    
-    std::auto_ptr< Msg >
-    RuleMsg::deepCopy() const
-    { 
-	return std::auto_ptr< Msg >( new RuleMsg( *this ) ); 
-    }
-
-//     void
-//     RuleMsg::accept( Visitor& v )
-//     { v.startVisit( this ); }
-
-//     void
-//     RuleMsg::accept( ConstVisitor& v ) const
-//     { v.startVisit( this ); }
-
-    std::ostream&
-    RuleMsg::print( std::ostream& out ) const
-    { 
-      out << "(rule ";
-      for( Storage::const_iterator i = m_active.begin();
-           i != m_active.end(); ++i )
         out << *i;
-      out << ")";
-      return out;
     }
-    
-    std::ostream&
-    RuleMsg::printPretty( std::ostream& out,
-                          const std::string& line_header ) const
-    { 
-      out << line_header << "Activation List:\n";
-      bool first = true;
-      for( Storage::const_iterator i = m_active.begin();
-           i != m_active.end(); ++i )
-        {
-          if( first )
-            first = false;
-          else
-            out << line_header << " Then:\n";
-          i->printPretty( out, line_header + "  -" );
-        }
-      return out;
-    }
-    
-    const RuleMsg::Storage&
-    RuleMsg::getList() const
-    { return m_active; }
+    out << ")";
+    return out;
+}
 
-      RuleMsg::Storage&
-      RuleMsg::getList()
-      { return m_active; }
-  }
+std::ostream &
+RuleMsg::printPretty( std::ostream & out,
+                      const std::string & line_header ) const
+{
+    out << line_header << "Activation List:\n";
+    bool first = true;
+    for ( Storage::const_iterator i = M_active.begin();
+          i != M_active.end();
+          ++i )
+    {
+        if ( first )
+        {
+            first = false;
+        }
+        else
+        {
+            out << line_header << " Then:\n";
+        }
+        i->printPretty( out, line_header + "  -" );
+    }
+    return out;
+}
+
+}
 }

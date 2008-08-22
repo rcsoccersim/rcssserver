@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangfreeformmsg.h  
+                                clangfreeformmsg.h
                        Class for CLang Freeform messages
                              -------------------
     begin                : 28-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -23,60 +23,45 @@
 #define CLANGFREEFORMMSG_H
 
 #include "clangmsg.h"
-#include "hasa.h"
 #include <string>
 
-namespace rcss
-{
-  namespace clang
-  { 
-    class FreeformMsg 
-      : public Msg
-    {
-    public:
-      
-      FreeformMsg();
+namespace rcss {
+namespace clang {
 
-      FreeformMsg( const std::string& str );
+class FreeformMsg
+    : public Msg {
+private:
+    FreeformMsg();
 
-      virtual
-      ~FreeformMsg();
- 
-      virtual
-      std::auto_ptr< Msg >
-      deepCopy() const;
+public:
 
-//       virtual
-//       void
-//       accept( Visitor& v );
+    FreeformMsg( const std::string & str );
 
-//       virtual
-//       void
-//       accept( ConstVisitor& v ) const;
+    virtual
+    ~FreeformMsg();
 
-      virtual
-      std::ostream&
-      print( std::ostream& out ) const;
+    virtual
+    std::auto_ptr< Msg > deepCopy() const;
 
-      virtual
-      std::ostream&
-      printPretty( std::ostream& out, const std::string& line_header ) const;
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-      std::string
-      getStr();
-
-      const std::string&
-      getStr() const;
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
 	virtual
-	Types
-	getType() const { return FREEFORM; }
+	Types getType() const
+      {
+          return FREEFORM;
+      }
 
-    private:
-	std::string m_str;
+private:
+	std::string M_str;
 
-    };
-  }
+};
+
+}
 }
 
 #endif

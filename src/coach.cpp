@@ -1306,8 +1306,7 @@ OnlineCoach::parse_command( const char *command )
 
                 msg->setTimeRecv( M_stadium.time() );
 
-                switch( msg->getType() )
-                {
+                switch ( msg->getType() ) {
                 case rcss::clang::Msg::META:
                     if ( M_stadium.playmode() != PM_PlayOn )
                     {
@@ -1625,8 +1624,8 @@ OnlineCoach::check_message_queue( int time )
     {
         rcss::clang::Msg* msg = *( M_message_queue.begin() );
 
-        if ( M_stadium.playmode() != PM_PlayOn ||
-             time - msg->getTimeRecv() >= ServerParam::instance().clangMessDelay() )
+        if ( M_stadium.playmode() != PM_PlayOn
+             || time - msg->getTimeRecv() >= ServerParam::instance().clangMessDelay() )
         {
             msg->setTimeSend( M_stadium.time() );
             msg->setSide( side() );

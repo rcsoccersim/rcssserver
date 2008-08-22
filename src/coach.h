@@ -152,8 +152,7 @@ class XPMHolder;
   \brief online coach class
  */
 class OnlineCoach
-    :	public Coach
-{
+    :	public Coach {
 private:
     rcss::InitObserverOnlineCoach * M_init_observer_olcoach;
 
