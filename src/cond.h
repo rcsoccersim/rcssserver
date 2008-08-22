@@ -23,10 +23,12 @@
 #define CLANG_COND_H
 
 #include "clangutil.h"
-#include <memory>
 #include "region.h"
 #include "compop.h"
 #include "rcssexceptions.h"
+
+#include <iosfwd>
+#include <memory>
 
 namespace rcss {
 namespace clang {
@@ -89,187 +91,6 @@ public:
         bool lookup( const CondUNum & cond ) const = 0;
     }; // end Context
 
-    //       typedef util::Visitor20< CondBool*,
-    //         CondPlayerPos*,
-    //         CondBallPos*,
-    //         CondBallOwner*,
-    //         CondPlayMode*,
-    //         CondAnd*,
-    //         CondOr*,
-    //         CondNot*,
-    //         CondNamed*,
-    //         CondTime*,
-    //         CondOppGoal*,
-    //         CondOurGoal*,
-    //         CondGoalDiff*,
-    //         CondUNum* > Visitor;
-
-    //       typedef util::Visitor20< const CondBool*,
-    //         const CondPlayerPos*,
-    //         const CondBallPos*,
-    //         const CondBallOwner*,
-    //         const CondPlayMode*,
-    //         const CondAnd*,
-    //         const CondOr*,
-    //         const CondNot*,
-    //         const CondNamed*,
-    //         const CondTime*,
-    //         const CondOppGoal*,
-    //         const CondOurGoal*,
-    //         const CondGoalDiff*,
-    //         const CondUNum* > ConstVisitor;
-
-    //       class TypeExtractor
-    //         : public util::TypeExtractor20< CondBool*,
-    //         CondPlayerPos*,
-    //         CondBallPos*,
-    //         CondBallOwner*,
-    //         CondPlayMode*,
-    //         CondAnd*,
-    //         CondOr*,
-    //         CondNot*,
-    //         CondNamed*,
-    //         CondTime*,
-    //         CondOppGoal*,
-    //         CondOurGoal*,
-    //         CondGoalDiff*,
-    //         CondUNum* >
-    //       {
-    //       protected:
-    //         void
-    //         visit( CondBool* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondPlayerPos* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondBallPos* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondBallOwner* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondPlayMode* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondAnd* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondOr* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondNot* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondNamed* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondTime* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondOppGoal* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondOurGoal* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondGoalDiff* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( CondUNum* cond )
-    //         { setValue( cond ); }
-
-    //       };
-
-    //       class ConstTypeExtractor
-    //         : public util::TypeExtractor20< const CondBool*,
-    //         const CondPlayerPos*,
-    //         const CondBallPos*,
-    //         const CondBallOwner*,
-    //         const CondPlayMode*,
-    //         const CondAnd*,
-    //         const CondOr*,
-    //         const CondNot*,
-    //         const CondNamed*,
-    //         const CondTime*,
-    //         const CondOppGoal*,
-    //         const CondOurGoal*,
-    //         const CondGoalDiff*,
-    //         const CondUNum* >
-    //       {
-    //       protected:
-    //         void
-    //         visit( const CondBool* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondPlayerPos* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondBallPos* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondBallOwner* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondPlayMode* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondAnd* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondOr* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondNot* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondNamed* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondTime* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondOppGoal* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondOurGoal* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondGoalDiff* cond )
-    //         { setValue( cond ); }
-
-    //         void
-    //         visit( const CondUNum* cond )
-    //         { setValue( cond ); }
-
-    //        };
-
-
     Cond()
       { }
 
@@ -287,14 +108,6 @@ public:
     virtual
     bool eval( const Context & context ) const = 0;
 
-    //       virtual
-    //       void
-    //       accept( Visitor& v ) = 0;
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const = 0;
-
     virtual
     std::auto_ptr< Cond > deepCopy() const = 0;
 };
@@ -304,8 +117,9 @@ std::ostream &
 operator<<( std::ostream & os,
             const Cond & c )
 {
-    return c.print(os);
+    return c.print( os );
 }
+
 
 class CondBool
     : public Cond {
@@ -313,50 +127,34 @@ public:
 
     CondBool()
         : Cond(),
-          m_state( false )
+          M_state( false )
       { }
 
     CondBool( bool state )
         : Cond(),
-          m_state( state )
+          M_state( state )
       { }
 
     ~CondBool()
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const
-      {
-          return out << "(" << ( getState() ? "true" : "false" ) << ")";
-      }
+    std::ostream & print( std::ostream & out ) const;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const
-      {
-          return out << line_header << ( getState() ? "true" : "false" )
-                     << std::endl;
-      }
+                                const std::string & line_header ) const;
 
+    virtual
     bool eval( const Context & ) const
       {
-          return m_state;
+          return M_state;
       }
 
     bool getState() const
       {
-          return m_state;
+          return M_state;
       }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
 
     virtual
     std::auto_ptr< Cond > deepCopy() const
@@ -365,225 +163,190 @@ public:
       }
 
 private:
-	bool m_state;
+	bool M_state;
 };
 
-class CondPlayerPos
-    : public Cond
-{
-public:
 
+class CondPlayerPos
+    : public Cond {
+private:
     CondPlayerPos()
         : Cond(),
           M_our_side( false ),
           M_min_match( 1 ),
           M_max_match( 11 )
       {}
-
-    CondPlayerPos( const bool& our_side,
-                   const UNumSet& players,
-                   const int& min_match,
-                   const int& max_match,
+public:
+    CondPlayerPos( const bool & our_side,
+                   const UNumSet & players,
+                   const int & min_match,
+                   const int & max_match,
                    std::auto_ptr< Region > reg )
         : Cond(),
           M_our_side( our_side ),
           M_min_match( min_match ),
           M_max_match( max_match ),
-          m_players( players ),
-          m_reg( reg )
+          M_players( players ),
+          M_reg( reg )
       {}
 
     virtual
     ~CondPlayerPos()
-      {}
-
-    std::ostream&
-    print( std::ostream& out ) const;
-
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const;
-
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
-
-    /* class specific stuff */
-    bool
-    isOurSide() const
-      { return M_our_side; }
-
-    bool
-    isTheirSide() const
-      { return !M_our_side; }
-
-    int
-    getMinMatch() const
-      { return M_min_match; }
-
-    int
-    getMaxMatch() const
-      { return M_max_match; }
-
-    const Region*
-    getRegion() const
-      { return m_reg.get(); }
-
-    UNumSet
-    getPlayerSet()
-      { return m_players; }
-
-    void
-    setMinMatch( int x )
-      { M_min_match = x; }
-
-    void
-    setMaxMatch( int x )
-      { M_max_match = x; }
-
-    void
-    set( std::auto_ptr< Region > reg )
-      { m_reg = reg; }
-
-    std::auto_ptr< Region >
-    detachRegion()
-      { return m_reg; }
-
-    void
-    setOurSide( const bool& our_side )
-      { M_our_side = our_side; }
-
-    void
-    set( const UNumSet& players )
-      { m_players = players; }
-
-    void
-    addPlayer( const UNum& i )
-      { m_players.add( i ); }
-
-    void
-    clearPlayers()
-      { m_players.clear(); }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
+      { }
 
     virtual
-    std::auto_ptr< Cond >
-    deepCopy() const
+    std::auto_ptr< Cond > deepCopy() const;
+
+
+    virtual
+    std::ostream & print( std::ostream & out ) const;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const
       {
-          if( m_reg.get() != NULL )
-              return std::auto_ptr< Cond >( new CondPlayerPos( M_our_side,
-                                                               m_players,
-                                                               M_min_match,
-                                                               M_max_match,
-                                                               m_reg->deepCopy() ) );
-          else
-              return std::auto_ptr< Cond >( new CondPlayerPos( M_our_side,
-                                                               m_players,
-                                                               M_min_match,
-                                                               M_max_match,
-                                                               std::auto_ptr< Region >() ) );
+          return context.lookup( *this );
+      }
+
+    /* class specific stuff */
+    bool isOurSide() const
+      {
+          return M_our_side;
+      }
+
+    bool isTheirSide() const
+      {
+          return !M_our_side;
+      }
+
+    int getMinMatch() const
+      {
+          return M_min_match;
+      }
+
+    int getMaxMatch() const
+      {
+          return M_max_match;
+      }
+
+    const Region * getRegion() const
+      {
+          return M_reg.get();
+      }
+
+    UNumSet getPlayerSet()
+      {
+          return M_players;
+      }
+
+    void setMinMatch( int x )
+      {
+          M_min_match = x;
+      }
+
+    void setMaxMatch( int x )
+      {
+          M_max_match = x;
+      }
+
+    void set( std::auto_ptr< Region > reg )
+      {
+          M_reg = reg;
+      }
+
+    std::auto_ptr< Region > detachRegion()
+      {
+          return M_reg;
+      }
+
+    void setOurSide( const bool & our_side )
+      {
+          M_our_side = our_side;
+      }
+
+    void set( const UNumSet & players )
+      {
+          M_players = players;
+      }
+
+    void addPlayer( const UNum & i )
+      {
+          M_players.add( i );
+      }
+
+    void clearPlayers()
+      {
+          M_players.clear();
       }
 
 private:
     bool M_our_side;
     int M_min_match;
     int M_max_match;
-	UNumSet m_players;
-	std::auto_ptr< Region > m_reg;
+	UNumSet M_players;
+	std::auto_ptr< Region > M_reg;
 };
 
 class CondBallPos
-    : public Cond
-{
-public:
-
+    : public Cond {
+private:
     CondBallPos()
         : Cond()
-      {}
+      { }
 
+public:
     CondBallPos( std::auto_ptr< Region > reg )
         : Cond(),
-          m_reg( reg )
-      {}
+          M_reg( reg )
+      { }
 
     ~CondBallPos()
-      {}
-
-    std::ostream&
-    print( std::ostream& out ) const
-      {
-          out << "(bpos ";
-          if( getRegion() == NULL )
-              out << "(null)";
-          else
-              out << *getRegion();
-          return out << ")";
-      }
-
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      {
-          out << line_header << "is ball position at: " << std::endl;
-          if( getRegion() == NULL )
-              out << line_header << " (null)\n";
-          else
-              getRegion()->printPretty( out, line_header + " " );
-          return out;
-      }
-
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
-
-    const Region*
-    getRegion() const
-      { return m_reg.get(); }
-
-    std::auto_ptr< Region >
-    detachRegion()
-      { return m_reg; }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
+      { }
 
     virtual
-    std::auto_ptr< Cond >
-    deepCopy() const
+    std::auto_ptr< Cond > deepCopy() const;
+
+    virtual
+    std::ostream & print( std::ostream & out ) const;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const
       {
-          if( getRegion() )
-              return std::auto_ptr< Cond >( new CondBallPos( m_reg->deepCopy() ) );
-          else
-              return std::auto_ptr< Cond >( new CondBallPos() );
+          return context.lookup( *this );
       }
+
+    const Region * getRegion() const
+      {
+          return M_reg.get();
+      }
+
+    std::auto_ptr< Region > detachRegion()
+      {
+          return M_reg;
+      }
+
 private:
-	std::auto_ptr< Region > m_reg;
+	std::auto_ptr< Region > M_reg;
 };
 
 class CondBallOwner
-    : public Cond
-{
-public:
+    : public Cond {
+private:
     CondBallOwner()
         : Cond(),
           M_our_side( false )
       {}
 
-    CondBallOwner( const bool& our_side, const UNumSet& players )
+public:
+    CondBallOwner( const bool & our_side,
+                   const UNumSet & players )
         : Cond(),
           M_our_side( our_side ),
           M_players( players )
@@ -592,62 +355,65 @@ public:
     ~CondBallOwner()
       {}
 
-    std::ostream&
-    print( std::ostream& out ) const;
+    virtual
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondBallOwner( *this ) );
+      }
 
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const;
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup( *this );
+      }
 
     /* class specific stuff */
-    bool
-    isOurSide() const
-      { return M_our_side; }
+    bool isOurSide() const
+      {
+          return M_our_side;
+      }
 
-    bool
-    isTheirSide() const
-      { return !M_our_side; }
+    bool isTheirSide() const
+      {
+          return ! M_our_side;
+      }
 
-    UNumSet&
-    getPlayerSet()
-      { return M_players; }
+    UNumSet & getPlayerSet()
+      {
+          return M_players;
+      }
 
-    const UNumSet&
-    getPlayerSet() const
-      { return M_players; }
+    const UNumSet & getPlayerSet() const
+      {
+          return M_players;
+      }
 
-    void
-    setOurSide( const bool& our_side )
-      { M_our_side = our_side; }
+    void setOurSide( const bool & our_side )
+      {
+          M_our_side = our_side;
+      }
 
-    void
-    setPlayers( const UNumSet& players )
-      { M_players = players; }
+    void setPlayers( const UNumSet & players )
+      {
+          M_players = players;
+      }
 
-    void
-    addPlayer( const UNum& i )
-      { M_players.add( i ); }
+    void addPlayer( const UNum & i )
+      {
+          M_players.add( i );
+      }
 
-    void
-    clearPlayers()
-      { M_players.clear(); }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
-
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondBallOwner( *this ) ); }
+    void clearPlayers()
+      {
+          M_players.clear();
+      }
 
 private:
     bool M_our_side;
@@ -657,284 +423,199 @@ private:
 
 
 class CondPlayMode
-    : public Cond
-{
+    : public Cond {
 public:
-    static const char* MODE_STRINGS[];
+    static const char * MODE_STRINGS[];
 
+private:
     CondPlayMode()
         : Cond(),
           M_pm( PM_None )
-      {}
+      { }
 
+public:
     CondPlayMode( const PlayMode& pm )
         : Cond(),
           M_pm( pm )
-      {}
+      { }
 
     ~CondPlayMode()
-      {}
+      { }
 
-    std::ostream&
-    print( std::ostream& out ) const
-      { return out << "(playm " << MODE_STRINGS[ M_pm ] << ")"; }
+    virtual
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondPlayMode( *this ) );
+      }
 
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      { return out << line_header << "is play mode '"
-                   << MODE_STRINGS[ M_pm ] << "'" << std::endl; }
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup( *this );
+      }
 
     /* class specific stuff */
-    PlayMode
-    getPlayMode() const
-      { return M_pm; }
+    PlayMode getPlayMode() const
+      {
+          return M_pm;
+      }
 
-    void
-    setPlayMode( const PlayMode& pm)
-      { M_pm = pm; }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
-
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondPlayMode( *this ) ); }
+    void setPlayMode( const PlayMode & pm )
+      {
+          M_pm = pm;
+      }
 
 private:
     PlayMode M_pm;
 };
 
-class CondAnd
-    : public Cond
-{
-public:
-	typedef std::list< Cond* > Storage;
 
+class CondAnd
+    : public Cond {
+public:
+	typedef std::list< Cond * > Storage;
+
+private:
     CondAnd()
         : Cond()
-      {}
+      { }
 
-    CondAnd( const Storage& conds )
+public:
+    CondAnd( const Storage & conds )
         : Cond(),
-          m_conds( conds )
-      {
-      }
+          M_conds( conds )
+      { }
 
     virtual
-    ~CondAnd()
-      {
-          for( Storage::iterator i = m_conds.begin();
-               i != m_conds.end(); ++i )
-              delete *i;
-          m_conds.clear();
-      }
-
-    std::ostream&
-    print( std::ostream& out ) const;
-
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const;
-
-    bool
-    eval( const Context& context ) const;
-
-    const Storage&
-    getConds() const
-      { return m_conds; }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
+    ~CondAnd();
 
     virtual
-    std::auto_ptr< Cond >
-    deepCopy() const
+    std::auto_ptr< Cond > deepCopy() const;
+
+    virtual
+    std::ostream & print( std::ostream & out ) const;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const;
+
+    const Storage & getConds() const
       {
-          Storage new_conds;
-          for( Storage::const_iterator i = m_conds.begin();
-               i != m_conds.end(); ++i )
-              new_conds.push_back( (*i)->deepCopy().release() );
-          return std::auto_ptr< Cond >( new CondAnd( new_conds ) );
+          return M_conds;
       }
 
 private:
-	Storage m_conds;
+	Storage M_conds;
 
 };
 
 
 class CondOr
-    : public Cond
-{
+    : public Cond {
 public:
- 	typedef std::list< Cond* > Storage;
+ 	typedef std::list< Cond * > Storage;
 
+private:
     CondOr()
         : Cond()
-      {}
+      { }
 
-    CondOr( const Storage& conds )
+public:
+    CondOr( const Storage & conds )
         : Cond(),
-          m_conds( conds )
-      {}
+          M_conds( conds )
+      { }
 
     virtual
-    ~CondOr()
-      {
-          for( Storage::iterator i = m_conds.begin();
-               i != m_conds.end(); ++i )
-              delete *i;
-          m_conds.clear();
-      }
-
-    std::ostream&
-    print( std::ostream& out ) const;
-
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const;
-
-    bool
-    eval( const Context& context ) const;
-
-    const Storage&
-    getConds() const
-      { return m_conds; }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
+    ~CondOr();
 
     virtual
-    std::auto_ptr< Cond >
-    deepCopy() const
+    std::auto_ptr< Cond > deepCopy() const;
+
+    virtual
+    std::ostream & print( std::ostream & out ) const;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const;
+
+    const Storage & getConds() const
       {
-          Storage new_conds;
-          for( Storage::const_iterator i = m_conds.begin();
-               i != m_conds.end(); ++i )
-              new_conds.push_back( (*i)->deepCopy().release() );
-          return std::auto_ptr< Cond >( new CondOr( new_conds ) );
+          return M_conds;
       }
 
 private:
-	Storage m_conds;
+	Storage M_conds;
 };
 
 
 class CondNot
-    : public Cond
-{
+    : public Cond {
 public:
 
     CondNot()
         : Cond()
-      {}
+      { }
 
     CondNot( std::auto_ptr< Cond > cond )
         : Cond(),
-          m_cond( cond )
-      {}
+          M_cond( cond )
+      { }
 
     virtual
     ~CondNot()
-      {}
-
-    std::ostream&
-    print( std::ostream& out ) const
-      {
-          out << "(not ";
-          if( getCond() == NULL )
-              out << "(null)\n";
-          else
-              out << *getCond();
-          return out << ")";
-      }
-
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      {
-          out << line_header << "not " << std::endl;
-          if( getCond() == NULL )
-              out << line_header << " (null)\n";
-          else
-              getCond()->printPretty( out, line_header + " +" );
-          return out;
-      }
-
-    bool
-    eval( const Context& context ) const
-      {
-          if( getCond() == NULL )
-              throw util::NullErr( __FILE__, __LINE__,
-                                   "Null condition in CondNot\n" );
-          else
-              return !( getCond()->eval( context ) );
-      }
-
-    const Cond*
-    getCond() const
-      { return m_cond.get(); }
-
-    std::auto_ptr< Cond >
-    detachCond()
-      { return m_cond; }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
+      { }
 
     virtual
-    std::auto_ptr< Cond >
-    deepCopy() const
+    std::auto_ptr< Cond > deepCopy() const;
+
+    virtual
+    std::ostream & print( std::ostream & out ) const;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const;
+
+    const Cond * getCond() const
       {
-          if( m_cond.get() != NULL )
-              return std::auto_ptr< Cond >( new CondNot( m_cond->deepCopy() ) );
-          else
-              return std::auto_ptr< Cond >( new CondNot() );
+          return M_cond.get();
+      }
+
+    std::auto_ptr< Cond > detachCond()
+      {
+          return M_cond;
       }
 
 private:
-	std::auto_ptr< Cond > m_cond;
+	std::auto_ptr< Cond > M_cond;
 };
 
 
 class CondNamed
-    : public Cond
-{
-public:
+    : public Cond {
+private:
     CondNamed()
         : Cond()
-      {}
+      { }
 
-    CondNamed( const std::string& name )
+public:
+    CondNamed( const std::string & name )
         : Cond(),
           M_name( name )
       {}
@@ -942,45 +623,40 @@ public:
     ~CondNamed()
       {}
 
-    std::ostream&
-    print( std::ostream& out ) const
-      { return out << "\"" << M_name << "\""; }
+    virtual
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondNamed( *this ) );
+      }
 
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      { return out << line_header << "cond named \""
-                   << M_name << "\"" << std::endl; }
+    virtual
+    std::ostream & print( std::ostream & out ) const;
 
-    bool
-    eval( const Context& context ) const
-      { return context.lookup ( *this ); }
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
+
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup ( *this );
+      }
 
     /* class specific */
-    std::string&
-    getName()
-      { return M_name; }
+//     std::string & getName()
+//       {
+//           return M_name;
+//       }
 
-    const std::string&
-    getName() const
-      { return M_name; }
+    const std::string & getName() const
+      {
+          return M_name;
+      }
 
-    void
-    setName( const std::string& name )
-      { M_name = name; }
-
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
-
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondNamed( *this ) ); }
+//     void setName( const std::string & name )
+//       {
+//           M_name = name;
+//       }
 
 private:
     std::string M_name;
@@ -995,279 +671,243 @@ private:
     VALUE M_value;
 
 public:
-    CondComp( const VALUE& value, const util::CompOp& comp )
+    CondComp( const VALUE & value,
+              const util::CompOp & comp )
         : M_comp( &comp ),
           M_value( value )
-      {}
+      { }
 
     ~CondComp()
-      {}
+      { }
 
-    VALUE
-    getValue() const
-      { return M_value; }
+    VALUE getValue() const
+      {
+          return M_value;
+      }
 
-    VALUE
-    setValue( const VALUE& value )
-      { return M_value = value; }
+    VALUE setValue( const VALUE & value )
+      {
+          return M_value = value;
+      }
 
-    const util::CompOp&
-    getComp() const
-      { return *M_comp; }
+    const util::CompOp & getComp() const
+      {
+          return *M_comp;
+      }
 
-    const util::CompOp&
-    setComp( const util::CompOp& comp )
-      { return *(M_comp = &comp); }
+    const util::CompOp & setComp( const util::CompOp & comp )
+      {
+          return *(M_comp = &comp);
+      }
 };
 
 class CondTime
-    : public CondComp< int >
-{
+    : public CondComp< int > {
 public:
-    CondTime( const int& value, const util::CompOp& comp )
+    CondTime( const int & value,
+              const util::CompOp & comp )
         : CondComp< int >( value, comp )
-      {}
+      { }
 
     ~CondTime()
-      {}
+      { }
 
     virtual
-    std::ostream&
-    print( std::ostream& out ) const
-      { return out << "(time " << getComp() << " " << getValue() << ")"; }
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondTime( *this ) );
+      }
 
     virtual
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      { return print( out << line_header ); }
+    std::ostream & print( std::ostream & out ) const;
 
     virtual
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
-
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondTime( *this ) ); }
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup( *this );
+      }
 };
 
 
 class CondOppGoal
-    : public CondComp< int >
-{
+    : public CondComp< int > {
 public:
-    CondOppGoal( const int& value, const util::CompOp& comp )
+    CondOppGoal( const int & value,
+                 const util::CompOp & comp )
         : CondComp< int >( value, comp )
-      {}
+      { }
 
     ~CondOppGoal()
-      {}
+      { }
 
     virtual
-    std::ostream&
-    print( std::ostream& out ) const
-      { return out << "(opp_goals " << getComp() << " " << getValue() << ")"; }
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondOppGoal( *this ) );
+      }
 
     virtual
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      { return print( out << line_header ); }
+    std::ostream & print( std::ostream & out ) const;
 
     virtual
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-    //      virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
-
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondOppGoal( *this ) ); }
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup( *this );
+      }
 };
 
 class CondOurGoal
-    : public CondComp< int >
-{
+    : public CondComp< int > {
 public:
-    CondOurGoal( const int& value, const util::CompOp& comp )
+    CondOurGoal( const int & value,
+                 const util::CompOp & comp )
         : CondComp< int >( value, comp )
-      {}
+      { }
 
     ~CondOurGoal()
-      {}
+      { }
 
     virtual
-    std::ostream&
-    print( std::ostream& out ) const
-      { return out << "(our_goals " << getComp() << " " << getValue() << ")"; }
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondOurGoal( *this ) );
+      }
 
     virtual
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      { return print( out << line_header ); }
+    std::ostream & print( std::ostream & out ) const;
 
     virtual
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
-
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondOurGoal( *this ) ); }
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup( *this );
+      }
 };
 
 class CondGoalDiff
-    : public CondComp< int >
-{
+    : public CondComp< int > {
 public:
-    CondGoalDiff( const int& value, const util::CompOp& comp )
+    CondGoalDiff( const int & value,
+                  const util::CompOp & comp )
         : CondComp< int >( value, comp )
-      {}
+      { }
 
     ~CondGoalDiff()
-      {}
+      { }
 
     virtual
-    std::ostream&
-    print( std::ostream& out ) const
-      { return out << "(goal_diff " << getComp() << " " << getValue() << ")"; }
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondGoalDiff( *this ) );
+      }
 
     virtual
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      { return print( out << line_header ); }
+    std::ostream & print( std::ostream & out ) const;
 
     virtual
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-    //      virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
-
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
-
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondGoalDiff( *this ) ); }
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup( *this );
+      }
 };
 
 
 class CondUNum
-    : public Cond
-{
-public:
+    : public Cond {
+private:
     CondUNum()
         : Cond(),
           M_unum(),
           M_set()
-      {}
+      { }
 
-    CondUNum( const UNum& unum )
+public:
+    CondUNum( const UNum & unum )
         : Cond(),
           M_unum( unum ),
           M_set()
-      {}
+      { }
 
-    CondUNum( const UNum& unum, const UNumSet& players )
+    CondUNum( const UNum & unum,
+              const UNumSet & players )
         : Cond(),
           M_unum( unum ),
           M_set( players )
-      {}
+      { }
 
     ~CondUNum()
-      {}
+      { }
 
     virtual
-    std::ostream&
-    print( std::ostream& out ) const
-      { return out << "(unum " << M_unum << " " << M_set << ")"; }
+    std::auto_ptr< Cond > deepCopy() const
+      {
+          return std::auto_ptr< Cond >( new CondUNum( *this ) );
+      }
 
     virtual
-    std::ostream&
-    printPretty( std::ostream& out, const std::string& line_header ) const
-      { return print( out << line_header ); }
+    std::ostream & print( std::ostream & out ) const;
 
     virtual
-    bool
-    eval( const Context& context ) const
-      { return context.lookup( *this ); }
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const;
 
-    //       virtual
-    //       void
-    //       accept( Visitor& v )
-    //       { v.startVisit( this ); }
+    virtual
+    bool eval( const Context & context ) const
+      {
+          return context.lookup( *this );
+      }
 
-    //       virtual
-    //       void
-    //       accept( ConstVisitor& v ) const
-    //       { v.startVisit( this ); }
+//     UNum & setUNum( const UNum & unum )
+//       {
+//           return M_unum = unum;
+//       }
 
-    std::auto_ptr< Cond >
-    deepCopy() const
-      { return std::auto_ptr< Cond >( new CondUNum( *this ) ); }
+    UNum getUNum() const
+      {
+          return M_unum;
+      }
 
-    UNum&
-    setUNum( const UNum& unum )
-      { return M_unum = unum; }
+//     UNumSet & setUNum( const UNumSet & uset )
+//       {
+//           return M_set = uset;
+//       }
 
-    UNum
-    getUNum() const
-      { return M_unum; }
+//     UNumSet & getUNumSet()
+//       {
+//           return M_set;
+//       }
 
-    UNumSet&
-    setUNum( const UNumSet& uset )
-      { return M_set = uset; }
+    const UNumSet & getUNumSet() const
+      {
+          return M_set;
+      }
 
-    UNumSet&
-    getUNumSet()
-      { return M_set; }
-
-    const UNumSet&
-    getUNumSet() const
-      { return M_set; }
-
-    UNum
-    addUNum( const UNum& unum )
-      { M_set.add( unum ); return unum; }
+//     UNum addUNum( const UNum & unum )
+//       {
+//           M_set.add( unum );
+//           return unum;
+//       }
 
 private:
     UNum M_unum;
     UNumSet M_set;
 };
+
 }
 }
 

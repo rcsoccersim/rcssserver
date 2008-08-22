@@ -1,14 +1,14 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                 compop.h  
+                                 compop.h
                   Flyweight classes representing comparison operators
                              -------------------
     begin                : 22-MAR-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintainance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -19,120 +19,109 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _COMPOP_H_
-#define _COMPOP_H_
+#ifndef COMPOP_H
+#define COMPOP_H
 
 #include <iostream>
 
-namespace rcss
-{
-  namespace util
-  {
-    // CompOp is a flyweight class that represents comparision
-    // operations such as less than, equal, etc.  Access to CompOp
-    // instances can only be made via the static member functions such
-    // as less(), equal(), etc.  The object returned is immutable and
-    // has no non-const member functions.
+namespace rcss {
+namespace util {
 
-    // You can compare two objects using a CompOp object and the
-    // compare() member function.
+// CompOp is a flyweight class that represents comparision
+// operations such as less than, equal, etc.  Access to CompOp
+// instances can only be made via the static member functions such
+// as less(), equal(), etc.  The object returned is immutable and
+// has no non-const member functions.
 
-    // You can get the swap of the comparison by calling the swap()
-    // member function.  As an example this is used is you want to
-    // convert a < b to b > a.  Swap does not modify the current
-    // CompOp object, it just returns a reference to it's swaped equivilant.
+// You can compare two objects using a CompOp object and the
+// compare() member function.
 
-    // CompOp also has an inverse() member function. As and example,
-    // inverse() can be used when you want to convert something like a
-    // < b to a >= b.  Like swap(), inverse() does not modify the
-    // CompOp object, it simply returns a const reference to the
-    // appropriate inverse.
+// You can get the swap of the comparison by calling the swap()
+// member function.  As an example this is used is you want to
+// convert a < b to b > a.  Swap does not modify the current
+// CompOp object, it just returns a reference to it's swaped equivilant.
 
-    class CompOp
-    {
-    private:
-      enum comp_t
-      { L, LE, E, NE, GE, G };
+// CompOp also has an inverse() member function. As and example,
+// inverse() can be used when you want to convert something like a
+// < b to a >= b.  Like swap(), inverse() does not modify the
+// CompOp object, it simply returns a const reference to the
+// appropriate inverse.
 
-      comp_t M_comp;
+class CompOp {
+private:
+    enum comp_t
+        { L, LE, E, NE, GE, G };
 
-      CompOp( const comp_t& comp );
+    comp_t M_comp;
 
-      CompOp( const CompOp& comp_op ); // not used
+    CompOp( const comp_t & comp );
+
+    CompOp( const CompOp & comp_op ); // not used
 
 
-      CompOp& operator=( const CompOp& comp_op ); // not used
-    public:
-      template< typename A, typename B >
-      bool
-      compare( const A& a, const B& b ) const
+    CompOp& operator=( const CompOp & comp_op ); // not used
+public:
+    template< typename A, typename B >
+    bool compare( const A & a,
+                  const B & b ) const
       {
-        switch( M_comp )
-          {
+          switch ( M_comp ) {
           case L:
-            return a < b;
+              return a < b;
           case LE:
-            return a <= b;
+              return a <= b;
           case E:
-            return a == b;
+              return a == b;
           case NE:
-            return a != b;
+              return a != b;
           case GE:
-            return a >= b;
+              return a >= b;
           case G:
-            return a > b;
+              return a > b;
           }
       }
 
-      const char*
-      getStr() const;
+    const char * getStr() const;
 
-      const CompOp&
-      swap() const;
+    const CompOp & swap() const;
 
-      const CompOp&
-      inverse() const;
+    const CompOp & inverse() const;
 
-    private:
-      static const char* STRINGS[];
-      
-      static
-      const CompOp&
-      instance( const comp_t& comp );
+private:
+    static const char * STRINGS[];
 
-    public:
-      static
-      const CompOp&
-      less();
+    static
+    const CompOp & instance( const comp_t & comp );
 
-      static
-      const CompOp&
-      lessEqual();
+public:
+    static
+    const CompOp & less();
 
-      static
-      const CompOp&
-      equal();
+    static
+    const CompOp & lessEqual();
 
-      static
-      const CompOp&
-      notEqual();
+    static
+    const CompOp & equal();
 
-      static
-      const CompOp&
-      greaterEqual();
+    static
+    const CompOp & notEqual();
 
-      static
-      const CompOp&
-      greater();
+    static
+    const CompOp & greaterEqual();
 
-    private:
-      friend class CompOpFriend;
-      // this is just to get rid of the compiler warning us that compop has
-      // private constructors/destructors
-    };
+    static
+    const CompOp & greater();
 
-      std::ostream&
-      operator<<( std::ostream& o, const CompOp& comp );
-  }
+private:
+    friend class CompOpFriend;
+    // this is just to get rid of the compiler warning us that compop has
+    // private constructors/destructors
+};
+
+std::ostream &
+operator<<( std::ostream & o,
+            const CompOp & comp );
+}
+
 }
 #endif

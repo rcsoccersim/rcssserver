@@ -23,7 +23,6 @@
 #define _PCOMLEXER_H_
 
 #include "pcombuilder.h"
-// #include "tuple.h"
 
 #include <rcssbase/rcssbaseconfig.hpp>
 
@@ -34,15 +33,7 @@
 class RCSSPComLexer
     : public RCSSPComFlexLexer {
 public:
-    //     typedef rcss::util::Tuple10< int,
-    //                                  double,
-    //                                  std::string,
-    //                                  bool,
-    //                                  rcss::pcom::VIEW_WIDTH,
-    //                                  rcss::pcom::VIEW_QUALITY,
-    //                                  rcss::pcom::TEAM,
-    //                                  rcss::pcom::EAR_MODE
-    //                                > Holder;
+
     union Holder {
         enum { STR_MAX = 8192 };
 

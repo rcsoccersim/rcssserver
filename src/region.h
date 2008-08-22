@@ -254,7 +254,7 @@ public:
 
 private:
     std::auto_ptr< Point > M_points[2];
-    const util::ArithOp* M_arith_op;
+    const util::ArithOp * M_arith_op;
     unsigned int M_idx;
 };
 

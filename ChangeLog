@@ -12,6 +12,8 @@
 	- renamed coach_lang_par.* with coach_lang_parser.*.
 
 	* src/Makefile.am:
+	* src/arithop.cpp:
+	* src/arithop.h:
 	* src/clangaction.cpp:
 	* src/clangaction.h:
 	* src/clangadvicemsg.cpp:
@@ -44,6 +46,9 @@
 	* src/coach.h:
 	* src/coach_lang_comp.cpp:
 	* src/coach_lang_comp.h:
+	* src/compop.cpp:
+	* src/compop.h:
+	* src/cond.cpp:
 	* src/cond.h:
 	* src/region.cpp:
 	* src/region.h:
@@ -52,7 +57,9 @@
 	- fixed coding style.
 
 	* src/Makefile.am:
+	* src/tuple.h:
 	* src/hasa.h:
+	* src/player_command_tok.h:
 	* src/visitor.cpp:
 	* src/visitor.h:
 	- removed unused files.
