@@ -24,13 +24,11 @@
 
 #include "serializercommonstdv1.h"
 
-namespace rcss
-{
+namespace rcss {
 
 
 class SerializerCommonStdv7
-    : public SerializerCommonStdv1
-{
+    : public SerializerCommonStdv1 {
 protected:
     SerializerCommonStdv7();
 

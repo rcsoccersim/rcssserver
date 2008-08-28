@@ -1,3 +1,38 @@
+2008-08-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/pcombuilder.cpp:
+	* src/pcomparser.cpp:
+	* src/rcssexceptions.cpp:
+	* src/installdirs.cpp.in:
+	* src/installdirs.hpp.in:
+	* src/Makefile.am:
+	* src/audio.h:
+	* src/clangbuilder.cpp:
+	* src/clangbuilder.h:
+	* src/clangmsgbuilder.cpp:
+	* src/clangparser.cpp:
+	* src/clangparser.h:
+	* src/field.cpp:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	* src/observer.h:
+	* src/pcombuilder.h:
+	* src/pcomparser.h:
+	* src/player.cpp:
+	* src/random.h:
+	* src/rcssexceptions.h:
+	* src/referee.cpp:
+	* src/remoteclient.h:
+	* src/serializercommonstdv1.h:
+	* src/serializercommonstdv7.h:
+	* src/serializercommonstdv8.h:
+	* src/stdtimer.cpp:
+	* src/timer.h:
+	* src/visualsenderplayer.h:
+	- separated the implementation of exceptions to .cpp files.
+	- fixed coding style.
+	- removed unused files.
+
 2008-08-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach_lang_par.ypp:

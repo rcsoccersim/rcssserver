@@ -26,8 +26,7 @@
 #include "rcssexceptions.h"
 #include <memory>
 
-namespace rcss
-{
+namespace rcss {
 
 /*!
 //===================================================================
@@ -69,16 +68,14 @@ public:
           clear();
       }
 
-    void
-    setSender( Sender & sender )
+    void setSender( Sender & sender )
       {
           clear();
           M_sender = &sender;
           M_owns_sender = false;
       }
 
-    void
-    setSender( std::auto_ptr< Sender > sender )
+    void setSender( std::auto_ptr< Sender > sender )
       {
           clear();
           M_sender = sender.release();
@@ -95,8 +92,7 @@ public:
           return *M_sender;
       }
 
-    const
-    Sender & sender() const
+    const Sender & sender() const
       {
           if ( M_sender == NULL )
           {
@@ -117,10 +113,9 @@ private:
       }
 
     BaseObserver( const BaseObserver & ); // not used;
-
-    BaseObserver &
-    operator=( const BaseObserver & ); // not used;
+    BaseObserver & operator=( const BaseObserver & ); // not used;
 };
+
 }
 
 #endif

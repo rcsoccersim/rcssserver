@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "referee.h"
@@ -31,6 +31,12 @@
 #include "random.h"
 
 #include <limits>
+
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#else
+#include <strstream>
+#endif
 
 const char * KeepawayRef::trainingMsg = "training Keepaway 1";
 const int KeepawayRef::TURNOVER_TIME = 4;

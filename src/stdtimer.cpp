@@ -19,16 +19,21 @@
  *                                                                         *
  ***************************************************************************/
 
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "stdtimer.h"
+
+#include "param.h"          // needed for TIMEDELTA
+#include "serverparam.h"    // needed for ServerParam
+
+#include <csignal>          // needed for sigaction
+#include <cstdlib>          // needed for NULL
+
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>       // needed for itimerval
 #endif
-#include <csignal>          // needed for sigaction
-#include "param.h"          // needed for TIMEDELTA
-#include "serverparam.h"    // needed for ServerParam
-#include <cstdlib>          // needed for NULL
 
 
 StandardTimer* StandardTimer::s_instance = NULL;
@@ -38,7 +43,7 @@ bool StandardTimer::gotsig = false;
 int StandardTimer::timedelta = 0;
 bool StandardTimer::lock_timedelta = false;
 
-StandardTimer::StandardTimer( Timeable &timeable )
+StandardTimer::StandardTimer( Timeable & timeable )
     : Timer( timeable )
 {
     gotsig         = false;
@@ -50,11 +55,11 @@ StandardTimer::StandardTimer( Timeable &timeable )
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
 VOID
 CALLBACK
-StandardTimer::check(PVOID ptr, BOOL)
+StandardTimer::check( PVOID ptr, BOOL )
 {
     static int td_mult = 1;
     //if( StandardTimer::instance().lock_timedelta )
-    if( lock_timedelta )
+    if ( lock_timedelta )
     {
         td_mult += 1;
     }
@@ -174,8 +179,8 @@ initTimer( HANDLE gDoneEvent )
 #else
 static
 void
-initTimer( struct itimerval& itv_prev,
-           struct sigaction& alarm_prev )
+initTimer( struct itimerval & itv_prev,
+           struct sigaction & alarm_prev )
 {
     struct itimerval itv;
     struct sigaction alarm_action;
@@ -196,8 +201,8 @@ initTimer( struct itimerval& itv_prev,
 #else
 static
 void
-restoreTimer( struct itimerval& itv_prev,
-              struct sigaction& alarm_prev )
+restoreTimer( struct itimerval & itv_prev,
+              struct sigaction & alarm_prev )
 {
     setitimer(ITIMER_REAL, &itv_prev, NULL) ;   // restore the old timer
     sigaction(SIGALRM, &alarm_prev, NULL) ;     // restore the old alaram handler

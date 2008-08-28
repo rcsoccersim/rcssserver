@@ -29,42 +29,46 @@
 #include <memory>
 #include <cstdlib>
 
-namespace rcss
-{
-namespace random
-{
+namespace rcss {
+namespace random {
 
 class DefaultRNG
-    : public boost::mt19937
-{
+    : public boost::mt19937 {
 public:
     static
-    DefaultRNG&
-    instance ()
-      { static DefaultRNG the_instance; return the_instance; }
+    DefaultRNG & instance()
+      {
+          static DefaultRNG the_instance;
+          return the_instance;
+      }
 
     static
-    DefaultRNG&
+    DefaultRNG &
 #if defined(__SUNPRO_CC) && (__SUNPRO_CC <= 0x520)
     // Work around overload resolution problem (Gennadiy E. Rozental)
-    instance( const boost::mt19937::result_type& value )
+    instance( const boost::mt19937::result_type & value )
 #else
         instance( boost::mt19937::result_type value )
 #endif
-      { instance().seed( value ); return instance(); }
+      {
+          instance().seed( value );
+          return instance();
+      }
 
     // For GCC, moving this function out-of-line prevents inlining, which may
     // reduce overall object code size.  However, MSVC does not grok
     // out-of-line definitions of member function templates.
-    template<class Generator>
+    template< class Generator >
     static
-    DefaultRNG&
-    instance( Generator& gen )
-      { instance().seed( gen ); return instance(); }
+    DefaultRNG & instance( Generator & gen )
+      {
+          instance().seed( gen );
+          return instance();
+      }
 private:
     DefaultRNG()
         : boost::mt19937()
-      {}
+      { }
 };
 
 // class UniformRNG

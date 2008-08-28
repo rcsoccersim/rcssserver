@@ -2365,12 +2365,11 @@ Stadium::doSendSenseBody()
         (*it)->resetCollisionFlags();
     }
 
-
     //
     // send audio message
     //
     std::for_each( M_listeners.begin(), M_listeners.end(),
-                   rcss::Listener::NewCycle() );
+                   rcss::Listener::NewCycle() ); //std::mem_fun( &rcss::Listener::newCycle ) );
 
     //
     // write profile

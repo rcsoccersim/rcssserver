@@ -157,20 +157,17 @@ public:
     ~ObserverPlayer()
       { }
 
-    void
-    setVisualSender( VisualSenderPlayer & sender )
+    void setVisualSender( VisualSenderPlayer & sender )
       {
           BaseObserver< VisualSenderPlayer >::setSender( sender );
       }
 
-    void
-    setVisualSender( std::auto_ptr< VisualSenderPlayer > sender )
+    void setVisualSender( std::auto_ptr< VisualSenderPlayer > sender )
       {
           BaseObserver< VisualSenderPlayer >::setSender( sender );
       }
 
-    void
-    sendVisual()
+    void sendVisual()
       {
           BaseObserver< VisualSenderPlayer >::sender().sendVisual();
       }

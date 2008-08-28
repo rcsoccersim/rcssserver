@@ -1,12 +1,12 @@
 // -*-c++-*-
 
 /***************************************************************************
-                               rcssexceptions.h
-                               exceptions for rcss
+                                pcomparser.cpp
+                          Parser for Player Commands
                              -------------------
-    begin                : 27-JUN-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server
-                           Maintenance Group.
+    begin                : 2008-08-27
+    copyright            : (C) 2008 by The RoboCup Soccer Server
+                           Maintainance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
 
@@ -19,34 +19,38 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef RCSS_EXCEPTIONS_H
-#define RCSS_EXCEPTIONS_H
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include <exception>
-#include <string>
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#else
+#include <strstream>;
+#endif
+
+#include "pcomparser.h"
 
 namespace rcss {
-namespace util {
+namespace pcom {
 
-class NullErr
-    : public std::exception {
-protected:
-    std::string M_msg;
-public:
-    NullErr( const char * file,
-             const int & line,
-             const char * msg ) throw();
-
-    ~NullErr() throw()
-      { }
-
-    const char * what() const throw()
-      {
-          return M_msg.c_str();
-      }
-};
+Parser::Parser( Builder & builder )
+    : M_param( *this, builder ),
+      M_parser( &RCSS_PCOM_parse )
+{
 
 }
-}
 
+int
+Parser::parse( const char * msg )
+{
+#ifdef HAVE_SSTREAM
+    std::istringstream strm( msg );
+#else
+    std::istrstream strm( msg );
 #endif
+    return ( ::rcss::Parser::parse( strm ) ? 0 : 1 );
+}
+
+}
+}

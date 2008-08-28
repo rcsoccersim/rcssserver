@@ -19,8 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _PCOMPARSER_H_
-#define _PCOMPARSER_H_
+#ifndef PCOMPARSER_H
+#define PCOMPARSER_H
 
 #include <string>
 #include <rcssbase/parser.h>
@@ -39,31 +39,34 @@ public:
     typedef ::rcss::pcom::Lexer Lexer;
     typedef int (*ParserFunc)( void * );
 
-    class Param
-    {
+    class Param {
     private:
         Lexer M_lexer;
-        Parser& M_parser;
+        Parser & M_parser;
 
     protected:
-        Builder& M_builder;
+        Builder & M_builder;
     public:
-        Param( Parser& parser, Builder& builder )
+        Param( Parser & parser,
+               Builder & builder )
             : M_parser( parser ),
               M_builder( builder )
-          {}
+          { }
 
-        Parser&
-        getParser()
-          { return M_parser; }
+        Parser & getParser()
+          {
+              return M_parser;
+          }
 
-        Lexer&
-        getLexer()
-          { return M_lexer; }
+        Lexer & getLexer()
+          {
+              return M_lexer;
+          }
 
-        Builder&
-        getBuilder()
-          { return M_builder; }
+        Builder & getBuilder()
+          {
+              return M_builder;
+          }
     };
 
 private:
@@ -71,30 +74,18 @@ private:
     ParserFunc M_parser;
 
     virtual
-    bool
-    doParse( std::istream& strm )
+    bool doParse( std::istream & strm )
       {
           M_param.getLexer().switch_streams( &strm, &std::cerr );
           return M_parser( (void*)&M_param ) == 0;
       }
 
 public:
-    Parser( Builder& builder )
-        : M_param( *this, builder ),
-          M_parser( &RCSS_PCOM_parse )
-      {}
+    Parser( Builder & builder );
 
     // convenience method
-    int
-    parse( const char* msg )
-      {
-#ifdef HAVE_SSTREAM
-          std::istringstream strm( msg );
-#else
-          std::istrstream strm( msg );
-#endif
-          return ( ::rcss::Parser::parse( strm ) ? 0 : 1 );
-      }
+    int parse( const char * msg );
+
 };
 
 }

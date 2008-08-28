@@ -321,15 +321,21 @@ MsgBuilder::isItem( Types type ) const
 bool
 MsgBuilder::checkIsItem( Types type ) const
 {
-    if( !M_items.empty() )
+    if ( !M_items.empty() )
     {
-        if( M_items.top().m_type == type )
+        if ( M_items.top().m_type == type )
+        {
             return true;
+        }
         else
+        {
             onWrongItem();
+        }
     }
     else
+    {
         onNoItems();
+    }
     return false;
 }
 
@@ -337,7 +343,7 @@ MsgBuilder::checkIsItem( Types type ) const
 std::auto_ptr< MetaToken >
 MsgBuilder::checkAndGetMetaToken()
 {
-    if( checkIsItem( META ) )
+    if ( checkIsItem( META ) )
     {
         return getMetaToken();
     }
@@ -349,7 +355,7 @@ MsgBuilder::checkAndGetMetaToken()
 std::auto_ptr< Action >
 MsgBuilder::checkAndGetAction()
 {
-    if( checkIsItem( ACTION ) )
+    if ( checkIsItem( ACTION ) )
     {
         return getAction();
     }
@@ -360,7 +366,7 @@ MsgBuilder::checkAndGetAction()
 std::auto_ptr< Dir >
 MsgBuilder::checkAndGetDir()
 {
-    if( checkIsItem( DIR ) )
+    if ( checkIsItem( DIR ) )
     {
         return getDir();
     }
@@ -372,7 +378,7 @@ MsgBuilder::checkAndGetDir()
 std::auto_ptr< Cond >
 MsgBuilder::checkAndGetCond()
 {
-    if( checkIsItem( COND ) )
+    if ( checkIsItem( COND ) )
     {
         return getCond();
     }
@@ -384,7 +390,7 @@ MsgBuilder::checkAndGetCond()
 std::auto_ptr< MsgBuilder::CondList >
 MsgBuilder::checkAndGetCondList()
 {
-    if( checkIsItem( CONDLIST ) )
+    if ( checkIsItem( CONDLIST ) )
     {
         return getCondList();
     }
@@ -396,7 +402,7 @@ MsgBuilder::checkAndGetCondList()
 std::auto_ptr< Token >
 MsgBuilder::checkAndGetToken()
 {
-    if( checkIsItem( TOKEN ) )
+    if ( checkIsItem( TOKEN ) )
     {
         return getToken();
     }
@@ -408,7 +414,7 @@ MsgBuilder::checkAndGetToken()
 std::auto_ptr< Def >
 MsgBuilder::checkAndGetDef()
 {
-    if( checkIsItem( DEF ) )
+    if ( checkIsItem( DEF ) )
     {
         return getDef();
     }
@@ -420,7 +426,7 @@ MsgBuilder::checkAndGetDef()
 std::auto_ptr< Region >
 MsgBuilder::checkAndGetRegion()
 {
-    if( checkIsItem( REG ) )
+    if ( checkIsItem( REG ) )
     {
         return getRegion();
     }
@@ -432,7 +438,7 @@ MsgBuilder::checkAndGetRegion()
 std::auto_ptr< Point >
 MsgBuilder::checkAndGetPoint()
 {
-    if( checkIsItem( POINT ) )
+    if ( checkIsItem( POINT ) )
     {
         return getPoint();
     }
@@ -444,7 +450,7 @@ MsgBuilder::checkAndGetPoint()
 std::auto_ptr< UNum >
 MsgBuilder::checkAndGetUNum()
 {
-    if( checkIsItem( UNUM ) )
+    if ( checkIsItem( UNUM ) )
     {
         return getUNum();
     }
@@ -456,7 +462,7 @@ MsgBuilder::checkAndGetUNum()
 BallMoveToken
 MsgBuilder::checkAndGetBMT()
 {
-    if( checkIsItem( BMT ) )
+    if ( checkIsItem( BMT ) )
     {
         return getBMT();
     }
@@ -468,7 +474,7 @@ MsgBuilder::checkAndGetBMT()
 std::auto_ptr< UNumSet >
 MsgBuilder::checkAndGetUNumSet()
 {
-    if( checkIsItem( UNUMSET ) )
+    if ( checkIsItem( UNUMSET ) )
     {
         return getUNumSet();
     }
@@ -480,7 +486,7 @@ MsgBuilder::checkAndGetUNumSet()
 std::auto_ptr< std::string >
 MsgBuilder::checkAndGetStr()
 {
-    if( checkIsItem( STR ) )
+    if ( checkIsItem( STR ) )
     {
         return getStr();
     }
@@ -492,7 +498,7 @@ MsgBuilder::checkAndGetStr()
 std::auto_ptr< RuleIDList >
 MsgBuilder::checkAndGetRIDList()
 {
-    if( checkIsItem( RIDLIST ) )
+    if ( checkIsItem( RIDLIST ) )
     {
         return getRIDList();
     }
@@ -504,7 +510,7 @@ MsgBuilder::checkAndGetRIDList()
 std::auto_ptr< ActivateRules >
 MsgBuilder::checkAndGetActivateRules()
 {
-    if( checkIsItem( ACTIVATE ) )
+    if ( checkIsItem( ACTIVATE ) )
     {
         return getActivateRules();
     }
@@ -516,7 +522,7 @@ MsgBuilder::checkAndGetActivateRules()
 std::auto_ptr< Rule >
 MsgBuilder::checkAndGetRule()
 {
-    if( checkIsItem( RULE ) )
+    if ( checkIsItem( RULE ) )
     {
         return getRule();
     }
@@ -527,7 +533,7 @@ MsgBuilder::checkAndGetRule()
 RuleID
 MsgBuilder::checkAndGetRID()
 {
-    if( checkIsItem( RID ) )
+    if ( checkIsItem( RID ) )
     {
         return *getRID();
     }
@@ -535,7 +541,7 @@ MsgBuilder::checkAndGetRID()
     return RuleID();
 }
 
-void MsgBuilder::add( MetaToken* meta )
+void MsgBuilder::add( MetaToken * meta )
 {
     traceAdding< MetaToken >();
     ItemType tmp;
@@ -544,7 +550,7 @@ void MsgBuilder::add( MetaToken* meta )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Action* action )
+void MsgBuilder::add( Action * action )
 {
     traceAdding< Action >();
     ItemType tmp;
@@ -553,7 +559,7 @@ void MsgBuilder::add( Action* action )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Dir* dir )
+void MsgBuilder::add( Dir * dir )
 {
     traceAdding< Dir >();
     ItemType tmp;
@@ -562,7 +568,7 @@ void MsgBuilder::add( Dir* dir )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Cond* cond )
+void MsgBuilder::add( Cond * cond )
 {
     traceAdding< Cond >();
     ItemType tmp;
@@ -571,7 +577,7 @@ void MsgBuilder::add( Cond* cond )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( MsgBuilder::CondList* cond_list )
+void MsgBuilder::add( MsgBuilder::CondList * cond_list )
 {
     traceAdding< CondList >();
     ItemType tmp;
@@ -580,7 +586,7 @@ void MsgBuilder::add( MsgBuilder::CondList* cond_list )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Token* token )
+void MsgBuilder::add( Token * token )
 {
     traceAdding< Token >();
     ItemType tmp;
@@ -589,7 +595,7 @@ void MsgBuilder::add( Token* token )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Def* def )
+void MsgBuilder::add( Def * def )
 {
     traceAdding< Def >();
     ItemType tmp;
@@ -598,7 +604,7 @@ void MsgBuilder::add( Def* def )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Region* region )
+void MsgBuilder::add( Region * region )
 {
     traceAdding< Region >();
     ItemType tmp;
@@ -607,7 +613,7 @@ void MsgBuilder::add( Region* region )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Point* point )
+void MsgBuilder::add( Point * point )
 {
     traceAdding< Point >();
     ItemType tmp;
@@ -616,7 +622,7 @@ void MsgBuilder::add( Point* point )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( UNum* unum )
+void MsgBuilder::add( UNum * unum )
 {
     traceAdding< UNum >();
     ItemType tmp;
@@ -634,7 +640,7 @@ void MsgBuilder::add( BallMoveToken bmt )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( UNumSet* unum_set )
+void MsgBuilder::add( UNumSet * unum_set )
 {
     traceAdding< UNumSet >();
     ItemType tmp;
@@ -643,7 +649,7 @@ void MsgBuilder::add( UNumSet* unum_set )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( std::string* str )
+void MsgBuilder::add( std::string * str )
 {
     traceAdding< std::string >();
     ItemType tmp;
@@ -652,7 +658,7 @@ void MsgBuilder::add( std::string* str )
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( RuleIDList* rid_list )
+void MsgBuilder::add( RuleIDList * rid_list )
 {
     traceAdding< RuleIDList >();
     ItemType tmp;

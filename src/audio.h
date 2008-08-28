@@ -19,8 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _AUDIO_H_
-#define _AUDIO_H_
+#ifndef RCSSSERVER_AUDIO_H
+#define RCSSSERVER_AUDIO_H
 
 #include "sender.h"
 #include "observer.h"
@@ -144,7 +144,7 @@ public:
     Listener()
       { }
 
-    Listener( AudioSender& sender )
+    Listener( AudioSender & sender )
         : BaseObserver< AudioSender >( sender )
       { }
 
@@ -177,12 +177,11 @@ public:
 
     void newCycle();
 
-    void focusOn( const Player& player );
+    void focusOn( const Player & player );
 
     void focusOff();
 
-    const
-    Player * getFocusTarget() const
+    const Player * getFocusTarget() const
       {
           return sender().getFocusTarget();
       }
@@ -192,26 +191,23 @@ public:
           return sender().getFocusCount();
       }
 
+    void setEar( bool on,
+                 Side side,
+                 bool complete,
+                 bool partial );
+
+    void sendOKClang();
+
+    void sendErrorNoTeamName( const std::string & team_name );
+
+
     class NewCycle {
     public:
-        void
-        operator()( Listener * listener )
+        void operator()( Listener * listener )
           {
               listener->newCycle();
           }
     };
-
-    void
-    setEar( bool on,
-            Side side,
-            bool complete,
-            bool partial );
-
-    void
-    sendOKClang();
-
-    void
-    sendErrorNoTeamName( const std::string & team_name );
 };
 
 

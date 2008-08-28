@@ -24,13 +24,11 @@
 
 #include "serializercommonstdv7.h"
 
-namespace rcss
-{
+namespace rcss {
 
 
 class SerializerCommonStdv8
-    : public SerializerCommonStdv7
-{
+    : public SerializerCommonStdv7 {
 protected:
     SerializerCommonStdv8();
 
@@ -72,5 +70,7 @@ public:
                          const std::string & param ) const;
 
 };
+
 }
+
 #endif

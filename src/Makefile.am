@@ -15,33 +15,33 @@ libimports.cpp:	Makefile
 	@RCSSLIBIMPORTER@ $(PRELOAD_MODULES) > $@
 
 CLEANFILES = \
-*~ \
-core \
-libimports.cpp \
-moduletest.sh
+	*~ \
+	core \
+	libimports.cpp \
+	moduletest.sh
 
 DISTCLEANILES = \
-rcsoccersim
+	rcsoccersim
 
 MAINTAINERCLEANFILES = \
-coach_lang_parser.cpp \
-coach_lang_parser.h \
-coach_lang_tok.cpp \
-player_command_parser.cpp \
-player_command_parser.h \
-player_command_tok.cpp
+	coach_lang_parser.cpp \
+	coach_lang_parser.h \
+	coach_lang_tok.cpp \
+	player_command_parser.cpp \
+	player_command_parser.h \
+	player_command_tok.cpp
 
 lib_LTLIBRARIES = \
-librcssresultsaver.la \
-librcssclangparser.la
+	librcssresultsaver.la \
+	librcssclangparser.la
 
 module_LTLIBRARIES = \
-libstdoutsaver.la \
-libcsvsaver.la
+	libstdoutsaver.la \
+	libcsvsaver.la
 
 DYNAMIC_MODULES += \
-libstdoutsaver.la \
-libcsvsaver.la
+	libstdoutsaver.la \
+	libcsvsaver.la
 
 # if BUILD_MYSQL_SAVER
 
@@ -57,7 +57,7 @@ libcsvsaver.la
 # endif
 
 
-librcssresultsaver_la_SOURCES = resultsaver.cpp resultsaver.hpp
+librcssresultsaver_la_SOURCES = resultsaver.cpp
 
 
 libstdoutsaver_la_SOURCES = stdoutsaver.cpp
@@ -65,6 +65,7 @@ libstdoutsaver_la_SOURCES = stdoutsaver.cpp
 libstdoutsaver_la_LDFLAGS = -module
 
 libstdoutsaver_la_LIBADD = librcssresultsaver.la
+
 
 libcsvsaver_la_SOURCES = csvsaver.cpp
 
@@ -74,32 +75,32 @@ libcsvsaver_la_LIBADD = -lrcssconfparser librcssresultsaver.la
 
 
 pkginclude_HEADERS = \
-clangparser.h \
-coach_lang_tok.h \
-clangbuilder.h \
-clangmsgbuilder.h \
-clangmsg.h \
-clangmetamsg.h \
-clangfreeformmsg.h \
-clangunsuppmsg.h \
-clangrulemsg.h \
-clangdelmsg.h \
-clanginfomsg.h \
-clangadvicemsg.h \
-clangdefmsg.h \
-clangaction.h \
-coach_lang_comp.h \
-region.h \
-coach_lang_parser.h \
-vector.h \
-clangutil.h \
-cond.h \
-compop.h \
-arithop.h \
-rule.h \
-rcssexceptions.h \
-rcssserverconfig.hpp \
-resultsaver.hpp
+	clangparser.h \
+	coach_lang_tok.h \
+	clangbuilder.h \
+	clangmsgbuilder.h \
+	clangmsg.h \
+	clangmetamsg.h \
+	clangfreeformmsg.h \
+	clangunsuppmsg.h \
+	clangrulemsg.h \
+	clangdelmsg.h \
+	clanginfomsg.h \
+	clangadvicemsg.h \
+	clangdefmsg.h \
+	clangaction.h \
+	clangutil.h \
+	coach_lang_comp.h \
+	coach_lang_parser.h \
+	arithop.h \
+	compop.h \
+	cond.h \
+	region.h \
+	rule.h \
+	vector.h \
+	rcssexceptions.h \
+	rcssserverconfig.hpp \
+	resultsaver.hpp
 
 librcssclangparser_la_LDFLAGS = -version-info 3:0:1
 #    Changed from 2.0.0 to 3.0.1 at 9.3.5 for addition of buildCondList
@@ -125,174 +126,176 @@ librcssclangparser_la_LDFLAGS = -version-info 3:0:1
 
 
 librcssclangparser_la_SOURCES = \
-clangbuilder.cpp \
-clangmsgbuilder.cpp \
-clangparser.cpp \
-clangmsg.cpp \
-clangmetamsg.cpp \
-clangfreeformmsg.cpp \
-clangunsuppmsg.cpp \
-clangrulemsg.cpp \
-clangdelmsg.cpp \
-clanginfomsg.cpp \
-clangadvicemsg.cpp \
-clangdefmsg.cpp \
-clangaction.cpp \
-coach_lang_comp.cpp \
-coach_lang_parser.ypp \
-coach_lang_tok.cpp \
-region.cpp \
-clangutil.cpp \
-cond.cpp \
-compop.cpp \
-arithop.cpp \
-rule.cpp
+	clangbuilder.cpp \
+	clangmsgbuilder.cpp \
+	clangparser.cpp \
+	clangmsg.cpp \
+	clangmetamsg.cpp \
+	clangfreeformmsg.cpp \
+	clangunsuppmsg.cpp \
+	clangrulemsg.cpp \
+	clangdelmsg.cpp \
+	clanginfomsg.cpp \
+	clangadvicemsg.cpp \
+	clangdefmsg.cpp \
+	clangaction.cpp \
+	clangutil.cpp \
+	coach_lang_comp.cpp \
+	coach_lang_parser.ypp \
+	coach_lang_tok.cpp \
+	arithop.cpp \
+	cond.cpp \
+	compop.cpp \
+	region.cpp \
+	rule.cpp \
+	rcssexceptions.cpp
 
 
 bin_PROGRAMS = \
-rcssserver @RCSSCLIENT@
+	rcssserver @RCSSCLIENT@
 
 bin_SCRIPTS = rcsoccersim
 
 
 BUILT_SOURCES = libimports.cpp \
-coach_lang_parser.h \
-coach_lang_tok.cpp \
-player_command_tok.cpp \
-player_command_parser.h
+	coach_lang_parser.h \
+	coach_lang_tok.cpp \
+	player_command_tok.cpp \
+	player_command_parser.h
 
 EXTRA_DIST = \
-coach_lang_tok.lpp \
-player_command_tok.lpp \
-rcsoccersim.in \
-ac_lib_rcssclangparser.m4
+	coach_lang_tok.lpp \
+	player_command_tok.lpp \
+	rcsoccersim.in \
+	ac_lib_rcssclangparser.m4
 
 nodist_rcssserver_SOURCES = libimports.cpp
 
 rcssserver_SOURCES = \
-heteroplayer.cpp \
-heteroplayer.h \
-param.h \
-main.cpp \
-types.h \
-field.cpp \
-playerparam.h \
-playerparam.cpp \
-field.h \
-netif.cpp \
-netif.h \
-version.h \
-object.h \
-object.cpp \
-team.h \
-team.cpp \
-xmlreader.h \
-xmlreader.cpp \
-landmarkreader.h \
-landmarkreader.cpp \
-coach.cpp \
-coach.h \
-compress.h \
-remoteclient.h \
-remoteclient.cpp \
-pcombuilder.h \
-pcomparser.h \
-player_command_parser.ypp \
-player_command_tok.h \
-player_command_tok.cpp \
-player.h \
-player.cpp \
-logger.h \
-logger.cpp \
-monitor.h \
-monitor.cpp \
-arm.h \
-random.h \
-audio.h \
-audio.cpp \
-serializer.h \
-serializer.cpp \
-serializerplayerstdv1.h \
-serializerplayerstdv1.cpp \
-serializerplayerstdv7.h \
-serializerplayerstdv7.cpp \
-serializerplayerstdv8.h \
-serializerplayerstdv8.cpp \
-serializercoachstdv1.h \
-serializercoachstdv1.cpp \
-serializercoachstdv7.h \
-serializercoachstdv7.cpp \
-serializercoachstdv8.h \
-serializercoachstdv8.cpp \
-serializeronlinecoachstdv1.h \
-serializeronlinecoachstdv1.cpp \
-serializeronlinecoachstdv6.h \
-serializeronlinecoachstdv6.cpp \
-serializeronlinecoachstdv7.h \
-serializeronlinecoachstdv7.cpp \
-serializeronlinecoachstdv8.h \
-serializeronlinecoachstdv8.cpp \
-serializercommonstdv1.h \
-serializercommonstdv1.cpp \
-serializercommonstdv7.h \
-serializercommonstdv7.cpp \
-serializercommonstdv8.h \
-serializercommonstdv8.cpp \
-serializermonitor.h \
-serializermonitor.cpp \
-serverparam.h \
-serverparam.cpp \
-referee.h \
-referee.cpp \
-xpmholder.cpp \
-xpmholder.h \
-visual.h \
-visualsenderplayer.h \
-visualsenderplayer.cpp \
-visualsendercoach.h \
-visualsendercoach.cpp \
-xpmholder.h \
-timer.h \
-timer.cpp \
-stdtimer.h \
-stdtimer.cpp \
-synctimer.h \
-synctimer.cpp \
-timeable.h \
-utility.h \
-utility.cpp \
-dispsender.h \
-dispsender.cpp \
-bodysender.h \
-bodysender.cpp \
-fullstatesender.h \
-fullstatesender.cpp \
-initsender.h \
-initsender.cpp \
-initsenderplayer.h \
-initsenderplayer.cpp \
-initsendercoach.h \
-initsendercoach.cpp \
-initsenderonlinecoach.h \
-initsenderonlinecoach.cpp \
-initsendermonitor.h \
-initsendermonitor.cpp \
-initsenderlogger.h \
-initsenderlogger.cpp \
-observer.h \
-sender.h
+	heteroplayer.cpp \
+	heteroplayer.h \
+	param.h \
+	main.cpp \
+	types.h \
+	field.cpp \
+	playerparam.h \
+	playerparam.cpp \
+	field.h \
+	netif.cpp \
+	version.h \
+	object.h \
+	object.cpp \
+	team.h \
+	team.cpp \
+	xmlreader.h \
+	xmlreader.cpp \
+	landmarkreader.h \
+	landmarkreader.cpp \
+	coach.cpp \
+	coach.h \
+	compress.h \
+	remoteclient.h \
+	remoteclient.cpp \
+	pcombuilder.h \
+	pcombuilder.cpp \
+	pcomparser.h \
+	pcomparser.cpp \
+	player_command_parser.ypp \
+	player_command_tok.h \
+	player_command_tok.cpp \
+	player.h \
+	player.cpp \
+	logger.h \
+	logger.cpp \
+	monitor.h \
+	monitor.cpp \
+	arm.h \
+	random.h \
+	audio.h \
+	audio.cpp \
+	serializer.h \
+	serializer.cpp \
+	serializerplayerstdv1.h \
+	serializerplayerstdv1.cpp \
+	serializerplayerstdv7.h \
+	serializerplayerstdv7.cpp \
+	serializerplayerstdv8.h \
+	serializerplayerstdv8.cpp \
+	serializercoachstdv1.h \
+	serializercoachstdv1.cpp \
+	serializercoachstdv7.h \
+	serializercoachstdv7.cpp \
+	serializercoachstdv8.h \
+	serializercoachstdv8.cpp \
+	serializeronlinecoachstdv1.h \
+	serializeronlinecoachstdv1.cpp \
+	serializeronlinecoachstdv6.h \
+	serializeronlinecoachstdv6.cpp \
+	serializeronlinecoachstdv7.h \
+	serializeronlinecoachstdv7.cpp \
+	serializeronlinecoachstdv8.h \
+	serializeronlinecoachstdv8.cpp \
+	serializercommonstdv1.h \
+	serializercommonstdv1.cpp \
+	serializercommonstdv7.h \
+	serializercommonstdv7.cpp \
+	serializercommonstdv8.h \
+	serializercommonstdv8.cpp \
+	serializermonitor.h \
+	serializermonitor.cpp \
+	serverparam.h \
+	serverparam.cpp \
+	referee.h \
+	referee.cpp \
+	xpmholder.cpp \
+	xpmholder.h \
+	visual.h \
+	visualsenderplayer.h \
+	visualsenderplayer.cpp \
+	visualsendercoach.h \
+	visualsendercoach.cpp \
+	xpmholder.h \
+	timer.h \
+	timer.cpp \
+	stdtimer.h \
+	stdtimer.cpp \
+	synctimer.h \
+	synctimer.cpp \
+	timeable.h \
+	utility.h \
+	utility.cpp \
+	dispsender.h \
+	dispsender.cpp \
+	bodysender.h \
+	bodysender.cpp \
+	fullstatesender.h \
+	fullstatesender.cpp \
+	initsender.h \
+	initsender.cpp \
+	initsenderplayer.h \
+	initsenderplayer.cpp \
+	initsendercoach.h \
+	initsendercoach.cpp \
+	initsenderonlinecoach.h \
+	initsenderonlinecoach.cpp \
+	initsendermonitor.h \
+	initsendermonitor.cpp \
+	initsenderlogger.h \
+	initsenderlogger.cpp \
+	observer.h \
+	sender.h
 
 
 rcssserver_LDADD = $(LLLIBS) $(PRELOAD_MODULES) \
--lrcssclangparser \
--lrcssresultsaver \
--lrcssconfparser \
--lrcsslib \
--lrcsserror \
--lrcssnet \
--lrcssgz \
--lrcssbase \
-$(BOOST_FILESYSTEM_LIB)
+	-lrcssclangparser \
+	-lrcssresultsaver \
+	-lrcssconfparser \
+	-lrcsslib \
+	-lrcsserror \
+	-lrcssnet \
+	-lrcssgz \
+	-lrcssbase \
+	$(BOOST_FILESYSTEM_LIB)
 
 rcssserver_DEPENDENCIES = $(PRELOAD_MODULES)
 
@@ -335,18 +338,18 @@ AM_FLEXFLEX=@AM_FLEXFLAGS@
 EXTRA_PROGRAMS = rcssclient
 
 rcssclient_SOURCES = \
-client.cpp
+	client.cpp
 
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
--lrcssnet \
--lrcssgz \
-$(BOOST_FILESYSTEM_LIB)
+	-lrcssnet \
+	-lrcssgz \
+	$(BOOST_FILESYSTEM_LIB)
 
 check_SCRIPTS = \
-moduletest.sh
+	moduletest.sh
 
 TESTS = \
-moduletest.sh
+	moduletest.sh
 
 moduletest.sh: Makefile.am
 	echo "#! /bin/sh" > $@

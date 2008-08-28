@@ -72,11 +72,12 @@ public:
                           const size_t & len );
 
 protected:
-    void processMsg( char* msg,
+    void processMsg( char * msg,
                      const size_t & len );
 
     virtual
-    void parseMsg( const char * msg, const size_t & len ) = 0;
+    void parseMsg( const char * msg,
+                   const size_t & len ) = 0;
 
 public:
     int compressionLevel() const

@@ -19,19 +19,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _PCOMBUILDER_H_
-#define _PCOMBUILDER_H_
+#ifndef RCSSSERVER_PCOMBUILDER_H
+#define RCSSSERVER_PCOMBUILDER_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_SSTREAM
-#include <sstream>
-#else
-#include <strstream>
-#endif
 #include <string>
+#include <iosfwd>
 #include <exception>
 
 // The pcom::Builder is called from within the parser to construct the
@@ -77,9 +69,12 @@ enum EAR_MODE {
 
 class Builder {
 public:
-    Builder(){}
+    Builder()
+      { }
 
-    virtual ~Builder(){}
+    virtual
+    ~Builder()
+      { }
 
     virtual void dash( double power ) = 0;
     virtual void turn( double moment ) = 0;
@@ -105,42 +100,24 @@ public:
 
 
 class BuilderErr
-    : public std::exception
-{
+    : public std::exception {
 protected:
     std::string M_msg;
 public:
-    BuilderErr( const char* file,
-                const int& line,
-                const char* msg ) throw()
-      {
-#ifdef HAVE_SSTREAM
-          std::ostringstream tmp;
-          tmp << file << ": " << line << ": " << msg;
-          M_msg = tmp.str();
-#else
-          std::ostrstream tmp;
-          tmp << file << ": " << line << ": " << msg << std::ends;
-          M_msg = tmp.str();
-          tmp.freeze( false );
-#endif
-      }
+    BuilderErr( const char * file,
+                const int & line,
+                const char * msg ) throw();
 
-    ~BuilderErr () throw () {}
+    ~BuilderErr() throw()
+      { }
 
-    const char* what () const throw ()
+    const char * what() const throw()
       {
           return M_msg.c_str();
       }
 };
-}
-}
 
-
-inline std::ostream& operator<< ( std::ostream& o,
-                                  const rcss::pcom::BuilderErr& e )
-{
-    return o << e.what();
+}
 }
 
 #endif

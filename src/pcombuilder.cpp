@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                               rcssexceptions.h
-                               exceptions for rcss
+                               pcombuilder.cpp
+                Interface for building a player command message
                              -------------------
-    begin                : 27-JUN-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server
+    begin                : 2008-08-27
+    copyright            : (C) 2008 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
@@ -19,34 +19,36 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef RCSS_EXCEPTIONS_H
-#define RCSS_EXCEPTIONS_H
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include <exception>
-#include <string>
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#else
+#include <strstream>
+#endif
+
+#include "pcombuilder.h"
 
 namespace rcss {
-namespace util {
+namespace pcom {
 
-class NullErr
-    : public std::exception {
-protected:
-    std::string M_msg;
-public:
-    NullErr( const char * file,
-             const int & line,
-             const char * msg ) throw();
-
-    ~NullErr() throw()
-      { }
-
-    const char * what() const throw()
-      {
-          return M_msg.c_str();
-      }
-};
-
-}
-}
-
+BuilderErr::BuilderErr( const char * file,
+                        const int & line,
+                        const char * msg ) throw()
+{
+#ifdef HAVE_SSTREAM
+    std::ostringstream tmp;
+    tmp << file << ": " << line << ": " << msg;
+    M_msg = tmp.str();
+#else
+    std::ostrstream tmp;
+    tmp << file << ": " << line << ": " << msg << std::ends;
+    M_msg = tmp.str();
+    tmp.freeze( false );
 #endif
+}
+
+}
+}

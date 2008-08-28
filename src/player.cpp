@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "player.h"
@@ -44,6 +44,12 @@
 
 #include <algorithm>
 #include <cassert>
+
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#else
+#include <strstream>
+#endif
 
 namespace {
 

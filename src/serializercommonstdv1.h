@@ -24,13 +24,11 @@
 
 #include "serializer.h"
 
-namespace rcss
-{
+namespace rcss {
 
 
 class SerializerCommonStdv1
-    : public SerializerCommon
-{
+    : public SerializerCommon {
 protected:
     SerializerCommonStdv1();
 
@@ -80,5 +78,7 @@ public:
     void serializeParam( std::ostream & strm,
                          const std::string & param ) const;
 };
+
 }
+
 #endif

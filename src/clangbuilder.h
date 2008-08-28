@@ -19,8 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGBUILDER_H
-#define CLANGBUILDER_H
+#ifndef RCSSSERVER_CLANGBUILDER_H
+#define RCSSSERVER_CLANGBUILDER_H
 
 
 #include <string>
@@ -354,15 +354,6 @@ public:
 };
 
 }
-}
-
-
-inline
-std::ostream &
-operator<<( std::ostream & o,
-            const rcss::clang::BuilderErr & e )
-{
-    return o << e.what();
 }
 
 #endif

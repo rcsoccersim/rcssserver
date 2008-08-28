@@ -70,11 +70,11 @@
 #include <cstring>
 #include <cerrno>
 
-#ifdef __APPLE__
-extern "C" {
-    int isnan (double);
-}
-#endif
+// #ifdef __APPLE__
+// extern "C" {
+//     int isnan (double);
+// }
+// #endif
 
 
 /*

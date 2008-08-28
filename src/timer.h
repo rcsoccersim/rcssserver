@@ -52,11 +52,10 @@ protected:
     //    RCSSSERVER_API
     Timer( Timeable & timeable )
         : M_timeable ( timeable )
-      {}
+      { }
 
     //    RCSSSERVER_API
-    Timeable &
-    getTimeableRef()
+    Timeable & getTimeableRef()
       {
           return M_timeable;
       }

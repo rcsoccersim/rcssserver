@@ -22,11 +22,9 @@
 #ifndef CLANGPARSER_H
 #define CLANGPARSER_H
 
-
 #include <string>
 #include <rcssbase/parser.h>
 #include "coach_lang_tok.h"
-
 
 extern int RCSS_CLANG_parse( void * );
 
@@ -87,14 +85,6 @@ public:
 
     // convenience method
     int parse( const char * msg );
-//       {
-// #ifdef HAVE_SSTREAM
-//           std::istringstream strm( msg );
-// #else
-//           std::istrstream strm( msg );
-// #endif
-//           return ( rcss::Parser::parse( strm ) ? 0 : 1 );
-//       }
 };
 
 }

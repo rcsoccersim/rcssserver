@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #ifdef HAVE_SSTREAM
@@ -40,17 +40,14 @@ BuilderErr::BuilderErr( const char * file,
 {
 #ifdef HAVE_SSTREAM
     std::ostringstream tmp;
+    tmp << file << ": " << line << ": " << msg;
+    M_msg = tmp.str();
 #else
     std::ostrstream tmp;
-#endif
-
-    tmp << file << ": " << line << ": " << msg;
-
-#ifndef HAVE_SSTREAM
-    tmp << std::ends;
-#endif
-
+    tmp << file << ": " << line << ": " << msg << std::ends;
     M_msg = tmp.str();
+    tmp.freeze( false );
+#endif
 }
 
 }

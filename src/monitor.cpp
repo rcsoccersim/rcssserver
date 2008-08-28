@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "monitor.h"
@@ -34,6 +34,12 @@
 #include "player.h"
 #include "team.h"
 #include "types.h"
+
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#else
+#include <strstream>
+#endif
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
