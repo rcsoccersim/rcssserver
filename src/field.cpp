@@ -179,17 +179,6 @@ Stadium::Stadium()
 
 Stadium::~Stadium()
 {
-    for ( std::vector< HeteroPlayer * >::iterator it = M_player_types.begin();
-          it != M_player_types.end();
-          ++it )
-    {
-        if ( *it != NULL )
-        {
-            delete *it;
-        }
-    }
-    M_player_types.clear();
-
     for ( std::list< Referee * >::iterator i = M_referees.begin();
           i != M_referees.end();
           ++i )
@@ -209,7 +198,6 @@ Stadium::~Stadium()
         }
     }
     M_monitors.clear();
-
 
     for ( OnlineCoachCont::iterator it = M_olcoaches.begin();
           it != M_olcoaches.end();
@@ -234,6 +222,17 @@ Stadium::~Stadium()
         }
     }
     M_players.clear();
+
+    for ( std::vector< HeteroPlayer * >::iterator it = M_player_types.begin();
+          it != M_player_types.end();
+          ++it )
+    {
+        if ( *it != NULL )
+        {
+            delete *it;
+        }
+    }
+    M_player_types.clear();
 
     delete M_team_l; M_team_l = NULL;
     delete M_team_r; M_team_r = NULL;
@@ -1465,19 +1464,14 @@ void
 Stadium::discard_player( const Side side,
                          const int unum )
 {
-    int i = 0;
-    for ( i = 0; i < MAX_PLAYER * 2; ++i )
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
         if ( M_players[i]->side() == side
              && M_players[i]->unum() == unum )
         {
+            M_players[i]->discard();
             break;
         }
-    }
-
-    if ( i < MAX_PLAYER * 2 )
-    {
-        M_players[i]->discard();
     }
 }
 

@@ -89,27 +89,29 @@ public:
                const char * const * argv );
 
     virtual
-    ~ServerParam ();
+    ~ServerParam();
 
     void clear();
 
 private:
 
+    void convertOldConf();
+
     void setDefaults();
     void addParams();
 
     template< typename P >
-    void addParam(  const std::string & name,
-                    P & param,
-                    const std::string & desc,
-                    int version );
+    void addParam( const std::string & name,
+                   P & param,
+                   const std::string & desc,
+                   int version );
 
     template< typename S, typename G >
-    void addParam(  const std::string & name,
-                    const S & setter,
-                    const G & getter,
-                    const std::string & desc,
-                    int version );
+    void addParam( const std::string & name,
+                   const S & setter,
+                   const G & getter,
+                   const std::string & desc,
+                   int version );
 
     // default values
 

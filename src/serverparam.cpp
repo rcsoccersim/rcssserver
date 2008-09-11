@@ -301,47 +301,8 @@ ServerParam::init( const int & argc,
     S_program_name = argv[0];
     instance();
     S_in_init = false;
-#ifndef WIN32
-    if ( std::system( ( "ls " + tildeExpand( ServerParam::OLD_SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0 )
-    {
-        if ( std::system( ( "ls " + tildeExpand( ServerParam::SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) != 0 )
-        {
-            if( std::system( "which awk > /dev/null 2>&1" ) == 0 )
-            {
-                std::cout << "Trying to convert old configuration file '"
-                          << ServerParam::OLD_SERVER_CONF
-                          << "'\n";
 
-                char filename[] = "/tmp/rcssserver-oldconf-XXXXXX";
-                int fd = mkstemp( filename );
-                if ( fd != -1 )
-                {
-                    close( fd );
-                    std::string command = "awk '/^[ \\t]*$/ {} ";
-                    command += "/^[^#]+[:]/ { gsub(/:/, \"=\" ); $1 = \"server::\" $1; } ";
-                    command += "/^[ \\t]*[^#:=]+$/ { $1 = \"server::\" $1 \" = true\"; }";
-                    command += "{ print; }' ";
-                    command +=  tildeExpand( ServerParam::OLD_SERVER_CONF );
-                    command += " > ";
-                    command += filename;
-                    if ( std::system( command.c_str() ) == 0 )
-                    {
-                        std::cout << "Conversion successful\n";
-                        instance().M_conf_parser->parse( filename );
-                    }
-                    else
-                    {
-                        std::cout << "Conversion failed\n";
-                    }
-                }
-                else
-                {
-                    std::cout << "Conversion failed\n";
-                }
-            }
-        }
-    }
-#endif // not win32
+    instance().convertOldConf();
 
     boost::filesystem::path conf_path( tildeExpand( ServerParam::SERVER_CONF ),
                                        boost::filesystem::portable_posix_name );
@@ -446,6 +407,49 @@ ServerParam::init( const int & argc,
     return true;
 }
 
+
+void
+ServerParam::convertOldConf()
+{
+#ifndef WIN32
+    if ( std::system( ( "ls " + tildeExpand( OLD_SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
+         && std::system( ( "ls " + tildeExpand( SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) != 0
+         && std::system( "which awk > /dev/null 2>&1" ) == 0 )
+    {
+        std::cout << "Trying to convert old configuration file '"
+                  << ServerParam::OLD_SERVER_CONF
+                  << "'\n";
+
+        char filename[] = "/tmp/rcssserver-oldconf-XXXXXX";
+        int fd = mkstemp( filename );
+        if ( fd != -1 )
+        {
+            close( fd );
+            std::string command = "awk '/^[ \\t]*$/ {} ";
+            command += "/^[^#]+[:]/ { gsub(/:/, \"=\" ); $1 = \"server::\" $1; } ";
+            command += "/^[ \\t]*[^#:=]+$/ { $1 = \"server::\" $1 \" = true\"; }";
+            command += "{ print; }' ";
+            command +=  tildeExpand( OLD_SERVER_CONF );
+            command += " > ";
+            command += filename;
+            if ( std::system( command.c_str() ) == 0 )
+            {
+                std::cout << "Conversion successful\n";
+                instance().M_conf_parser->parse( filename );
+            }
+            else
+            {
+                std::cout << "Conversion failed\n";
+            }
+        }
+        else
+        {
+            std::cout << "Conversion failed\n";
+        }
+    }
+#endif // not win32
+}
+
 void
 ServerParam::setSlowDownFactor()
 {
@@ -478,7 +482,8 @@ ServerParam::ServerParam( const std::string & progname )
     addParams();
     if ( ! ServerParam::S_in_init )
     {
-        std::cerr << "Warning: ServerParam is being used before it has been initialised\n";
+        std::cerr << "Warning: ServerParam is being used before it has been initialised."
+                  << std::endl;
     }
 }
 
@@ -618,7 +623,7 @@ ServerParam::addParams()
               rcss::conf::makeSetter( this, &ServerParam::setExtraHalfTime ),
               rcss::conf::makeGetter( this, &ServerParam::getRawExtraHalfTime ),
               "",
-              999 );
+              13 );
     addParam( "drop_ball_time", M_drop_ball_time, "", 7 );
     addParam( "port", M_port, "", 8 );
     addParam( "coach_port", M_coach_port, "", 8 );

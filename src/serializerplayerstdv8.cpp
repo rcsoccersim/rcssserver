@@ -1,7 +1,7 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializerplayerstdv8.cc
+                            serializerplayerstdv8.cpp
                   Class for serializing data to std v8 players
                              -------------------
     begin                : 27-MAY-2002

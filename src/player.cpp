@@ -197,11 +197,20 @@ Player::Player( Stadium & stadium,
 Player::~Player()
 {
 #if 0
-    std::cerr << shortName() << " consumed stamina = "
-              << M_consumed_stamina
-              << " dash_count = " << M_dash_count
-              << " ave stam =  " << M_consumed_stamina / M_dash_count
-              << std::endl;
+    if ( ! isGoalie() )
+    {
+        std::cerr << M_team->name() << ','
+                  << unum() << ','
+                  << M_player_type->staminaIncMax() << ','
+                  << M_player_type->staminaIncMax() * 3000 << ','
+                  << M_consumed_stamina;
+//               << " dash_count = " << M_dash_count;
+//     if ( M_dash_count > 0 )
+//     {
+//         std::cerr << " consumed_stamina/dash =  " << M_consumed_stamina / M_dash_count;
+//     }
+            std::cerr << std::endl;
+    }
 #endif
     delete M_init_observer;
     M_init_observer = NULL;
@@ -859,9 +868,16 @@ Player::dash( double power )
         {
             M_stamina = 0.0;
         }
-        M_consumed_stamina += power_need;
 
-        power = (power < 0) ? power_need / -2.0 : power_need;
+        if ( M_stadium.playmode() != PM_BeforeKickOff
+             && M_stadium.playmode() != PM_TimeOver )
+        {
+            M_consumed_stamina += power_need;
+        }
+
+        power = ( power < 0.0
+                  ? power_need / -2.0
+                  : power_need );
         double effective_dash_power
             = effort()
             * power

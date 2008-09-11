@@ -1,3 +1,16 @@
+2008-09-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/logger.cpp:
+	* src/serializerplayerstdv8.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/utility.cpp:
+	- fixed coding style. cleaned up the code.
+	- changed the version of extra_half_time parameter to 13.
+	- changed thr text log format slightly. Now, the stoppage time
+	information is recorded to the text log.
+
 2008-08-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/pcombuilder.cpp:

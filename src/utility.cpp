@@ -127,11 +127,12 @@ lcm( int a, int b )
 
 
 std::string
-tildeExpand( const std::string& path_name )
+tildeExpand( const std::string & path_name )
 {
     // There must be a ~ at the start of the path for a valid
     // expansioin.
-    if (path_name.length() == 0 || path_name[0] != '~')
+    if ( path_name.length() == 0
+         || path_name[0] != '~' )
     {
         return path_name;
     }
@@ -149,7 +150,7 @@ tildeExpand( const std::string& path_name )
     {
 #ifdef WIN32
         char szpath[MAX_PATH];
-        if(SHGetSpecialFolderPath(NULL, szpath, CSIDL_PERSONAL, TRUE))
+        if ( SHGetSpecialFolderPath( NULL, szpath, CSIDL_PERSONAL, TRUE ) )
         {
             return szpath + path_name.substr( 1, path_name.length() );
         }
@@ -197,7 +198,9 @@ tildeExpand( const std::string& path_name )
     // directory path at the start of newPath.
     struct passwd * pwdEntry = getpwnam( username.c_str() );
     if ( pwdEntry == NULL )
+    {
         return path_name;
+    }
 
     newPath.insert( 0, pwdEntry->pw_dir );
 
