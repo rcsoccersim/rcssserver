@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                               clangmsgbuilder.cc  
+                               clangmsgbuilder.cc
                       Class for building a clang message
                              -------------------
     begin                : 25-FEB-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
  ***************************************************************************/
@@ -107,7 +107,7 @@ namespace rcss
 		return rval;
 	    }
 
-	
+
 	std::auto_ptr< Action >
 	MsgBuilder::getAction()
 	    {
@@ -150,7 +150,7 @@ namespace rcss
 		return rval;
 	    }
 
-	
+
 	std::auto_ptr< Token >
 	MsgBuilder::getToken()
 	    {
@@ -227,7 +227,7 @@ namespace rcss
 		return rval;
 	    }
 
-	
+
 	std::auto_ptr< std::string >
 	MsgBuilder::getStr()
 	    {
@@ -303,7 +303,7 @@ namespace rcss
 		return false;
 	    }
 
- 
+
 	std::auto_ptr< MetaToken >
 	MsgBuilder::checkAndGetMetaToken()
 	    {
@@ -315,7 +315,7 @@ namespace rcss
 		return std::auto_ptr< MetaToken >();
 	    }
 
-	
+
 	std::auto_ptr< Action >
 	MsgBuilder::checkAndGetAction()
 	    {
@@ -362,7 +362,7 @@ namespace rcss
 		return std::auto_ptr< CondList >( new CondList() );
 	    }
 
-	
+
 	std::auto_ptr< Token >
 	MsgBuilder::checkAndGetToken()
 	    {
@@ -446,7 +446,7 @@ namespace rcss
 		return std::auto_ptr< UNumSet >( new UNumSet() );
 	    }
 
-	
+
 	std::auto_ptr< std::string >
 	MsgBuilder::checkAndGetStr()
 	    {
@@ -675,32 +675,33 @@ namespace rcss
       M_msg.release();
       M_min_ver = (unsigned int)-1;
       M_max_ver = 0;
-    }      
+    }
 
     void
     MsgBuilder::onNoItems() const
     {
       throw BuilderErr( __FILE__, __LINE__,
-                        "No item on stack." );        
+                        "No item on stack." );
     }
-    
+
     void
     MsgBuilder::onWrongItem() const
     {
       throw BuilderErr( __FILE__, __LINE__,
-                        "Wrong item on stack." );        
+                        "Wrong item on stack." );
     }
-    
+
     void
     MsgBuilder::onNotEmpty() const
     {
       throw BuilderErr( __FILE__, __LINE__,
-                        "Stack is not empty when it should be." );        
+                        "Stack is not empty when it should be." );
     }
- 
+
     MsgBuilder::MsgBuilder()
       : M_min_ver( (unsigned int)-1 ),
-        M_max_ver( 0 )
+        M_max_ver( 0 ),
+        M_freeform_msg_size( 128 )
     {}
 
     MsgBuilder::~MsgBuilder()
@@ -709,16 +710,16 @@ namespace rcss
     Msg*
     MsgBuilder::getMsg()
     { return M_msg.get(); }
-    
+
     const Msg*
     MsgBuilder::getMsg() const
     { return M_msg.get(); }
-    
+
     std::auto_ptr< Msg >
     MsgBuilder::detatchMsg()
     { return M_msg; }
 
-    
+
     void
     MsgBuilder::checkItemsEmpty() const
     {
@@ -726,7 +727,7 @@ namespace rcss
         onNotEmpty();
     }
 
-    
+
     void
     MsgBuilder::setMsg( Msg* msg )
     {
@@ -736,15 +737,15 @@ namespace rcss
       checkItemsEmpty();
     }
 
-    
+
     void
     MsgBuilder::setTime( const int& time )
     {
       if( M_msg.get() != NULL )
         M_msg->setTimeSend( time );
     }
-    
-    
+
+
     void
     MsgBuilder::setSide( const int& side )
     {
@@ -757,10 +758,10 @@ namespace rcss
     {
       if( M_msg.get() != NULL )
         M_msg->setTimeRecv( time );
-    }      
+    }
 
 
-    
+
     void
     MsgBuilder::setVer( const unsigned int& min,
                               const unsigned int& max )
@@ -781,9 +782,9 @@ namespace rcss
             M_min_ver = min;
           if( max > M_max_ver )
             M_max_ver = max;
-          if( min > max 
-              && M_max_ver < M_min_ver 
-              && min > M_max_ver 
+          if( min > max
+              && M_max_ver < M_min_ver
+              && min > M_max_ver
               && max < M_min_ver )
             {
               M_min_ver = min;
@@ -796,8 +797,18 @@ namespace rcss
         }
     }
 
-      
-    
+void
+MsgBuilder::setFreeformMsgSize( const unsigned int len )
+{
+    M_freeform_msg_size = len;
+}
+
+unsigned int
+MsgBuilder::freeformMsgSize() const
+{
+    return M_freeform_msg_size;
+}
+
     void
     MsgBuilder::buildMetaMsg()
     {
@@ -807,20 +818,20 @@ namespace rcss
       {
 	  while( isItem( META ) )
 	      msg->getTokens().push_front( getMetaToken().release() );
-      }  
+      }
       setMsg( msg );
     }
-      
-    
+
+
     void
     MsgBuilder::buildMetaTokenVer( const double& ver )
     {
       traceBuild< MetaTokenVer* >();
-      add( new MetaTokenVer( ver ) ); 
+      add( new MetaTokenVer( ver ) );
     }
 
-      
-    
+
+
     void
     MsgBuilder::buildDefineMsg()
     {
@@ -834,57 +845,57 @@ namespace rcss
       setMsg( msg );
     }
 
-      
-    
+
+
     void
     MsgBuilder::buildDefineCond( const std::string& name )
     {
       traceBuild< DefCond* >();
-      add( new DefCond( name, checkAndGetCond() ) ); 
+      add( new DefCond( name, checkAndGetCond() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildDefineDir( const std::string& name )
     {
       traceBuild< DefDir* >();
-      add( new DefDir( name, checkAndGetDir() ) ); 
+      add( new DefDir( name, checkAndGetDir() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildDefineReg( const std::string& name )
     {
       traceBuild< DefReg* >();
-      add( new DefReg( name, checkAndGetRegion() ) ); 
+      add( new DefReg( name, checkAndGetRegion() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildDefineAct( const std::string& name )
-    { 
+    {
       traceBuild< DefAct* >();
-      add( new DefAct( name, checkAndGetAction() ) ); 
+      add( new DefAct( name, checkAndGetAction() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildFreeformMsg( const std::string& str )
-    { 
+    {
       traceBuild< FreeformMsg* >();
-      setMsg( new FreeformMsg( str ) ); 
+      setMsg( new FreeformMsg( str ) );
     }
-     
-    
+
+
     void
     MsgBuilder::buildUnsuppMsg()
-    { 
+    {
       traceBuild< UnsuppMsg* >();
-      setMsg( new UnsuppMsg() ); 
+      setMsg( new UnsuppMsg() );
     }
-      
-    
-    void  
+
+
+    void
     MsgBuilder::buildInfoMsg()
     {
       traceBuild< InfoMsg* >();
@@ -896,8 +907,8 @@ namespace rcss
         }
       setMsg( msg );
     }
-      
-    
+
+
     void
     MsgBuilder::buildAdviceMsg()
     {
@@ -910,8 +921,8 @@ namespace rcss
         }
       setMsg( msg );
     }
-      
-    
+
+
     void
     MsgBuilder::buildTokenRule( const int& ttl )
     {
@@ -925,35 +936,35 @@ namespace rcss
       token->set( checkAndGetCond() );
       add( token );
     }
-      
-    
+
+
     void
     MsgBuilder::buildTokenClear()
     {
       traceBuild< TokClear* >();
       add( new TokClear() );
     }
- 
-    
+
+
     void
     MsgBuilder::buildActPos()
     {
       traceBuild< ActPos* >();
-      add( new ActPos( checkAndGetRegion() ) ); 
+      add( new ActPos( checkAndGetRegion() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActHome()
     {
       traceBuild< ActHome* >();
       add( new ActHome( checkAndGetRegion() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActBallToReg()
-    { 
+    {
       traceBuild< ActBallToReg* >();
       BallMove bm;
       if( checkIsItem( BMT ) )
@@ -961,136 +972,136 @@ namespace rcss
           while( isItem( BMT ) )
             bm.addToken( getBMT() );
         }
-      std::auto_ptr< Region > reg = checkAndGetRegion(); 
+      std::auto_ptr< Region > reg = checkAndGetRegion();
       add( new ActBallToReg( reg, bm ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActBallToPlayer()
     {
       traceBuild< ActBallToPlayer* >();
       add( new ActBallToPlayer( *checkAndGetUNumSet() ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildActMark()
     {
       traceBuild< ActMark* >();
       add( new ActMark( *checkAndGetUNumSet() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActMarkLinePlayer()
     {
       traceBuild< ActMarkLinePlayer* >();
       add( new ActMarkLinePlayer( *checkAndGetUNumSet() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActMarkLineReg()
     {
       traceBuild< ActMarkLineReg* >();
-      add( new ActMarkLineReg( checkAndGetRegion() ) ); 
+      add( new ActMarkLineReg( checkAndGetRegion() ) );
     }
 
-    
+
     void
     MsgBuilder::buildActOffsideLine()
     {
       traceBuild< ActOffsidesLine* >();
-      add( new ActOffsidesLine( checkAndGetRegion() ) ); 
+      add( new ActOffsidesLine( checkAndGetRegion() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActHetType( const int& type )
     {
       traceBuild< ActHetType* >();
-      add( new ActHetType( type ) ); 
+      add( new ActHetType( type ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActNamed( const std::string& name )
     {
       traceBuild< ActNamed* >();
-      add( new ActNamed( name ) ); 
+      add( new ActNamed( name ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActPassReg()
     {
       traceBuild< ActPassReg* >();
-      add( new ActPassReg( checkAndGetRegion() ) ); 
+      add( new ActPassReg( checkAndGetRegion() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActPassUNum()
     {
       traceBuild< ActPassUNum* >();
-      add( new ActPassUNum( *checkAndGetUNumSet() ) ); 
+      add( new ActPassUNum( *checkAndGetUNumSet() ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildActDribble()
     {
       traceBuild< ActDribble* >();
-      add( new ActDribble( checkAndGetRegion() ) ); 
+      add( new ActDribble( checkAndGetRegion() ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildActClear()
     {
       traceBuild< ActClear* >();
-      add( new ActClear( checkAndGetRegion() ) ); 
+      add( new ActClear( checkAndGetRegion() ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildActShoot()
     {
       traceBuild< ActShoot* >();
       add( new ActShoot() );
     }
-      
-    
+
+
     void
     MsgBuilder::buildActHold()
     {
       traceBuild< ActHold* >();
-      add( new ActHold() ); 
+      add( new ActHold() );
     }
- 
-    
+
+
     void
     MsgBuilder::buildActIntercept()
     {
       traceBuild< ActIntercept* >();
-      add( new ActIntercept() ); 
+      add( new ActIntercept() );
     }
- 
-    
+
+
     void
     MsgBuilder::buildActTackle()
     {
       traceBuild< ActTackle* >();
-      add( new ActTackle( *checkAndGetUNumSet() ) ); 
+      add( new ActTackle( *checkAndGetUNumSet() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildDirComm( const bool& do_dont, const bool& our_side )
     {
       traceBuild< DirComm* >();
-      DirComm* dir = new DirComm( do_dont, our_side, UNumSet(), 
+      DirComm* dir = new DirComm( do_dont, our_side, UNumSet(),
                                   std::list< Action* >() );
       if( checkIsItem( ACTION ) )
         {
@@ -1102,68 +1113,68 @@ namespace rcss
       dir->set( *checkAndGetUNumSet() );
       add( dir );
     }
-      
-    
+
+
     void
     MsgBuilder::buildDirNamed( const std::string& name )
-    { 
+    {
       traceBuild< DirNamed* >();
-      add( new DirNamed( name ) ); 
+      add( new DirNamed( name ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondTrue()
     {
       traceBuild< CondBool* >();
-      add( new CondBool( true ) ); 
+      add( new CondBool( true ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildCondFalse()
     {
       traceBuild< CondBool* >();
-      add( new CondBool( false ) ); 
+      add( new CondBool( false ) );
     }
-      
-    
+
+
     void
-    MsgBuilder::buildCondPlayerPos( const bool& our_side, 
-                                          const int& min, 
+    MsgBuilder::buildCondPlayerPos( const bool& our_side,
+                                          const int& min,
                                           const int& max )
     {
       traceBuild< CondPlayerPos* >();
-      std::auto_ptr< Region > reg = checkAndGetRegion(); 
+      std::auto_ptr< Region > reg = checkAndGetRegion();
       UNumSet unums = *checkAndGetUNumSet();
       add( new CondPlayerPos( our_side, unums, min, max, reg ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondBallPos()
     {
       traceBuild< CondBallPos* >();
-      add( new CondBallPos( checkAndGetRegion() ) ); 
+      add( new CondBallPos( checkAndGetRegion() ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildCondBallOwner( const bool& our_side )
     {
       traceBuild< CondBallOwner* >();
       add( new CondBallOwner( our_side, *checkAndGetUNumSet() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondPlayMode( const PlayMode& play_mode )
     {
       traceBuild< CondPlayMode* >();
-      add( new CondPlayMode( play_mode ) ); 
+      add( new CondPlayMode( play_mode ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondAnd()
     {
@@ -1172,8 +1183,8 @@ namespace rcss
       std::auto_ptr< CondAnd > cond( new CondAnd(l) );
       add( cond.release() );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondOr()
     {
@@ -1182,68 +1193,68 @@ namespace rcss
       std::auto_ptr< CondOr > cond( new CondOr(l) );
       add( cond.release() );
     }
- 
-    
+
+
     void
     MsgBuilder::buildCondNot()
     {
       traceBuild< CondNot* >();
-      add( new CondNot( checkAndGetCond() ) ); 
+      add( new CondNot( checkAndGetCond() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondNamed( const std::string& name )
     {
       traceBuild< CondNamed* >();
-      add( new CondNamed( name ) ); 
+      add( new CondNamed( name ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildCondTime( const int& time,
                                      const util::CompOp& comp )
     {
       traceBuild< CondTime* >();
-      add( new CondTime( time, comp ) ); 
+      add( new CondTime( time, comp ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondOppGoal( const int& goals,
                                         const util::CompOp& comp )
     {
       traceBuild< CondOppGoal* >();
-      add( new CondOppGoal( goals, comp ) ); 
+      add( new CondOppGoal( goals, comp ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildCondOurGoal( const int& goals,
                                         const util::CompOp& comp )
     {
       traceBuild< CondOurGoal* >();
-      add( new CondOurGoal( goals, comp ) ); 
-    }     
- 
-    
+      add( new CondOurGoal( goals, comp ) );
+    }
+
+
     void
-    MsgBuilder::buildCondGoalDiff( const int& goals, 
+    MsgBuilder::buildCondGoalDiff( const int& goals,
                                          const util::CompOp& comp )
     {
       traceBuild< CondGoalDiff* >();
-      add( new CondGoalDiff( goals, comp ) ); 
+      add( new CondGoalDiff( goals, comp ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildCondUNum( const rcss::clang::UNum& unum )
-    { 
+    {
       traceBuild< CondUNum* >();
       add( new CondUNum( unum, *checkAndGetUNumSet() ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildAddToCondList ( )
     {
@@ -1253,7 +1264,7 @@ namespace rcss
       l->push_back( c.release() );
       add( l );
     }
-    
+
     void
     MsgBuilder::buildCreateCondList ( )
     {
@@ -1267,10 +1278,10 @@ namespace rcss
     MsgBuilder::buildRegNull()
     {
       traceBuild< RegNull* >();
-      add( new RegNull() ); 
+      add( new RegNull() );
     }
-      
-    
+
+
     void
     MsgBuilder::buildRegQuad()
     {
@@ -1281,8 +1292,8 @@ namespace rcss
       std::auto_ptr< Point > p1 = checkAndGetPoint();
       add( new RegQuad( p1, p2, p3, p4 ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildRegArc( const double& start_rad,
                                    const double& end_rad,
@@ -1294,8 +1305,8 @@ namespace rcss
                        start_rad, end_rad,
                        start_ang, span_ang ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildRegUnion()
     {
@@ -1308,24 +1319,24 @@ namespace rcss
 	}
 	add( reg.release() );
     }
- 
-    
+
+
     void
     MsgBuilder::buildRegNamed( const std::string& name )
     {
       traceBuild< RegNamed* >();
-      add( new RegNamed( name ) ); 
+      add( new RegNamed( name ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildRegPoint()
     {
       traceBuild< RegPoint* >();
-      add( new RegPoint( checkAndGetPoint() ) ); 
+      add( new RegPoint( checkAndGetPoint() ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildRegTri()
     {
@@ -1333,53 +1344,53 @@ namespace rcss
       std::auto_ptr< Point > p3 = checkAndGetPoint();
       std::auto_ptr< Point > p2 = checkAndGetPoint();
       std::auto_ptr< Point > p1 = checkAndGetPoint();
-      add( new RegTri( p1, p2, p3 ) ); 
+      add( new RegTri( p1, p2, p3 ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildRegRec()
     {
       traceBuild< RegRec* >();
       std::auto_ptr< Point > p2 = checkAndGetPoint();
       std::auto_ptr< Point > p1 = checkAndGetPoint();
-      add( new RegRec( p1, p2 ) ); 
+      add( new RegRec( p1, p2 ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildPointSimple( const double& x, const double& y )
     {
       traceBuild< PointSimple* >();
-      add( new PointSimple( x, y ) ); 
+      add( new PointSimple( x, y ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildPointRel( const double& x, const double& y )
     {
       traceBuild< PointRel* >();
-      add( new PointRel( x, y, checkAndGetPoint() ) ); 
+      add( new PointRel( x, y, checkAndGetPoint() ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildPointBall()
     {
       traceBuild< PointBall* >();
-      add( new PointBall() ); 
+      add( new PointBall() );
     }
-      
-    
+
+
     void
     MsgBuilder::buildPointPlayer( const bool& our_side,
                                         const UNum& unum )
     {
       traceBuild< PointPlayer* >();
-      add( new PointPlayer( our_side, unum ) ); 
+      add( new PointPlayer( our_side, unum ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildPointArith( const rcss::util::ArithOp& arith_op )
     {
@@ -1388,21 +1399,21 @@ namespace rcss
       // up with 'b / a', when 'a / b' was what was actually sent.
       std::auto_ptr< Point > second = checkAndGetPoint();
       std::auto_ptr< Point > first = checkAndGetPoint();
-      add( new PointArith( first, second, arith_op ) ); 
+      add( new PointArith( first, second, arith_op ) );
     }
-      
-    
+
+
     void
     MsgBuilder::buildUNum( const UNum& unum )
-    { 
+    {
       traceBuild< UNum* >();
-      add( new UNum( unum ) ); 
+      add( new UNum( unum ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildUNumSet()
-    { 
+    {
       traceBuild< UNumSet >();
       UNumSet unums;
       if( checkIsItem( UNUM ) )
@@ -1410,18 +1421,18 @@ namespace rcss
           while( isItem( UNUM ) )
 	      unums.add( *getUNum() );
         }
-      add( new UNumSet( unums ) ); 
+      add( new UNumSet( unums ) );
     }
- 
-    
+
+
     void
     MsgBuilder::buildBallMoveToken( const BallMoveToken& bmt )
     {
       traceBuild< BallMoveToken >();
-      add( bmt ); 
+      add( bmt );
     }
 
-    
+
     void
     MsgBuilder::buildRuleMsg()
     {
@@ -1432,10 +1443,10 @@ namespace rcss
           while( isItem( ACTIVATE ) )
 	      msg->getList().push_front( *getActivateRules() );
         }
-      setMsg( msg ); 
+      setMsg( msg );
     }
-    
-    
+
+
     void
     MsgBuilder::buildActivateAllRules( const bool& on )
     {
@@ -1443,7 +1454,7 @@ namespace rcss
       add( new ActivateRules( on, RuleIDList() ) );
     }
 
-    
+
     void
     MsgBuilder::buildActivateRules( const bool& on )
     {
@@ -1458,11 +1469,11 @@ namespace rcss
       else
       {
           act->set( *checkAndGetRIDList() );
-      } 
+      }
       add( act );
     }
 
-    
+
     void
     MsgBuilder::buildRuleID( const std::string& id )
     {
@@ -1470,7 +1481,7 @@ namespace rcss
       add( id );
     }
 
-    
+
     void
     MsgBuilder::buildRuleIDList()
     {
@@ -1483,10 +1494,10 @@ namespace rcss
           // by adding the items to the front, the original order is
           // maintained.
         }
-      add( new RuleIDList( rids ) ); 
+      add( new RuleIDList( rids ) );
     }
 
-    
+
     void
     MsgBuilder::buildRuleIDListALL()
     {
@@ -1494,7 +1505,7 @@ namespace rcss
       add( new RuleIDList() ); // an empty list == all rules.
     }
 
-    
+
     void
     MsgBuilder::buildDelMsg()
     {
@@ -1510,26 +1521,26 @@ namespace rcss
         {
           msg->set( *checkAndGetRIDList() );
         }
-      setMsg( msg ); 
+      setMsg( msg );
     }
 
-    
+
     void
     MsgBuilder::buildDefineModelRule( const std::string& id )
     {
       traceBuild< DefRule* >();
-      add( new DefRule( id, checkAndGetRule(), true ) ); 
+      add( new DefRule( id, checkAndGetRule(), true ) );
     }
 
-    
+
     void
     MsgBuilder::buildDefineDirectiveRule( const std::string& id )
     {
       traceBuild< DefRule* >();
-      add( new DefRule( id, checkAndGetRule(), false ) ); 
+      add( new DefRule( id, checkAndGetRule(), false ) );
     }
 
-    
+
     void
     MsgBuilder::buildSimpleRule()
     {
@@ -1546,7 +1557,7 @@ namespace rcss
       add( new SimpleRule( checkAndGetCond(), dirs ) );
     }
 
-    
+
     void
     MsgBuilder::buildNestedRule()
     {
@@ -1563,7 +1574,7 @@ namespace rcss
       add( new NestedRule( checkAndGetCond(), rules ) );
     }
 
-    
+
     void
     MsgBuilder::buildIDRule()
     {

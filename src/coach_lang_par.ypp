@@ -346,7 +346,8 @@ rule_list : rule_list rule
 freeform_mess : RCSS_CLANG_LP RCSS_CLANG_FREEFORM RCSS_CLANG_STR RCSS_CLANG_RP
                 {
                   std::string str = rcss::stripQuotes( $3.getStr() );
-                  if( str.length() > ServerParam::instance().freeformMsgSize() )
+                  /*if( str.length() > ServerParam::instance().freeformMsgSize() )*/
+                  if ( str.length() > BUILDER.freeformMsgSize() )
                     YYERROR;
                   else
                     {

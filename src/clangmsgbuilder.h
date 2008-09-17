@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                               clangmsgbuilder.h  
+                               clangmsgbuilder.h
                       Class for building a clang message
                              -------------------
     begin                : 25-FEB-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
  ***************************************************************************/
@@ -42,31 +42,31 @@ namespace rcss
 
     template< typename X >
     inline
-    void 
+    void
     traceBuild()
     {
 #ifdef DEBUG
-      std::cout << "Building: " << typeid( X ).name() << std::endl; 
+      std::cout << "Building: " << typeid( X ).name() << std::endl;
 #endif
     }
 
     template< typename X >
     inline
-    void 
+    void
     traceRemoving()
-    { 
+    {
 #ifdef DEBUG
-      std::cout << "Removing: " << typeid( X ).name() << std::endl; 
+      std::cout << "Removing: " << typeid( X ).name() << std::endl;
 #endif
     }
 
     template< typename X >
     inline
-    void 
+    void
     traceAdding()
-    { 
+    {
 #ifdef DEBUG
-      std::cout << "Adding: " << typeid( X ).name() << std::endl; 
+      std::cout << "Adding: " << typeid( X ).name() << std::endl;
 #endif
     }
 
@@ -85,7 +85,7 @@ namespace rcss
     class RuleIDList;
     class ActivateRules;
     class Rule;
-      
+
       typedef std::string RuleID;
 
 
@@ -96,6 +96,7 @@ namespace rcss
       std::auto_ptr< Msg > M_msg;
       unsigned int M_min_ver;
       unsigned int M_max_ver;
+    unsigned int M_freeform_msg_size;
 
     public:
       typedef std::list< Cond* > CondList;
@@ -130,7 +131,7 @@ namespace rcss
 	    ~ItemType()
 		{
 		}
-	    
+
 	    void
 	    clear();
 
@@ -165,7 +166,7 @@ namespace rcss
 	std::auto_ptr< MetaToken >
 	getMetaToken();
 
-	
+
 	std::auto_ptr< Action >
 	getAction();
 
@@ -180,7 +181,7 @@ namespace rcss
 	std::auto_ptr< CondList >
 	getCondList();
 
-	
+
 	std::auto_ptr< Token >
 	getToken();
 
@@ -208,7 +209,7 @@ namespace rcss
 	std::auto_ptr< UNumSet >
 	getUNumSet();
 
-	
+
 	std::auto_ptr< std::string >
 	getStr();
 
@@ -232,11 +233,11 @@ namespace rcss
 	bool
 	checkIsItem( Types type ) const;
 
- 
+
 	std::auto_ptr< MetaToken >
 	checkAndGetMetaToken();
 
-	
+
 	std::auto_ptr< Action >
 	checkAndGetAction();
 
@@ -251,7 +252,7 @@ namespace rcss
 	std::auto_ptr< CondList >
 	checkAndGetCondList();
 
-	
+
 	std::auto_ptr< Token >
 	checkAndGetToken();
 
@@ -279,7 +280,7 @@ namespace rcss
 	std::auto_ptr< UNumSet >
 	checkAndGetUNumSet();
 
-	
+
 	std::auto_ptr< std::string >
 	checkAndGetStr();
 
@@ -352,7 +353,7 @@ namespace rcss
 
       void
       onNotEmpty() const;
-      
+
     public:
       MsgBuilder();
 
@@ -372,6 +373,12 @@ namespace rcss
       void
       setVer( const unsigned int& min, const unsigned int& max );
 
+    virtual
+    void setFreeformMsgSize( const unsigned int len );
+
+    virtual
+    unsigned int freeformMsgSize() const;
+
       virtual
       void
       setTime( const int& time );
@@ -379,7 +386,7 @@ namespace rcss
       virtual
       void
       setSide( const int& side );
-      
+
       virtual
       void
       setTimeRecv( const int& time );
@@ -390,7 +397,7 @@ namespace rcss
 
       virtual
       void
-      buildMetaTokenVer( const double& ver ); 
+      buildMetaTokenVer( const double& ver );
 
       virtual
       void
@@ -415,15 +422,15 @@ namespace rcss
       virtual
       void
       buildFreeformMsg( const std::string& str );
-      
+
       virtual
       void
       buildUnsuppMsg();
 
       virtual
-      void  
+      void
       buildInfoMsg();
- 
+
       virtual
       void
       buildAdviceMsg();
@@ -471,7 +478,7 @@ namespace rcss
       virtual
       void
       buildActHetType( const int& type );
- 
+
       virtual
       void
       buildActNamed( const std::string& name );
@@ -526,8 +533,8 @@ namespace rcss
 
       virtual
       void
-      buildCondPlayerPos( const bool& our_side, 
-                          const int& min, 
+      buildCondPlayerPos( const bool& our_side,
+                          const int& min,
                           const int& max );
 
       virtual
@@ -557,7 +564,7 @@ namespace rcss
       virtual
       void
       buildCondNamed( const std::string& name );
-      
+
       virtual
       void
       buildCondTime( const int& time, const util::CompOp& comp );
@@ -585,7 +592,7 @@ namespace rcss
       virtual
       void
       buildCreateCondList ( );
-      
+
       virtual
       void
       buildRegNull();
@@ -644,14 +651,14 @@ namespace rcss
       virtual
       void
       buildUNum( const UNum& unum );
- 
+
       virtual
       void
       buildUNumSet();
- 
+
       virtual
       void
-      buildBallMoveToken( const BallMoveToken& bmt );     
+      buildBallMoveToken( const BallMoveToken& bmt );
 
       virtual
       void

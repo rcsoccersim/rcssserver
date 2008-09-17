@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                               clangbuilder.h  
+                               clangbuilder.h
                       Interface for building a clang message
                              -------------------
     begin                : 16-FEB-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server 
+    copyright            : (C) 2002 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
  ***************************************************************************/
@@ -67,11 +67,11 @@ namespace rcss
     public:
       Builder()
       {}
-  
+
       virtual
       ~Builder()
       {}
-            
+
       inline
       void
       setVer( const unsigned int& ver )
@@ -81,6 +81,12 @@ namespace rcss
       void
       setVer( const unsigned int& min, const unsigned int& max ) = 0;
 
+    virtual
+    void setFreeformMsgSize( const unsigned int len ) = 0;
+
+    virtual
+    unsigned int freeformMsgSize() const = 0;
+
       virtual
       void
       setTime( const int& time ) = 0;
@@ -88,7 +94,7 @@ namespace rcss
       virtual
       void
       setSide( const int& side ) = 0;
-      
+
       virtual
       void
       setTimeRecv( const int& time ) = 0;
@@ -99,7 +105,7 @@ namespace rcss
 
       virtual
       void
-      buildMetaTokenVer( const double& ver ) = 0; 
+      buildMetaTokenVer( const double& ver ) = 0;
 
       virtual
       void
@@ -124,15 +130,15 @@ namespace rcss
       virtual
       void
       buildFreeformMsg( const std::string& str ) = 0;
-      
+
       virtual
       void
       buildUnsuppMsg() = 0;
 
       virtual
-      void  
+      void
       buildInfoMsg() = 0;
- 
+
       virtual
       void
       buildAdviceMsg() = 0;
@@ -180,7 +186,7 @@ namespace rcss
       virtual
       void
       buildActHetType( const int& type ) = 0;
- 
+
       virtual
       void
       buildActNamed( const std::string& name ) = 0;
@@ -235,8 +241,8 @@ namespace rcss
 
       virtual
       void
-      buildCondPlayerPos( const bool& our_side, 
-                          const int& min, 
+      buildCondPlayerPos( const bool& our_side,
+                          const int& min,
                           const int& max ) = 0;
 
       virtual
@@ -266,7 +272,7 @@ namespace rcss
       virtual
       void
       buildCondNamed( const std::string& name ) = 0;
-      
+
       virtual
       void
       buildCondTime( const int& time, const util::CompOp& comp ) = 0;
@@ -294,7 +300,7 @@ namespace rcss
       virtual
       void
       buildCreateCondList ( ) = 0;
-      
+
       virtual
       void
       buildRegNull() = 0;
@@ -353,11 +359,11 @@ namespace rcss
       virtual
       void
       buildUNum( const UNum& unum ) = 0;
- 
+
       virtual
       void
       buildUNumSet() = 0;
- 
+
       virtual
       void
       buildBallMoveToken( const BallMoveToken& bmt ) = 0;
@@ -419,8 +425,8 @@ namespace rcss
     protected:
       std::string M_msg;
     public:
-      BuilderErr( const char* file, 
-                  const int& line, 
+      BuilderErr( const char* file,
+                  const int& line,
                   const char* msg ) throw()
       {
 #ifdef HAVE_SSTREAM
@@ -434,12 +440,12 @@ namespace rcss
 #ifndef HAVE_SSTREAM
         tmp << std::ends;
 #endif
-      
+
         M_msg = tmp.str ();
       }
 
       ~BuilderErr () throw () {}
-  
+
       const char* what () const throw ()
       { return M_msg.c_str (); }
 
@@ -448,8 +454,8 @@ namespace rcss
 }
 
 
-inline 
-std::ostream& operator<< ( std::ostream& o, 
+inline
+std::ostream& operator<< ( std::ostream& o,
                            const rcss::clang::BuilderErr& e )
 { return o << e.what (); }
 

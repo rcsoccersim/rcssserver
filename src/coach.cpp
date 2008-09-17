@@ -1294,6 +1294,8 @@ OnlineCoach::parse_command( const char *command )
             /* parsing for new coach language */
 
             rcss::clang::MsgBuilder builder;
+            builder.setFreeformMsgSize( ServerParam::instance().freeformMsgSize() );
+
             rcss::clang::Parser parser( builder );
 
             int ret = parser.parse( command );

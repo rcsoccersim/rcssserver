@@ -26,7 +26,7 @@ which rcssmodtest 2> /dev/null
 if test $? -eq 1; then
     LIBLOAD=""
 else
-    rcssmodtest @prefix@/lib/@PACKAGE@/modules/libstdoutsaver 2> /dev/null
+    rcssmodtest @libdir@/@PACKAGE@/modules/libstdoutsaver 2> /dev/null
     if test $? -eq 1; then
         LIBLOAD=""
     fi
