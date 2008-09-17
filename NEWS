@@ -1923,7 +1923,7 @@
   otherwise. Player_2_ball is a vector from the player to the ball, relative
   to the player's body direction.
 
-  If the tackle is successfull, the ball is pushed in the direction of the
+  If the tackle is successfull, the ball is pushed in the direction of the
   players body.
 
   When players can see another players team, they can also see if that player

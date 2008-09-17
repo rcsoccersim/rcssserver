@@ -59,19 +59,13 @@ DYNAMIC_MODULES += \
 
 librcssresultsaver_la_SOURCES = resultsaver.cpp
 
-
 libstdoutsaver_la_SOURCES = stdoutsaver.cpp
-
 libstdoutsaver_la_LDFLAGS = -module
-
-libstdoutsaver_la_LIBADD = librcssresultsaver.la
-
+libstdoutsaver_la_LIBADD = librcssresultsaver.la -lrcsslib
 
 libcsvsaver_la_SOURCES = csvsaver.cpp
-
 libcsvsaver_la_LDFLAGS = -module
-
-libcsvsaver_la_LIBADD = -lrcssconfparser librcssresultsaver.la
+libcsvsaver_la_LIBADD = librcssresultsaver.la -lrcssconfparser -lrcsslib
 
 
 pkginclude_HEADERS = \
