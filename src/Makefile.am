@@ -66,7 +66,9 @@ libstdoutsaver_la_LIBADD = librcssresultsaver.la -lrcsslib
 
 libcsvsaver_la_SOURCES = csvsaver.cpp
 libcsvsaver_la_LDFLAGS = -module
-libcsvsaver_la_LIBADD = librcssresultsaver.la -lrcssconfparser
+libcsvsaver_la_LIBADD = librcssresultsaver.la \
+	-lrcssconfparser -lrcsslib \
+	$(BOOST_FILESYSTEM_LIB)
 
 
 pkginclude_HEADERS = \
@@ -281,7 +283,6 @@ initsenderlogger.cpp \
 observer.h \
 sender.h
 
-
 rcssserver_LDADD = $(LLLIBS) $(PRELOAD_MODULES) \
 -lrcssclangparser \
 -lrcssresultsaver \
@@ -291,7 +292,7 @@ rcssserver_LDADD = $(LLLIBS) $(PRELOAD_MODULES) \
 -lrcssnet \
 -lrcssgz \
 -lrcssbase \
-$(BOOST_FILESYSTEM_LIB)
+$(BOOST_FILESYSTEM_LIB) @GZ_LIBS@
 
 rcssserver_DEPENDENCIES = $(PRELOAD_MODULES)
 

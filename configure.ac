@@ -28,7 +28,12 @@ ACX_PTHREAD([LIBS="$PTHREAD_LIBS $LIBS"
 dnl Checks for libraries.
 AC_CHECK_LIB([m], [cos])
 dnl AC_CHECK_LIB(expat, XML_Parse)
-AC_CHECK_LIB([z], [deflate])
+#AC_CHECK_LIB([z], [deflate])
+AC_SUBST(GZ_LIBS)
+AC_CHECK_LIB([z], [deflate],
+             [AC_DEFINE([HAVE_LIBZ], [1],
+                        [Define to 1 if you have the `z' library (-lz).])
+              GZ_LIBS="-lz"])
 
 AC_ARG_WITH(sstream,
         AS_HELP_STRING(--with-sstream,use sstream instead of strstream (default=yes)),
@@ -104,11 +109,11 @@ AC_LIBTOOL_DLOPEN
 # due to a problem with libtool 1.4.2 and autoconf 2.53 and
 # automake 1.6.3, I need to use the following line to
 # enable dlopen support. I don't know how good or bad this is
-AC_DEFUN([AC_PROVIDE_AC_LIBTOOL_DLOPEN])
+##AC_DEFUN([AC_PROVIDE_AC_LIBTOOL_DLOPEN])
 # AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
+AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
-LIBS="$LIBS $lt_cv_dlopen_libs"
+##LIBS="$LIBS $lt_cv_dlopen_libs"
 
 AC_ARG_VAR(SED, [name and location of sed executable.  If it is not
 set, it configure looks for sed in your PATH])
