@@ -64,7 +64,7 @@ tilde_expand( const std::string & path_name )
 {
     // There must be a ~ at the start of the path for a valid
     // expansioin.
-    if  (path_name.length() == 0 || path_name[0] != '~' )
+    if  ( path_name.length() == 0 || path_name[0] != '~' )
     {
         return path_name;
     }
