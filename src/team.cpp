@@ -272,11 +272,6 @@ Team::substitute( const Player * player,
     old_it->second -= 1;
     new_it->second += 1;
 
-    if ( M_stadium->playmode() != PM_BeforeKickOff )
-    {
-        ++M_subs_count;
-    }
-
     if ( M_stadium->time() <= 0 ) // before kick off
     {
         for ( std::map< int, int >::iterator it = M_ptype_used_count.begin();
@@ -293,6 +288,7 @@ Team::substitute( const Player * player,
     }
     else
     {
+        ++M_subs_count;
         M_ptype_used_count[player_type] += 1;
     }
 }

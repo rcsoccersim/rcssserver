@@ -1,3 +1,8 @@
+2008-09-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/team.cpp:
+	- fixed a bug of the substitution count.
+
 2008-09-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:
