@@ -1,3 +1,7 @@
+[12.1.4]
+  * Fixed library dependencies and a problem in 64bit platforms.
+    Thanks go to hedayat Vatankhah for providing the patches.
+
 [12.1.3]
   * This release is the version for the final round of RoboCup2008.
 
