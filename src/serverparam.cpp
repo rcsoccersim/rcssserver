@@ -42,6 +42,7 @@
 #include <rcssbase/conf/paramsetter.hpp>
 #include <rcssbase/conf/paramgetter.hpp>
 
+#include <algorithm>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -453,6 +454,8 @@ ServerParam::convertOldConf()
 void
 ServerParam::setSlowDownFactor()
 {
+    M_slow_down_factor = std::max( 1, M_slow_down_factor );
+
     M_half_time = static_cast< int >( M_raw_half_time * getHalfTimeScaler() + 0.5 );
     M_extra_half_time = static_cast< int >( M_raw_extra_half_time * getHalfTimeScaler() + 0.5 );
 

@@ -561,6 +561,8 @@ public:
 
 private:
 
+    void startPenaltyShootout();
+
     void analyseImpl();
     void handleTimeout( bool left_move_check,
                         bool right_move_check );

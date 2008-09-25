@@ -2384,31 +2384,32 @@ CatchRef::callCatchFault( Side side, PVector pos )
 void
 PenaltyRef::analyse()
 {
+    startPenaltyShootout();
     analyseImpl();
 
     M_prev_ball_pos = M_stadium.ball().pos();
 }
 
 void
-PenaltyRef::analyseImpl()
+PenaltyRef::startPenaltyShootout()
 {
-    static const char * playmode_strings[] = PLAYMODE_STRINGS;
-    static bool bFirstTime = true;
+    static bool first_time = true;
+
+    const ServerParam & param = ServerParam::instance();
 
     // if normal and extra time are over -> start the penalty procedure or quit
-    if ( bFirstTime
-         && ServerParam::instance().penaltyShootOuts()
-         && ( ( ServerParam::instance().halfTime() < 0
-                && ( ServerParam::instance().nrNormalHalfs()
-                     + ServerParam::instance().nrExtraHalfs() == 0 ) )
-              || ( M_stadium.time() >=
-                   ( ( ServerParam::instance().halfTime()
-                       * ServerParam::instance().nrNormalHalfs() )
-                     + ( ServerParam::instance().extraHalfTime()
-                         * ServerParam::instance().nrExtraHalfs() ) ) )
-              )
+    if ( first_time
+         && param.penaltyShootOuts()
+         && M_stadium.playmode() != PM_BeforeKickOff
          && M_stadium.teamLeft().point() == M_stadium.teamRight().point()
-         && M_stadium.playmode() != PM_BeforeKickOff )
+         && ( ( param.halfTime() < 0
+                && param.nrNormalHalfs() + param.nrExtraHalfs() == 0 )
+              || ( param.halfTime() >= 0
+                   && ( M_stadium.time() >=
+                        ( param.halfTime() * param.nrNormalHalfs()
+                          + param.extraHalfTime() * param.nrExtraHalfs() ) ) )
+              )
+         )
     {
         if ( drand( 0, 1 ) < 0.5 )       // choose random side of the playfield
         {
@@ -2445,8 +2446,14 @@ PenaltyRef::analyseImpl()
         }
 
         penalty_init();
-        bFirstTime = false;
+        first_time = false;
     }
+}
+
+void
+PenaltyRef::analyseImpl()
+{
+    static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
     if ( ! isPenaltyShootOut( M_stadium.playmode() ) )
     {

@@ -624,7 +624,7 @@ private:
     //Have to be careful with integer math, see bug # 800540
     void setExtraHalfTime( int value )
       {
-          M_raw_extra_half_time = value;
+          M_raw_extra_half_time = value < 0 ? 0 : value;
           M_extra_half_time = static_cast< int >( value * getHalfTimeScaler() + 0.5 );
       }
 

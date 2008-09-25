@@ -1,5 +1,13 @@
 2008-09-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/coach.cpp:
+	* src/field.cpp:
+	* src/referee.cpp:
+	* src/referee.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- fixed defects of time referee.
+
 	* NEWS:
 	* configure.ac:
 	- updated a point version. Official release 12.1.4.

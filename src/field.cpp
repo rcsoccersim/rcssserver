@@ -1279,8 +1279,8 @@ void
 Stadium::setHalfTime( const Side kick_off_side,
                       const int half_time_count )
 {
-    std::cerr << time() << ": setHalfTime  count=" << half_time_count
-              << std::endl;
+    //std::cerr << time() << ": setHalfTime  count=" << half_time_count
+    //          << std::endl;
 
     M_ball_catcher = NULL;
     set_ball( kick_off_side, PVector( 0.0, 0.0 ) );

@@ -1239,7 +1239,7 @@ OnlineCoach::send( const char * msg )
     {
         std::cerr << __FILE__ << ": " << __LINE__ << ": ";
         perror( "Error sending to online coach" );
-          }
+    }
 }
 
 
@@ -1248,7 +1248,7 @@ OnlineCoach::parseMsg( const char * msg,
                        const size_t & len )
 {
     char * str = const_cast< char * >( msg );
-    if( str[ len - 1 ] != 0 )
+    if ( str[ len - 1 ] != 0 )
     {
         if ( version() >= 8.0 )
         {
@@ -1668,8 +1668,10 @@ OnlineCoach::change_player_type( int unum,
         send( "(warning cannot_sub_while_playon)" );
         return;
     }
-
-    // when time elapsed, do not allow substitutions anymore (for penalties)
+    else if ( ServerParam::instance().halfTime() < 0 )
+    {
+        // OK
+    }
     else if ( M_stadium.time()
               >= ( ( ServerParam::instance().halfTime()
                      * ServerParam::instance().nrNormalHalfs() )
@@ -1677,7 +1679,9 @@ OnlineCoach::change_player_type( int unum,
                        * ServerParam::instance().nrExtraHalfs() ) )
               )
     {
-        send( "(warning no_subs_left)" );
+        // when time elapsed, do not allow substitutions anymore (for penalties)
+        //send( "(warning no_subs_left)" );
+        send( "(warning cannot_sub_while_penalty_shootouts)" );
         return;
     }
 
