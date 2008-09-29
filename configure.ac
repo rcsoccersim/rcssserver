@@ -161,6 +161,7 @@ if test "$RCSSBASE"; then
 fi
 
 AX_BOOST_BASE([1.32.0])
+AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
 CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
@@ -259,13 +260,13 @@ AC_SUBST(RCSSCLIENT)
 AC_ARG_ENABLE(rcssclient,
 [  --enable-rcssclient[=ARG] build rcssclient, a sample client [ARG=yes]],
 if test -n $enableval; then
-	if test $enableval = yes; then
-		RCSSCLIENT=rcssclient$EXEEXT
-		echo enabling rcssclient
-	elif test $enableval = no; then
-		RCSSCLIENT=
-		echo disabling rcssclient
-	fi
+  if test $enableval = yes; then
+    RCSSCLIENT=rcssclient$EXEEXT
+    echo enabling rcssclient
+  elif test $enableval = no; then
+    RCSSCLIENT=
+    echo disabling rcssclient
+  fi
 fi
 , RCSSCLIENT=rcssclient$EXEEXT)
 
@@ -288,18 +289,18 @@ fi
 #AX_EXTRA_DIST
 #AX_UPLOAD([ncftpput -v upload.sourceforge.net /incoming %%s])
 #AX_RPM_GEN_SPEC([spec.tmpl],
-#	    [The RoboCup Soccer Simulator Server],
+#     [The RoboCup Soccer Simulator Server],
 #            [LGPL],
-#	    [Applications/Engineering],
-#	    [http://sserver.sf.net],
-#	    [http://prdownloads.sourceforge.net/sserver/],
+#     [Applications/Engineering],
+#     [http://sserver.sf.net],
+#     [http://prdownloads.sourceforge.net/sserver/],
 #[The RoboCup Soccer Simulator Server (rcssserver) is a research and\neducational tool for mutli-agent systems and artificial\nintelligence. It allows 11 simulated autonomous robotic players to\nplay soccer (football).])
 #AX_DIST_RPM
 ##AX_DIST_MSI([$srcdir/Setup/Release/${PACKAGE_NAME}Setup.msi])
 #AX_CVS([:pserver:anonymous@cvs.sourceforge.net:/cvsroot/sserver])
 #
 #AX_PKG_GEN_PLIST([Info.plist], [Description.plist],
-#	         [RoboCup], [com.robocup.${PACKAGE}])
+#          [RoboCup], [com.robocup.${PACKAGE}])
 #AX_DIST_DMG
 
 
