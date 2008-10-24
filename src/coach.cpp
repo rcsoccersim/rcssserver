@@ -1123,7 +1123,12 @@ OnlineCoach::OnlineCoach( Stadium & stadium )
 
 OnlineCoach::~OnlineCoach()
 {
-
+    while ( ! M_message_queue.empty() )
+    {
+        rcss::clang::Msg * msg = *M_message_queue.begin();
+        M_message_queue.pop_front();
+        delete msg;
+    }
 }
 
 void
@@ -1263,7 +1268,7 @@ OnlineCoach::parseMsg( const char * msg,
 
 
 void
-OnlineCoach::parse_command( const char *command )
+OnlineCoach::parse_command( const char * command )
 {
     char com[MaxMesg];
     int n;
@@ -1347,7 +1352,7 @@ OnlineCoach::parse_command( const char *command )
                     }
                     break;
                 case rcss::clang::Msg::INFO:
-                    if( M_stadium.playmode() != PM_PlayOn )
+                    if ( M_stadium.playmode() != PM_PlayOn )
                     {
                         should_queue = true;
                     }
@@ -1450,7 +1455,7 @@ OnlineCoach::parse_command( const char *command )
         else
         {
             //pre v7.0
-            if( M_stadium.playmode() != PM_PlayOn )
+            if ( M_stadium.playmode() != PM_PlayOn )
             {
                 if( M_freeform_messages_said < M_freeform_messages_allowed
                     || M_freeform_messages_allowed < 0 )
