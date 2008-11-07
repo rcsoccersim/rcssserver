@@ -1,5 +1,9 @@
 2008-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/rcsoccersim.in:
+	- fixed a library path.
+	- fixed a usage message.
+
 	* rcssbase/conf/parser.cpp:
 	* rcssbase/conf/streamstatushandler.cpp:
 	- replaced native_file_string() with file_string().
