@@ -1,11 +1,14 @@
 #! /bin/sh
 
-BASEPATH=@RCSSBASE@
-if [ x"$BASEPATH" != x ] ; then
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+LIBPATH=${libdir}
+if [ x"$LIBPATH" != x ] ; then
     if [ x"$LD_LIBRARY_PATH" = x ] ; then
-        LD_LIBRARY_PATH=$BASEPATH/lib
+        LD_LIBRARY_PATH=$LIBPATH
     else
-        LD_LIBRARY_PATH=$BASEPATH/lib:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=$LIBPATH:$LD_LIBRARY_PATH
     fi
     export LD_LIBRARY_PATH
 fi
@@ -51,7 +54,7 @@ else
             -frameview)
             MON=`which rcssmonitor 2> /dev/null`
             if test $? -eq 1; then
-                echo "Error: rcssmonitor found in your PATH"
+                echo "Error: rcssmonitor cannot be found in your PATH"
                 echo ""
                 exit 1
             fi
@@ -60,7 +63,7 @@ else
             -classic)
             MON=`which rcssmonitor_classic 2> /dev/null`
             if test $? -eq 1; then
-                echo "Error: rcssmonitor_classic found in your PATH"
+                echo "Error: rcssmonitor_classic cannot be found in your PATH"
                 echo ""
                 exit 1
             fi
@@ -68,7 +71,7 @@ else
 
             *)
             echo "Error: unsupported option"
-            echo "Usage: $0 [(-frameview)|(-classic)][(-nostdoutsaver)]"
+            echo "Usage: $0 [(-frameview)|(-classic)]"
             echo ""
             ;;
         esac
