@@ -136,16 +136,17 @@ StreamStatusHandler::loadFailed( const std::string & libname,
     M_errstrm << name << ": " << lineno << ": error: " << error << std::endl;
     if ( avail.empty() )
     {
-				M_errstrm << name << ": " << lineno << ": error: no available modules\n";
+        M_errstrm << name << ": " << lineno << ": error: no available modules\n";
     }
     else
     {
-				M_errstrm << name << ": " << lineno << ": error: available modules:\n";
-				for( std::vector< boost::filesystem::path >::const_iterator i = avail.begin();
+        M_errstrm << name << ": " << lineno << ": error: available modules:\n";
+        for( std::vector< boost::filesystem::path >::const_iterator i = avail.begin();
              i != avail.end(); ++i )
-				{
-            M_errstrm << "\t" << i->native_file_string() << std::endl;
-				}
+        {
+            //M_errstrm << "\t" << i->native_file_string() << std::endl;
+            M_errstrm << "\t" << i->file_string() << std::endl;
+        }
     }
 }
 

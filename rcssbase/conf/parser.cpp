@@ -245,7 +245,8 @@ bool
 Parser::parseCreateConf( const boost::filesystem::path & conf_name,
                          const std::string & module_name )
 {
-    std::string native_path = conf_name.native_file_string();
+    //std::string native_path = conf_name.native_file_string();
+    std::string native_path = conf_name.file_string();
     boost::filesystem::ifstream conf( conf_name );
     if ( ! conf.is_open() )
     {
@@ -358,7 +359,8 @@ Parser::include( const char * begin,
           i != m_stack.end();
           ++i )
     {
-        if ( full_name.native_file_string() == i->m_name )
+        //if ( full_name.native_file_string() == i->m_name )
+        if ( full_name.file_string() == i->m_name )
         {
             // file already included so ignore it
             return true;
@@ -373,13 +375,15 @@ Parser::include( const char * begin,
             if ( strm.is_open() && strm.good() )
             {
                 bool rval = parse( strm,
-                                   full_name.native_file_string() );
+                                   //full_name.native_file_string() );
+                                   full_name.file_string() );
                 strm.close();
                 return rval;
             }
             else
             {
-                m_builder.includeFailed( full_name.native_file_string(),
+                //m_builder.includeFailed( full_name.native_file_string(),
+                m_builder.includeFailed( full_name.file_string(),
                                          "read failed",
                                          m_stack.front().m_name,
                                          m_stack.front().m_lineno );
@@ -388,7 +392,8 @@ Parser::include( const char * begin,
         }
         else
         {
-            m_builder.includeFailed( full_name.native_file_string(),
+            //m_builder.includeFailed( full_name.native_file_string(),
+            m_builder.includeFailed( full_name.file_string(),
                                      "cannot include a directory",
                                      m_stack.front().m_name,
                                      m_stack.front().m_lineno );
@@ -397,7 +402,8 @@ Parser::include( const char * begin,
     }
     else
     {
-        m_builder.includeFailed( full_name.native_file_string(),
+        //m_builder.includeFailed( full_name.native_file_string(),
+        m_builder.includeFailed( full_name.file_string(),
                                  "file not found",
                                  m_stack.front().m_name,
                                  m_stack.front().m_lineno );
