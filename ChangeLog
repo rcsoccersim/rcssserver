@@ -1,5 +1,9 @@
 2008-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* rcssbase/conf/parser.cpp:
+	* rcssbase/conf/streamstatushandler.cpp:
+	- replaced native_file_string() with file_string().
+
 	* src/main.cpp:
 	* src/serverparam.cpp:
 	- added the missing include file.
