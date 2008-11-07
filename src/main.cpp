@@ -34,6 +34,7 @@
 #include "object.h"
 #include "player.h"
 #include "field.h"
+#include "serverparam.h"
 #include "version.h"
 
 #include "timer.h"
@@ -68,32 +69,6 @@ main( int argc, char *argv[] )
 {
     std::cout << PACKAGE << "-" << VERSION << "\n\n"
               << Copyright << std::endl;
-
-    {
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-        std::string config_dir_name = tildeExpand( "~\\.rcssserver" );
-#else
-        std::string config_dir_name = tildeExpand( "~/.rcssserver" );
-#endif
-        boost::filesystem::path config_dir( config_dir_name,
-                                            boost::filesystem::portable_posix_name );
-        if ( ! boost::filesystem::exists( config_dir )
-             && ! boost::filesystem::create_directory( config_dir ) )
-        {
-            std::cerr << "Could not read or create config directory '" << config_dir_name
-                      << std::endl;
-        }
-//         DIR* config_dir = opendir( config_dir_name.c_str() );
-//         if ( config_dir == NULL )
-//         {
-//             int err = mkdir( config_dir_name.c_str(), 0777 );
-//             if ( err != 0 )
-//             {
-//                 std::cerr << "Could not read or create config directory '" << config_dir_name << "': "
-//                           << strerror( errno ) << std::endl;
-//             }
-//         }
-    }
 
     if ( ! ServerParam::init( argc, argv ) )
     {

@@ -43,6 +43,8 @@
 #include <rcssbase/conf/paramsetter.hpp>
 #include <rcssbase/conf/paramgetter.hpp>
 
+#include <boost/filesystem/operations.hpp>
+
 #include <algorithm>
 #include <string>
 #include <iostream>
@@ -326,18 +328,28 @@ ServerParam::init( const int & argc,
         conf_dir = env_conf_dir;
     }
 
-    //boost::filesystem::path conf_path( tildeExpand( ServerParam::SERVER_CONF ),
     boost::filesystem::path conf_path( tildeExpand( conf_dir ),
                                        boost::filesystem::portable_posix_name );
     if ( ! boost::filesystem::exists( conf_path )
          && ! boost::filesystem::create_directory( conf_path ) )
     {
-        std::cerr << "could not create the configuration file directory '"
-                  << conf_path.string()
-                  << "'\n";
+        std::cerr << "Could not read or create config directory '" << conf_path.string()
+                  << std::endl;
         instance().clear();
         return false;
     }
+//         DIR* config_dir = opendir( config_dir_name.c_str() );
+//         if ( config_dir == NULL )
+//         {
+//             int err = mkdir( config_dir_name.c_str(), 0777 );
+//             if ( err != 0 )
+//             {
+//                 std::cerr << "Could not read or create config directory '" << config_dir_name << "': "
+//                           << strerror( errno ) << std::endl;
+//                 instance().clear();
+//                 return false;
+//             }
+//         }
 
     conf_path /= ServerParam::SERVER_CONF;
 
