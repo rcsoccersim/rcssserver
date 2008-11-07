@@ -87,7 +87,6 @@ SerializerOnlineCoachStdv7::serializeChangedPlayer( std::ostream & strm,
 }
 
 namespace {
-
 const
 SerializerOnlineCoach *
 create()
@@ -95,7 +94,7 @@ create()
     return SerializerOnlineCoachStdv7::instance();
 }
 
-lib::RegHolder v7 = SerializerOnlineCoach::factory().autoReg( &create, 7 );
-
+RegHolder v7 = SerializerOnlineCoach::factory().autoReg( &create, 7 );
 }
+
 }

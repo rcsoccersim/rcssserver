@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializercoachstdv8.cpp
+                            serializercoachstdv13.cpp
                Class for serializing data to std v8 offline coaches
                              -------------------
-    begin                : 27-JAN-2003
-    copyright            : (C) 2003 by The RoboCup Soccer Server
+    begin                : 2008-10-28
+    copyright            : (C) 2008 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
@@ -19,86 +19,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "serializercoachstdv8.h"
-#include "clangmsg.h"
-#include "object.h"
+#include "serializercoachstdv13.h"
+
 #include "player.h"
 
 namespace rcss {
 
-SerializerCoachStdv8::SerializerCoachStdv8( const SerializerCommon & common )
-    : SerializerCoachStdv7( common )
+SerializerCoachStdv13::SerializerCoachStdv13( const SerializerCommon & common )
+    : SerializerCoachStdv8( common )
 {
 
 }
 
 
-SerializerCoachStdv8::~SerializerCoachStdv8()
+SerializerCoachStdv13::~SerializerCoachStdv13()
 {
 
 }
 
 const
-SerializerCoachStdv8 *
-SerializerCoachStdv8::instance()
+SerializerCoachStdv13 *
+SerializerCoachStdv13::instance()
 {
     rcss::SerializerCommon::Creator cre;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 8 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 13 ) )
     {
         return NULL;
     }
 
-    static SerializerCoachStdv8 ser( cre() );
+    static SerializerCoachStdv13 ser( cre() );
     return &ser;
 }
 
 void
-SerializerCoachStdv8::serializeVisualObject( std::ostream & strm,
-                                             const std::string & name,
-                                             const PVector & pos,
-                                             const PVector & vel,
-                                             const int body,
-                                             const int neck,
-                                             const bool tackling ) const
-{
-    strm << " (" << name
-         << ' ' << pos.x << ' ' << pos.y
-         << ' ' << vel.x << ' ' << vel.y
-         << ' ' << body
-         << ' ' << neck;
-    if ( tackling )
-    {
-        strm << " t";
-    }
-    strm << ')';
-}
-
-void
-SerializerCoachStdv8::serializeVisualObject( std::ostream & strm,
-                                             const std::string & name,
-                                             const PVector & pos,
-                                             const PVector & vel,
-                                             const int body,
-                                             const int neck,
-                                             const int point_dir,
-                                             const bool tackling ) const
-{
-    strm << " (" << name
-         << ' ' << pos.x << ' ' << pos.y
-         << ' ' << vel.x << ' ' << vel.y
-         << ' ' << body
-         << ' ' << neck
-         << ' ' << point_dir;
-    if ( tackling )
-    {
-        strm << " t";
-    }
-    strm << ')';
-}
-
-
-void
-SerializerCoachStdv8::serializeVisualPlayer( std::ostream & strm,
+SerializerCoachStdv13::serializeVisualPlayer( std::ostream & strm,
                                              const Player & player,
                                              const std::string & name,
                                              const PVector & pos,
@@ -115,11 +69,15 @@ SerializerCoachStdv8::serializeVisualPlayer( std::ostream & strm,
     {
         strm << " t";
     }
+    else if ( player.kicked() )
+    {
+        strm << " k";
+    }
     strm << ')';
 }
 
 void
-SerializerCoachStdv8::serializeVisualPlayer( std::ostream & strm,
+SerializerCoachStdv13::serializeVisualPlayer( std::ostream & strm,
                                              const Player & player,
                                              const std::string & name,
                                              const PVector & pos,
@@ -138,23 +96,24 @@ SerializerCoachStdv8::serializeVisualPlayer( std::ostream & strm,
     {
         strm << " t";
     }
+    else if ( player.kicked() )
+    {
+        strm << " k";
+    }
     strm << ')';
 }
 
 
 namespace {
+
 const
 SerializerCoach *
 create()
 {
-    return SerializerCoachStdv8::instance();
+    return SerializerCoachStdv13::instance();
 }
 
-RegHolder v8 = SerializerCoach::factory().autoReg( &create, 8 );
-RegHolder v9 = SerializerCoach::factory().autoReg( &create, 9 );
-RegHolder v10 = SerializerCoach::factory().autoReg( &create, 10 );
-RegHolder v11 = SerializerCoach::factory().autoReg( &create, 11 );
-RegHolder v12 = SerializerCoach::factory().autoReg( &create, 12 );
+RegHolder v13 = SerializerCoach::factory().autoReg( &create, 13 );
 }
 
 }

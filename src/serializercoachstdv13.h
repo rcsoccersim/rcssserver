@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializercoachstdv8.h
-               Class for serializing data to std v8 offline coaches
+                            serializercoachstdv13.h
+               Class for serializing data to std v13 offline coaches
                              -------------------
-    begin                : 28-JAN-2003
-    copyright            : (C) 2003 by The RoboCup Soccer Server
+    begin                : 2008-10-28
+    copyright            : (C) 2008 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
@@ -19,46 +19,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SERIALIZERCOACHSTDV8_H
-#define SERIALIZERCOACHSTDV8_H
+#ifndef SERIALIZERCOACHSTDV13_H
+#define SERIALIZERCOACHSTDV13_H
 
-#include "serializercoachstdv7.h"
+#include "serializercoachstdv8.h"
 
 namespace rcss {
 
-class SerializerCoachStdv8
-    : public SerializerCoachStdv7 {
+class SerializerCoachStdv13
+    : public SerializerCoachStdv8 {
 protected:
-    SerializerCoachStdv8( const SerializerCommon & common );
+    SerializerCoachStdv13( const SerializerCommon & common );
 
 
 public:
     virtual
-    ~SerializerCoachStdv8();
+    ~SerializerCoachStdv13();
 
     static
     const
-    SerializerCoachStdv8 * instance();
-
-    virtual
-    void serializeVisualObject( std::ostream &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int,
-                                const bool ) const;
-
-    virtual
-    void serializeVisualObject( std::ostream &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int,
-                                const int,
-                                const bool ) const;
-
+    SerializerCoachStdv13 * instance();
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,

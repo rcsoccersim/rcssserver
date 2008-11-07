@@ -77,8 +77,9 @@ public:
       { }
 
     virtual void dash( double power ) = 0;
+    virtual void dash( double power, double dir ) = 0;
     virtual void turn( double moment ) = 0;
-    virtual void turn_neck( double moment) = 0;
+    virtual void turn_neck( double moment ) = 0;
     virtual void kick( double power, double dir ) = 0;
     virtual void goalieCatch( double dir ) = 0;
     virtual void say( std::string message ) = 0;

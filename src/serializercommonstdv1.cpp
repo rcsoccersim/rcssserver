@@ -114,7 +114,6 @@ SerializerCommonStdv1::serializeParam( std::ostream &,
 }
 
 namespace {
-
 const
 SerializerCommon &
 create()
@@ -122,12 +121,12 @@ create()
     return SerializerCommonStdv1::instance();
 }
 
-lib::RegHolder v1 = SerializerCommon::factory().autoReg( &create, 1 );
-lib::RegHolder v2 = SerializerCommon::factory().autoReg( &create, 2 );
-lib::RegHolder v3 = SerializerCommon::factory().autoReg( &create, 3 );
-lib::RegHolder v4 = SerializerCommon::factory().autoReg( &create, 4 );
-lib::RegHolder v5 = SerializerCommon::factory().autoReg( &create, 5 );
-lib::RegHolder v6 = SerializerCommon::factory().autoReg( &create, 6 );
-
+RegHolder v1 = SerializerCommon::factory().autoReg( &create, 1 );
+RegHolder v2 = SerializerCommon::factory().autoReg( &create, 2 );
+RegHolder v3 = SerializerCommon::factory().autoReg( &create, 3 );
+RegHolder v4 = SerializerCommon::factory().autoReg( &create, 4 );
+RegHolder v5 = SerializerCommon::factory().autoReg( &create, 5 );
+RegHolder v6 = SerializerCommon::factory().autoReg( &create, 6 );
 }
+
 }

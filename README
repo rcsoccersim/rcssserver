@@ -10,34 +10,6 @@ simulated autonomous robotic players to play soccer (football).
 QUICK START
 ===========
 
-These are the main installation steps to install the soccer simulator:
-
-Mainly three packages should be downloaded and installed: rcssbase,
-rcssserver, rcssmonitor. Create a folder, put all packages onto that
-and extract them there. (filenames which have .tar.gz or .tar.bz2 at
-the end of them, usually represent a zipped package, extracting them
-is as simple as right clicking on them, and selecting "extract here"
-menu)
-
-After that, do these steps one by one in order for all the packages,
-first rcssbase, then rcssserver and last rcssmonitor:
-
-1- Go to the extracted directory
-2- Open a terminal at that directory (it is usually the F4 key, if not
-   find a menu item for "Open Terminal Here")
-3- Type this: "./configure"
-4- Type this if ./configure showed no error: "make"
-5- and at last type this: "make install"
-
-Do this for all the packages.
-
-An important note: You should login as root to be able to install the
-packages, after installation, there is no need to login as root. -->
-There is only one administrator user in linux and its name is root, so
-you can only install stuff when u have logged in as root. If any of
-the commands showed an error, mail the mailing list with the exact
-error message, sure someone would be able to help.
-
 From the rcssserver directory execute:
 
 `./configure'
@@ -55,8 +27,8 @@ install) or run it from `rcssserver/src'.
 A sample client can be found at `rcssserver/src/rcssclient'.
 
 To see what is actually happening in the simulator, you will need to
-start a simlator monitor, which needs to be installed seperately
-(rcssmointor or rcssmonitor_classic).
+start a simulator monitor, which needs to be installed seperately
+(rcssmointor, rcssmonitor_classic or any other third party monitor).
 
 To playback games that that you have recorded or downloaded, you will need to
 start the log player such as rcsslogplayer, which must also be
@@ -77,14 +49,6 @@ the following location:
 You may need administrator privilages to install the server into the default
 location.  This locations can be modified by using configure's `--prefix=DIR'
 and related options.  See `configure --help' for more details.
-
-The configure script looks for a RCSSBASE enviroment variable and set
-the approriate flags to look for the rcssbase libraries, headers and
-exes in the location specified by rcssbase. If rcssbase was installed
-at the location where the system cannot detect automatically, you need
-to set the RCSSBASE variable. For instance, if rcssbase was configured
-with a prefix of $HOME ("configure --prefix=$HOME"), then you should
-configure rcsssever with RCSSBASE equal to $HOME ("configure RCSSBASE=$HOME").
 
 The server has serveral features that can be enabled or disabled at
 configure time by using the `--enable-FEATURE[=ARG]' or `--disable-FEATURE'
@@ -120,7 +84,8 @@ INSTALLING
 
 When you have completed building the server, it's components can be installed
 into their default locations or the locations specified during configuring by
-running `make install'.  Depending on where you are installing the server, you may need special permissions.
+running `make install'.  Depending on where you are installing the
+server, you may need special permissions.
 
 ============
 UNINSTALLING
@@ -135,7 +100,7 @@ installation process.
 USING THE SERVER
 ================
 
-To start the server either type
+To start only the server either type
 
 `./rcssserver'
 
@@ -165,6 +130,13 @@ as above.  Then type `(init sample)'.  This will connect the sample client to
 the server.  You can then type in client command to move the client around the
 field.  You will also need a monitor to be able to see whats happening on
 the field.
+
+If you installed the server and the monitor successfully, you can use
+the 'rcsoccersim' script. To start the simulator(server and monitor)
+either type:
+
+  `rcsoccersim`
+
 
 ==============
 Making Contact

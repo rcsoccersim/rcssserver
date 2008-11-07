@@ -39,12 +39,12 @@ class SerializerMonitor
     : public Serializer {
 public:
     typedef const rcss::SerializerMonitor* (*Creator)();
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
 public:
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
 protected:
 
@@ -230,6 +230,33 @@ public:
                                const int x,
                                const int y,
                                const char * msg ) const;
+};
+
+
+
+/*!
+  \class SerializerMonitor
+  \brief class of the version 4 serialization for monitors.
+*/
+class SerializerMonitorStdv4
+    : public SerializerMonitorStdv3 {
+protected:
+
+    explicit
+    SerializerMonitorStdv4( const SerializerCommon & common );
+
+public:
+
+    virtual
+    ~SerializerMonitorStdv4();
+
+    static
+    const
+    SerializerMonitorStdv4 * instance();
+
+    virtual
+    void serializePlayerStamina( std::ostream & os,
+                                 const Player & player ) const;
 };
 
 

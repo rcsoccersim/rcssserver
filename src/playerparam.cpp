@@ -38,9 +38,11 @@
 #include <rcssbase/conf/builder.hpp>
 
 #include <boost/filesystem/path.hpp>
+
 #include <string>
 #include <iostream>
 #include <cerrno>
+#include <cassert>
 
 
 #ifdef HAVE_SYS_PARAM_H
@@ -68,11 +70,13 @@ roundint( const double & value )
 #endif
 
 #ifdef WIN32
-const char PlayerParam::OLD_PLAYER_CONF[] = "~\\.rcssserver-player.conf";
-const char PlayerParam::PLAYER_CONF[] = "~\\.rcssserver\\player.conf";
+const std::string PlayerParam::CONF_DIR = "~\\.rcssserver\\";
+const std::string PlayerParam::PLAYER_CONF = "player.conf";
+const std::string PlayerParam::OLD_PLAYER_CONF = "~\\.rcssserver-player.conf";
 #else
-const char PlayerParam::OLD_PLAYER_CONF[] = "~/.rcssserver-player.conf";
-const char PlayerParam::PLAYER_CONF[] = "~/.rcssserver/player.conf";
+const std::string PlayerParam::CONF_DIR = "~/.rcssserver/";
+const std::string PlayerParam::PLAYER_CONF = "player.conf";
+const std::string PlayerParam::OLD_PLAYER_CONF = "~/.rcssserver-player.conf";
 #endif
 
 const int PlayerParam::DEFAULT_PLAYER_TYPES = 18; // [12.0.0] 7 -> 18
@@ -83,8 +87,11 @@ const double PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MIN = 0.0;
 const double PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MAX = 0.0;
 const double PlayerParam::DEFAULT_STAMINA_INC_MAX_DELTA_FACTOR = 0.0;
 
-const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MIN = -0.05; // [12.0.0] 0.0 -> -0.05
-const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX = 0.1; // [12.0.0] 0.2 -> 0.1
+// [13.0.0] -0.05 -> -0.1
+// [12.0.0]  0.0  -> -0.05
+const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MIN = -0.1;
+// [12.0.0] 0.2 -> 0.1
+const double PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX = 0.1;
 const double PlayerParam::DEFAULT_INERTIA_MOMENT_DELTA_FACTOR = 25.0;
 
 const double PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MIN = 0.0;
@@ -96,24 +103,32 @@ const double PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MAX = 0.1; // [12.0.0] 0
 const double PlayerParam::DEFAULT_KICK_RAND_DELTA_FACTOR = 1.0; // [12.0.0] 0.5 -> 1.0
 
 const double PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MIN = 0.0;
-const double PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MAX = 100.0;
-const double PlayerParam::DEFAULT_EFFORT_MAX_DELTA_FACTOR = -0.002;
-const double PlayerParam::DEFAULT_EFFORT_MIN_DELTA_FACTOR = -0.002;
+// [13.0.0] 100.0 -> 50.0
+const double PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MAX = 50.0;
+// [13.0.0] -0.002 -> -0.004
+const double PlayerParam::DEFAULT_EFFORT_MAX_DELTA_FACTOR = -0.004;
+// [13.0.0] -0.002 -> -0.004
+const double PlayerParam::DEFAULT_EFFORT_MIN_DELTA_FACTOR = -0.004;
 
 const int    PlayerParam::DEFAULT_RANDOM_SEED = -1; //negative means generate a new seed
 
-const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MIN = -0.0005; // [12.0.0] 0 -> -0.0005
-const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX = 0.0015; // [12.0.0] 0.002 -> 0.0015
-const double PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR = -6000.0; // [12.0.0] -10000.0 -> -6000.0
+// [13.0.0] -0.0005 -> -0.0012
+// [12.0.0]  0      -> -0.0005
+const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MIN = -0.0012;
+// [13.0.0] 0.0015 -> 0.0008
+// [12.0.0] 0.002  -> 0.0015
+const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX = 0.0008;
+// [12.0.0] -10000.0 -> -6000.0
+const double PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR = -6000.0;
 
 
 
 
 PlayerParam &
-PlayerParam::instance( rcss::conf::Builder* parent )
+PlayerParam::instance( rcss::conf::Builder * parent )
 {
     static bool parent_set = false;
-    if( parent != NULL || parent_set )
+    if ( parent != NULL || parent_set )
     {
         static PlayerParam rval( parent );
         parent_set = true;
@@ -121,7 +136,7 @@ PlayerParam::instance( rcss::conf::Builder* parent )
     }
     // hack to allow link testing to call instance without crashing
     // do not used the return value in these situations
-    PlayerParam* rval = NULL;
+    PlayerParam * rval = NULL;
     return *rval;
 }
 
@@ -132,51 +147,12 @@ PlayerParam::instance()
 }
 
 bool
-PlayerParam::init( rcss::conf::Builder* parent )
+PlayerParam::init( rcss::conf::Builder * parent )
 {
+    assert( parent );
     instance( parent );
-#ifndef WIN32
-    if( system( ( "ls " + tildeExpand( PlayerParam::OLD_PLAYER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0 )
-    {
-        if( system( ( "ls " + tildeExpand( PlayerParam::PLAYER_CONF ) + " > /dev/null 2>&1" ).c_str() ) != 0 )
-        {
-            if( system( "which awk > /dev/null 2>&1" ) == 0 )
-            {
-                std::cout << "Trying to convert old configuration file '"
-                          << PlayerParam::OLD_PLAYER_CONF
-                          << "'\n";
 
-                char filename[] = "/tmp/rcssplayer-oldconf-XXXXXX";
-                int fd = mkstemp( filename );
-                if( fd != -1 )
-                {
-                    close( fd );
-                    std::string command = "awk '/^[ \\t]*$/ {} ";
-                    command += "/^[^#]+[:]/ { gsub(/:/, \"=\" ); $1 = \"player::\" $1; } ";
-                    command += "/^[ \\t]*[^#:=]+$/ { $1 = \"player::\" $1 \" = true\"; }";
-                    command += "{ print; }' ";
-                    command +=  tildeExpand( PlayerParam::OLD_PLAYER_CONF );
-                    command += " > ";
-                    command += filename;
-                    if( system( command.c_str() ) == 0 )
-                    {
-                        std::cout << "Conversion successful\n";
-                        instance().m_builder->parser()->parse( filename );
-                    }
-                    else
-                    {
-                        std::cout << "Conversion failed\n";
-                    }
-                }
-                else
-                {
-                    std::cout << "Conversion failed\n";
-                }
-            }
-        }
-    }
-#endif // not win32
-    if( ! instance().m_builder->parser() )
+    if ( ! instance().m_builder->parser() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": internal error: player param could not find configuration parser\n";
@@ -184,13 +160,24 @@ PlayerParam::init( rcss::conf::Builder* parent )
         return false;
     }
 
-    boost::filesystem::path conf_path( tildeExpand( PlayerParam::PLAYER_CONF ),
+    std::string conf_dir = PlayerParam::CONF_DIR;
+    const char * env_conf_dir = std::getenv( "RCSS_CONF_DIR" );
+    if ( env_conf_dir )
+    {
+        conf_dir = env_conf_dir;
+    }
+
+    //boost::filesystem::path conf_path( tildeExpand( PlayerParam::PLAYER_CONF ),
+    boost::filesystem::path conf_path( tildeExpand( conf_dir ),
                                        boost::filesystem::portable_posix_name );
-    if ( ! instance().m_builder->parser()->parseCreateConf( conf_path,
-                                                            "player" ) )
+    conf_path /= PlayerParam::PLAYER_CONF;
+
+    instance().convertOldConf( conf_path.string() );
+
+    if ( ! instance().m_builder->parser()->parseCreateConf( conf_path, "player" ) )
     {
         std::cerr << "could not parse configuration file '"
-                  << tildeExpand( PlayerParam::PLAYER_CONF )
+                  << conf_path.string()
                   << "'\n";
         return false;
     }
@@ -212,7 +199,51 @@ PlayerParam::init( rcss::conf::Builder* parent )
     return true;
 }
 
-PlayerParam::PlayerParam( rcss::conf::Builder* parent )
+
+void
+PlayerParam::convertOldConf( const std::string & new_conf )
+{
+#ifndef WIN32
+    if ( std::system( ( "ls " + tildeExpand( PlayerParam::OLD_PLAYER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
+         && std::system( ( "ls " + tildeExpand( new_conf ) + " > /dev/null 2>&1" ).c_str() ) != 0
+         && std::system( "which awk > /dev/null 2>&1" ) == 0 )
+    {
+        std::cout << "Trying to convert old configuration file '"
+                  << PlayerParam::OLD_PLAYER_CONF
+                  << "'\n";
+
+        char filename[] = "/tmp/rcssplayer-oldconf-XXXXXX";
+        int fd = mkstemp( filename );
+        if( fd != -1 )
+        {
+            close( fd );
+            std::string command = "awk '/^[ \\t]*$/ {} ";
+            command += "/^[^#]+[:]/ { gsub(/:/, \"=\" ); $1 = \"player::\" $1; } ";
+            command += "/^[ \\t]*[^#:=]+$/ { $1 = \"player::\" $1 \" = true\"; }";
+            command += "{ print; }' ";
+            command +=  tildeExpand( PlayerParam::OLD_PLAYER_CONF );
+            command += " > ";
+            command += filename;
+            if( system( command.c_str() ) == 0 )
+            {
+                std::cout << "Conversion successful\n";
+                instance().m_builder->parser()->parse( filename );
+            }
+            else
+            {
+                std::cout << "Conversion failed\n";
+            }
+        }
+        else
+        {
+            std::cout << "Conversion failed\n";
+        }
+    }
+#endif // not win32
+}
+
+
+PlayerParam::PlayerParam( rcss::conf::Builder * parent )
     : m_builder( new rcss::conf::Builder( parent, VERSION, "player" ) )
 {
     setDefaults();
@@ -255,9 +286,9 @@ PlayerParam::addParams()
 
 template< typename P >
 void
-PlayerParam::addParam(  const std::string& name,
-                        P& param,
-                        const std::string& desc,
+PlayerParam::addParam(  const std::string & name,
+                        P & param,
+                        const std::string & desc,
                         int version )
 {
     m_builder->addParam( name, param, desc );

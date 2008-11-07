@@ -4,18 +4,18 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool:	$(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-SUBDIRS = src \
-.
+SUBDIRS = \
+	rcssbase \
+	src \
+	.
 
 EXTRA_DIST = \
-missingflex
+	missingflex
 
 CLEANFILES = \
-*~ \
-core \
-*.tar.gz \
-*.tmp
+	*~ \
+	core \
+	*.tar.gz \
+	*.tmp
 
-#DISTCLEANFILES = @INCLUDE_MK_FILE@
-
-#@INCLUDE_MK@
+#DISTCLEANFILES =

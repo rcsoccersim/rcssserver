@@ -32,8 +32,6 @@
 #ifndef SERVER_PARAM_H
 #define SERVER_PARAM_H
 
-#include "rcssserverconfig.hpp"
-
 #include "utility.h"
 #include "types.h"
 
@@ -74,16 +72,14 @@ private:
 
 protected:
 
-    RCSSSERVER_API
+    explicit
     ServerParam ( const std::string & progname );
 
 public:
 
-    RCSSSERVER_API
     static
     ServerParam & instance();
 
-    RCSSSERVER_API
     static
     bool init( const int & argc,
                const char * const * argv );
@@ -95,7 +91,7 @@ public:
 
 private:
 
-    void convertOldConf();
+    void convertOldConf( const std::string & new_conf );
 
     void setDefaults();
     void addParams();
@@ -126,7 +122,6 @@ private:
     static const int SEND_VISUALINFO_INTERVAL_MSEC; /* milli-sec */
 
     static const int HALF_TIME;
-    static const int EXTRA_HALF_TIME;
     static const int DROP_TIME;
 
 public:
@@ -165,14 +160,12 @@ private:
     static const double PLAYER_RAND;
     static const double PLAYER_WEIGHT;
     static const double PLAYER_SPEED_MAX;
-    static const double PLAYER_SPEED_MAX_MIN; // [12.0.0]
     // th 6.3.00
     static const double PLAYER_ACCEL_MAX;
     //
     static const double IMPARAM; /* Inertia-Moment Parameter */
 
     static const double	STAMINA_MAX;
-    static const double EXTRA_STAMINA;
     static const double	STAMINA_INC_MAX;
     static const double RECOVERY_DEC_THR;
     static const double RECOVERY_DEC;
@@ -231,23 +224,24 @@ private:
     static const double OFFSIDE_ACTIVE_AREA_SIZE;
     static const double OFFSIDE_KICK_MARGIN;
 
-    static const char LANDMARK_FILE[];
-    static const char SERVER_CONF[];
-    static const char OLD_SERVER_CONF[];
+    static const std::string LANDMARK_FILE;
+    static const std::string CONF_DIR;
+    static const std::string SERVER_CONF;
+    static const std::string OLD_SERVER_CONF;
 
     static const int SEND_COMMS;
     static const int TEXT_LOGGING;
     static const int GAME_LOGGING;
     static const int GAME_LOG_VERSION;
-    static const char TEXT_LOG_DIR[];
-    static const char GAME_LOG_DIR[];
-    static const char TEXT_LOG_FIXED_NAME[];
-    static const char GAME_LOG_FIXED_NAME[];
+    static const std::string TEXT_LOG_DIR;
+    static const std::string GAME_LOG_DIR;
+    static const std::string TEXT_LOG_FIXED_NAME;
+    static const std::string GAME_LOG_FIXED_NAME;
     static const int TEXT_LOG_FIXED;
     static const int GAME_LOG_FIXED;
     static const int TEXT_LOG_DATED;
     static const int GAME_LOG_DATED;
-    static const char LOG_DATE_FORMAT[];
+    static const std::string LOG_DATE_FORMAT;
     static const int LOG_TIMES;
     static const int RECORD_MESSAGES;
     static const int TEXT_LOG_COMPRESSION;
@@ -255,8 +249,8 @@ private:
     static const bool PROFILE;
 
     static const int KAWAY_LOGGING;
-    static const char KAWAY_LOG_DIR[];
-    static const char KAWAY_LOG_FIXED_NAME[];
+    static const std::string KAWAY_LOG_DIR;
+    static const std::string KAWAY_LOG_FIXED_NAME;
     static const int KAWAY_LOG_FIXED;
     static const int KAWAY_LOG_DATED;
 
@@ -276,8 +270,6 @@ private:
     static const double TACKLE_EXPONENT;
     static const unsigned int TACKLE_CYCLES;
     static const double TACKLE_POWER_RATE;
-    static const double MAX_TACKLE_POWER;
-    static const double MAX_BACK_TACKLE_POWER;
 
     static const int NR_NORMAL_HALFS;
     static const int NR_EXTRA_HALFS;
@@ -313,12 +305,29 @@ private:
     static const int S_CONNECT_WAIT;
     static const int S_GAME_OVER_WAIT;
 
-    static const char S_TEAM_L_START[];
-    static const char S_TEAM_R_START[];
+    static const std::string S_TEAM_L_START;
+    static const std::string S_TEAM_R_START;
 
-    static const char S_MODULE_DIR[];
-
+    //static const char S_MODULE_DIR[];
+    // 11.0.0
     static const double BALL_STUCK_AREA;
+    // 12.0.0
+    static const double MAX_TACKLE_POWER;
+    static const double MAX_BACK_TACKLE_POWER;
+    static const double PLAYER_SPEED_MAX_MIN;
+    static const double EXTRA_STAMINA;
+    static const int SYNCH_SEE_OFFSET;
+    // 12.1.3
+    static const int EXTRA_HALF_TIME;
+    // 13.0.0
+    static const double	STAMINA_CAPACITY;
+    static const double MAX_DASH_ANGLE;
+    static const double MIN_DASH_ANGLE;
+    static const double DASH_ANGLE_STEP;
+    static const double SIDE_DASH_RATE;
+    static const double BACK_DASH_RATE;
+    static const double MAX_DASH_POWER;
+    static const double MIN_DASH_POWER;
 
     double M_goal_width; /* goal width */
     double M_inertia_moment; /* intertia moment for turn */
@@ -408,9 +417,6 @@ private:
 
     int M_raw_half_time; /* half time */
     int M_half_time; /* half time */
-
-    int M_raw_extra_half_time; /* extra half time */
-    int M_extra_half_time; /* extra half time */
 
     int M_drop_ball_time; /* cycles for dropping
                              the ball after a free kick,
@@ -560,6 +566,20 @@ private:
     int M_max_monitors; //!< The maximum number of monitor client connection.
 
     int M_synch_see_offset; //!< synch see offset
+
+    // 12.1.3
+    int M_raw_extra_half_time;
+    int M_extra_half_time;
+
+    // 13.0.0
+    double M_stamina_capacity;
+    double M_max_dash_angle;
+    double M_min_dash_angle;
+    double M_dash_angle_step;
+    double M_side_dash_rate;
+    double M_back_dash_rate;
+    double M_max_dash_power;
+    double M_min_dash_power;
 
     // test parameters for future specification
     double M_reliable_catch_area_l; /* goalie reliable catchable area length */
@@ -793,7 +813,6 @@ public:
     int clangMessPerCycle() const{ return M_clang_mess_per_cycle; }
 
     int halfTime() const { return M_half_time; }
-    int extraHalfTime() const { return M_extra_half_time; }
     int dropTime() const { return M_drop_ball_time; }
     int nrNormalHalfs() const { return M_nr_normal_halfs; }
     int nrExtraHalfs() const { return M_nr_extra_halfs; }
@@ -953,6 +972,18 @@ public:
     const double & extraStamina() const { return M_extra_stamina; }
     int maxMonitors() const { return M_max_monitors; }
     int synchSeeOffset() const { return M_synch_see_offset; }
+    // v12.1.3
+    int extraHalfTime() const { return M_extra_half_time; }
+
+    // v13
+    const double & staminaCapacity() const { return M_stamina_capacity; }
+    const double & maxDashAngle() const { return M_max_dash_angle; }
+    const double & minDashAngle() const { return M_min_dash_angle; }
+    const double & dashAngleStep() const { return M_dash_angle_step; }
+    const double & sideDashRate() const { return M_side_dash_rate; }
+    const double & backDashRate() const { return M_back_dash_rate; }
+    const double & maxDashPower() const { return M_max_dash_power; }
+    const double & minDashPower() const { return M_min_dash_power; }
 
     // test
     const double & reliableCatchAreaLength() const { return M_reliable_catch_area_l; }

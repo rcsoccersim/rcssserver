@@ -90,7 +90,8 @@ public:
     virtual
     void serializeBodyStamina( std::ostream & strm,
                                const double & stamina,
-                               const double & effort ) const;
+                               const double & effort,
+                               const double & stamina_capacity ) const;
 
     virtual
     void serializeBodyVelocity( std::ostream & strm,
@@ -196,10 +197,13 @@ public:
                                  const double & neck_dir ) const;
 
     virtual
-    void serializeFSPlayerEnd( std::ostream & strm,
-                               const double & stamina,
-                               const double & effort,
-                               const double & recovery ) const;
+    void serializeFSPlayerStamina( std::ostream & strm,
+                                   const double & stamina,
+                                   const double & effort,
+                                   const double & recovery,
+                                   const double & stamina_capacity ) const;
+    virtual
+    void serializeFSPlayerEnd( std::ostream & strm ) const;
 
     virtual
     void serializeInit( std::ostream & strm,

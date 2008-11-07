@@ -22,10 +22,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "rcssserverconfig.hpp"
-
 #include "timeable.h"
-#include <rcssbase/lib/shared_ptr.hpp>
 
 /** The timer class is an abstract class that has a reference to a timeable
     class. Specific timers can be derived from this class which has to implement
@@ -33,28 +30,20 @@
     timeable instance are called. */
 class Timer {
 public:
-//     typedef rcss::lib::shared_ptr< Timer > Ptr;
-//     typedef Ptr (*Creator)( Timeable& );
-//     typedef rcss::lib::Factory< Creator > Factory;
 
     virtual
     ~Timer()
       { }
 
-//     RCSSSERVER_API
-//     static
-//     Factory & factory();
-
     virtual
     void run() = 0;
 
 protected:
-    //    RCSSSERVER_API
+
     Timer( Timeable & timeable )
         : M_timeable ( timeable )
       { }
 
-    //    RCSSSERVER_API
     Timeable & getTimeableRef()
       {
           return M_timeable;

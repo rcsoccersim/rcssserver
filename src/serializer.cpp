@@ -23,24 +23,28 @@
 
 namespace rcss {
 
-SerializerCommon::Factory &
+SerializerCommon::FactoryHolder &
 SerializerCommon::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
 SerializerCommon::SerializerCommon()
-{}
+{
+
+}
 
 SerializerCommon::~SerializerCommon()
-{}
+{
+
+}
 
 
-SerializerPlayer::Factory &
+SerializerPlayer::FactoryHolder &
 SerializerPlayer::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -56,32 +60,36 @@ SerializerPlayer::~SerializerPlayer()
 }
 
 
-SerializerCoach::Factory &
+SerializerCoach::FactoryHolder &
 SerializerCoach::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
 SerializerCoach::SerializerCoach( const SerializerCommon & common )
     : Serializer( common )
-{}
+{
+
+}
 
 SerializerCoach::~SerializerCoach()
-{}
+{
 
-SerializerOnlineCoach::Factory &
+}
+
+SerializerOnlineCoach::FactoryHolder &
 SerializerOnlineCoach::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
 
 SerializerOnlineCoach::SerializerOnlineCoach( const SerializerCommon & common,
                                               const SerializerCoach & coach )
-    : Serializer( common )
-    , M_coach( coach )
+    : Serializer( common ),
+      M_coach( coach )
 {
 
 }

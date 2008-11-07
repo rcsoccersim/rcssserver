@@ -40,10 +40,10 @@ namespace rcss {
 //===================================================================
 */
 
-VisualSenderPlayer::Factory &
+VisualSenderPlayer::FactoryHolder &
 VisualSenderPlayer::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -54,12 +54,12 @@ VisualSenderPlayer::VisualSenderPlayer( const Params & params )
       M_stadium( params.M_stadium ),
       M_sendcnt( 0 )
 {
-
+    //std::cerr << "create VisualSenderPlayer" << std::endl;
 }
 
 VisualSenderPlayer::~VisualSenderPlayer()
 {
-
+    //std::cerr << "delete VisualSenderPlayer" << std::endl;
 }
 
 /*!
@@ -457,7 +457,8 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
                                  calcName( player ),
                                  quant_dist,
                                  calcDegDir( ang ),
-                                 dist_chg, dir_chg );
+                                 dist_chg,
+                                 dir_chg );
             }
         }
     }
@@ -642,7 +643,7 @@ VisualSenderPlayerV1::calcVel( const PVector & obj_vel,
 }
 
 void
-VisualSenderPlayerV1::serializePlayer( const Player&,
+VisualSenderPlayerV1::serializePlayer( const Player &,
                                        const std::string & name,
                                        const double & dist,
                                        const int dir,
@@ -656,7 +657,7 @@ VisualSenderPlayerV1::serializePlayer( const Player&,
 }
 
 void
-VisualSenderPlayerV1::serializePlayer( const Player&,
+VisualSenderPlayerV1::serializePlayer( const Player &,
                                        const std::string & name,
                                        const double & dist,
                                        const int dir )
@@ -709,20 +710,25 @@ VisualSenderPlayerV1::serializePlayer( const Player&,
 
 VisualSenderPlayerV4::VisualSenderPlayerV4( const Params & params )
     : VisualSenderPlayerV1( params )
-{}
+{
+
+}
 
 VisualSenderPlayerV4::~VisualSenderPlayerV4()
-{}
+{
+
+}
 
 void
 VisualSenderPlayerV4::serializePlayer( const Player & player,
+                                       const std::string & name,
                                        const double & dist,
                                        const int dir,
                                        const double & dist_chg,
                                        const double & dir_chg )
 {
     serializer().serializeVisualObject( transport(),
-                                        calcName( player ),
+                                        name,
                                         dist, dir, dist_chg, dir_chg,
                                         calcBodyDir( player ) );
 }
@@ -750,21 +756,26 @@ VisualSenderPlayerV4::serializePlayer( const Player & player,
 
 VisualSenderPlayerV5::VisualSenderPlayerV5( const Params & params )
     : VisualSenderPlayerV4( params )
-{}
+{
+
+}
 
 
 VisualSenderPlayerV5::~VisualSenderPlayerV5()
-{}
+{
+
+}
 
 void
 VisualSenderPlayerV5::serializePlayer( const Player & player,
+                                       const std::string & name,
                                        const double & dist,
                                        const int dir,
                                        const double & dist_chg,
                                        const double & dir_chg )
 {
     serializer().serializeVisualObject( transport(),
-                                        calcName( player ),
+                                        name,
                                         dist, dir, dist_chg, dir_chg,
                                         calcBodyDir( player ),
                                         calcHeadDir( player ) );
@@ -784,10 +795,14 @@ VisualSenderPlayerV5::serializePlayer( const Player & player,
 
 VisualSenderPlayerV6::VisualSenderPlayerV6( const Params & params )
     : VisualSenderPlayerV5( params )
-{}
+{
+
+}
 
 VisualSenderPlayerV6::~VisualSenderPlayerV6()
-{}
+{
+
+}
 
 /*!
 //===================================================================
@@ -805,12 +820,16 @@ VisualSenderPlayerV6::~VisualSenderPlayerV6()
 //===================================================================
 */
 
-VisualSenderPlayerV7::VisualSenderPlayerV7( const Params& params )
+VisualSenderPlayerV7::VisualSenderPlayerV7( const Params & params )
     : VisualSenderPlayerV6( params )
-{}
+{
+
+}
 
 VisualSenderPlayerV7::~VisualSenderPlayerV7()
-{}
+{
+
+}
 
 
 /*!
@@ -827,12 +846,16 @@ VisualSenderPlayerV7::~VisualSenderPlayerV7()
 //===================================================================
 */
 
-VisualSenderPlayerV8::VisualSenderPlayerV8( const Params& params )
+VisualSenderPlayerV8::VisualSenderPlayerV8( const Params & params )
     : VisualSenderPlayerV7( params )
-{}
+{
+
+}
 
 VisualSenderPlayerV8::~VisualSenderPlayerV8()
-{}
+{
+
+}
 
 int
 VisualSenderPlayerV8::calcPointDir( const Player & player )
@@ -884,6 +907,64 @@ VisualSenderPlayerV8::calcPointDir( const Player & player )
     }
 }
 
+// void
+// VisualSenderPlayerV8::serializePlayer( const Player & player,
+//                                        const std::string & name,
+//                                        const double & dist,
+//                                        const int dir,
+//                                        const double & dist_chg,
+//                                        const double & dir_chg )
+// {
+//     if ( player.arm().isPointing() )
+//     {
+//         int point_dir = calcPointDir( player );
+//         serializer().serializeVisualObject( transport(),
+//                                             name,
+//                                             dist, dir,
+//                                             dist_chg, dir_chg,
+//                                             calcBodyDir( player ),
+//                                             calcHeadDir( player ),
+//                                             point_dir,
+//                                             player.isTackling() );
+//     }
+//     else
+//     {
+//         serializer().serializeVisualObject( transport(),
+//                                             name,
+//                                             dist, dir,
+//                                             dist_chg, dir_chg,
+//                                             calcBodyDir( player ),
+//                                             calcHeadDir( player ),
+//                                             player.isTackling() );
+//     }
+// }
+
+// void
+// VisualSenderPlayerV8::serializePlayer( const Player & player,
+//                                        const std::string & name,
+//                                        const double & dist,
+//                                        const int dir )
+// {
+//     if ( player.arm().isPointing() )
+//     {
+//         int point_dir = calcPointDir( player );
+//         serializer().serializeVisualObject( transport(),
+//                                             name,
+//                                             dist,
+//                                             dir,
+//                                             point_dir,
+//                                             player.isTackling() );
+//     }
+//     else
+//     {
+//         serializer().serializeVisualObject( transport(),
+//                                             name,
+//                                             dist,
+//                                             dir,
+//                                             player.isTackling() );
+//     }
+// }
+
 void
 VisualSenderPlayerV8::serializePlayer( const Player & player,
                                        const std::string & name,
@@ -895,24 +976,24 @@ VisualSenderPlayerV8::serializePlayer( const Player & player,
     if ( player.arm().isPointing() )
     {
         int point_dir = calcPointDir( player );
-        serializer().serializeVisualObject( transport(),
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
                                             name,
                                             dist, dir,
                                             dist_chg, dir_chg,
                                             calcBodyDir( player ),
                                             calcHeadDir( player ),
-                                            point_dir,
-                                            player.isTackling() );
+                                            point_dir );
     }
     else
     {
-        serializer().serializeVisualObject( transport(),
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
                                             name,
                                             dist, dir,
                                             dist_chg, dir_chg,
                                             calcBodyDir( player ),
-                                            calcHeadDir( player ),
-                                            player.isTackling() );
+                                            calcHeadDir( player ) );
     }
 }
 
@@ -925,23 +1006,45 @@ VisualSenderPlayerV8::serializePlayer( const Player & player,
     if ( player.arm().isPointing() )
     {
         int point_dir = calcPointDir( player );
-        serializer().serializeVisualObject( transport(),
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
                                             name,
                                             dist,
                                             dir,
-                                            point_dir,
-                                            player.isTackling() );
+                                            point_dir );
     }
     else
     {
-        serializer().serializeVisualObject( transport(),
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
                                             name,
                                             dist,
-                                            dir,
-                                            player.isTackling() );
+                                            dir );
     }
 }
 
+
+/*!
+//===================================================================
+//
+//  CLASS: VisualSensorPlayerV13
+//
+//  DESC: Class for the version 13 visual protocol.  This version
+//        introduced observation of the kicking state of other players.
+//
+//===================================================================
+*/
+
+VisualSenderPlayerV13::VisualSenderPlayerV13( const Params & params )
+    : VisualSenderPlayerV8( params )
+{
+
+}
+
+VisualSenderPlayerV13::~VisualSenderPlayerV13()
+{
+
+}
 
 /*!
 //===================================================================
@@ -952,7 +1055,6 @@ VisualSenderPlayerV8::serializePlayer( const Player & player,
 */
 
 namespace visual {
-
 template< typename Sender >
 VisualSenderPlayer::Ptr
 create( const VisualSenderPlayer::Params & params )
@@ -960,18 +1062,19 @@ create( const VisualSenderPlayer::Params & params )
     return VisualSenderPlayer::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vp1 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 1 );
-lib::RegHolder vp2 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 2 );
-lib::RegHolder vp3 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 3 );
-lib::RegHolder vp4 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV4 >, 4 );
-lib::RegHolder vp5 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV5 >, 5 );
-lib::RegHolder vp6 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV6 >, 6 );
-lib::RegHolder vp7 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV7 >, 7 );
-lib::RegHolder vp8 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 8 );
-lib::RegHolder vp9 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 9 );
-lib::RegHolder vp10 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 10 );
-lib::RegHolder vp11 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 11 );
-lib::RegHolder vp12 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 12 );
-
+RegHolder vp1 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 1 );
+RegHolder vp2 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 2 );
+RegHolder vp3 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV1 >, 3 );
+RegHolder vp4 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV4 >, 4 );
+RegHolder vp5 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV5 >, 5 );
+RegHolder vp6 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV6 >, 6 );
+RegHolder vp7 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV7 >, 7 );
+RegHolder vp8 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 8 );
+RegHolder vp9 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 9 );
+RegHolder vp10 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 10 );
+RegHolder vp11 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 11 );
+RegHolder vp12 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 12 );
+RegHolder vp13 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV13 >, 13 );
 }
+
 }

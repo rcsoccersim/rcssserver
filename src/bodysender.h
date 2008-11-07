@@ -25,7 +25,7 @@
 
 #include "sender.h"
 #include "observer.h"
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 class Player;
 
@@ -128,10 +128,10 @@ public:
 
     typedef std::auto_ptr< BodySenderPlayer > Ptr;
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     BodySenderPlayer( const Params & params );
 
@@ -263,7 +263,7 @@ class BodySenderPlayerV5
     : public BodySenderPlayerV1
 {
 public:
-    BodySenderPlayerV5( const Params& params );
+    BodySenderPlayerV5( const Params & params );
 
     virtual
     ~BodySenderPlayerV5();
@@ -291,7 +291,7 @@ class BodySenderPlayerV6
     : public BodySenderPlayerV5
 {
 public:
-    BodySenderPlayerV6( const Params& params );
+    BodySenderPlayerV6( const Params & params );
 
     virtual
     ~BodySenderPlayerV6();
@@ -315,7 +315,7 @@ class BodySenderPlayerV7
     : public BodySenderPlayerV6
 {
 public:
-    BodySenderPlayerV7( const Params& params );
+    BodySenderPlayerV7( const Params & params );
 
     virtual
     ~BodySenderPlayerV7();
@@ -341,7 +341,7 @@ class BodySenderPlayerV8
     : public BodySenderPlayerV7
 {
 public:
-    BodySenderPlayerV8( const Params& params );
+    BodySenderPlayerV8( const Params & params );
 
     virtual
     ~BodySenderPlayerV8();
@@ -374,6 +374,29 @@ public:
 protected:
     virtual
     void sendBodyData();
+
+};
+
+
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV13
+//
+//  DESC: version 13 of the sense body protocol. Added stamina
+//        capacity info.
+//
+//===================================================================
+*/
+
+class BodySenderPlayerV13
+    : public BodySenderPlayerV12
+{
+public:
+    BodySenderPlayerV13( const Params & params );
+
+    virtual
+    ~BodySenderPlayerV13();
 
 };
 

@@ -179,6 +179,14 @@ Stadium::Stadium()
 
 Stadium::~Stadium()
 {
+    for ( std::list< ResultSaver * >::iterator i = m_savers.begin();
+          i != m_savers.end();
+          ++i )
+    {
+        delete *i;
+    }
+    m_savers.clear();
+
     for ( std::list< Referee * >::iterator i = M_referees.begin();
           i != M_referees.end();
           ++i )
@@ -256,17 +264,17 @@ Stadium::init()
     // we create the result savers now, so that if there are any
     // errors creating them, it will be reported before
     // the game starts, not after it has finished.
-    std::list< const char * > savers = rcss::ResultSaver::factory().list();
+    std::list< const char * > savers = ResultSaver::factory().list();
     for ( std::list< const char * >::iterator i = savers.begin();
           i != savers.end();
           ++i )
     {
-        rcss::ResultSaver::Creator creator;
-        if ( rcss::ResultSaver::factory().getCreator( creator, *i ) )
+        ResultSaver::Creator creator;
+        if ( ResultSaver::factory().getCreator( creator, *i ) )
         {
-            rcss::ResultSaver::Ptr saver = creator();
+            ResultSaver::Ptr saver = creator();
             std::cout << saver->getName() << ": Ready\n";
-            m_savers.push_back( saver );
+            m_savers.push_back( saver.release() );
         }
         else
         {
@@ -1298,6 +1306,23 @@ Stadium::setHalfTime( const Side kick_off_side,
             + ServerParam::instance().extraHalfTime() * extra_count;
     }
 
+    // recover only stamina capacity at the start of extra halves
+    if ( half_time_count == ServerParam::instance().nrNormalHalfs() )
+    {
+        const PlayerCont::iterator end = M_players.end();
+        for ( PlayerCont::iterator p = M_players.begin();
+              p != end;
+              ++p )
+        {
+            if ( (*p)->state() == DISABLE )
+            {
+                continue;
+            }
+
+            (*p)->recoverStaminaCapacity();
+        }
+    }
+
     M_weather.wind_vector.x *= -1;
     M_weather.wind_vector.y *= -1;
 }
@@ -1561,13 +1586,13 @@ Stadium::_Start( Stadium & stad )
 {
     const ServerParam & param = ServerParam::instance();
 
-    //if ( stad.time() % param.halfTime() == 0 )
     int normal_time = param.halfTime() * param.nrNormalHalfs();
+
     if ( param.halfTime() < 0
          || ( stad.time() <= normal_time
               && stad.time() % param.halfTime() == 0 )
          || ( stad.time() > normal_time
-              && ( stad.time() - normal_time )% param.extraHalfTime() == 0 )
+              && ( stad.time() - normal_time ) % param.extraHalfTime() == 0 )
          )
     {
         int time = stad.time();
@@ -1580,10 +1605,8 @@ Stadium::_Start( Stadium & stad )
 
         if ( ( time / half_time ) % 2 == 0 )
         {
-            if ( ServerParam::instance().nrNormalHalfs() >= 0
-                 && stad.time() < ( ServerParam::instance().halfTime()
-                                    * ServerParam::instance().nrNormalHalfs() )
-                 )
+            if ( param.nrNormalHalfs() >= 0
+                 && stad.time() < param.halfTime() * param.nrNormalHalfs() )
             {
                 stad.recoveryPlayers();
             }
@@ -1600,10 +1623,8 @@ Stadium::_Start( Stadium & stad )
         }
         else // if ( ( time / half_time ) % 2 == 1 )
         {
-            if ( ServerParam::instance().nrNormalHalfs() >= 0
-                 && stad.time() < ( ServerParam::instance().halfTime()
-                                    * ServerParam::instance().nrNormalHalfs() )
-                 )
+            if ( param.nrNormalHalfs() >= 0
+                 && stad.time() < param.halfTime() * param.nrNormalHalfs() )
             {
                 stad.recoveryPlayers();
             }
@@ -2414,7 +2435,7 @@ void
 Stadium::doSendSynchVisuals()
 {
     struct timeval tv_start, tv_end;
-
+    //    std::cerr << "sendSynchVisuals time=" << time() << std::endl;
     if ( M_logger.isTextLogOpen()
          && ServerParam::instance().profile() )
     {
@@ -2676,7 +2697,7 @@ Stadium::finalize( const std::string & msg )
     {
         s_first = false;
         killTeams();
-        std::cout << msg << '\n';
+        std::cout << '\n' << msg << '\n';
         M_logger.close();
         saveResults();
         disable();
@@ -2694,9 +2715,9 @@ Stadium::disable()
 namespace rcss
 {
 void
-save_results( rcss::ResultSaver::team_id id,
+save_results( ResultSaver::team_id id,
               const Team & team,
-              rcss::ResultSaver::Ptr & saver )
+              ResultSaver * saver )
 {
     if ( ! team.name().empty() )
     {
@@ -2732,7 +2753,7 @@ Stadium::saveResults()
     }
 
     std::cout << "\nSaving Results:"  << std::endl;
-    for ( std::list< rcss::ResultSaver::Ptr >::iterator i = m_savers.begin();
+    for ( std::list< ResultSaver * >::iterator i = m_savers.begin();
           i != m_savers.end();
           ++i )
     {
@@ -2742,11 +2763,11 @@ Stadium::saveResults()
             (*i)->saveStart();
             (*i)->saveTime( realTime() );
             if ( M_team_l )
-                rcss::save_results( rcss::ResultSaver::TEAM_LEFT,
+                rcss::save_results( ResultSaver::TEAM_LEFT,
                                     *M_team_l,
                                     *i );
             if ( M_team_r )
-                rcss::save_results( rcss::ResultSaver::TEAM_RIGHT,
+                rcss::save_results( ResultSaver::TEAM_RIGHT,
                                     *M_team_r,
                                     *i );
             if ( (*i)->saveComplete() )
@@ -2764,6 +2785,5 @@ Stadium::saveResults()
         }
     }
     std::cout << std::endl;
-    m_savers.clear();
     std::cout << "Saving Results Complete" << std::endl;
 }

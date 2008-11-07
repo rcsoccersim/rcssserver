@@ -177,7 +177,6 @@ SerializerPlayerStdv7::serializeChangePlayer( std::ostream & strm,
 }
 
 namespace {
-
 const
 SerializerPlayer *
 create()
@@ -185,7 +184,7 @@ create()
     return SerializerPlayerStdv7::instance();
 }
 
-lib::RegHolder v7 = SerializerPlayer::factory().autoReg( &create, 7 );
-
+RegHolder v7 = SerializerPlayer::factory().autoReg( &create, 7 );
 }
+
 }

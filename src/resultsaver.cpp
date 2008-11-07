@@ -21,13 +21,9 @@
 
 #include "resultsaver.hpp"
 
-namespace rcss {
-
-ResultSaver::Factory &
+ResultSaver::FactoryHolder &
 ResultSaver::factory()
 {
-    static Factory fact;
+    static FactoryHolder fact;
     return fact;
-}
-
 }

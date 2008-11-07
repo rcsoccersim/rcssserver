@@ -21,17 +21,6 @@ if test $? -eq 1; then
     exit 1
 fi
 
-LIBLOAD="load=libstdoutsaver"
-which rcssmodtest 2> /dev/null
-if test $? -eq 1; then
-    LIBLOAD=""
-else
-    rcssmodtest @libdir@/@PACKAGE@/modules/libstdoutsaver 2> /dev/null
-    if test $? -eq 1; then
-        LIBLOAD=""
-    fi
-fi
-
 if test $# -eq 0; then
     if test "$RCSSMONITOR"; then
         MON=`which "$RCSSMONITOR" 2> /dev/null`
@@ -77,10 +66,6 @@ else
             fi
             ;;
 
-            -nostdoutsaver)
-            LIBLOAD=""
-            ;;
-
             *)
             echo "Error: unsupported option"
             echo "Usage: $0 [(-frameview)|(-classic)][(-nostdoutsaver)]"
@@ -102,7 +87,7 @@ trap kill_server INT
 # start server
 #
 
-$SERV $LIBLOAD &
+$SERV &
 PID=$!
 
 #--------------------------------------------------

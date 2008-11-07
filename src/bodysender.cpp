@@ -62,10 +62,10 @@ BodySender::~BodySender()
 //===================================================================
 */
 
-BodySenderPlayer::Factory &
+BodySenderPlayer::FactoryHolder &
 BodySenderPlayer::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -79,7 +79,7 @@ BodySenderPlayer::BodySenderPlayer( const Params & params )
 
 BodySenderPlayer::~BodySenderPlayer()
 {
-
+    //std::cerr << "delete BodySenderPlayer" << std::endl;
 }
 
 
@@ -128,7 +128,8 @@ BodySenderPlayerV1::sendBodyData()
                                           : "normal" ) );
     serializer().serializeBodyStamina( transport(),
                                        self().stamina(),
-                                       self().effort() );
+                                       self().effort(),
+                                       self().staminaCapacity() );
     sendVelocity();
     sendNeck();
     sendCounts();
@@ -241,10 +242,14 @@ BodySenderPlayerV6::sendVelocity()
 
 BodySenderPlayerV7::BodySenderPlayerV7( const Params & params )
     : BodySenderPlayerV6( params )
-{}
+{
+
+}
 
 BodySenderPlayerV7::~BodySenderPlayerV7()
-{}
+{
+
+}
 
 void
 BodySenderPlayerV7::sendCounts()
@@ -342,6 +347,29 @@ BodySenderPlayerV12::sendBodyData()
                                      self().postCollide() );
 }
 
+
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV13
+//
+//  DESC: version 13 of the sense body protocol. Added stamina
+//        capacity info.
+//
+//===================================================================
+*/
+
+BodySenderPlayerV13::BodySenderPlayerV13( const Params & params )
+    : BodySenderPlayerV12( params )
+{
+
+}
+
+BodySenderPlayerV13::~BodySenderPlayerV13()
+{
+
+}
+
 namespace bodysender {
 
 template< typename Sender >
@@ -351,17 +379,19 @@ create( const BodySenderPlayer::Params & params )
     return BodySenderPlayer::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vp1 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 1 );
-lib::RegHolder vp2 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 2 );
-lib::RegHolder vp3 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 3 );
-lib::RegHolder vp4 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 4 );
-lib::RegHolder vp5 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV5 >, 5 );
-lib::RegHolder vp6 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV6 >, 6 );
-lib::RegHolder vp7 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV7 >, 7 );
-lib::RegHolder vp8 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 8 );
-lib::RegHolder vp9 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 9 );
-lib::RegHolder vp10 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 10 );
-lib::RegHolder vp11 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 11 );
-lib::RegHolder vp12 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV12 >, 12 );
+RegHolder vp1 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 1 );
+RegHolder vp2 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 2 );
+RegHolder vp3 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 3 );
+RegHolder vp4 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV1 >, 4 );
+RegHolder vp5 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV5 >, 5 );
+RegHolder vp6 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV6 >, 6 );
+RegHolder vp7 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV7 >, 7 );
+RegHolder vp8 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 8 );
+RegHolder vp9 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 9 );
+RegHolder vp10 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 10 );
+RegHolder vp11 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 11 );
+RegHolder vp12 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV12 >, 12 );
+RegHolder vp13 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV13 >, 13 );
 }
+
 }

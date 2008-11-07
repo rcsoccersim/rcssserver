@@ -42,10 +42,10 @@ namespace rcss {
 //===================================================================
 */
 
-VisualSenderCoach::Factory &
+VisualSenderCoach::FactoryHolder &
 VisualSenderCoach::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -60,7 +60,7 @@ VisualSenderCoach::VisualSenderCoach( const Params & params )
 
 VisualSenderCoach::~VisualSenderCoach()
 {
-
+    //std::cerr << "delete VisualSenderCoach" << std::endl;
 }
 
 /*!
@@ -274,6 +274,60 @@ VisualSenderCoachV8::serializePlayerLook( const Player & player )
     VisualSenderCoachV7::serializePlayer( player );
 }
 
+
+/*!
+//===================================================================
+//
+//  CLASS: VisualSenderCoachV13
+//
+//  DESC:
+//
+//===================================================================
+*/
+
+VisualSenderCoachV13::VisualSenderCoachV13( const Params & params )
+    : VisualSenderCoachV8( params )
+{
+
+}
+
+VisualSenderCoachV13::~VisualSenderCoachV13()
+{
+
+}
+
+void
+VisualSenderCoachV13::serializePlayer( const Player & player )
+{
+    if ( player.arm().isPointing() )
+    {
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
+                                            calcName( player ),
+                                            player.pos(),
+                                            player.vel(),
+                                            rad2Deg( player.angleBodyCommitted() ),
+                                            rad2Deg( player.angleNeckCommitted() ),
+                                            calcPointDir( player ) );
+    }
+    else
+    {
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
+                                            calcName( player ),
+                                            player.pos(),
+                                            player.vel(),
+                                            rad2Deg( player.angleBodyCommitted() ),
+                                            rad2Deg( player.angleNeckCommitted() ) );
+    }
+}
+
+void
+VisualSenderCoachV13::serializePlayerLook( const Player & player )
+{
+    VisualSenderCoachV8::serializePlayer( player );
+}
+
 /*!
 //===================================================================
 //
@@ -283,7 +337,6 @@ VisualSenderCoachV8::serializePlayerLook( const Player & player )
 */
 
 namespace visual {
-
 template< typename Sender >
 VisualSenderCoach::Ptr
 create( const VisualSenderCoach::Params & params )
@@ -291,18 +344,19 @@ create( const VisualSenderCoach::Params & params )
     return VisualSenderCoach::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vc1 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 1 );
-lib::RegHolder vc2 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 2 );
-lib::RegHolder vc3 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 3 );
-lib::RegHolder vc4 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 4 );
-lib::RegHolder vc5 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 5 );
-lib::RegHolder vc6 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 6 );
-lib::RegHolder vc7 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV7 >, 7 );
-lib::RegHolder vc8 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 8 );
-lib::RegHolder vc9 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 9 );
-lib::RegHolder vc10 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 10 );
-lib::RegHolder vc11 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 11 );
-lib::RegHolder vc12 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 12 );
-
+RegHolder vc1 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 1 );
+RegHolder vc2 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 2 );
+RegHolder vc3 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 3 );
+RegHolder vc4 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 4 );
+RegHolder vc5 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 5 );
+RegHolder vc6 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV1 >, 6 );
+RegHolder vc7 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV7 >, 7 );
+RegHolder vc8 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 8 );
+RegHolder vc9 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 9 );
+RegHolder vc10 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 10 );
+RegHolder vc11 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 11 );
+RegHolder vc12 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 12 );
+RegHolder vc13 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 13 );
 }
+
 }

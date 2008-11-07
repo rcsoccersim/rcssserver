@@ -25,6 +25,8 @@
 
 #include "initsender.h"
 
+#include <rcssbase/factory.hpp>
+
 class Monitor;
 
 namespace rcss {
@@ -58,7 +60,7 @@ public:
 
     typedef std::auto_ptr< InitSenderMonitor > Ptr;
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
 private:
 
@@ -71,7 +73,7 @@ private:
 
 public:
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
    virtual
     ~InitSenderMonitor();

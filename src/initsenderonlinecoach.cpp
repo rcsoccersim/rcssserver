@@ -43,10 +43,10 @@ namespace rcss {
 //===================================================================
 */
 
-InitSenderOnlineCoach::Factory &
+InitSenderOnlineCoach::FactoryHolder &
 InitSenderOnlineCoach::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -289,18 +289,19 @@ create( const InitSenderOnlineCoach::Params & params )
     return InitSenderOnlineCoach::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder voc1 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 1 );
-lib::RegHolder voc2 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 2 );
-lib::RegHolder voc3 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 3 );
-lib::RegHolder voc4 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 4 );
-lib::RegHolder voc5 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 5 );
-lib::RegHolder voc6 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV6 >, 6 );
-lib::RegHolder voc7 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV7 >, 7 );
-lib::RegHolder voc8 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 8 );
-lib::RegHolder voc9 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 9 );
-lib::RegHolder voc10 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 10 );
-lib::RegHolder voc11 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 11 );
-lib::RegHolder voc12 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 12 );
-
+RegHolder voc1 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 1 );
+RegHolder voc2 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 2 );
+RegHolder voc3 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 3 );
+RegHolder voc4 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 4 );
+RegHolder voc5 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV1 >, 5 );
+RegHolder voc6 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV6 >, 6 );
+RegHolder voc7 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV7 >, 7 );
+RegHolder voc8 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 8 );
+RegHolder voc9 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 9 );
+RegHolder voc10 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 10 );
+RegHolder voc11 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 11 );
+RegHolder voc12 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 12 );
+RegHolder voc13 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 13 );
 }
+
 }

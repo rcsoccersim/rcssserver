@@ -25,6 +25,8 @@
 
 #include "initsender.h"
 
+#include <rcssbase/factory.hpp>
+
 class Logger;
 
 namespace rcss {
@@ -54,7 +56,7 @@ public:
 
     typedef std::auto_ptr< InitSenderLogger > Ptr;
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
 private:
 
@@ -67,7 +69,7 @@ private:
 
 public:
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     virtual
     ~InitSenderLogger();
@@ -306,6 +308,25 @@ public:
 
     virtual
     void sendTeam();
+
+};
+
+
+class InitSenderLoggerV5
+    : public InitSenderLoggerV4 {
+public:
+    InitSenderLoggerV5( const Params & params );
+
+protected:
+    InitSenderLoggerV5( const Params & params,
+                        const boost::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderLoggerV5();
+
+    virtual
+    void sendHeader();
 
 };
 

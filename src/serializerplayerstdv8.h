@@ -39,6 +39,45 @@ public:
     const
     SerializerPlayerStdv8 * instance();
 
+
+    virtual
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const double & dist,
+                                const int dir ) const;
+
+    virtual
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const double & dist,
+                                const int dir,
+                                const int point_dir ) const;
+
+    virtual
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const double & dist,
+                                const int dir,
+                                const double & dist_chg,
+                                const double & dir_chg,
+                                const int body_dir,
+                                const int head_dir ) const;
+
+    virtual
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const double & dist,
+                                const int dir,
+                                const double & dist_chg,
+                                const double & dir_chg,
+                                const int body_dir,
+                                const int head_dir,
+                                const int point_dir ) const;
+
     virtual
     void serializeAllyAudioFull( std::ostream & strm,
                                  const int time,
@@ -87,10 +126,11 @@ public:
                                const double & head ) const;
 
     virtual
-    void serializeFSPlayerEnd( std::ostream & strm,
-                               const double & stamina,
-                               const double & effort,
-                               const double & recovery ) const;
+    void serializeFSPlayerStamina( std::ostream & strm,
+                                   const double & stamina,
+                                   const double & effort,
+                                   const double & recovery,
+                                   const double & stamina_capacity ) const;
 
     virtual
     void serializeFSCounts( std::ostream & strm,
@@ -114,8 +154,8 @@ public:
 
     virtual
     void serializeParam( std::ostream & strm,
-                    const std::string & name,
-                    const int param ) const;
+                         const std::string & name,
+                         const int param ) const;
 
     virtual
     void serializeParam( std::ostream & strm,

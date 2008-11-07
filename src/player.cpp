@@ -1,7 +1,7 @@
 // -*-c++-*-
 
 /***************************************************************************
-                             player.cc
+                             player.cpp
                A class for field players and goalies
                           -------------------
     begin                : 26-NOV-2001
@@ -57,9 +57,21 @@ inline
 double
 NormalizeDashPower( const double & p )
 {
-    return rcss::bound( ServerParam::instance().minPower(),
+//     return rcss::bound( ServerParam::instance().minPower(),
+//                         p,
+//                         ServerParam::instance().maxPower() );
+    return rcss::bound( ServerParam::instance().minDashPower(),
                         p,
-                        ServerParam::instance().maxPower() );
+                        ServerParam::instance().maxDashPower() );
+}
+
+inline
+double
+NormalizeDashAngle( const double & p )
+{
+    return rcss::bound( ServerParam::instance().minDashAngle(),
+                        p,
+                        ServerParam::instance().maxDashAngle() );
 }
 
 inline
@@ -126,6 +138,7 @@ Player::Player( Stadium & stadium,
       M_unum( number ),
       M_stamina( ServerParam::instance().staminaMax() ),
       M_recovery( ServerParam::instance().recoverInit() ),
+      M_stamina_capacity( ServerParam::instance().staminaCapacity() ),
       M_consumed_stamina( 0.0 ),
       M_vis_angle( ServerParam::instance().visibleAngle() ),
       M_view_width( rcss::pcom::NORMAL ),
@@ -156,6 +169,15 @@ Player::Player( Stadium & stadium,
       M_goalie( false ),
       M_goalie_catch_ban( 0 ),
       M_goalie_moves_since_catch( 0 ),
+      M_kick_cycles( 0 ),
+      M_kick_count( 0 ),
+      M_dash_count( 0 ),
+      M_turn_count( 0 ),
+      M_catch_count( 0 ),
+      M_move_count( 0 ),
+      M_turn_neck_count( 0 ),
+      M_change_view_count( 0 ),
+      M_say_count( 0 ),
       M_arm( ServerParam::instance().pointToBan(),
              ServerParam::instance().pointToDuration() ),
       M_attentionto_count( 0 ),
@@ -179,15 +201,6 @@ Player::Player( Stadium & stadium,
 
     // pfr 8/14/00: for RC2000 evaluation
     M_kick_rand = ServerParam::instance().kickRand();
-
-    M_kick_count
-        = M_dash_count
-        = M_turn_count
-        = M_catch_count
-        = M_move_count
-        = M_turn_neck_count
-        = M_change_view_count
-        = M_say_count = 0;
 
     setPlayerType( 0 );
 
@@ -314,6 +327,7 @@ Player::substitute( const int type )
     M_stamina = ServerParam::instance().staminaMax();
     M_recovery = 1.0;
     M_effort = M_player_type->effortMax();
+    M_stamina_capacity = ServerParam::instance().staminaCapacity();
     M_consumed_stamina = 0.0;
 
     M_hear_capacity_from_teammate = ServerParam::instance().hearMax();
@@ -853,47 +867,115 @@ Player::send( const char * msg )
 void
 Player::dash( double power )
 {
+    dash( power, 0.0 );
+
+//     if ( ! M_command_done )
+//     {
+//         // calculate stamina
+//         double power_need = ( power < 0.0
+//                               ? NormalizeDashPower( power ) * -2.0
+//                               : NormalizeDashPower( power ) );
+//         if ( power_need > stamina() + M_player_type->extraStamina() )
+//         {
+//             power_need = stamina() + M_player_type->extraStamina();
+//         }
+//         M_stamina -= power_need;
+//         if ( stamina() < 0.0 )
+//         {
+//             M_stamina = 0.0;
+//         }
+
+//         if ( M_stadium.playmode() != PM_BeforeKickOff
+//              && M_stadium.playmode() != PM_TimeOver )
+//         {
+//             M_consumed_stamina += power_need;
+//         }
+
+//         power = ( power < 0.0
+//                   ? power_need / -2.0
+//                   : power_need );
+//         double effective_dash_power
+//             = effort()
+//             * power
+//             * M_player_type->dashPowerRate();
+//         if ( pos().y < 0.0 )
+//         {
+//             effective_dash_power /= ( side() == LEFT
+//                                       ? ServerParam::instance().slownessOnTopForLeft()
+//                                       : ServerParam::instance().slownessOnTopForRight() );
+//         }
+
+//         push( PVector::fromPolar( effective_dash_power,
+//                                   angleBodyCommitted() ) );
+//         ++M_dash_count;
+//         M_command_done = true;
+//     }
+}
+
+void
+Player::dash( double power,
+              double dir )
+{
     if ( ! M_command_done )
     {
-        // calculate stamina
-        double power_need = ( power < 0.0
-                              ? NormalizeDashPower( power ) * -2.0
-                              : NormalizeDashPower( power ) );
-        if ( power_need > stamina() + M_player_type->extraStamina() )
-        {
-            power_need = stamina() + M_player_type->extraStamina();
-        }
-        M_stamina -= power_need;
-        if ( stamina() < 0.0 )
-        {
-            M_stamina = 0.0;
-        }
+        const ServerParam & param = ServerParam::instance();
 
-        if ( M_stadium.playmode() != PM_BeforeKickOff
-             && M_stadium.playmode() != PM_TimeOver )
-        {
-            M_consumed_stamina += power_need;
-        }
+        power = NormalizeDashPower( power );
+        dir = NormalizeDashAngle( dir );
 
-        power = ( power < 0.0
+        bool back_dash = power < 0.0;
+
+        double dir_rate = ( std::fabs( dir ) > 90.0
+                            ? param.backDashRate() - ( ( param.backDashRate() - param.sideDashRate() )
+                                                       * ( 1.0 - ( std::fabs( dir ) - 90.0 ) / 90.0 ) )
+                            : param.sideDashRate() + ( ( 1.0 - param.sideDashRate() )
+                                                       * ( 1.0 - std::fabs( dir ) / 90.0 ) )
+                            );
+
+        double power_need = ( back_dash
+                              ? power * -2.0
+                              : power );
+        power_need = std::min( power_need, stamina() + M_player_type->extraStamina() );
+        M_stamina = std::max( 0.0, stamina() - power_need );
+
+        power = ( back_dash
                   ? power_need / -2.0
                   : power_need );
-        double effective_dash_power
-            = effort()
-            * power
-            * M_player_type->dashPowerRate();
+
+        double effective_dash_power = std::fabs( effort()
+                                                 * power
+                                                 * dir_rate
+                                                 * M_player_type->dashPowerRate() );
         if ( pos().y < 0.0 )
         {
             effective_dash_power /= ( side() == LEFT
-                                      ? ServerParam::instance().slownessOnTopForLeft()
-                                      : ServerParam::instance().slownessOnTopForRight() );
+                                      ? param.slownessOnTopForLeft()
+                                      : param.slownessOnTopForRight() );
+        }
+
+        double actual_dir = dir;
+        if ( param.dashAngleStep() < EPS )
+        {
+            // players can dash in any direction.
+        }
+        else
+        {
+            // The dash direction is discretized by server::dash_angle_step
+            actual_dir = param.dashAngleStep() * rint( actual_dir / param.dashAngleStep() );
+        }
+
+        if ( back_dash )
+        {
+            actual_dir += 180.0;
         }
 
         push( PVector::fromPolar( effective_dash_power,
-                                  angleBodyCommitted() ) );
+                                  normalize_angle( angleBodyCommitted() + Deg2Rad( actual_dir ) ) ) );
+
         ++M_dash_count;
         M_command_done = true;
     }
+
 }
 
 
@@ -905,14 +987,14 @@ Player::turn( double moment )
         M_angle_body = normalize_angle( angleBodyCommitted()
                                         + ( 1.0 + drand( -M_randp, M_randp ) )
                                         * NormalizeMoment( moment )
-                                        / (1.0 + M_inertia_moment * vel().r()) );
+                                        / ( 1.0 + M_inertia_moment * vel().r() ) );
         ++M_turn_count;
         M_command_done = true;
     }
 }
 
 void
-Player::turn_neck( double moment)
+Player::turn_neck( double moment )
 {
     if ( ! M_turn_neck_done )
     {
@@ -924,10 +1006,14 @@ Player::turn_neck( double moment)
 }
 
 void
-Player::kick( double power, double dir )
+Player::kick( double power,
+              double dir )
 {
     if ( ! M_command_done )
     {
+        M_command_done = true;
+        M_kick_cycles = 1;
+
         power = NormalizeKickPower( power );
         dir = NormalizeMoment( dir );
 
@@ -950,6 +1036,7 @@ Player::kick( double power, double dir )
              M_stadium.playmode() == PM_CatchFault_Right ||
              M_stadium.playmode() == PM_TimeOver )
         {
+            M_state |= KICK_FAULT;
             return;
         }
 
@@ -1023,7 +1110,6 @@ Player::kick( double power, double dir )
         M_stadium.kickTaken( *this, accel );
 
         ++M_kick_count;
-        M_command_done = true;
     }
 }
 
@@ -1032,7 +1118,7 @@ Player::goalieCatch( double dir )
 {
     if ( ! M_command_done )
     {
-
+        M_command_done = true;
         M_state |= CATCH;
 
         //pfr: we should only be able to catch in PlayOn mode
@@ -1198,7 +1284,6 @@ Player::goalieCatch( double dir )
         }
 #endif
         ++M_catch_count;
-        M_command_done = true;
     }
 }
 
@@ -2032,6 +2117,9 @@ Player::recoverAll()
     M_stamina = ServerParam::instance().staminaMax();
     M_recovery = 1.0;
     M_effort = M_player_type->effortMax();
+
+    recoverStaminaCapacity();
+
     M_consumed_stamina = 0.0;
 
     M_hear_capacity_from_teammate = ServerParam::instance().hearMax();
@@ -2039,40 +2127,85 @@ Player::recoverAll()
 }
 
 void
+Player::recoverStaminaCapacity()
+{
+    M_stamina_capacity = ServerParam::instance().staminaCapacity();
+}
+
+void
 Player::updateStamina()
 {
-    if ( M_stamina <= ( ServerParam::instance().recoverDecThr()
-                        * ServerParam::instance().staminaMax() ) )
-    {
-        if ( M_recovery > ServerParam::instance().recoverMin() )
-            M_recovery -= ServerParam::instance().recoverDec();
-        if ( M_recovery < ServerParam::instance().recoverMin() )
-            M_recovery = ServerParam::instance().recoverMin();
-    }
+    const ServerParam & param = ServerParam::instance();
 
-    if ( M_stamina <= ( ServerParam::instance().effortDecThr()
-                        * ServerParam::instance().staminaMax() ) )
+    if ( M_stamina <= param.recoverDecThr() * param.staminaMax() )
     {
-        if ( M_effort > M_player_type->effortMin() )
-            M_effort -= ServerParam::instance().effortDec();
-        if ( M_effort < M_player_type->effortMin() )
-            M_effort = M_player_type->effortMin();
-    }
-
-    if ( M_stamina >= ( ServerParam::instance().effortIncThr()
-                        * ServerParam::instance().staminaMax() ) )
-    {
-        if ( M_effort < M_player_type->effortMax() )
+        if ( M_recovery > param.recoverMin() )
         {
-            M_effort += ServerParam::instance().effortInc();
-            if ( M_effort > M_player_type->effortMax() )
-                M_effort = M_player_type->effortMax();
+            M_recovery -= param.recoverDec();
+        }
+
+        if ( M_recovery < param.recoverMin() )
+        {
+            M_recovery = param.recoverMin();
         }
     }
 
-    M_stamina += ( M_recovery * M_player_type->staminaIncMax() );
-    if ( M_stamina > ServerParam::instance().staminaMax() )
-        M_stamina = ServerParam::instance().staminaMax();
+    if ( M_stamina <= param.effortDecThr() * param.staminaMax() )
+    {
+        if ( M_effort > M_player_type->effortMin() )
+        {
+            M_effort -= param.effortDec();
+        }
+
+        if ( M_effort < M_player_type->effortMin() )
+        {
+            M_effort = M_player_type->effortMin();
+        }
+    }
+
+    if ( M_stamina >= param.effortIncThr() * param.staminaMax() )
+    {
+        if ( M_effort < M_player_type->effortMax() )
+        {
+            M_effort += param.effortInc();
+            if ( M_effort > M_player_type->effortMax() )
+            {
+                M_effort = M_player_type->effortMax();
+            }
+        }
+    }
+
+    //M_stamina += ( M_recovery * M_player_type->staminaIncMax() );
+    //if ( M_stamina > param.staminaMax() )
+    //{
+    //    M_stamina = param.staminaMax();
+    //}
+
+    double stamina_inc = std::min( M_recovery * M_player_type->staminaIncMax(),
+                                   param.staminaMax() - M_stamina );
+
+    if ( param.staminaCapacity() >= 0.0 )
+    {
+        if ( stamina_inc > M_stamina_capacity )
+        {
+            stamina_inc = M_stamina_capacity;
+        }
+    }
+
+    M_stamina += stamina_inc;
+    if ( M_stamina > param.staminaMax() )
+    {
+        M_stamina = param.staminaMax();
+    }
+
+    if ( param.staminaCapacity() >= 0.0 )
+    {
+        M_stamina_capacity -= stamina_inc;
+        if ( M_stamina_capacity < 0.0 )
+        {
+            M_stamina_capacity = 0.0;
+        }
+    }
 }
 
 void
@@ -2080,14 +2213,20 @@ Player::updateCapacity()
 {
     M_hear_capacity_from_teammate += ServerParam::instance().hearInc();
     if( M_hear_capacity_from_teammate > (int)ServerParam::instance().hearMax() )
+    {
         M_hear_capacity_from_teammate = ServerParam::instance().hearMax();
+    }
 
     M_hear_capacity_from_opponent += ServerParam::instance().hearInc();
     if ( M_hear_capacity_from_opponent > (int)ServerParam::instance().hearMax() )
+    {
         M_hear_capacity_from_opponent = ServerParam::instance().hearMax();
+    }
 
     if ( M_goalie_catch_ban > 0 )
+    {
         --M_goalie_catch_ban;
+    }
 }
 
 void
@@ -2101,6 +2240,11 @@ Player::resetCollisionFlags()
 void
 Player::resetCommandFlags()
 {
+    if ( M_kick_cycles >= 0 )
+    {
+        --M_kick_cycles;
+    }
+
     if ( M_tackle_cycles > 0 )
     {
         --M_tackle_cycles;

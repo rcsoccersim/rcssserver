@@ -41,10 +41,10 @@ namespace rcss {
 //===================================================================
 */
 
-SerializerMonitor::Factory &
+SerializerMonitor::FactoryHolder &
 SerializerMonitor::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -330,8 +330,53 @@ SerializerMonitorStdv3::serializeTeamGraphic( std::ostream & os,
        << " \"" << msg << "\")";
 }
 
-namespace {
 
+/*
+//===================================================================
+//
+//  SerializerMonitorStdv4
+//
+//===================================================================
+*/
+
+SerializerMonitorStdv4::SerializerMonitorStdv4( const SerializerCommon & common )
+    : SerializerMonitorStdv3( common )
+{
+
+}
+
+SerializerMonitorStdv4::~SerializerMonitorStdv4()
+{
+
+}
+
+const
+SerializerMonitorStdv4 *
+SerializerMonitorStdv4::instance()
+{
+    rcss::SerializerCommon::Creator cre_common;
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 13 ) )
+    {
+        return NULL;
+    }
+
+    static SerializerMonitorStdv4 ser( cre_common() );
+    return &ser;
+}
+
+void
+SerializerMonitorStdv4::serializePlayerStamina( std::ostream & os,
+                                                const Player & player ) const
+{
+    os << " (s "
+       << player.stamina() << ' '
+       << player.effort() << ' '
+       << player.recovery() << ' '
+       << player.staminaCapacity() << ')';
+}
+
+
+namespace {
 const
 SerializerMonitor *
 create1()
@@ -345,10 +390,17 @@ create3()
 {
     return SerializerMonitorStdv3::instance();
 }
-
-lib::RegHolder v1 = SerializerMonitor::factory().autoReg( &create1, 1 );
-lib::RegHolder v2 = SerializerMonitor::factory().autoReg( &create1, 2 );
-lib::RegHolder v3 = SerializerMonitor::factory().autoReg( &create3, 3 );
-
+const
+SerializerMonitor *
+create4()
+{
+    return SerializerMonitorStdv4::instance();
 }
+
+RegHolder v1 = SerializerMonitor::factory().autoReg( &create1, 1 );
+RegHolder v2 = SerializerMonitor::factory().autoReg( &create1, 2 );
+RegHolder v3 = SerializerMonitor::factory().autoReg( &create3, 3 );
+RegHolder v4 = SerializerMonitor::factory().autoReg( &create4, 4 );
+}
+
 }

@@ -63,10 +63,10 @@ FullStateSender::~FullStateSender()
 //===================================================================
 */
 
-FullStateSenderPlayer::Factory &
+FullStateSenderPlayer::FactoryHolder &
 FullStateSenderPlayer::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -75,10 +75,14 @@ FullStateSenderPlayer::FullStateSenderPlayer( const Params & params )
       M_serializer( params.m_serializer ),
       M_self( params.m_self ),
       M_stadium( params.m_stadium )
-{}
+{
+    //std::cerr << "create FullStateSenderPlayer" << std::endl;
+}
 
 FullStateSenderPlayer::~FullStateSenderPlayer()
-{}
+{
+    //std::cerr << "delete FullStateSenderPlayer" << std::endl;
+}
 
 
 /*!
@@ -254,10 +258,12 @@ FullStateSenderPlayerV5::sendPlayer( const Player & p )
                                                    quantize_step ),
                                          Quantize( Rad2Deg( p.angleNeckCommitted() ),
                                                    quantize_step ) ); //neck_angle
-    serializer().serializeFSPlayerEnd( transport(),
-                                       int( p.stamina() ),
-                                       Quantize( p.effort(), .0001 ),
-                                       Quantize( p.recovery(), .0001) );
+    serializer().serializeFSPlayerStamina( transport(),
+                                           int( p.stamina() ),
+                                           Quantize( p.effort(), .0001 ),
+                                           Quantize( p.recovery(), .0001 ),
+                                           p.staminaCapacity() );
+    serializer().serializeFSPlayerEnd( transport() );
 }
 
 /*!
@@ -285,11 +291,11 @@ void
 FullStateSenderPlayerV8::sendSelf()
 {
     rcss::geom::Vector2D arm_vec;
-    self().arm().getRelDest ( rcss::geom::Vector2D ( self().pos().x,
-                                                     self().pos().y ),
-                              self().angleBodyCommitted()
-                              + self().angleNeckCommitted(),
-                              arm_vec );
+    self().arm().getRelDest( rcss::geom::Vector2D ( self().pos().x,
+                                                    self().pos().y ),
+                             self().angleBodyCommitted()
+                             + self().angleNeckCommitted(),
+                             arm_vec );
     serializer().serializeFSCounts( transport(),
                                     self().kickCount(),
                                     self().dashCount(),
@@ -367,11 +373,77 @@ FullStateSenderPlayerV8::sendPlayer( const Player & p )
                                            arm_vec.getHead() );
     }
 
-    serializer().serializeFSPlayerEnd( transport(),
-                                       p.stamina(),
-                                       p.effort(),
-                                       p.recovery() );
+    serializer().serializeFSPlayerStamina( transport(),
+                                           p.stamina(),
+                                           p.effort(),
+                                           p.recovery(),
+                                           p.staminaCapacity() );
+
+    serializer().serializeFSPlayerEnd( transport() );
 }
+
+
+/*!
+//===================================================================
+//
+//  CLASS: FullStateSenderPlayerV13
+//
+//  DESC: version 13 of the full state protocol. The tackling or
+//  kikcing information are added.
+//
+//===================================================================
+*/
+
+FullStateSenderPlayerV13::FullStateSenderPlayerV13( const Params & params )
+    : FullStateSenderPlayerV8( params )
+{
+
+}
+
+FullStateSenderPlayerV13::~FullStateSenderPlayerV13()
+{
+
+}
+
+
+void
+FullStateSenderPlayerV13::sendPlayer( const Player & p )
+{
+    char side = ( p.team()->side() == LEFT ? 'l' : 'r' );
+    serializer().serializeFSPlayerBegin( transport(),
+                                         side,
+                                         p.unum(),
+                                         p.isGoalie(),
+                                         p.playerTypeId(),
+                                         p.pos().x,
+                                         p.pos().y,
+                                         p.vel().x,
+                                         p.vel().y,
+                                         Rad2Deg( p.angleBodyCommitted() ),
+                                         Rad2Deg( p.angleNeckCommitted() ) );
+
+    if ( p.arm().isPointing() )
+    {
+        rcss::geom::Vector2D arm_vec;
+        p.arm().getRelDest( rcss::geom::Vector2D( p.pos().x, p.pos().y ),
+                            p.angleBodyCommitted() + p.angleNeckCommitted(),
+                            arm_vec );
+        serializer().serializeFSPlayerArm( transport(),
+                                           arm_vec.getMag(),
+                                           arm_vec.getHead() );
+    }
+
+    serializer().serializeFSPlayerStamina( transport(),
+                                           p.stamina(),
+                                           p.effort(),
+                                           p.recovery(),
+                                           p.staminaCapacity() );
+
+    serializer().serializeFSPlayerState( transport(), p );
+
+    serializer().serializeFSPlayerEnd( transport() );
+}
+
 
 /*!
 //===================================================================
@@ -390,18 +462,19 @@ create( const FullStateSenderPlayer::Params & params )
     return FullStateSenderPlayer::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vp1 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 1 );
-lib::RegHolder vp2 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 2 );
-lib::RegHolder vp3 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 3 );
-lib::RegHolder vp4 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 4 );
-lib::RegHolder vp5 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV5 >, 5 );
-lib::RegHolder vp6 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV5 >, 6 );
-lib::RegHolder vp7 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV5 >, 7 );
-lib::RegHolder vp8 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 8 );
-lib::RegHolder vp9 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 9 );
-lib::RegHolder vp10 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 10 );
-lib::RegHolder vp11 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 11 );
-lib::RegHolder vp12 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 12 );
-
+RegHolder vp1 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 1 );
+RegHolder vp2 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 2 );
+RegHolder vp3 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 3 );
+RegHolder vp4 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV1 >, 4 );
+RegHolder vp5 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV5 >, 5 );
+RegHolder vp6 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV5 >, 6 );
+RegHolder vp7 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV5 >, 7 );
+RegHolder vp8 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 8 );
+RegHolder vp9 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 9 );
+RegHolder vp10 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 10 );
+RegHolder vp11 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 11 );
+RegHolder vp12 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 12 );
+RegHolder vp13 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 13 );
 }
+
 }

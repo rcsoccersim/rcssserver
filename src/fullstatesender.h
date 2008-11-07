@@ -26,7 +26,7 @@
 #include "sender.h"
 #include "observer.h"
 
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 class Stadium;
 class Player;
@@ -91,7 +91,7 @@ public:
 
     typedef std::auto_ptr< FullStateSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
 private:
     const SerializerPlayer & M_serializer;
@@ -104,7 +104,7 @@ private:
 
 public:
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     FullStateSenderPlayer( const Params & params );
 
@@ -270,6 +270,35 @@ protected:
     virtual
     void sendPlayer( const Player & p );
 };
+
+
+/*!
+//===================================================================
+//
+//  CLASS: FullStateSenderPlayerV13
+//
+//  DESC: version 13 of the full state protocol. The tackling or
+//  kikcing information are added.
+//
+//===================================================================
+*/
+
+class FullStateSenderPlayerV13
+    : public FullStateSenderPlayerV8
+{
+public:
+    FullStateSenderPlayerV13( const Params & );
+
+    virtual
+    ~FullStateSenderPlayerV13();
+
+protected:
+
+    virtual
+    void sendPlayer( const Player & p );
+};
+
+
 }
 
 #endif

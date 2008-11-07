@@ -25,7 +25,7 @@
 #include "sender.h"
 #include "observer.h"
 
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 class Stadium;
 class Logger;
@@ -99,10 +99,10 @@ private:
 public:
     typedef std::auto_ptr< DispSenderMonitor > Ptr;
     typedef Ptr (*Creator)( const DispSenderMonitor::Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     DispSenderMonitor( const Params & params );
 
@@ -220,7 +220,7 @@ public:
 };
 
 /*!
-  \class DispSenderMonitorV2
+  \class DispSenderMonitorV3
   \brief class for the version 3 display protocol.
 */
 class DispSenderMonitorV3
@@ -238,6 +238,27 @@ public:
     virtual
     void sendMsg();
 
+};
+
+
+/*!
+  \class DispSenderMonitorV4
+  \brief class for the version 4 display protocol.
+*/
+class DispSenderMonitorV4
+    : public DispSenderMonitorV3 {
+public:
+
+    DispSenderMonitorV4( const Params & params );
+
+    virtual
+    ~DispSenderMonitorV4();
+
+    virtual
+    void sendShow();
+
+    virtual
+    void sendMsg();
 };
 
 
@@ -279,10 +300,10 @@ private:
 public:
     typedef std::auto_ptr< DispSenderLogger > Ptr;
     typedef Ptr (*Creator)( const DispSenderLogger::Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     DispSenderLogger( const Params & params );
 
@@ -439,6 +460,28 @@ public:
     void sendMsg();
 
 };
+
+// /*!
+//   \class DispSenderLoggerV5
+//   \brief class for the log version 5
+//  */
+// class DispSenderLoggerV5
+//     : public DispSenderLoggerV4 {
+// public:
+
+//     DispSenderLoggerV5( const Params & params );
+
+//     virtual
+//     ~DispSenderLoggerV5();
+
+//     virtual
+//     void sendShow();
+
+//     virtual
+//     void sendMsg();
+
+// };
+
 
 }
 

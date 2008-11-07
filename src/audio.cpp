@@ -34,7 +34,7 @@
 #include "utility.h"
 #include "serializer.h"
 
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 namespace rcss {
 
@@ -104,12 +104,28 @@ Listener::sendErrorNoTeamName( const std::string & team_name )
 }
 
 
-AudioSenderPlayer::Factory &
+AudioSenderPlayer::FactoryHolder &
 AudioSenderPlayer::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
+
+
+AudioSenderPlayer::AudioSenderPlayer( const Params & params )
+    : AudioSender( params.m_stadium,
+                   params.m_transport ),
+      M_listener( params.m_listener ),
+      M_serializer( params.m_serializer )
+{
+
+}
+
+AudioSenderPlayer::~AudioSenderPlayer()
+{
+    //std::cerr << "delete AudioSenderPlayer" << std::endl;
+}
+
 
 void
 AudioSenderPlayer::sendPlayerAudio( const Player & player,
@@ -715,12 +731,27 @@ AudioSenderPlayerv8::setEar( bool on,
     }
 }
 
-AudioSenderCoach::Factory &
+AudioSenderCoach::FactoryHolder &
 AudioSenderCoach::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
+
+AudioSenderCoach::AudioSenderCoach( const Params & params )
+    : AudioSender( params.m_stadium,
+                   params.m_transport ),
+      M_listener( params.m_listener ),
+      M_serializer( params.m_serializer )
+{
+
+}
+
+AudioSenderCoach::~AudioSenderCoach()
+{
+    //std::cerr << "delete AudioSenderCoach" << std::endl;
+}
+
 
 bool
 AudioSenderCoach::generalPredicate() const
@@ -830,12 +861,27 @@ AudioSenderCoachv7::sendPlayerAudio( const Player & player,
 }
 
 
-AudioSenderOnlineCoach::Factory &
+AudioSenderOnlineCoach::FactoryHolder &
 AudioSenderOnlineCoach::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
+
+
+AudioSenderOnlineCoach::AudioSenderOnlineCoach( const Params & params )
+    : AudioSender( params.m_stadium, params.m_transport ),
+      M_listener( params.m_listener ),
+      M_serializer( params.m_serializer )
+{
+
+}
+
+AudioSenderOnlineCoach::~AudioSenderOnlineCoach()
+{
+    //std::cerr << "delete AudioSenderOnlineCoach" << std::endl;
+}
+
 
 bool
 AudioSenderOnlineCoach::generalPredicate() const
@@ -915,18 +961,19 @@ create( const AudioSenderPlayer::Params & params )
     return AudioSender::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vp1 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 1 );
-lib::RegHolder vp2 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 2 );
-lib::RegHolder vp3 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 3 );
-lib::RegHolder vp4 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 4 );
-lib::RegHolder vp5 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 5 );
-lib::RegHolder vp6 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 6 );
-lib::RegHolder vp7 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv7 >, 7 );
-lib::RegHolder vp8 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 8 );
-lib::RegHolder vp9 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 9 );
-lib::RegHolder vp10 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 10 );
-lib::RegHolder vp11 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 11 );
-lib::RegHolder vp12 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 12 );
+RegHolder vp1 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 1 );
+RegHolder vp2 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 2 );
+RegHolder vp3 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 3 );
+RegHolder vp4 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 4 );
+RegHolder vp5 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 5 );
+RegHolder vp6 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv1 >, 6 );
+RegHolder vp7 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv7 >, 7 );
+RegHolder vp8 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 8 );
+RegHolder vp9 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 9 );
+RegHolder vp10 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 10 );
+RegHolder vp11 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 11 );
+RegHolder vp12 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 12 );
+RegHolder vp13 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 13 );
 
 template< typename Sender >
 AudioSender::Ptr
@@ -935,18 +982,19 @@ create( const AudioSenderCoach::Params & params )
     return AudioSender::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vc1 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 1 );
-lib::RegHolder vc2 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 2 );
-lib::RegHolder vc3 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 3 );
-lib::RegHolder vc4 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 4 );
-lib::RegHolder vc5 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 5 );
-lib::RegHolder vc6 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 6 );
-lib::RegHolder vc7 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 7 );
-lib::RegHolder vc8 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 8 );
-lib::RegHolder vc9 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 9 );
-lib::RegHolder vc10 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 10 );
-lib::RegHolder vc11 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 11 );
-lib::RegHolder vc12 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 12 );
+RegHolder vc1 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 1 );
+RegHolder vc2 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 2 );
+RegHolder vc3 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 3 );
+RegHolder vc4 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 4 );
+RegHolder vc5 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 5 );
+RegHolder vc6 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv1 >, 6 );
+RegHolder vc7 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 7 );
+RegHolder vc8 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 8 );
+RegHolder vc9 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 9 );
+RegHolder vc10 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 10 );
+RegHolder vc11 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 11 );
+RegHolder vc12 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 12 );
+RegHolder vc13 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 13 );
 
 template< typename Sender >
 AudioSender::Ptr
@@ -955,18 +1003,18 @@ create( const AudioSenderOnlineCoach::Params & params )
     return AudioSender::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder voc1 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 1 );
-lib::RegHolder voc2 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 2 );
-lib::RegHolder voc3 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 3 );
-lib::RegHolder voc4 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 4 );
-lib::RegHolder voc5 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 5 );
-lib::RegHolder voc6 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 6 );
-lib::RegHolder voc7 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 7 );
-lib::RegHolder voc8 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 8 );
-lib::RegHolder voc9 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 9 );
-lib::RegHolder voc10 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 10 );
-lib::RegHolder voc11 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 11 );
-lib::RegHolder voc12 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 12 );
-
+RegHolder voc1 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 1 );
+RegHolder voc2 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 2 );
+RegHolder voc3 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 3 );
+RegHolder voc4 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 4 );
+RegHolder voc5 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 5 );
+RegHolder voc6 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv1 >, 6 );
+RegHolder voc7 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 7 );
+RegHolder voc8 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 8 );
+RegHolder voc9 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 9 );
+RegHolder voc10 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 10 );
+RegHolder voc11 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 11 );
+RegHolder voc12 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 12 );
+RegHolder voc13 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 13 );
 }
 }

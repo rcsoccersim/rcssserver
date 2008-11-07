@@ -38,9 +38,6 @@
 #ifndef RCSS_UTILITY_H
 #define RCSS_UTILITY_H
 
-#include "rcssserverconfig.hpp"
-
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <cstdlib>
 #include <string>
@@ -78,7 +75,7 @@ inline
 int
 Rad2IDeg( const double & a )
 {
-    return (int)( a * RAD2DEG );
+    return static_cast< int >( a * RAD2DEG );
 }
 
 //#define Rad2IDegRound(a)	((int)rint(Rad2Deg(a)))
@@ -86,7 +83,7 @@ inline
 int
 Rad2IDegRound( const double & a )
 {
-    return (int)( rint( Rad2Deg( a ) ) );
+    return static_cast< int >( rint( Rad2Deg( a ) ) );
 }
 
 //#define Deg2Rad(a)	((double)(a) * DEG2RAD)
@@ -138,31 +135,17 @@ bound( const T & low,
 extern "C" {
 #endif
 
-    //RCSSSERVER_API
-    //extern unsigned int randomize(void) ;
-    //extern double drand(double l, double h) ;
-
-    //RCSSSERVER_API
-    //extern double normalize_angle(double ang) ;
-
-    //RCSSSERVER_API
 extern int lcm(int a, int b);
 
 #ifdef __cplusplus
 }
 #endif
 
-//#ifdef X11R5
-//# define mySetArg_1st(slot,val)	XtSetArg(Args[0], slot, (val)); Argn = 1
-//# define mySetArg(slot,val)	XtSetArg(Args[Argn], slot, (val)); Argn++
-//#endif
-
 
 #define nstonl(x) htonl((Int32)(((double)(Int16)ntohs(x) / SHOWINFO_SCALE) * SHOWINFO_SCALE2))
 #define nltons(x) htons((Int16)(((double)(Int32)ntohl(x) / SHOWINFO_SCALE2) * SHOWINFO_SCALE))
 
 
-//RCSSSERVER_API
 std::string
 tildeExpand( const std::string & path_name );
 

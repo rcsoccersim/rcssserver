@@ -28,8 +28,6 @@
 #include "serverparam.h"
 #include "playerparam.h"
 
-#include <rcssbase/lib/factory.hpp>
-
 class Stadium;
 
 namespace rcss {

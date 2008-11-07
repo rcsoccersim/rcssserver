@@ -65,7 +65,6 @@ SerializerOnlineCoachStdv8::serializePlayerClangVer( std::ostream& strm,
 }
 
 namespace {
-
 const
 SerializerOnlineCoach *
 create()
@@ -73,11 +72,11 @@ create()
     return SerializerOnlineCoachStdv8::instance();
 }
 
-lib::RegHolder v8 = SerializerOnlineCoach::factory().autoReg( &create, 8 );
-lib::RegHolder v9 = SerializerOnlineCoach::factory().autoReg( &create, 9 );
-lib::RegHolder v10 = SerializerOnlineCoach::factory().autoReg( &create, 10 );
-lib::RegHolder v11 = SerializerOnlineCoach::factory().autoReg( &create, 11 );
-lib::RegHolder v12 = SerializerOnlineCoach::factory().autoReg( &create, 12 );
-
+RegHolder v8 = SerializerOnlineCoach::factory().autoReg( &create, 8 );
+RegHolder v9 = SerializerOnlineCoach::factory().autoReg( &create, 9 );
+RegHolder v10 = SerializerOnlineCoach::factory().autoReg( &create, 10 );
+RegHolder v11 = SerializerOnlineCoach::factory().autoReg( &create, 11 );
+RegHolder v12 = SerializerOnlineCoach::factory().autoReg( &create, 12 );
 }
+
 }

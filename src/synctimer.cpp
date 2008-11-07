@@ -21,7 +21,6 @@
 
 #include "synctimer.h"
 #include "serverparam.h"    // needed for ServerParam
-#include <rcssbase/lib/loader.hpp>
 
 void
 SyncTimer::run()
@@ -47,6 +46,7 @@ SyncTimer::run()
         q_sent = ServerParam::instance().lcmStep()/ServerParam::instance().sendStep()*4,
         q_sbt  = ServerParam::instance().lcmStep()/ServerParam::instance().senseBodyStep(),
         q_svt  = ServerParam::instance().lcmStep()/ServerParam::instance().coachVisualStep();
+    bool sent_synch_see = false;
 
     //while (!shutdown)
     while ( getTimeableRef().alive() )
@@ -61,13 +61,14 @@ SyncTimer::run()
                 c_simt = 1;
             else
                 c_simt++;
+            sent_synch_see = false;
         }
 
         // new sense body step
         if ( lcmt >= ServerParam::instance().senseBodyStep() * c_sbt )
         {
             getTimeableRef().sendSenseBody();
-            c_sbt = (int)floor( lcmt / ServerParam::instance().senseBodyStep() );
+            c_sbt = static_cast< int >( std::floor( lcmt / ServerParam::instance().senseBodyStep() ) );
             if (q_sbt <= c_sbt)
                 c_sbt = 1;
             else
@@ -78,7 +79,7 @@ SyncTimer::run()
         if ( lcmt >= (ServerParam::instance().sendStep() * 0.25 ) * c_sent )
         {
             getTimeableRef().sendVisuals();
-            c_sent = (int)floor( lcmt / (ServerParam::instance().sendStep() * 0.25 ) );
+            c_sent = static_cast< int >( std::floor( lcmt / (ServerParam::instance().sendStep() * 0.25 ) ) );
             if ( q_sent <= c_sent )
                 c_sent = 1;
             else
@@ -86,18 +87,20 @@ SyncTimer::run()
         }
 
         // send synch visual message
-        if ( lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
-                       + ServerParam::instance().synchSeeOffset() ) )
+        if ( ! sent_synch_see
+             && lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
+                          + ServerParam::instance().synchSeeOffset() ) )
         {
             getTimeableRef().sendSynchVisuals();
             ++c_synch_see;
+            sent_synch_see = true;
         }
 
         // send coach messages
         if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
         {
             getTimeableRef().sendCoachMessages();
-            c_svt = (int)floor( lcmt / ServerParam::instance().coachVisualStep() );
+            c_svt = static_cast< int >( std::floor( lcmt / ServerParam::instance().coachVisualStep() ) );
             if ( q_svt <= c_svt )
                 c_svt = 1;
             else
@@ -105,7 +108,7 @@ SyncTimer::run()
         }
 
         //we do a c_synch-1 because of the offset
-        if ( lcmt >= ServerParam::instance().simStep() * (c_synch-1) + ServerParam::instance().synchOffset() )
+        if ( lcmt >= ServerParam::instance().simStep() * ( c_synch - 1 ) + ServerParam::instance().synchOffset() )
         {
             shutdown = getTimeableRef().sendThink();
             /* because of the strange offset nature here,
@@ -123,31 +126,3 @@ SyncTimer::run()
 
     getTimeableRef().quit();
 }
-
-// void
-// SyncTimer::destroy( SyncTimer* c )
-// {
-//     delete c;
-// }
-
-// SyncTimer::Ptr
-// SyncTimer::create( Timeable& t )
-// {
-//      return Ptr( new SyncTimer( t ),
-//                  &SyncTimer::destroy,
-//                  rcss::lib::Loader::loadFromCache( "librcsssynctimer" ) );
-// }
-
-
-// RCSSLIB_INIT( librcsssynctimer )
-// {
-//     //printf("reg synctimer\n");
-//     SyncTimer::factory().reg( &SyncTimer::create, "sync" );
-//     return true;
-// }
-
-// RCSSLIB_FIN( librcsssynctimer )
-// {
-//     //printf("dereg synctimer\n");
-//     SyncTimer::factory().dereg( "sync" );
-// }

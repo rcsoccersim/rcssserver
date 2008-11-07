@@ -69,6 +69,7 @@ private:
     double M_stamina;
     double M_recovery;
     double M_effort;
+    double M_stamina_capacity;
 
     double M_consumed_stamina;
 
@@ -123,6 +124,7 @@ private:
     int M_goalie_catch_ban;
     int M_goalie_moves_since_catch;
 
+    int M_kick_cycles;
     int M_kick_count;
     int M_dash_count;
     int M_turn_count;
@@ -281,6 +283,11 @@ public:
       {
           return M_effort;
       }
+    const
+    double & staminaCapacity() const
+      {
+          return M_stamina_capacity;
+      }
 
     const
     double & visibleAngle() const
@@ -379,6 +386,8 @@ public:
     void decrementHearCapacity( const Player & sender );
     bool canHearFullFrom( const Player & sender ) const;
 
+    bool kicked() const { return M_kick_cycles >= 0; }
+
     int kickCount() const { return M_kick_count; }
     int dashCount() const { return M_dash_count; }
     int turnCount() const { return M_turn_count; }
@@ -407,6 +416,7 @@ public:
     bool setSenders();
 
     void recoverAll();
+    void recoverStaminaCapacity();
     void updateStamina();
     void updateCapacity();
 
@@ -468,6 +478,7 @@ private:
 
     /** PlayerCommands */
     void dash( double power );
+    void dash( double power, double dir );
     void turn( double moment );
     void turn_neck( double moment );
     void kick( double power, double dir );

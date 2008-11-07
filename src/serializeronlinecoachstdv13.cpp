@@ -1,11 +1,11 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializeronlinecoachstdv6.cc
-               Class for serializing data to std v6 online coaches
+                         serializeronlinecoachstdv13.cc
+               Class for serializing data to std v13 online coaches
                              -------------------
-    begin                : 27-MAY-2002
-    copyright            : (C) 2002 by The RoboCup Soccer Server
+    begin                : 2008-11-03
+    copyright            : (C) 2008 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
@@ -19,49 +19,40 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "serializeronlinecoachstdv6.h"
+#include "serializeronlinecoachstdv13.h"
 
 namespace rcss {
 
-SerializerOnlineCoachStdv6::SerializerOnlineCoachStdv6( const SerializerCommon & common,
-                                                        const SerializerCoach & coach )
-    : SerializerOnlineCoachStdv1( common, coach )
+SerializerOnlineCoachStdv13::SerializerOnlineCoachStdv13( const SerializerCommon & common,
+                                                          const SerializerCoach & coach )
+    : SerializerOnlineCoachStdv8( common, coach )
 {
 
 }
 
-SerializerOnlineCoachStdv6::~SerializerOnlineCoachStdv6()
+SerializerOnlineCoachStdv13::~SerializerOnlineCoachStdv13()
 {
 
 }
 
 const
-SerializerOnlineCoachStdv6 *
-SerializerOnlineCoachStdv6::instance()
+SerializerOnlineCoachStdv13 *
+SerializerOnlineCoachStdv13::instance()
 {
     rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 6 ) )
+    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 13 ) )
     {
         return NULL;
     }
 
     rcss::SerializerCoach::Creator cre_coach;
-    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 6 ) )
+    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 13 ) )
     {
         return NULL;
     }
 
-    static SerializerOnlineCoachStdv6 ser( cre_common(), *cre_coach() );
+    static SerializerOnlineCoachStdv13 ser( cre_common(), *cre_coach() );
     return &ser;
-}
-
-void
-SerializerOnlineCoachStdv6::serializeInit( std::ostream& strm,
-                                           const int side ) const
-{
-    strm << "(init "
-         << ( side == LEFT ? 'l' : 'r' )
-         << " ok)";
 }
 
 namespace {
@@ -69,10 +60,10 @@ const
 SerializerOnlineCoach *
 create()
 {
-    return SerializerOnlineCoachStdv6::instance();
+    return SerializerOnlineCoachStdv13::instance();
 }
 
-RegHolder v6 = SerializerOnlineCoach::factory().autoReg( &create, 6 );
+RegHolder v13 = SerializerOnlineCoach::factory().autoReg( &create, 13 );
 }
 
 }

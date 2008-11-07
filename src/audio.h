@@ -29,7 +29,7 @@
 #include <string>
 #include <map>
 #include <list>
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 
 class Coach;
@@ -240,21 +240,15 @@ public:
     };
 
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
 
-    AudioSenderPlayer( const Params & params )
-        : AudioSender( params.m_stadium,
-                       params.m_transport ),
-          M_listener( params.m_listener ),
-          M_serializer( params.m_serializer )
-      { }
+    AudioSenderPlayer( const Params & params );
 
-    ~AudioSenderPlayer()
-      { }
+    ~AudioSenderPlayer();
 
     virtual
     void sendPlayerAudio( const Player & player,
@@ -573,21 +567,15 @@ public:
 
 public:
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
 
-    AudioSenderCoach( const Params & params )
-        : AudioSender( params.m_stadium,
-                       params.m_transport ),
-          M_listener( params.m_listener ),
-          M_serializer( params.m_serializer )
-      { }
+    AudioSenderCoach( const Params & params );
 
-    ~AudioSenderCoach()
-      { }
+    ~AudioSenderCoach();
 
 protected:
     virtual
@@ -670,19 +658,14 @@ public:
 
 public:
     typedef Ptr (*Creator)( const rcss::AudioSenderOnlineCoach::Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
-    AudioSenderOnlineCoach( const Params & params )
-        : AudioSender( params.m_stadium, params.m_transport ),
-          M_listener( params.m_listener ),
-          M_serializer( params.m_serializer )
-      {}
+    AudioSenderOnlineCoach( const Params & params );
 
-    ~AudioSenderOnlineCoach()
-      { }
+    ~AudioSenderOnlineCoach();
 
 protected:
     virtual
@@ -728,9 +711,8 @@ public:
       { }
 
     virtual
-    void
-    sendPlayerAudio( const Player & player,
-                     const char * msg );
+    void sendPlayerAudio( const Player & player,
+                          const char * msg );
 };
 
 }

@@ -52,10 +52,10 @@ namespace rcss {
 //===================================================================
 */
 
-InitSenderLogger::Factory &
+InitSenderLogger::FactoryHolder &
 InitSenderLogger::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -85,17 +85,17 @@ InitSenderLogger::~InitSenderLogger()
 
 InitSenderLoggerV1::InitSenderLoggerV1( const Params & params )
     : InitSenderLogger( params,
-                         boost::shared_ptr< InitSenderCommon >
-                         ( new InitSenderCommonV1( params.M_transport,
-                                                   params.M_serializer,
-                                                   params.M_stadium,
-                                                   1 ) ) )
+                        boost::shared_ptr< InitSenderCommon >
+                        ( new InitSenderCommonV1( params.M_transport,
+                                                  params.M_serializer,
+                                                  params.M_stadium,
+                                                  1 ) ) )
 {
 
 }
 
 InitSenderLoggerV1::InitSenderLoggerV1( const Params & params,
-                                          const boost::shared_ptr< InitSenderCommon > common )
+                                        const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderLogger( params, common )
 {
 
@@ -163,7 +163,7 @@ InitSenderLoggerV2::InitSenderLoggerV2( const Params & params )
 }
 
 InitSenderLoggerV2::InitSenderLoggerV2( const Params & params,
-                                          const boost::shared_ptr< InitSenderCommon > common )
+                                        const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderLoggerV1( params, common )
 {
 
@@ -226,17 +226,17 @@ InitSenderLoggerV2::sendTeam()
 
 InitSenderLoggerV3::InitSenderLoggerV3( const Params & params )
     : InitSenderLoggerV2( params,
-                           boost::shared_ptr< InitSenderCommon >
-                           ( new InitSenderCommonV1( params.M_transport,
-                                                     params.M_serializer,
-                                                     params.M_stadium,
-                                                     1 ) ) )
+                          boost::shared_ptr< InitSenderCommon >
+                          ( new InitSenderCommonV1( params.M_transport,
+                                                    params.M_serializer,
+                                                    params.M_stadium,
+                                                    1 ) ) )
 {
 
 }
 
 InitSenderLoggerV3::InitSenderLoggerV3( const Params & params,
-                                          const boost::shared_ptr< InitSenderCommon > common )
+                                        const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderLoggerV2( params, common )
 {
 
@@ -348,19 +348,19 @@ InitSenderLoggerV3::sendTeam()
 
 InitSenderLoggerV4::InitSenderLoggerV4( const Params & params )
     : InitSenderLoggerV3( params,
-                         boost::shared_ptr< InitSenderCommon >
-                           ( new InitSenderCommonV8( params.M_transport,
-                                                     params.M_serializer,
-                                                     params.M_stadium,
-                                                     999,  // accept all parameters
-                                                     true ) ) ) // new line
+                          boost::shared_ptr< InitSenderCommon >
+                          ( new InitSenderCommonV8( params.M_transport,
+                                                    params.M_serializer,
+                                                    params.M_stadium,
+                                                    999,  // accept all parameters
+                                                    true ) ) ) // new line
 {
     // The version of the common sender has to be "8".
     // The client version is set to "999" in order to send all parameters.
 }
 
 InitSenderLoggerV4::InitSenderLoggerV4( const Params & params,
-                                          const boost::shared_ptr< InitSenderCommon > common )
+                                        const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderLoggerV3( params, common )
 {
 
@@ -415,6 +415,47 @@ InitSenderLoggerV4::sendTeam()
     transport() << std::endl;
 }
 
+
+/*
+//===================================================================
+//
+//  InitSenderLoggerV5
+//
+//===================================================================
+*/
+
+InitSenderLoggerV5::InitSenderLoggerV5( const Params & params )
+    : InitSenderLoggerV4( params,
+                          boost::shared_ptr< InitSenderCommon >
+                          ( new InitSenderCommonV8( params.M_transport,
+                                                    params.M_serializer,
+                                                    params.M_stadium,
+                                                    999,  // accept all parameters
+                                                    true ) ) ) // new line
+{
+    // The version of the common sender has to be "8".
+    // The client version is set to "999" in order to send all parameters.
+}
+
+InitSenderLoggerV5::InitSenderLoggerV5( const Params & params,
+                                        const boost::shared_ptr< InitSenderCommon > common )
+    : InitSenderLoggerV4( params, common )
+{
+
+}
+
+InitSenderLoggerV5::~InitSenderLoggerV5()
+{
+
+}
+
+void
+InitSenderLoggerV5::sendHeader()
+{
+    transport() << "ULG5" << std::endl;
+}
+
+
 namespace initsender {
 
 template< typename Sender >
@@ -424,10 +465,11 @@ create( const InitSenderLogger::Params & params )
     return InitSenderLogger::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vl1 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV1 >, 1 );
-lib::RegHolder vl2 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV2 >, 2 );
-lib::RegHolder vl3 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV3 >, 3 );
-lib::RegHolder vl4 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV4 >, 4 );
-
+RegHolder vl1 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV1 >, 1 );
+RegHolder vl2 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV2 >, 2 );
+RegHolder vl3 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV3 >, 3 );
+RegHolder vl4 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV4 >, 4 );
+RegHolder vl5 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV5 >, 5 );
 }
+
 }

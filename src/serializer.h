@@ -19,16 +19,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _SERIALIZER_H_
-#define _SERIALIZER_H_
+#ifndef RCSS_SERIALIZER_H
+#define RCSS_SERIALIZER_H
 
 #include "types.h"
 
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 #include <iostream>
 
 class PVector;
+class Player;
 
 namespace rcss {
 
@@ -45,10 +46,10 @@ protected:
     ~SerializerCommon();
 public:
     typedef const SerializerCommon & (*Creator)();
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     virtual
     void serializeServerParamBegin( std::ostream & ) const
@@ -238,10 +239,10 @@ class SerializerPlayer
     : public Serializer {
 public:
     typedef const SerializerPlayer* (*Creator)();
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
 protected:
     SerializerPlayer( const SerializerCommon & common );
@@ -345,7 +346,7 @@ public:
                                 const int dir,
                                 const double & dist_chg,
                                 const double & dir_chg,
-                                const double & body_dir ) const
+                                const int body_dir ) const
       {
           strm << " (" << name << ' ' << dist << ' ' << dir
                << ' ' << dist_chg << ' ' << dir_chg
@@ -359,8 +360,8 @@ public:
                                 const int dir,
                                 const double & dist_chg,
                                 const double & dir_chg,
-                                const double & body_dir,
-                                const double & head_dir ) const
+                                const int body_dir,
+                                const int head_dir ) const
       {
           strm << " (" << name << ' ' << dist << ' ' << dir
                << ' ' << dist_chg << ' ' << dir_chg
@@ -432,6 +433,50 @@ public:
           strm << ')';
       }
 
+
+    virtual
+    void serializeVisualPlayer( std::ostream &, /* strm */
+                                const Player &, /* player */
+                                const std::string &, /* name */
+                                const double &, /* dist */
+                                const int /* dir */ ) const
+      { }
+
+    virtual
+    void serializeVisualPlayer( std::ostream &, /* strm */
+                                const Player &, /* player */
+                                const std::string &, /* name */
+                                const double &, /* dist */
+                                const int, /* dir */
+                                const int /* point_dir */ ) const
+      { }
+
+    virtual
+    void serializeVisualPlayer( std::ostream &, /* strm */
+                                const Player &, /* player */
+                                const std::string &, /* name */
+                                const double &, /* dist */
+                                const int, /* dir */
+                                const double &, /* dist_chg */
+                                const double &, /* dir_chg */
+                                const int, /* body_dir */
+                                const int /* head_dir */ ) const
+      { }
+
+    virtual
+    void serializeVisualPlayer( std::ostream &, /* strm */
+                                const Player &, /* player */
+                                const std::string &, /* name */
+                                const double &, /* dist */
+                                const int, /* dir */
+                                const double &, /* dist_chg */
+                                const double &, /* dir_chg */
+                                const int, /* body_dir */
+                                const int, /* head_dir */
+                                const int /* point_dir */ ) const
+      { }
+
+
     virtual
     void serializeBodyBegin( std::ostream &,
                              const int ) const
@@ -449,8 +494,9 @@ public:
 
     virtual
     void serializeBodyStamina( std::ostream &,
-                               const double &,
-                               const double & ) const
+                               const double & /* stamina*/ ,
+                               const double & /* effort */,
+                               const double & /* stamina_capacity */ ) const
       { }
 
     virtual
@@ -593,10 +639,20 @@ public:
       { }
 
     virtual
-    void serializeFSPlayerEnd( std::ostream &,
-                               const double &,
-                               const double &,
-                               const double & ) const
+    void serializeFSPlayerStamina( std::ostream &,
+                                   const double & /*stamina*/ ,
+                                   const double & /*effort*/ ,
+                                   const double & /*recovery*/ ,
+                                   const double & /*stamina_capacity*/ ) const
+      { }
+
+    virtual
+    void serializeFSPlayerState( std::ostream &,
+                                 const Player & ) const
+      { }
+
+    virtual
+    void serializeFSPlayerEnd( std::ostream & ) const
       { }
 
     virtual
@@ -648,10 +704,10 @@ class SerializerCoach
     : public Serializer {
 public:
     typedef const rcss::SerializerCoach* (*Creator)();
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
 protected:
     SerializerCoach( const SerializerCommon & common );
@@ -749,6 +805,29 @@ public:
                                 const bool ) const
       { }
 
+
+    virtual
+    void serializeVisualPlayer( std::ostream &,
+                                const Player &,
+                                const std::string &,
+                                const PVector &,
+                                const PVector &,
+                                const int,
+                                const int ) const
+      { }
+
+    virtual
+    void serializeVisualPlayer( std::ostream &,
+                                const Player &,
+                                const std::string &,
+                                const PVector &,
+                                const PVector &,
+                                const int,
+                                const int,
+                                const int ) const
+      { }
+
+
     virtual
     void serializeOKEye( std::ostream &,
                          const bool ) const
@@ -762,7 +841,7 @@ class SerializerOnlineCoach
     : public Serializer {
 public:
     typedef const rcss::SerializerOnlineCoach* (*Creator)();
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
 private:
 
@@ -771,7 +850,7 @@ private:
 public:
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
 protected:
 
@@ -897,6 +976,43 @@ public:
                                                    body, neck, point_dir,
                                                    tackling );
       }
+
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const PVector & pos,
+                                const PVector & vel,
+                                const int body,
+                                const int neck ) const
+      {
+          coachSerializer().serializeVisualPlayer( strm,
+                                                   player,
+                                                   name,
+                                                   pos,
+                                                   vel,
+                                                   body,
+                                                   neck );
+      }
+
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const PVector & pos,
+                                const PVector & vel,
+                                const int body,
+                                const int neck,
+                                const int point_dir ) const
+      {
+          coachSerializer().serializeVisualPlayer( strm,
+                                                   player,
+                                                   name,
+                                                   pos,
+                                                   vel,
+                                                   body,
+                                                   neck,
+                                                   point_dir );
+      }
+
 
 };
 

@@ -28,7 +28,7 @@
 #include "player.h"
 #include "random.h"
 
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 class Stadium;
 
@@ -83,10 +83,10 @@ private:
 public:
     typedef std::auto_ptr< VisualSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const VisualSenderPlayer::Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     VisualSenderPlayer( const Params & params );
 
@@ -408,6 +408,7 @@ public:
 protected:
     virtual
     void serializePlayer( const Player & player,
+                          const std::string & name,
                           const double & dist,
                           const int dir,
                           const double & dist_chg,
@@ -445,6 +446,7 @@ public:
 protected:
     virtual
     void serializePlayer( const Player & player,
+                          const std::string & name,
                           const double & dist,
                           const int dir,
                           const double & dist_chg,
@@ -580,6 +582,28 @@ protected:
                           const std::string & name,
                           const double & dist,
                           const int dir );
+};
+
+
+/*!
+//===================================================================
+//
+//  CLASS: VisualSensorPlayerV13
+//
+//  DESC: Class for the version 13 visual protocol.  This version
+//        introduced observation of the kicking state of other players.
+//
+//===================================================================
+*/
+
+class VisualSenderPlayerV13
+    : public VisualSenderPlayerV8 {
+public:
+    VisualSenderPlayerV13( const Params & params );
+
+    virtual
+    ~VisualSenderPlayerV13();
+
 };
 
 }

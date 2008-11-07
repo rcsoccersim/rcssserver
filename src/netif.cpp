@@ -261,13 +261,12 @@ Stadium::parseMonitorInit( const char * message,
             return true;
         }
 
-        //if ( ver < 1.0 || 3.0 <= ver )
-        if ( ver < 1.0 || 4.0 <= ver )
-        {
-            std::cout << "Unsupported monitor protocol version. " << ver
-                      << std::endl;
-            return true;
-        }
+//         if ( ver < 1.0 || 5.0 <= ver )
+//         {
+//             std::cout << "Unsupported monitor protocol version. " << ver
+//                       << std::endl;
+//             return true;
+//         }
 
         // a new monitor connected
         Monitor * mon = new Monitor( *this, ver );
@@ -277,6 +276,7 @@ Stadium::parseMonitorInit( const char * message,
             delete mon;
             return true;
         }
+
         if ( ! mon->setSenders() )
         {
             delete mon;

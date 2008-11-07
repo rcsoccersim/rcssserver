@@ -114,7 +114,6 @@ SerializerCommonStdv7::serializeParam( std::ostream & strm,
 }
 
 namespace {
-
 const
 SerializerCommon &
 create()
@@ -122,7 +121,7 @@ create()
     return SerializerCommonStdv7::instance();
 }
 
-lib::RegHolder v7 = SerializerCommon::factory().autoReg( &create, 7 );
-
+RegHolder v7 = SerializerCommon::factory().autoReg( &create, 7 );
 }
+
 }

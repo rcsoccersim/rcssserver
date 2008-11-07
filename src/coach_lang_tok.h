@@ -26,12 +26,12 @@
 #include "arithop.h"
 #include "clangutil.h"
 
-#include <rcssbase/rcssbaseconfig.hpp>
 #include <cstring>
 
 #undef yyFlexLexer
 #define yyFlexLexer RCSSCLangFLexLexer
-#include <rcssbase/FlexLexer.h>
+//#include <rcssbase/FlexLexer.h>
+#include <FlexLexer.h>
 
 #define CLANG_MAX_STR 8192
 

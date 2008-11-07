@@ -468,9 +468,10 @@ TimeRef::analyse()
     /* if a value of half_time is negative, then ignore time. */
     if ( param.halfTime() > 0 )
     {
-        int maximum_time = ( param.halfTime() * param.nrNormalHalfs()
-                             + param.extraHalfTime() * param.nrExtraHalfs() );
         int normal_time = param.halfTime() * param.nrNormalHalfs();
+        int maximum_time
+            = normal_time
+            + param.extraHalfTime() * param.nrExtraHalfs();
         int extra_count = s_half_time_count - param.nrNormalHalfs();
 
         /* check for penalty shoot-outs, half_time and extra_time. */

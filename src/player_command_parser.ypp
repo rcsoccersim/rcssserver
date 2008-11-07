@@ -151,6 +151,10 @@ command : dash_com
 dash_com : RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number RCSS_PCOM_RP
            {
 	       BUILDER.dash( $3.m_double );
+           }
+           | RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number floating_point_number RCSS_PCOM_RP
+           {
+	       BUILDER.dash( $3.m_double, $4.m_double );
            } ;
 
 turn_com : RCSS_PCOM_LP RCSS_PCOM_TURN floating_point_number RCSS_PCOM_RP

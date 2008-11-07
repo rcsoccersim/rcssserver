@@ -75,10 +75,10 @@ DispSender::~DispSender()
 //===================================================================
 */
 
-DispSenderMonitor::Factory &
+DispSenderMonitor::FactoryHolder &
 DispSenderMonitor::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -93,7 +93,7 @@ DispSenderMonitor::DispSenderMonitor( const Params & params )
 
 DispSenderMonitor::~DispSenderMonitor()
 {
-
+    //std::cerr << "delete DispSenderMonitor" << std::endl;
 }
 
 
@@ -423,7 +423,7 @@ DispSenderMonitorV3::sendShow()
     message.erase();
 
     //
-    // creage new data
+    // create new data
     //
 
     std::ostringstream ostr;
@@ -470,6 +470,95 @@ DispSenderMonitorV3::sendMsg()
 /*!
 //===================================================================
 //
+//  CLASS: DispSenderMonitorV4
+//
+//  DESC: version 4 of display protocol.
+//
+//===================================================================
+*/
+
+DispSenderMonitorV4::DispSenderMonitorV4( const Params & params )
+    : DispSenderMonitorV3( params )
+{
+
+}
+
+DispSenderMonitorV4::~DispSenderMonitorV4()
+{
+
+}
+
+void
+DispSenderMonitorV4::sendShow()
+{
+    static std::string message;
+    static int last_sent_time = -1;
+    static int last_sent_stoppage_time = -1;
+
+    //
+    // send cached data
+    //
+
+    if ( stadium().time() == last_sent_time
+         && stadium().stoppageTime() == last_sent_stoppage_time )
+    {
+        transport() << message << std::ends << std::flush;
+        return;
+    }
+
+    last_sent_time = stadium().time();
+    last_sent_stoppage_time = stadium().stoppageTime();
+
+    message.erase();
+
+    //
+    // create new data
+    //
+
+    std::ostringstream ostr;
+
+    serializer().serializeShowBegin( ostr,
+                                     stadium().time() );
+    serializer().serializePlayModeId( ostr,
+                                      stadium().playmode() );
+    serializer().serializeScore( ostr,
+                                 stadium().teamLeft(),
+                                 stadium().teamRight() );
+
+    serializer().serializeBall( ostr,
+                                stadium().ball() );
+
+    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
+    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
+          p != end;
+          ++p )
+    {
+        serializer().serializePlayerBegin( ostr, **p );
+        serializer().serializePlayerPos( ostr, **p );
+        serializer().serializePlayerArm( ostr, **p );
+        serializer().serializePlayerViewMode( ostr, **p );
+        serializer().serializePlayerStamina( ostr, **p );
+        serializer().serializePlayerFocus( ostr, **p );
+        serializer().serializePlayerCounts( ostr, **p );
+        serializer().serializePlayerEnd( ostr );
+    }
+
+    serializer().serializeShowEnd( ostr );
+
+    message = ostr.str();
+    transport() << message << std::ends << std::flush;
+}
+
+void
+DispSenderMonitorV4::sendMsg()
+{
+
+}
+
+
+/*!
+//===================================================================
+//
 //  CLASS: DispSenderLogger
 //
 //  DESC: Base class for the display protocol for logger.
@@ -477,10 +566,10 @@ DispSenderMonitorV3::sendMsg()
 //===================================================================
 */
 
-DispSenderLogger::Factory &
+DispSenderLogger::FactoryHolder &
 DispSenderLogger::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -495,7 +584,7 @@ DispSenderLogger::DispSenderLogger( const Params & params )
 
 DispSenderLogger::~DispSenderLogger()
 {
-
+    //std::cerr << "delete DispSenderLogger" << std::endl;
 }
 
 
@@ -815,6 +904,40 @@ DispSenderLoggerV4::sendMsg()
 }
 
 
+// /*!
+// //===================================================================
+// //
+// //  CLASS: DispSenderLoggerV5
+// //
+// //  DESC: version 5 log format
+// //
+// //===================================================================
+// */
+
+// DispSenderLoggerV5::DispSenderLoggerV5( const Params & params )
+//     : DispSenderLoggerV4( params )
+// {
+
+// }
+
+// DispSenderLoggerV5::~DispSenderLoggerV5()
+// {
+
+// }
+
+// void
+// DispSenderLoggerV5::sendShow()
+// {
+//     DispSenderLoggerV4::sendShow();
+// }
+
+// void
+// DispSenderLoggerV4::sendMsg()
+// {
+
+// }
+
+
 namespace dispsender {
 
 template< typename Sender >
@@ -824,9 +947,10 @@ create( const DispSenderMonitor::Params & params )
     return DispSenderMonitor::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV1 >, 1 );
-lib::RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
-lib::RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
+RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV1 >, 1 );
+RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
+RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
+RegHolder vm4 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV4 >, 4 );
 
 
 template< typename Sender >
@@ -836,10 +960,11 @@ create( const DispSenderLogger::Params & params )
     return DispSenderLogger::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vl1 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV1 >, 1 );
-lib::RegHolder vl2 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV2 >, 2 );
-lib::RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 3 );
-lib::RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 4 );
+RegHolder vl1 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV1 >, 1 );
+RegHolder vl2 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV2 >, 2 );
+RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 3 );
+RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 4 );
+RegHolder vl5 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 5 );
 
 }
 }

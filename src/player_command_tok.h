@@ -19,16 +19,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef _PCOMLEXER_H_
-#define _PCOMLEXER_H_
+#ifndef RCSS_PCOMLEXER_H
+#define RCSS_PCOMLEXER_H
 
 #include "pcombuilder.h"
 
-#include <rcssbase/rcssbaseconfig.hpp>
 
 #undef yyFlexLexer
 #define yyFlexLexer RCSSPComFlexLexer
-#include <rcssbase/FlexLexer.h>
+//#include <rcssbase/FlexLexer.h>
+#include <FlexLexer.h>
 
 class RCSSPComLexer
     : public RCSSPComFlexLexer {

@@ -99,6 +99,26 @@ public:
                                 const int neck ) const;
 
     virtual
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const PVector & pos,
+                                const PVector & vel,
+                                const int body,
+                                const int neck ) const;
+
+    virtual
+    void serializeVisualPlayer( std::ostream & strm,
+                                const Player & player,
+                                const std::string & name,
+                                const PVector & pos,
+                                const PVector & vel,
+                                const int body,
+                                const int neck,
+                                const int point_dir ) const;
+
+
+    virtual
     void serializeOKEye( std::ostream & strm,
                          const bool on ) const;
 };

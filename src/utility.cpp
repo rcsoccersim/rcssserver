@@ -95,7 +95,7 @@ lcm( int a, int b )
     do {
         ++idx;
         tmp = larger * idx;
-    } while (tmp % a != 0 || tmp % b != 0);
+    } while ( tmp % a != 0 || tmp % b != 0 );
     return tmp;
 }
 

@@ -48,10 +48,10 @@ namespace rcss {
 //===================================================================
 */
 
-InitSenderMonitor::Factory &
+InitSenderMonitor::FactoryHolder &
 InitSenderMonitor::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -311,9 +311,10 @@ create( const InitSenderMonitor::Params & params )
     return InitSenderMonitor::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder v1 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV1 >, 1 );
-lib::RegHolder v2 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV2 >, 2 );
-lib::RegHolder v3 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 3 );
-
+RegHolder v1 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV1 >, 1 );
+RegHolder v2 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV2 >, 2 );
+RegHolder v3 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 3 );
+RegHolder v4 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 4 );
 }
+
 }

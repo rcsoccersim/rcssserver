@@ -25,6 +25,8 @@
 
 #include "initsender.h"
 
+#include <rcssbase/factory.hpp>
+
 class Player;
 
 namespace rcss {
@@ -65,10 +67,10 @@ public:
 public:
     typedef std::auto_ptr< InitSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     virtual
     ~InitSenderPlayer();

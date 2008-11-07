@@ -237,6 +237,7 @@ StandardTimer::run()
         q_sbt = ServerParam::instance().lcmStep() / ServerParam::instance().senseBodyStep(),
         q_svt = ServerParam::instance().lcmStep() / ServerParam::instance().coachVisualStep();
     int c_synch_see = 1;
+    bool sent_synch_see = false;
 
     // create a timer that will be called every TIMEDELTA msec. Each time
     // this timer is called, lcmt is raised and it is checked which message
@@ -269,7 +270,7 @@ StandardTimer::run()
 
         if ( lcmt >= ServerParam::instance().simStep() * c_simt )
         {
-            c_simt = (int)floor( lcmt / ServerParam::instance().simStep() );
+            c_simt = static_cast< int >( std::floor( lcmt / ServerParam::instance().simStep() ) );
             lcmt = ServerParam::instance().simStep() * c_simt;
             // the above lines are needed to
             // prevent short "catch up" cycles if
@@ -280,7 +281,7 @@ StandardTimer::run()
         if ( lcmt >= ServerParam::instance().recvStep() * c_rect )
         {
             getTimeableRef().recvFromClients();
-            c_rect = (int)floor( lcmt / ServerParam::instance().recvStep() );
+            c_rect = static_cast< int >( std::floor( lcmt / ServerParam::instance().recvStep() ) );
             if ( q_rect <= c_rect )
                 c_rect = 1;
             else
@@ -295,14 +296,15 @@ StandardTimer::run()
                 c_simt = 1;
             else
                 c_simt++;
+            sent_synch_see = false;
         }
 
         // send sense body
         if ( lcmt >= ServerParam::instance().senseBodyStep() * c_sbt )
         {
             getTimeableRef().sendSenseBody();
-            c_sbt = (int) (floor (lcmt / ServerParam::instance().senseBodyStep() ) );
-            if (q_sbt <= c_sbt)
+            c_sbt = static_cast< int >( std::floor( lcmt / ServerParam::instance().senseBodyStep() ) );
+            if ( q_sbt <= c_sbt )
                 c_sbt = 1;
             else
                 c_sbt++;
@@ -312,7 +314,7 @@ StandardTimer::run()
         if ( lcmt >= ( ServerParam::instance().sendStep() * 0.25 ) * c_sent )
         {
             getTimeableRef().sendVisuals();
-            c_sent = (int)floor( lcmt/(ServerParam::instance().sendStep() * 0.25 ) );
+            c_sent = static_cast< int >( std::floor( lcmt/(ServerParam::instance().sendStep() * 0.25 ) ) );
             if ( q_sent <= c_sent )
                 c_sent = 1;
             else
@@ -320,18 +322,21 @@ StandardTimer::run()
         }
 
         // send synch visual message
-        if ( lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
-                       + ServerParam::instance().synchSeeOffset() ) )
+        if ( ! sent_synch_see
+             && lcmt >= ( ServerParam::instance().simStep() * ( c_synch_see - 1 )
+                          + ServerParam::instance().synchSeeOffset() ) )
         {
+            //std::cerr << "lcmt=" << lcmt << "  c_synch_see=" << c_synch_see << '\n';
             getTimeableRef().sendSynchVisuals();
             ++c_synch_see;
+            sent_synch_see = true;
         }
 
         // send coach look messages
         if ( lcmt >= ServerParam::instance().coachVisualStep() * c_svt )
         {
             getTimeableRef().sendCoachMessages();
-            c_svt = (int)floor( lcmt / ServerParam::instance().coachVisualStep() );
+            c_svt = static_cast< int >( std::floor( lcmt / ServerParam::instance().coachVisualStep() ) );
             if ( q_svt <= c_svt )
                 c_svt = 1;
             else
@@ -350,26 +355,3 @@ StandardTimer::run()
 #endif
     getTimeableRef().quit();
 }
-
-
-// StandardTimer::Ptr
-// StandardTimer::create( Timeable& t)
-// {
-//     return Ptr( &instance( t ),
-//                 &destroy,
-//                 rcss::lib::Loader::loadFromCache( "librcssstdtimer" ) );
-// }
-
-// RCSSLIB_INIT( librcssstdtimer )
-// {
-//     //printf("reg stdtimer\n");
-//     Timer::factory().reg( &StandardTimer::create, "std" );
-//     return true;
-// }
-
-
-// RCSSLIB_FIN( librcssstdtimer )
-// {
-//     //printf("dereg stdtimer\n");
-//     Timer::factory().dereg( "std" );
-// }

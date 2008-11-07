@@ -100,18 +100,17 @@ SerializerOnlineCoachStdv1::serializeChangedPlayer( std::ostream &,
 }
 
 namespace {
-
 const SerializerOnlineCoach *
 create()
 {
     return SerializerOnlineCoachStdv1::instance();
 }
 
-lib::RegHolder v1 = SerializerOnlineCoach::factory().autoReg( &create, 1 );
-lib::RegHolder v2 = SerializerOnlineCoach::factory().autoReg( &create, 2 );
-lib::RegHolder v3 = SerializerOnlineCoach::factory().autoReg( &create, 3 );
-lib::RegHolder v4 = SerializerOnlineCoach::factory().autoReg( &create, 4 );
-lib::RegHolder v5 = SerializerOnlineCoach::factory().autoReg( &create, 5 );
-
+RegHolder v1 = SerializerOnlineCoach::factory().autoReg( &create, 1 );
+RegHolder v2 = SerializerOnlineCoach::factory().autoReg( &create, 2 );
+RegHolder v3 = SerializerOnlineCoach::factory().autoReg( &create, 3 );
+RegHolder v4 = SerializerOnlineCoach::factory().autoReg( &create, 4 );
+RegHolder v5 = SerializerOnlineCoach::factory().autoReg( &create, 5 );
 }
+
 }

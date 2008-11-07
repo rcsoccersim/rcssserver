@@ -31,14 +31,14 @@
 #ifndef RCSSSERVR_PLAYER_PARAM_H
 #define RCSSSERVR_PLAYER_PARAM_H
 
-#include "rcssserverconfig.hpp"
-
 #include "utility.h"
 #include "types.h"
 
 #include <rcssbase/conf/builder.hpp>
+
 #include <boost/shared_ptr.hpp>
 
+#include <string>
 #include <map>
 
 class PlayerParam {
@@ -47,29 +47,28 @@ public:
 
 private:
 
-    PlayerParam( const PlayerParam& ); // not used
+    PlayerParam(); // not used
+    PlayerParam( const PlayerParam & ); // not used
+    PlayerParam & operator=( PlayerParam & ); // not used
 
 protected:
 
-    RCSSSERVER_API
-    PlayerParam( rcss::conf::Builder* parent );
+    explicit
+    PlayerParam( rcss::conf::Builder * parent );
 
 public:
 
-    RCSSSERVER_API
-    virtual ~PlayerParam ();
+    virtual
+    ~PlayerParam();
 
-    RCSSSERVER_API
     static
     PlayerParam & instance();
 
-    RCSSSERVER_API
     static
-    PlayerParam & instance( rcss::conf::Builder* parent );
+    PlayerParam & instance( rcss::conf::Builder * parent );
 
-    RCSSSERVER_API
     static
-    bool init( rcss::conf::Builder* parent );
+    bool init( rcss::conf::Builder * parent );
 
 protected:
 
@@ -88,6 +87,10 @@ public:
 
 protected:
 
+    void convertOldConf( const std::string & new_conf );
+
+    void setDefaults();
+
     template< typename P >
     void addParam( const std::string & name,
                    P & param,
@@ -100,8 +103,6 @@ protected:
                    const G & getter,
                    const std::string & desc,
                    int version );
-
-    void setDefaults();
 
 public:
 
@@ -156,8 +157,9 @@ public:
 
 
 private:
-    static const char OLD_PLAYER_CONF[];
-    static const char PLAYER_CONF[];
+    static const std::string CONF_DIR;
+    static const std::string PLAYER_CONF;
+    static const std::string OLD_PLAYER_CONF;
 
     static const int DEFAULT_PLAYER_TYPES;
     static const int DEFAULT_SUBS_MAX;

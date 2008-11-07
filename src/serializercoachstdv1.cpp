@@ -148,11 +148,11 @@ SerializerCoachStdv1::serializeVisualObject( std::ostream & strm,
 
 void
 SerializerCoachStdv1::serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const PVector & pos,
-                                const PVector & vel,
-                                const int body,
-                                const int neck ) const
+                                             const std::string & name,
+                                             const PVector & pos,
+                                             const PVector & vel,
+                                             const int body,
+                                             const int neck ) const
 {
     strm << " (" << name
          << ' ' << pos.x << ' ' << pos.y
@@ -161,6 +161,43 @@ SerializerCoachStdv1::serializeVisualObject( std::ostream & strm,
          << ' ' << vel.x << ' ' << vel.y
          << ')';
 }
+
+
+void
+SerializerCoachStdv1::serializeVisualPlayer( std::ostream & strm,
+                                             const Player & /*player*/ ,
+                                             const std::string & name,
+                                             const PVector & pos,
+                                             const PVector & vel,
+                                             const int body,
+                                             const int neck ) const
+{
+    strm << " (" << name
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << body
+         << ' ' << neck
+         << ' ' << vel.x << ' ' << vel.y
+         << ')';
+}
+
+ void
+ SerializerCoachStdv1::serializeVisualPlayer( std::ostream & strm,
+                                              const Player & /*player*/ ,
+                                              const std::string & name,
+                                              const PVector & pos,
+                                              const PVector & vel,
+                                              const int body,
+                                              const int neck,
+                                              const int /*point_dir*/ ) const
+ {
+     strm << " (" << name
+          << ' ' << pos.x << ' ' << pos.y
+          << ' ' << body
+          << ' ' << neck
+          << ' ' << vel.x << ' ' << vel.y
+          << ')';
+ }
+
 
 void
 SerializerCoachStdv1::serializeOKEye( std::ostream & strm,
@@ -181,12 +218,12 @@ create()
     return SerializerCoachStdv1::instance();
 }
 
-lib::RegHolder v1 = SerializerCoach::factory().autoReg( &create, 1 );
-lib::RegHolder v2 = SerializerCoach::factory().autoReg( &create, 2 );
-lib::RegHolder v3 = SerializerCoach::factory().autoReg( &create, 3 );
-lib::RegHolder v4 = SerializerCoach::factory().autoReg( &create, 4 );
-lib::RegHolder v5 = SerializerCoach::factory().autoReg( &create, 5 );
-lib::RegHolder v6 = SerializerCoach::factory().autoReg( &create, 6 );
-
+RegHolder v1 = SerializerCoach::factory().autoReg( &create, 1 );
+RegHolder v2 = SerializerCoach::factory().autoReg( &create, 2 );
+RegHolder v3 = SerializerCoach::factory().autoReg( &create, 3 );
+RegHolder v4 = SerializerCoach::factory().autoReg( &create, 4 );
+RegHolder v5 = SerializerCoach::factory().autoReg( &create, 5 );
+RegHolder v6 = SerializerCoach::factory().autoReg( &create, 6 );
 }
+
 }

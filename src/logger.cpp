@@ -98,6 +98,9 @@ Logger::setSenders()
     int log_version = ServerParam::instance().gameLogVersion();
     int monitor_version = 3;
     switch ( log_version ) {
+    case REC_VERSION_5:
+        monitor_version = 4;
+        break;
     case REC_VERSION_4:
         monitor_version = 3;
         break;
@@ -109,7 +112,8 @@ Logger::setSenders()
         monitor_version = 1;
         break;
     default:
-        return false;
+        monitor_version = log_version - 1;
+        break;
     }
 
     rcss::SerializerMonitor::Creator ser_cre;
@@ -620,7 +624,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
         return;
     }
 
-    if ( ServerParam::instance().gameLogVersion() == REC_VERSION_4 )
+    if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_4 )
     {
         if ( compulsion
              || ServerParam::instance().recordMessages() )

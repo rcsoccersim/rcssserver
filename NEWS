@@ -1,3 +1,142 @@
+[13.0.0]
+  * RCSSBase is now integrated into RCSSServer. It is not necessary
+    for you to install RCSSBase before the RCSSServer installation.
+
+  * New parameters:
+    - server::stamina_capacity (default value: 148600.0)
+    - server::max_dash_angle (default value: 180.0)
+    - server::min_dash_angle (default value: -180.0)
+    - server::dash_angle_step (default value: 90.0)
+    - server::side_dash_rate (default value: 0.25)
+    - server::back_dash_rate (default value: 0.5)
+    - server::max_dash_power (default value: 100.0)
+    - server::min_dash_power (default value: -100.0)
+
+  * Changed parameters:
+    - server::stamina_max (4000 -> 8000)
+    - server::max_back_tackle_power (50.0 -> 0.0)
+    - server::extra_half_time (300 -> 100)
+    - server::player_speed_max (1.2 -> 1.05)
+    - server::player_speed_max_min (0.8 -> 0.75)
+    - server::extra_stamina (0.0 -> 50.0)
+    - player::player_decay_delta_min (-0.05 -> -0.1)
+    - player::extra_stamina_delta_max (100.0 -> 50.0)
+    - player::effort_mix_delta_factor (-0.002 -> -0.004)
+    - player::effort_man_delta_factor (-0.002 -> -0.004)
+    - player::new_dash_power_rate_delta_min (-0.0005 -> -0.0012)
+    - player::new_dash_power_rate_delta_max (0.0015 -> 0.0008)
+
+  * Changed a stamina model. The new parameter
+    server::stamina_capacity defines the maximum recovery capacity for
+    each player. When player's stamina is recovered during the game,
+    his stamina capacity is also consumed. If the player's stamina
+    capacity becomes 0, his stamina is never recovered and he can use
+    only his extra stamina. The recovery policy of the stamina
+    capacity is as follows:
+
+     - normal halves
+       The stamina capacity is reset to the initial value just after
+       the kick off as well as the other stamina related variables.
+
+     - extra halves and penalty shootouts
+       The stamina capacity is reset to the initial value just after
+       normal halves if the game is not over, but is never recovered
+       at the half time and before the penalty shootouts.
+
+    If server::stamina_capacity is set to a negative value, players
+    have an infinite stamina capacity. This setting makes the new
+    stamina model completely same as the old stamina model.
+
+  * Changed a dash model. Players can now add the dash direction as
+    the second argument of his dash command:
+
+      `(dash <power> <dir>)'
+
+    The dash direction is relative to player's body angle (or reverse
+    side angle if dash power is negative value) and is restricted
+    within [server::min_dash_angle,server::max_dash_angle]. The dash
+    power effectiveness is affected by the magnitude of dash
+    angle. Players can dash in direction of their body (or reverse
+    side angle if dash power is negative) using 100% of power, in
+    backward with server::back_dash_rate(0.5) of power and in sideward
+    with server::side_dash_rate(0.25) of power. The dash power
+    effectiveness will increase between sides and body direction from
+    server::side_dash_rate(0.25) to 1.0 and between sides and backward
+    from server::side_dash_rate(0.25) to server::back_dash_rate(0.5).
+
+    dir_rate = ( fabs( dir ) > 90.0
+                 ? back_dash_rate - ( back_dash_rate - side_dash_rate )
+                                      * ( 1.0 - ( fabs( dir ) - 90.0 ) / 90.0 )
+                 : side_dash_rate + ( 1.0 - side_dash_rate )
+                                      * ( 1.0 - fabs( dir ) / 90.0 ) );
+
+    Please note that server::min_dash_power will be set to 0 in the
+    future simulator (v14 or later). This means the negative dash
+    power will be forbidden completely.
+
+    In order to balance with older binaries and to enable flexible
+    settings, server::dash_angle_step parameter has been
+    introduced. This parameter defines the discreteness of player's
+    dash direction. If server::dash_angle_step is 90.0, players can
+    dash only in four directions (forward, backward and two
+    sidewards).
+
+  * Changed heterogeneous player parameters. Now, heterogeneous
+    players' dash speed become slower.
+
+  * Forbad a backward tackle. Now, server::max_back_tackle_power is
+    set to 0. This means the tackle command directed to 180.0 degree
+    has no effect.
+
+  * Changed a overtime length. Now, the default overtime length
+    is set to 1000 cycles.
+
+  * Supported a protocol version 13.
+
+    - All new parameters are sent to v.13 or later clients.
+
+    - server::extra_half_time parameter is now sent to v.13 or later
+      clients.
+
+    - Version 13+ players and coaches can see players' kicking state.
+
+      When players can see another players team, they can also see if
+      that player is kicking via a `k' flag as follows:
+
+        `((p "<TEAMNAME>" <UNUM>) <DIST> <DIR> <DISTCHG> <DIRCHG>
+                                 <BDIR> <HDIR> [<POINTDIR>] [{t|k}])'
+
+        `((p "<TEAMNAME>") <DIST> <DIR> [<POINTDIR>] [{t|k}])'
+
+      Coach visuals now can indicate if a player is kickingvia a `k'
+      flag as follows:
+
+        `((p "<TEAMNAME>" <UNUM>) <X> <Y> <VEL_X> <VEL_Y> <ANGLE>
+                                  <NECK_ANGLE> [<ARM_DIR>] [{t|k}])'
+
+      If an observed player is tackling, the kicking flag is always
+      overwritten by the tackle flag.
+
+      Please note that the kicking state can be seen within one cycle
+      just after kicking.
+
+    - The stamina capacity information is added to sense_body message
+      as follows:
+
+        `(stamina <STAMINA> <EFFORT> <CAPACITY>)`
+
+  * Supported a monitor protocol version 4 and a game log format
+    version 5. In these versions, players' stamina capacity
+    information are contained in each player data. Now, these versions
+    are used by default.
+
+  * Now, stoppage time information is recorded in the text log(.rcl)
+    files.
+
+  * Supported the environment variable RCSS_CONF_DIR. With this
+    variable, you can specify the default location of configuration
+    files.
+
 [12.1.4]
   * Fixed library dependencies and a problem in 64bit platforms.
     Thanks go to hedayat Vatankhah for providing the patches.

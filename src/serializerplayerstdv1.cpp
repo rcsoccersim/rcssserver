@@ -138,7 +138,8 @@ SerializerPlayerStdv1::serializeBodyViewMode( std::ostream & strm,
 void
 SerializerPlayerStdv1::serializeBodyStamina( std::ostream & strm,
                                              const double & stamina,
-                                             const double & effort ) const
+                                             const double & effort,
+                                             const double & /*stamina_capacity*/ ) const
 {
     strm << " (stamina " << stamina << ' ' << effort << ')';
 }
@@ -364,15 +365,21 @@ SerializerPlayerStdv1::serializeFSPlayerBegin( std::ostream & strm,
 }
 
 void
-SerializerPlayerStdv1::serializeFSPlayerEnd( std::ostream & strm,
-                                             const double & stamina,
-                                             const double & effort,
-                                             const double & recovery ) const
+SerializerPlayerStdv1::serializeFSPlayerStamina( std::ostream & strm,
+                                                 const double & stamina,
+                                                 const double & effort,
+                                                 const double & recovery,
+                                                 const double & /*stamina_capacity*/ ) const
 {
     strm << ' ' << stamina
          << ' ' << effort
-         << ' ' << recovery
-         << ')';
+         << ' ' << recovery;
+}
+
+void
+SerializerPlayerStdv1::serializeFSPlayerEnd( std::ostream & strm ) const
+{
+    strm << ')';
 }
 
 
@@ -420,7 +427,6 @@ SerializerPlayerStdv1::serializeScore( std::ostream & strm,
 }
 
 namespace {
-
 const
 SerializerPlayer *
 create()
@@ -428,12 +434,12 @@ create()
     return SerializerPlayerStdv1::instance();
 }
 
-lib::RegHolder v1 = SerializerPlayer::factory().autoReg( &create, 1 );
-lib::RegHolder v2 = SerializerPlayer::factory().autoReg( &create, 2 );
-lib::RegHolder v3 = SerializerPlayer::factory().autoReg( &create, 3 );
-lib::RegHolder v4 = SerializerPlayer::factory().autoReg( &create, 4 );
-lib::RegHolder v5 = SerializerPlayer::factory().autoReg( &create, 5 );
-lib::RegHolder v6 = SerializerPlayer::factory().autoReg( &create, 6 );
-
+RegHolder v1 = SerializerPlayer::factory().autoReg( &create, 1 );
+RegHolder v2 = SerializerPlayer::factory().autoReg( &create, 2 );
+RegHolder v3 = SerializerPlayer::factory().autoReg( &create, 3 );
+RegHolder v4 = SerializerPlayer::factory().autoReg( &create, 4 );
+RegHolder v5 = SerializerPlayer::factory().autoReg( &create, 5 );
+RegHolder v6 = SerializerPlayer::factory().autoReg( &create, 6 );
 }
+
 }

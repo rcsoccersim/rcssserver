@@ -1,11 +1,14 @@
+// -*-c++-*-
+
 /***************************************************************************
-               rcssbaseconfig.hpp  -  Defines RCSSLIB_API
+                         serializeronlinecoachstdv13.h
+               Class for serializing data to std v13 online coaches
                              -------------------
-    begin                : 2005-07-08
-    copyright            : (C) 2005 by The RoboCup Soccer Server 
+    begin                : 2008-11-03
+    copyright            : (C) 2008 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -16,23 +19,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef RCSSSERVER_CONFIG_HPP
-#define RCSSSERVER_CONFIG_HPP
+#ifndef SERIALIZERONLINECOACHSTDV13_H
+#define SERIALIZERONLINECOACHSTDV13_H
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
-  #ifdef RCSSSERVER_EXPORTS
-    #define RCSSSERVER_API __declspec(dllexport)
-    #define RCSSSERVER_EXTERN
-  #else
-    #define RCSSSERVER_API __declspec(dllimport)
-    #define RCSSSERVER_EXTERN extern
-  #endif
-#elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
-  #define RCSSSERVER_API
-  #define RCSSSERVER_EXTERN extern
-#else
-  #define RCSSSERVER_API
-  #define RCSSSERVER_EXTERN
-#endif
+#include "serializeronlinecoachstdv8.h"
+
+namespace rcss {
+
+class SerializerOnlineCoachStdv13
+    : public SerializerOnlineCoachStdv8 {
+protected:
+    SerializerOnlineCoachStdv13( const SerializerCommon & common,
+                                const SerializerCoach & coach );
+
+public:
+    virtual
+    ~SerializerOnlineCoachStdv13();
+
+    static
+    const
+    SerializerOnlineCoachStdv13 * instance();
+
+};
+
+}
 
 #endif

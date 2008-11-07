@@ -112,16 +112,21 @@ Monitor::parseMsg( const char * msg,
 bool
 Monitor::setSenders()
 {
+    std::cerr << "Monitor::setSenders() version=" << version() << std::endl;
+
     rcss::SerializerMonitor::Creator ser_cre;
     if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre,
                                                           (int)version() ) )
     {
+        std::cout << "Unsupported monitor protocol version. version=" << version()
+                  << std::endl;
         return false;
     }
 
     const rcss::SerializerMonitor * ser = ser_cre();
     if ( ! ser )
     {
+        std::cout << "Could not create monitor serializer. " << std::endl;
         return false;
     }
 
@@ -155,6 +160,7 @@ Monitor::setSenders()
         if ( ! rcss::InitSenderMonitor::factory().getCreator( init_cre,
                                                               (int)version() ) )
         {
+            std::cerr << "failed to create InitSenderMonitor" << std::endl;
             return false;
         }
         M_init_observer->setInitSender( init_cre( init_params ) );

@@ -35,6 +35,7 @@
 #include "serverparam.h"
 
 #include "playerparam.h"
+#include "csvsaver.h"
 
 #include <rcssbase/conf/builder.hpp>
 #include <rcssbase/conf/parser.hpp>
@@ -47,6 +48,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <cstdlib>
 
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h> /* needed for htonl, htons, ... */
@@ -80,7 +82,6 @@ const int ServerParam::SENSE_BODY_INTERVAL_MSEC = 100;
 const int ServerParam::SEND_VISUALINFO_INTERVAL_MSEC = 100;
 
 const int ServerParam::HALF_TIME = 300;
-const int ServerParam::EXTRA_HALF_TIME = 300;
 const int ServerParam::DROP_TIME = 200;
 
 const double ServerParam::PITCH_LENGTH = 105.0;
@@ -115,13 +116,13 @@ const double ServerParam::PLAYER_WIDGET_SIZE = 1.0;
 const double ServerParam::PLAYER_DECAY = 0.4;
 const double ServerParam::PLAYER_RAND = 0.1;
 const double ServerParam::PLAYER_WEIGHT = 60.0;
-const double ServerParam::PLAYER_SPEED_MAX = 1.2;
+const double ServerParam::PLAYER_SPEED_MAX = 1.05; // [13.0.0] 1.2 -> 1.05
 // th 6.3.00
 const double ServerParam::PLAYER_ACCEL_MAX = 1.0;
 //
 const double ServerParam::IMPARAM = 5.0;
 
-const double ServerParam::STAMINA_MAX = 4000.0;
+const double ServerParam::STAMINA_MAX = 8000.0; // [13.0.0] 4000.0 -> 8000.0
 const double ServerParam::STAMINA_INC_MAX = 45.0;
 const double ServerParam::RECOVERY_DEC_THR = 0.3;
 const double ServerParam::RECOVERY_DEC = 0.002;
@@ -182,13 +183,15 @@ const double ServerParam::OFFSIDE_ACTIVE_AREA_SIZE = 2.5;
 const double ServerParam::OFFSIDE_KICK_MARGIN = 9.15;
 
 #ifdef WIN32
-const char ServerParam::LANDMARK_FILE[] = "~\\.rcssserver-landmark.xml";
-const char ServerParam::SERVER_CONF[] = "~\\.rcssserver\\server.conf";
-const char ServerParam::OLD_SERVER_CONF[] = "~\\.rcssserver-server.conf";
+const std::string ServerParam::LANDMARK_FILE = "~\\.rcssserver-landmark.xml";
+const std::string ServerParam::CONF_DIR = "~\\.rcssserver\\";
+const std::string ServerParam::SERVER_CONF = "server.conf";
+const std::string ServerParam::OLD_SERVER_CONF = "~\\.rcssserver-server.conf";
 #else
-const char ServerParam::LANDMARK_FILE[] = "~/.rcssserver-landmark.xml";
-const char ServerParam::SERVER_CONF[] = "~/.rcssserver/server.conf";
-const char ServerParam::OLD_SERVER_CONF[] = "~/.rcssserver-server.conf";
+const std::string ServerParam::LANDMARK_FILE = "~/.rcssserver-landmark.xml";
+const std::string ServerParam::CONF_DIR = "~/.rcssserver/";
+const std::string ServerParam::SERVER_CONF = "server.conf";
+const std::string ServerParam::OLD_SERVER_CONF = "~/.rcssserver-server.conf";
 #endif
 
 const int ServerParam::SEND_COMMS = false;
@@ -196,15 +199,15 @@ const int ServerParam::SEND_COMMS = false;
 const int ServerParam::TEXT_LOGGING = true;
 const int ServerParam::GAME_LOGGING = true;
 const int ServerParam::GAME_LOG_VERSION = DEFAULT_REC_VERSION;
-const char ServerParam::TEXT_LOG_DIR[] = "./";
-const char ServerParam::GAME_LOG_DIR[] = "./";
-const char ServerParam::TEXT_LOG_FIXED_NAME[] = "rcssserver";
-const char ServerParam::GAME_LOG_FIXED_NAME[] = "rcssserver";
+const std::string ServerParam::TEXT_LOG_DIR = "./";
+const std::string ServerParam::GAME_LOG_DIR = "./";
+const std::string ServerParam::TEXT_LOG_FIXED_NAME = "rcssserver";
+const std::string ServerParam::GAME_LOG_FIXED_NAME = "rcssserver";
 const int ServerParam::TEXT_LOG_FIXED = false;
 const int ServerParam::GAME_LOG_FIXED = false;
 const int ServerParam::TEXT_LOG_DATED = true;
 const int ServerParam::GAME_LOG_DATED = true;
-const char ServerParam::LOG_DATE_FORMAT[] = "%Y%m%d%H%M-";
+const std::string ServerParam::LOG_DATE_FORMAT = "%Y%m%d%H%M-";
 const int ServerParam::LOG_TIMES = false;
 const int ServerParam::RECORD_MESSAGES = false;
 const int ServerParam::TEXT_LOG_COMPRESSION = 0;
@@ -212,8 +215,8 @@ const int ServerParam::GAME_LOG_COMPRESSION = 0;
 const bool ServerParam::PROFILE = false;
 
 const int ServerParam::KAWAY_LOGGING = true;
-const char ServerParam::KAWAY_LOG_DIR[] = "./";
-const char ServerParam::KAWAY_LOG_FIXED_NAME[] = "rcssserver";
+const std::string ServerParam::KAWAY_LOG_DIR = "./";
+const std::string ServerParam::KAWAY_LOG_FIXED_NAME = "rcssserver";
 const int ServerParam::KAWAY_LOG_FIXED = false;
 const int ServerParam::KAWAY_LOG_DATED = true;
 
@@ -268,24 +271,37 @@ const int ServerParam::S_KICK_OFF_WAIT = 100;
 const int ServerParam::S_CONNECT_WAIT = 300;
 const int ServerParam::S_GAME_OVER_WAIT = 100;
 
-const char ServerParam::S_TEAM_L_START[] = "";
-const char ServerParam::S_TEAM_R_START[] = "";
+const std::string ServerParam::S_TEAM_L_START = "";
+const std::string ServerParam::S_TEAM_R_START = "";
 
-#ifdef MODULEDIR
-const char ServerParam::S_MODULE_DIR[] = MODULEDIR;
-#else
-const char ServerParam::S_MODULE_DIR[] = "/usr/local/lib/rcssserver/modules";
-#endif
+// #ifdef MODULEDIR
+// const std::string ServerParam::S_MODULE_DIR = MODULEDIR;
+// #else
+// const std::string ServerParam::S_MODULE_DIR = "/usr/local/lib/rcssserver/modules";
+// #endif
 
 // 11.0.0
 const double ServerParam::BALL_STUCK_AREA = 3.0;
 
 // 12.0.0
 const double ServerParam::MAX_TACKLE_POWER = 100.0;
-const double ServerParam::MAX_BACK_TACKLE_POWER = 50.0;
-const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.8;
-const double ServerParam::EXTRA_STAMINA = 0.0;
+const double ServerParam::MAX_BACK_TACKLE_POWER = 0.0; // [13.0.0] 50.0 -> 0.0
+const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.75; // [13.0.0] 0.8 -> 0.75
+const double ServerParam::EXTRA_STAMINA = 50.0; // [13.0.0] 0.0 -> 50.0
+const int ServerParam::SYNCH_SEE_OFFSET = 30;
 
+// 12.1.3
+const int ServerParam::EXTRA_HALF_TIME = 100; // [13.0.0] 300 -> 100
+
+// 13.0.0
+const double ServerParam::STAMINA_CAPACITY = 148600.0; //127000.0;
+const double ServerParam::MAX_DASH_ANGLE = +180.0;
+const double ServerParam::MIN_DASH_ANGLE = -180.0;
+const double ServerParam::DASH_ANGLE_STEP = 90.0;
+const double ServerParam::SIDE_DASH_RATE = 0.25;
+const double ServerParam::BACK_DASH_RATE = 0.5;
+const double ServerParam::MAX_DASH_POWER = +100.0;
+const double ServerParam::MIN_DASH_POWER = -100.0;
 
 ServerParam &
 ServerParam::instance()
@@ -303,22 +319,42 @@ ServerParam::init( const int & argc,
     instance();
     S_in_init = false;
 
-    instance().convertOldConf();
+    std::string conf_dir = ServerParam::CONF_DIR;
+    const char * env_conf_dir = std::getenv( "RCSS_CONF_DIR" );
+    if ( env_conf_dir )
+    {
+        conf_dir = env_conf_dir;
+    }
 
-    boost::filesystem::path conf_path( tildeExpand( ServerParam::SERVER_CONF ),
+    //boost::filesystem::path conf_path( tildeExpand( ServerParam::SERVER_CONF ),
+    boost::filesystem::path conf_path( tildeExpand( conf_dir ),
                                        boost::filesystem::portable_posix_name );
+    if ( ! boost::filesystem::exists( conf_path )
+         && ! boost::filesystem::create_directory( conf_path ) )
+    {
+        std::cerr << "could not create the configuration file directory '"
+                  << conf_path.string()
+                  << "'\n";
+        instance().clear();
+        return false;
+    }
+
+    conf_path /= ServerParam::SERVER_CONF;
+
+    instance().convertOldConf( conf_path.string() );
+
     if ( ! instance().M_conf_parser->parseCreateConf( conf_path, "server" ) )
     {
         std::cerr << "could not create or parse configuration file '"
-                  << tildeExpand( ServerParam::SERVER_CONF )
+                  << conf_path.string()
                   << "'\n";
         instance().M_builder->displayHelp();
         instance().clear();
-        //std::exit( EXIT_FAILURE );
         return false;
     }
     else
     {
+        //std::cerr << "server.conf = "  << conf_path.string() << std::endl;
         if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
         {
             std::cerr << "Version mismatched in the configuration file. "
@@ -331,7 +367,6 @@ ServerParam::init( const int & argc,
 //                       << instance().m_builder->parsedVersion() << "]\n"
 //                       << std::flush;
             instance().clear();
-            //std::exit( EXIT_FAILURE );
             return false;
         }
 
@@ -339,7 +374,13 @@ ServerParam::init( const int & argc,
         {
             instance().M_builder->displayHelp();
             instance().clear();
-            //std::exit( EXIT_FAILURE );
+            return false;
+        }
+
+        if ( ! CSVSaverParam::init( instance().M_builder.get() ) )
+        {
+            instance().M_builder->displayHelp();
+            instance().clear();
             return false;
         }
 
@@ -347,61 +388,16 @@ ServerParam::init( const int & argc,
         {
             instance().M_builder->displayHelp();
             instance().clear();
-            //std::exit( EXIT_FAILURE );
             return false;
         }
-
-//         if ( ! instance().timer_loaded )
-//         {
-//             instance().setSynchMode( false );
-//         }
-
-//         if ( ! instance().timer_loaded )
-//         {
-//             std::cerr << "Could not load timer\n";
-//             std::cerr << "timer library not found in:\n";
-//             for ( std::vector< boost::filesystem::path >::const_iterator i = rcss::lib::Loader::getPath().begin();
-//                  i != rcss::lib::Loader::getPath().end();
-//                  ++i )
-//             {
-//                 std::cerr << "\t - " << i->native_directory_string() << "\n";
-//             }
-//             instance().clear();
-//             std::exit( EXIT_FAILURE );
-//         }
 
         if ( instance().M_builder->genericHelpRequested() )
         {
             instance().M_builder->displayHelp();
             instance().clear();
-            //std::exit( EXIT_SUCCESS );
             return false;
         }
     }
-
-
-//     {
-//         rcss::lib::Loader loader;
-//         if ( loader.open( "libstdoutsaver" ) )
-//         {
-//             instance().m_builder->manageModule( loader );
-//         }
-//     }
-
-//     {
-//         std::string module_opts;
-//         const std::vector< boost::filesystem::path > & modules = rcss::lib::Loader::listAvailableModules();
-//         for ( std::vector< boost::filesystem::path >::const_iterator i = modules.begin();
-//               i != modules.end();
-//               ++i )
-//         {
-//             module_opts += " load=";
-//             module_opts += i->leaf();
-//         }
-
-//         std::istringstream is( module_opts );
-//         instance().m_conf_parser->parse( is );
-//     }
 
     instance().setSlowDownFactor();
 
@@ -410,11 +406,11 @@ ServerParam::init( const int & argc,
 
 
 void
-ServerParam::convertOldConf()
+ServerParam::convertOldConf( const std::string & new_conf )
 {
 #ifndef WIN32
     if ( std::system( ( "ls " + tildeExpand( OLD_SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
-         && std::system( ( "ls " + tildeExpand( SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) != 0
+         && std::system( ( "ls " + tildeExpand( new_conf ) + " > /dev/null 2>&1" ).c_str() ) != 0
          && std::system( "which awk > /dev/null 2>&1" ) == 0 )
     {
         std::cout << "Trying to convert old configuration file '"
@@ -471,7 +467,7 @@ ServerParam::setSlowDownFactor()
                            lcm( M_recv_step,
                                 lcm( M_sense_body_step,
                                      lcm( M_send_vi_step,
-                                          lcm( M_synch_see_offset,
+                                          lcm( std::max( M_synch_see_offset, 1 ),
                                                ( M_synch_mode ? M_synch_offset : 1 ) ) ) ) ) ) );
 }
 
@@ -622,11 +618,6 @@ ServerParam::addParams()
               rcss::conf::makeGetter( this, &ServerParam::getRawHalfTime ),
               "",
               7 );
-    addParam( "extra_half_time",
-              rcss::conf::makeSetter( this, &ServerParam::setExtraHalfTime ),
-              rcss::conf::makeGetter( this, &ServerParam::getRawExtraHalfTime ),
-              "",
-              13 );
     addParam( "drop_ball_time", M_drop_ball_time, "", 7 );
     addParam( "port", M_port, "", 8 );
     addParam( "coach_port", M_coach_port, "", 8 );
@@ -783,13 +774,13 @@ ServerParam::addParams()
               "Turn on to allow dribbling in penalty shootouts", 9 );
     addParam( "pen_coach_moves_players", M_pen_coach_moves_players,
               "Turn on to have the server automatically position players for peanlty shootouts", 9 );
-
+    // v11
     addParam( "ball_stuck_area", M_ball_stuck_area, "", 11 );
     addParam( "coach_msg_file",
               rcss::conf::makeSetter( this, &ServerParam::setCoachMsgFile ),
               rcss::conf::makeGetter( M_coach_msg_file ),
               "", 999 );
-
+    // v12
     addParam( "max_tackle_power", M_max_tackle_power, "", 12 );
     addParam( "max_back_tackle_power", M_max_back_tackle_power, "", 12 );
     addParam( "player_speed_max_min", M_player_speed_max_min,
@@ -799,6 +790,21 @@ ServerParam::addParams()
     addParam( "synch_see_offset", M_synch_see_offset, "", 12 );
 
     addParam( "max_monitors", M_max_monitors, "", 999 );
+    // v12.1.3
+    addParam( "extra_half_time",
+              rcss::conf::makeSetter( this, &ServerParam::setExtraHalfTime ),
+              rcss::conf::makeGetter( this, &ServerParam::getRawExtraHalfTime ),
+              "",
+              13 );
+    // v13
+    addParam( "stamina_capacity", M_stamina_capacity, "", 13 );
+    addParam( "max_dash_angle", M_max_dash_angle, "", 13 );
+    addParam( "min_dash_angle", M_min_dash_angle, "", 13 );
+    addParam( "dash_angle_step", M_dash_angle_step, "", 13 );
+    addParam( "side_dash_rate", M_side_dash_rate, "", 13 );
+    addParam( "back_dash_rate", M_back_dash_rate, "", 13 );
+    addParam( "max_dash_power", M_max_dash_power, "", 13 );
+    addParam( "min_dash_power", M_min_dash_power, "", 13 );
 
     // test
     addParam( "reliable_catch_area_l", M_reliable_catch_area_l, "", 999 );
@@ -817,7 +823,7 @@ ServerParam::setSynchMode( bool value )
                                lcm( M_recv_step,
                                     lcm( M_sense_body_step,
                                          lcm( M_send_vi_step,
-                                              lcm( M_synch_see_offset,
+                                              lcm( std::max( M_synch_see_offset, 1 ),
                                                    ( M_synch_mode ? M_synch_offset : 1 ) ) ) ) ) ) );
     }
 }
@@ -1084,9 +1090,19 @@ ServerParam::setDefaults()
     M_max_back_tackle_power = MAX_BACK_TACKLE_POWER;
     M_player_speed_max_min = PLAYER_SPEED_MAX_MIN;
     M_extra_stamina = EXTRA_STAMINA;
-    M_synch_see_offset = 30;
+    M_synch_see_offset = SYNCH_SEE_OFFSET;
 
     M_max_monitors = -1;
+
+    // 13.0.0
+    M_stamina_capacity = STAMINA_CAPACITY;
+    M_max_dash_angle = MAX_DASH_ANGLE;
+    M_min_dash_angle = MIN_DASH_ANGLE;
+    M_dash_angle_step = DASH_ANGLE_STEP;
+    M_side_dash_rate = SIDE_DASH_RATE;
+    M_back_dash_rate = BACK_DASH_RATE;
+    M_max_dash_power = MAX_DASH_POWER;
+    M_min_dash_power = MIN_DASH_POWER;
 
     // test
     M_reliable_catch_area_l = GOALIE_CATCHABLE_AREA_LENGTH;
@@ -1100,15 +1116,15 @@ ServerParam::setDefaults()
     M_kickable_area = M_player_size + M_kickable_margin + M_ball_size;
     M_control_radius_width = M_control_radius - M_player_size;
 
-    std::string module_dir = S_MODULE_DIR;
-    for ( std::string::size_type pos = module_dir.find( "//" );
-          pos != std::string::npos;
-          pos = module_dir.find( "//" ) )
-    {
-        module_dir.replace( pos, 2, "/" );
-    }
+//     std::string module_dir = S_MODULE_DIR;
+//     for ( std::string::size_type pos = module_dir.find( "//" );
+//           pos != std::string::npos;
+//           pos = module_dir.find( "//" ) )
+//     {
+//         module_dir.replace( pos, 2, "/" );
+//     }
 
-    rcss::lib::Loader::setPath( module_dir );
+//     rcss::lib::Loader::setPath( module_dir );
 }
 
 server_params_t

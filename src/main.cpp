@@ -39,13 +39,10 @@
 #include "timer.h"
 #include "stdtimer.h"
 #include "synctimer.h"
-//#include <rcssbase/lib/loader.hpp>
-#include <rcssbase/version.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
-//#include <dirent.h>
 
 #include <csignal>
 #include <cerrno>
@@ -69,9 +66,8 @@ sigHandle ( int )
 int
 main( int argc, char *argv[] )
 {
-    std::cout << PACKAGE << "-" << VERSION << std::endl << std::endl
+    std::cout << PACKAGE << "-" << VERSION << "\n\n"
               << Copyright << std::endl;
-    std::cout << "Using rcssbase-" << rcss::base::version() << std::endl << std::endl;
 
     {
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)

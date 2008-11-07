@@ -42,10 +42,10 @@ namespace rcss {
 //===================================================================
 */
 
-InitSenderPlayer::Factory &
+InitSenderPlayer::FactoryHolder &
 InitSenderPlayer::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -178,7 +178,7 @@ InitSenderPlayerV7::InitSenderPlayerV7( const Params & params )
 
 }
 
-InitSenderPlayerV7::InitSenderPlayerV7( const Params& params,
+InitSenderPlayerV7::InitSenderPlayerV7( const Params & params,
                                         const boost::shared_ptr< InitSenderCommon > common )
     : InitSenderPlayerV1( params, common )
 {
@@ -227,7 +227,7 @@ InitSenderPlayerV7::sendChangedPlayers()
 */
 
 
-InitSenderPlayerV8::InitSenderPlayerV8( const Params& params )
+InitSenderPlayerV8::InitSenderPlayerV8( const Params & params )
     : InitSenderPlayerV7( params,
                           boost::shared_ptr< rcss::InitSenderCommon >
                           ( new InitSenderCommonV8( params.M_transport,
@@ -268,18 +268,19 @@ create( const InitSenderPlayer::Params & params )
     return InitSenderPlayer::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vp1 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 1 );
-lib::RegHolder vp2 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 2 );
-lib::RegHolder vp3 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 3 );
-lib::RegHolder vp4 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 4 );
-lib::RegHolder vp5 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 5 );
-lib::RegHolder vp6 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 6 );
-lib::RegHolder vp7 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV7 >, 7 );
-lib::RegHolder vp8 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 8 );
-lib::RegHolder vp9 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 9 );
-lib::RegHolder vp10 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 10 );
-lib::RegHolder vp11 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 11 );
-lib::RegHolder vp12 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 12 );
-
+RegHolder vp1 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 1 );
+RegHolder vp2 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 2 );
+RegHolder vp3 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 3 );
+RegHolder vp4 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 4 );
+RegHolder vp5 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 5 );
+RegHolder vp6 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV1 >, 6 );
+RegHolder vp7 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV7 >, 7 );
+RegHolder vp8 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 8 );
+RegHolder vp9 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 9 );
+RegHolder vp10 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 10 );
+RegHolder vp11 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 11 );
+RegHolder vp12 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 12 );
+RegHolder vp13 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 13 );
 }
+
 }

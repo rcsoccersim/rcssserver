@@ -105,8 +105,43 @@ SerializerCoachStdv7::serializeVisualObject( std::ostream & strm,
          << ')';
 }
 
-namespace {
+void
+SerializerCoachStdv7::serializeVisualPlayer( std::ostream & strm,
+                                             const Player & /*player*/ ,
+                                             const std::string & name,
+                                             const PVector & pos,
+                                             const PVector & vel,
+                                             const int body,
+                                             const int neck ) const
+{
+    strm << " (" << name
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << vel.x << ' ' << vel.y
+         << ' ' << body
+         << ' ' << neck
+         << ')';
+}
 
+void
+SerializerCoachStdv7::serializeVisualPlayer( std::ostream & strm,
+                                             const Player & /*player*/ ,
+                                             const std::string & name,
+                                             const PVector & pos,
+                                             const PVector & vel,
+                                             const int body,
+                                             const int neck,
+                                             const int /*point_dir*/ ) const
+{
+    strm << " (" << name
+         << ' ' << pos.x << ' ' << pos.y
+         << ' ' << vel.x << ' ' << vel.y
+         << ' ' << body
+         << ' ' << neck
+         << ')';
+}
+
+
+namespace {
 const
 SerializerCoach *
 create()
@@ -114,7 +149,7 @@ create()
     return SerializerCoachStdv7::instance();
 }
 
-lib::RegHolder v7 = SerializerCoach::factory().autoReg( &create, 7 );
-
+RegHolder v7 = SerializerCoach::factory().autoReg( &create, 7 );
 }
+
 }

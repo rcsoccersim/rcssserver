@@ -41,10 +41,10 @@ namespace rcss {
 //===================================================================
 */
 
-InitSenderOfflineCoach::Factory &
+InitSenderOfflineCoach::FactoryHolder &
 InitSenderOfflineCoach::factory()
 {
-    static Factory rval;
+    static FactoryHolder rval;
     return rval;
 }
 
@@ -205,18 +205,19 @@ create( const InitSenderOfflineCoach::Params & params )
     return InitSenderOfflineCoach::Ptr( new Sender( params ) );
 }
 
-lib::RegHolder vc1 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 1 );
-lib::RegHolder vc2 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 2 );
-lib::RegHolder vc3 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 3 );
-lib::RegHolder vc4 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 4 );
-lib::RegHolder vc5 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 5 );
-lib::RegHolder vc6 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 6 );
-lib::RegHolder vc7 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV7 >, 7 );
-lib::RegHolder vc8 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 8 );
-lib::RegHolder vc9 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 9 );
-lib::RegHolder vc10 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 10 );
-lib::RegHolder vc11 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 11 );
-lib::RegHolder vc12 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 12 );
-
+RegHolder vc1 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 1 );
+RegHolder vc2 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 2 );
+RegHolder vc3 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 3 );
+RegHolder vc4 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 4 );
+RegHolder vc5 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 5 );
+RegHolder vc6 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV1 >, 6 );
+RegHolder vc7 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV7 >, 7 );
+RegHolder vc8 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 8 );
+RegHolder vc9 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 9 );
+RegHolder vc10 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 10 );
+RegHolder vc11 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 11 );
+RegHolder vc12 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 12 );
+RegHolder vc13 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 13 );
 }
+
 }

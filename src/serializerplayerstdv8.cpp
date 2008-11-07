@@ -21,6 +21,8 @@
 
 #include "serializerplayerstdv8.h"
 
+#include "player.h"
+
 namespace rcss {
 
 SerializerPlayerStdv8::SerializerPlayerStdv8( const SerializerCommon & common )
@@ -47,6 +49,75 @@ SerializerPlayerStdv8::instance()
     static SerializerPlayerStdv8 ser( cre() );
     return &ser;
 }
+
+
+void
+SerializerPlayerStdv8::serializeVisualPlayer( std::ostream & strm,
+                                              const Player & player,
+                                              const std::string & name,
+                                              const double & dist,
+                                              const int dir ) const
+{
+    strm << " (" << name << ' ' << dist << ' ' << dir;
+    if ( player.isTackling() ) strm << " t";
+    strm << ')';
+}
+
+
+void
+SerializerPlayerStdv8::serializeVisualPlayer( std::ostream & strm,
+                                              const Player & player,
+                                              const std::string & name,
+                                              const double & dist,
+                                              const int dir,
+                                              const int point_dir ) const
+{
+    strm << " (" << name << ' ' << dist << ' ' << dir
+         << ' ' << point_dir;
+    if ( player.isTackling() ) strm << " t";
+    strm << ')';
+}
+
+
+void
+SerializerPlayerStdv8::serializeVisualPlayer( std::ostream & strm,
+                                              const Player & player,
+                                              const std::string & name,
+                                              const double & dist,
+                                              const int dir,
+                                              const double & dist_chg,
+                                              const double & dir_chg,
+                                              const int body_dir,
+                                              const int head_dir ) const
+{
+    strm << " (" << name << ' ' << dist << ' ' << dir
+         << ' ' << dist_chg << ' ' << dir_chg
+         << ' ' << body_dir << ' ' << head_dir;
+    if ( player.isTackling() ) strm << " t";
+    strm << ')';
+}
+
+
+void
+SerializerPlayerStdv8::serializeVisualPlayer( std::ostream & strm,
+                                              const Player & player,
+                                              const std::string & name,
+                                              const double & dist,
+                                              const int dir,
+                                              const double & dist_chg,
+                                              const double & dir_chg,
+                                              const int body_dir,
+                                              const int head_dir,
+                                              const int point_dir ) const
+{
+    strm << " (" << name << ' ' << dist << ' ' << dir
+         << ' ' << dist_chg << ' ' << dir_chg
+         << ' ' << body_dir << ' ' << head_dir
+         << ' ' << point_dir;
+    if ( player.isTackling() ) strm << " t";
+    strm << ')';
+}
+
 
 void
 SerializerPlayerStdv8::serializeAllyAudioFull( std::ostream & strm,
@@ -145,15 +216,16 @@ SerializerPlayerStdv8::serializeFSPlayerArm( std::ostream & strm,
 }
 
 void
-SerializerPlayerStdv8::serializeFSPlayerEnd( std::ostream & strm,
-                                             const double & stamina,
-                                             const double & effort,
-                                             const double & recovery ) const
+SerializerPlayerStdv8::serializeFSPlayerStamina( std::ostream & strm,
+                                                 const double & stamina,
+                                                 const double & effort,
+                                                 const double & recovery,
+                                                 const double & /*stamina_capacity*/ ) const
 {
     strm << " (stamina " << stamina
          << ' ' << effort
          << ' ' << recovery
-         << "))";
+         << ')';
 }
 
 void
@@ -229,7 +301,6 @@ SerializerPlayerStdv8::serializeParam( std::ostream & strm,
 }
 
 namespace {
-
 const
 SerializerPlayer *
 create()
@@ -237,11 +308,11 @@ create()
     return SerializerPlayerStdv8::instance();
 }
 
-lib::RegHolder v8 = SerializerPlayer::factory().autoReg( &create, 8 );
-lib::RegHolder v9 = SerializerPlayer::factory().autoReg( &create, 9 );
-lib::RegHolder v10 = SerializerPlayer::factory().autoReg( &create, 10 );
-lib::RegHolder v11 = SerializerPlayer::factory().autoReg( &create, 11 );
-lib::RegHolder v12 = SerializerPlayer::factory().autoReg( &create, 12 );
-
+RegHolder v8 = SerializerPlayer::factory().autoReg( &create, 8 );
+RegHolder v9 = SerializerPlayer::factory().autoReg( &create, 9 );
+RegHolder v10 = SerializerPlayer::factory().autoReg( &create, 10 );
+RegHolder v11 = SerializerPlayer::factory().autoReg( &create, 11 );
+RegHolder v12 = SerializerPlayer::factory().autoReg( &create, 12 );
 }
+
 }

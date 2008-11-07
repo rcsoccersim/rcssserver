@@ -1,3 +1,363 @@
+2008-11-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* README:
+	* configure.ac:
+	- updated the NEWS file.
+	- updated a version number string. Official release 13.0.0.
+
+	* src/field.cpp:
+	* src/resultsaver.cpp:
+	* src/resultsaver.hpp:
+	* src/serializercoachstdv13.cpp:
+	* src/serializermonitor.cpp:
+	* src/serializerplayerstdv13.cpp:
+	- fixed a defect of result saver destruction.
+	- fixed a default version of common serializer.
+
+	* configure.ac:
+	* rcssbase/conf/Makefile.am:
+	* rcssbase/conf/parser.cpp:
+	* src/Makefile.am:
+	* src/audio.cpp:
+	* src/audio.h:
+	* src/bodysender.cpp:
+	* src/bodysender.h:
+	* src/csvsaver.cpp:
+	* src/csvsaver.h:
+	* src/dispsender.cpp:
+	* src/dispsender.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/fullstatesender.cpp:
+	* src/fullstatesender.h:
+	* src/initsendercoach.cpp:
+	* src/initsendercoach.h:
+	* src/initsenderlogger.cpp:
+	* src/initsenderlogger.h:
+	* src/initsendermonitor.cpp:
+	* src/initsendermonitor.h:
+	* src/initsenderonlinecoach.cpp:
+	* src/initsenderonlinecoach.h:
+	* src/initsenderplayer.cpp:
+	* src/initsenderplayer.h:
+	* src/logger.cpp:
+	* src/playerparam.cpp:
+	* src/resultsaver.cpp:
+	* src/resultsaver.hpp:
+	* src/serializer.cpp:
+	* src/serializer.h:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/serverparam.cpp:
+	* src/stdoutsaver.cpp:
+	* src/stdoutsaver.h:
+	* src/visualsendercoach.cpp:
+	* src/visualsendercoach.h:
+	* src/visualsenderplayer.cpp:
+	* src/visualsenderplayer.h:
+	- fixed build problems on some platforms.
+
+	* src/serializeronlinecoachstdv13.cpp:
+	* src/serializeronlinecoachstdv13.h:
+	* src/Makefile.am:
+	* src/dispsender.cpp:
+	* src/dispsender.h:
+	* src/serializeronlinecoachstdv8.cpp:
+	* src/serverparam.cpp:
+	* src/visualsendercoach.cpp:
+	* src/visualsendercoach.h:
+	- fixed defects in VisualSenderOnlineCoach.
+
+2008-10-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* rcssbase/parser.h:
+	* src/Makefile.am:
+	* src/audio.h:
+	* src/csvsaver.cpp:
+	* src/field.cpp:
+	* src/initsenderlogger.cpp:
+	* src/initsenderlogger.h:
+	* src/initsendermonitor.cpp:
+	* src/initsenderplayer.cpp:
+	* src/logger.cpp:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	* src/serializerplayerstdv8.h:
+	* src/serverparam.cpp:
+	* src/stdtimer.cpp:
+	* src/synctimer.cpp:
+	- fixed coding style.
+	- fixed the implementation of RCSS_CONF_DIR.
+	- fixed defects about synch_see_offset.
+	- changed the default game log version to 5.
+	- fixed defects about team_graphic message in game logging.
+
+2008-10-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* rcssbase/conf/builder.cpp:
+	* src/csvsaver.cpp:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	- removed unused command line help messages.
+	- supported RCSS_CONF_DIR environment variables to specify the
+	configuration directry.
+
+	* src/fullstatesender.cpp:
+	* src/fullstatesender.h:
+	* src/serializer.h:
+	* src/serializerplayerstdv13.cpp:
+	* src/serializerplayerstdv13.h:
+	* src/visualsendercoach.cpp:
+	* src/visualsendercoach.h:
+	- added tackle and kick information to v13 fullstate message.
+	- added VisualSenderCoachStdv13 class for the readability.
+
+	* src/serverparam.cpp:
+	- fixed a bug of lcm with 0 value synch_see_offset.
+
+	* rcssbase/factory.hpp:
+	* configure.ac:
+	* rcssbase/Makefile.am:
+	* rcssbase/conf/Makefile.am:
+	* src/Makefile.am:
+	* src/audio.cpp:
+	* src/audio.h:
+	* src/bodysender.cpp:
+	* src/bodysender.h:
+	* src/client.cpp:
+	* src/coach_lang_tok.h:
+	* src/csvsaver.cpp:
+	* src/dispsender.cpp:
+	* src/dispsender.h:
+	* src/field.cpp:
+	* src/fullstatesender.cpp:
+	* src/fullstatesender.h:
+	* src/initsender.h:
+	* src/initsendercoach.cpp:
+	* src/initsendercoach.h:
+	* src/initsenderlogger.cpp:
+	* src/initsenderlogger.h:
+	* src/initsendermonitor.cpp:
+	* src/initsendermonitor.h:
+	* src/initsenderonlinecoach.cpp:
+	* src/initsenderonlinecoach.h:
+	* src/initsenderplayer.cpp:
+	* src/initsenderplayer.h:
+	* src/player.cpp:
+	* src/player_command_tok.h:
+	* src/resultsaver.hpp:
+	* src/serializer.h:
+	* src/serializercoachstdv1.cpp:
+	* src/serializercoachstdv13.cpp:
+	* src/serializercoachstdv7.cpp:
+	* src/serializercoachstdv8.cpp:
+	* src/serializercommonstdv1.cpp:
+	* src/serializercommonstdv7.cpp:
+	* src/serializercommonstdv8.cpp:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/serializeronlinecoachstdv1.cpp:
+	* src/serializeronlinecoachstdv6.cpp:
+	* src/serializeronlinecoachstdv7.cpp:
+	* src/serializeronlinecoachstdv8.cpp:
+	* src/serializerplayerstdv1.cpp:
+	* src/serializerplayerstdv13.cpp:
+	* src/serializerplayerstdv7.cpp:
+	* src/serializerplayerstdv8.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/stdoutsaver.cpp:
+	* src/visualsendercoach.cpp:
+	* src/visualsendercoach.h:
+	* src/visualsenderplayer.cpp:
+	* src/visualsenderplayer.h:
+	* SConstruct:
+	* cvs.am:
+	* dist.am:
+	* inst.am:
+	* msi.am:
+	* rcssbase/cond.h:
+	* rcssbase/error/Makefile.am:
+	* rcssbase/error/error.cpp:
+	* rcssbase/error/error.hpp:
+	* rcssbase/lib/Makefile.am:
+	* rcssbase/lib/factory.hpp:
+	* rcssbase/messagequeue.h:
+	* rcssbase/mutex.h:
+	* rcssbase/sharedvar.h:
+	* rcssbase/thread.h:
+	* rpm.am:
+	* sf.am:
+	* src/ac_lib_rcssclangparser.m4:
+	- moved factory.hpp from rcssbase/lib to rcssbase.
+	- changed the distribution policy for source files generated by
+	flex/bison.
+	- removed lib and error directry.
+	- removed thread related files.
+	- reimplemented rcssclient.
+	- removed unused scons file and autotool macros.
+	- changed the default value of server::synch_see_offset to 0.
+	- changed the default value of server::stamina_capacity to 148600.
+
+2008-10-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	- removed AC_DISABLE_STATIC and AC_LIBTOOL_DLOPEN
+	- added the check of poll.h.
+
+	* src/Makefile.am:
+	* src/pcombuilder.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/player_command_parser.ypp:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/timer.h:
+	* src/utility.h:
+	- added new parameters related to the new dash model.
+	- implemented the new dash model.
+	- fixed the default value of player::new_dash_power_rate_delta_min.
+
+2008-10-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/serializercoachstdv13.cpp:
+	* src/serializercoachstdv13.h:
+	* src/serializerplayerstdv13.cpp:
+	* src/serializerplayerstdv13.h:
+	* src/Makefile.am:
+	* src/audio.cpp:
+	* src/bodysender.cpp:
+	* src/bodysender.h:
+	* src/csvsaver.cpp:
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/fullstatesender.cpp:
+	* src/initsendercoach.cpp:
+	* src/initsenderonlinecoach.cpp:
+	* src/initsenderplayer.cpp:
+	* src/logger.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/playerparam.cpp:
+	* src/referee.cpp:
+	* src/serializer.h:
+	* src/serializercoachstdv1.cpp:
+	* src/serializercoachstdv1.h:
+	* src/serializercoachstdv7.cpp:
+	* src/serializercoachstdv7.h:
+	* src/serializercoachstdv8.cpp:
+	* src/serializercoachstdv8.h:
+	* src/serializercommonstdv8.cpp:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/serializeronlinecoachstdv8.cpp:
+	* src/serializerplayerstdv1.cpp:
+	* src/serializerplayerstdv1.h:
+	* src/serializerplayerstdv8.cpp:
+	* src/serializerplayerstdv8.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/stdoutsaver.cpp:
+	* src/visualsendercoach.cpp:
+	* src/visualsenderplayer.cpp:
+	* src/visualsenderplayer.h:
+	- implemented v13 protocl. added new serializer classes.
+	- implemented monitor protocol v4 and log format v5.
+	- added new parameter, server::stamina_capacity, and implemented
+	new stamina model.
+	- changed some parameters' default value.
+
+	* configure.ac:
+	* src/csvsaver.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/resultsaver.cpp:
+	* src/stdoutsaver.cpp:
+	* src/visualsenderplayer.cpp:
+	* src/visualsenderplayer.h:
+	- updated version number string.
+	- changed the location of auto registration variable of
+	ResultSaver.
+	- added M_kick_cycles variable to Player class.
+	- fixed bugs of virtual function in VisualSenderPlayer.
+
+2008-10-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* rcssbase/FlexLexer.h:
+	* rcssbase/Makefile.am:
+	* rcssbase/cond.h:
+	* rcssbase/conf/Makefile.am:
+	* rcssbase/conf/builder.cpp:
+	* rcssbase/conf/builder.hpp:
+	* rcssbase/conf/paramgetter.hpp:
+	* rcssbase/conf/paramsetter.hpp:
+	* rcssbase/conf/parser.cpp:
+	* rcssbase/conf/parser.hpp:
+	* rcssbase/conf/statushandler.cpp:
+	* rcssbase/conf/statushandler.hpp:
+	* rcssbase/conf/streamstatushandler.cpp:
+	* rcssbase/conf/streamstatushandler.hpp:
+	* rcssbase/error/Makefile.am:
+	* rcssbase/error/error.cpp:
+	* rcssbase/error/error.hpp:
+	* rcssbase/gzip/Makefile.am:
+	* rcssbase/gzip/gzfstream.cpp:
+	* rcssbase/gzip/gzfstream.hpp:
+	* rcssbase/gzip/gzstream.cpp:
+	* rcssbase/gzip/gzstream.hpp:
+	* rcssbase/lib/Makefile.am:
+	* rcssbase/lib/factory.hpp:
+	* rcssbase/messagequeue.h:
+	* rcssbase/mutex.h:
+	* rcssbase/net/Makefile.am:
+	* rcssbase/net/addr.cpp:
+	* rcssbase/net/addr.hpp:
+	* rcssbase/net/handler.cpp:
+	* rcssbase/net/handler.hpp:
+	* rcssbase/net/iosocketstream.hpp:
+	* rcssbase/net/isocketstream.hpp:
+	* rcssbase/net/osocketstream.hpp:
+	* rcssbase/net/rcssaddrtest.cpp:
+	* rcssbase/net/socket.cpp:
+	* rcssbase/net/socket.hpp:
+	* rcssbase/net/socketstreambuf.hpp:
+	* rcssbase/net/tcpsocket.cpp:
+	* rcssbase/net/tcpsocket.hpp:
+	* rcssbase/net/udpsocket.cpp:
+	* rcssbase/net/udpsocket.hpp:
+	* rcssbase/parser.h:
+	* rcssbase/sharedvar.h:
+	* rcssbase/thread.h:
+	* ChangeLog:
+	* Makefile.am:
+	* configure.ac:
+	* reconfig.sh:
+	* src/Makefile.am:
+	* src/client.cpp:
+	* src/coach_lang_tok.h:
+	* src/csvsaver.cpp:
+	* src/field.cpp:
+	* src/field.h:
+	* src/main.cpp:
+	* src/player_command_tok.h:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/rcsoccersim.in:
+	* src/resultsaver.cpp:
+	* src/resultsaver.hpp:
+	* src/serverparam.cpp:
+	* src/stdoutsaver.cpp:
+	* src/stdtimer.cpp:
+	* src/synctimer.cpp:
+	* src/timer.h:
+	* src/utility.h:
+	* src/visualsenderplayer.cpp:
+	- integrated rcssbase into rcssserver.
+	- removed dynamic module loading.
+
 2008-10-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach.cpp:

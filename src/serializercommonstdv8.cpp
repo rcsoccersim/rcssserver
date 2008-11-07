@@ -90,7 +90,6 @@ SerializerCommonStdv8::serializeParam( std::ostream & strm,
 }
 
 namespace {
-
 const
 SerializerCommon &
 create()
@@ -98,11 +97,12 @@ create()
     return SerializerCommonStdv8::instance();
 }
 
-lib::RegHolder v8 = SerializerCommon::factory().autoReg( &create, 8 );
-lib::RegHolder v9 = SerializerCommon::factory().autoReg( &create, 9 );
-lib::RegHolder v10 = SerializerCommon::factory().autoReg( &create, 10 );
-lib::RegHolder v11 = SerializerCommon::factory().autoReg( &create, 11 );
-lib::RegHolder v12 = SerializerCommon::factory().autoReg( &create, 12 );
-
+RegHolder v8 = SerializerCommon::factory().autoReg( &create, 8 );
+RegHolder v9 = SerializerCommon::factory().autoReg( &create, 9 );
+RegHolder v10 = SerializerCommon::factory().autoReg( &create, 10 );
+RegHolder v11 = SerializerCommon::factory().autoReg( &create, 11 );
+RegHolder v12 = SerializerCommon::factory().autoReg( &create, 12 );
+RegHolder v13 = SerializerCommon::factory().autoReg( &create, 13 );
 }
+
 }

@@ -193,7 +193,7 @@ protected:
 
     tm m_real_time;
 
-    std::list< rcss::ResultSaver::Ptr > m_savers;
+    std::list< ResultSaver * > m_savers;
 
 public:
 

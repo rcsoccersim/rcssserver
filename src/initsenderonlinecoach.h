@@ -25,7 +25,7 @@
 
 #include "initsender.h"
 
-#include <rcssbase/lib/factory.hpp>
+#include <rcssbase/factory.hpp>
 
 class Stadium;
 class Player;
@@ -69,10 +69,10 @@ public:
 public:
     typedef std::auto_ptr< rcss::InitSenderOnlineCoach > Ptr;
     typedef Ptr (*Creator)( const Params & );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory & factory();
+    FactoryHolder & factory();
 
     virtual
     ~InitSenderOnlineCoach();

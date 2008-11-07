@@ -25,6 +25,8 @@
 
 #include "initsender.h"
 
+#include <rcssbase/factory.hpp>
+
 class Coach;
 
 namespace rcss {
@@ -64,11 +66,10 @@ public:
 
     typedef std::auto_ptr< rcss::InitSenderOfflineCoach > Ptr;
     typedef Ptr (*Creator)( const Params& );
-    typedef rcss::lib::Factory< Creator, int > Factory;
+    typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
-    Factory&
-    factory();
+    FactoryHolder & factory();
 
     virtual
     ~InitSenderOfflineCoach();
