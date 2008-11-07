@@ -1,3 +1,10 @@
+2008-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/main.cpp:
+	* src/serverparam.cpp:
+	- added the missing include file.
+	- creaned up the configuration directory creation.
+
 2008-11-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
