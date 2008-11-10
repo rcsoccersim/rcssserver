@@ -138,11 +138,6 @@ InitSenderMonitorV1::sendScore()
 
 }
 
-void
-InitSenderMonitorV1::sendTeamGraphic()
-{
-
-}
 
 void
 InitSenderMonitorV1::sendPlayMode()
@@ -284,13 +279,6 @@ InitSenderMonitorV3::sendScore()
                                 stadium().teamLeft(),
                                 stadium().teamRight() );
     transport() << std::ends << std::flush;
-}
-
-void
-InitSenderMonitorV3::sendTeamGraphic()
-{
-    // TODO
-    // serializer.serializeTeamGraphic( transport(), ...
 }
 
 void

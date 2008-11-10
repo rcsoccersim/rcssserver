@@ -1133,6 +1133,52 @@ Logger::writeGameLogV4()
 }
 
 void
+Logger::writeTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y )
+{
+    if ( ! isGameLogOpen() )
+    {
+        return;
+    }
+
+    M_observer->sendTeamGraphic( side, x, y );
+
+//     const XPMHolder * xpm = ( side == LEFT
+//                               ? M_stadium.teamLeft().teamGraphic( x, y )
+//                               : side == RIGHT
+//                               ? M_stadium.teamRight().teamGraphic( x, y )
+//                               : static_cast< const XPMHolder * >( 0 ) );
+//     if ( ! xpm )
+//     {
+//         return;
+//     }
+
+// #ifdef HAVE_SSTREAM
+//     std::ostringstream data;
+// #else
+//     std::ostrstream data;
+// #endif
+//     data << "(team_graphic_"
+//          << ( side == LEFT ? "l" : "r" )
+//          << " (" << x << " " << y << " "
+//          << *xpm << ")";
+
+// #ifndef HAVE_SSTREAM
+//     data << std::ends;
+// #endif
+
+//     std::string msg = data.str();
+
+// #ifndef HAVE_SSTREAM
+//     data.freeze( false );
+// #endif
+
+//     writeMsgToGameLog( MSG_BOARD, msg.c_str(), true );
+}
+
+
+void
 Logger::writeTextLog( const char * message,
                       const TextLogFlag flag )
 {

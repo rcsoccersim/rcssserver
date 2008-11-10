@@ -58,6 +58,10 @@ public:
     void sendMsg( const BoardType board,
                   const char * msg ) = 0;
 
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y ) = 0;
 };
 
 //===================================================================
@@ -131,7 +135,6 @@ protected:
       {
           return M_stadium;
       }
-
 };
 
 
@@ -178,6 +181,12 @@ public:
           BaseObserver< DispSenderMonitor >::sender().sendMsg( board, msg );
       }
 
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y )
+      {
+          BaseObserver< DispSenderMonitor >::sender().sendTeamGraphic( side, x, y );
+      }
 };
 
 
@@ -201,6 +210,10 @@ public:
     void sendMsg( const BoardType board,
                   const char * msg );
 
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y );
 };
 
 
@@ -224,6 +237,10 @@ public:
     void sendMsg( const BoardType board,
                   const char * msg );
 
+    //virtual
+    //void sendTeamGraphic( const Side side,
+    //                      const unsigned int x,
+    //                      const unsigned int y );
 };
 
 /*!
@@ -246,6 +263,10 @@ public:
     void sendMsg( const BoardType board,
                   const char * msg );
 
+    //virtual
+    //void sendTeamGraphic( const Side side,
+    //                      const unsigned int x,
+    //                      const unsigned int y );
 };
 
 
@@ -268,6 +289,11 @@ public:
 //     virtual
 //     void sendMsg( const BoardType board,
 //                   const char * msg );
+
+//     virtual
+//     void sendTeamGraphic( const Side side,
+//                           const unsigned int x,
+//                           const unsigned int y );
 // };
 
 
@@ -382,6 +408,13 @@ public:
       {
           BaseObserver< DispSenderLogger >::sender().sendMsg( board, msg );
       }
+
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y )
+      {
+          BaseObserver< DispSenderLogger >::sender().sendTeamGraphic( side, x, y );
+      }
 };
 
 
@@ -404,6 +437,11 @@ public:
     virtual
     void sendMsg( const BoardType board,
                   const char * msg );
+
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y );
 
 };
 

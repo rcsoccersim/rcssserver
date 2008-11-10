@@ -2,6 +2,21 @@
 
 	* src/dispsender.cpp:
 	* src/dispsender.h:
+	* src/field.cpp:
+	* src/initsendermonitor.cpp:
+	* src/initsendermonitor.h:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/monitor.cpp:
+	* src/monitor.h:
+	* src/serializer.h:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/team.h:
+	- reimplemented team_graphic senders.
+
+	* src/dispsender.cpp:
+	* src/dispsender.h:
 	* src/logger.cpp:
 	* src/logger.h:
 	* src/monitor.cpp:

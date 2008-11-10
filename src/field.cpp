@@ -1996,52 +1996,54 @@ Stadium::sendTeamGraphic( const Side side,
                           const unsigned int x,
                           const unsigned int y )
 {
-    const XPMHolder * holder = static_cast< const XPMHolder * >( 0 );
+    M_logger.writeTeamGraphic( side, x, y );
 
-    if ( side == LEFT )
-    {
-        holder = M_team_l->teamGraphic( x, y );
-    }
+//     const XPMHolder * holder = static_cast< const XPMHolder * >( 0 );
 
-    if ( side == RIGHT )
-    {
-        holder = M_team_r->teamGraphic( x, y );
-    }
+//     if ( side == LEFT )
+//     {
+//         holder = M_team_l->teamGraphic( x, y );
+//     }
 
-    if ( ! holder )
-    {
-        return;
-    }
+//     if ( side == RIGHT )
+//     {
+//         holder = M_team_r->teamGraphic( x, y );
+//     }
+
+//     if ( ! holder )
+//     {
+//         return;
+//     }
 
 
-#ifdef HAVE_SSTREAM
-    std::ostringstream data;
-#else
-    std::ostrstream data;
-#endif
-    data << "(team_graphic_"
-         << ( side == LEFT ? "l" : "r" )
-         << " (" << x << " " << y << " "
-         << *holder << ")";
+// #ifdef HAVE_SSTREAM
+//     std::ostringstream data;
+// #else
+//     std::ostrstream data;
+// #endif
+//     data << "(team_graphic_"
+//          << ( side == LEFT ? "l" : "r" )
+//          << " (" << x << " " << y << " "
+//          << *holder << ")";
 
-#ifndef HAVE_SSTREAM
-    data << std::ends;
-#endif
+// #ifndef HAVE_SSTREAM
+//     data << std::ends;
+// #endif
 
-    std::string msg = data.str();
+//     std::string msg = data.str();
 
-#ifndef HAVE_SSTREAM
-    data.freeze( false );
-#endif
+// #ifndef HAVE_SSTREAM
+//     data.freeze( false );
+// #endif
 
-    for ( MonitorCont::iterator i = M_monitors.begin();
-          i != M_monitors.end();
-          ++i )
-    {
-        (*i)->sendMsg( MSG_BOARD, msg.c_str() );
-    }
+//     for ( MonitorCont::iterator i = M_monitors.begin();
+//           i != M_monitors.end();
+//           ++i )
+//     {
+//         (*i)->sendMsg( MSG_BOARD, msg.c_str() );
+//     }
 
-    M_logger.writeMsgToGameLog( MSG_BOARD, msg.c_str(), true );
+//     M_logger.writeMsgToGameLog( MSG_BOARD, msg.c_str(), true );
 }
 
 

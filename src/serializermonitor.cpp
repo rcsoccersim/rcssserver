@@ -30,6 +30,7 @@
 #include "object.h"
 #include "player.h"
 #include "team.h"
+#include "xpmholder.h"
 
 namespace rcss {
 
@@ -64,6 +65,19 @@ SerializerMonitorStdv1::create()
 
     SerializerMonitor::Ptr ptr( new SerializerMonitorStdv1( cre_common() ) );
     return ptr;
+}
+
+void
+SerializerMonitorStdv1::serializeTeamGraphic( std::ostream & os,
+                                              const Side side,
+                                              const unsigned int x,
+                                              const unsigned int y,
+                                              const XPMHolder * xpm ) const
+{
+    os << "(team_graphic_"
+       << ( side == LEFT ? "l" : "r" )
+       << " (" << x << " " << y << " "
+       << *xpm << ")";
 }
 
 
@@ -292,17 +306,6 @@ SerializerMonitorStdv3::serializePlayerCounts( std::ostream & os,
         << player.arm().getCounter() << ' '
         << player.attentiontoCount() << ')';
 }
-
-void
-SerializerMonitorStdv3::serializeTeamGraphic( std::ostream & os,
-                                              const int x,
-                                              const int y,
-                                              const char * msg ) const
-{
-    os << "(team_graphic " << x << ' ' << y
-       << " \"" << msg << "\")";
-}
-
 
 /*
 //===================================================================

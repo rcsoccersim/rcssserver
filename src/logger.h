@@ -145,6 +145,10 @@ private:
 
 public:
 
+    void writeTeamGraphic( const Side side,
+                           const unsigned int x,
+                           const unsigned int y );
+
     void writeTextLog( const char * message,
                        const TextLogFlag flag );
 

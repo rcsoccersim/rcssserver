@@ -34,6 +34,10 @@ class OnlineCoach;
 class XPMHolder;
 
 class Team {
+public:
+    typedef std::pair< unsigned int, unsigned int > GraphKey;
+    typedef std::map< GraphKey, XPMHolder * > GraphCont;
+
 private:
     Stadium * M_stadium;
 
@@ -64,10 +68,8 @@ private:
     std::map< int, int > M_ptype_count;
     std::map< int, int > M_ptype_used_count;
 
-    OnlineCoach *M_olcoach;
+    OnlineCoach * M_olcoach;
 
-    typedef std::pair< unsigned int, unsigned int > GraphKey;
-    typedef std::map< GraphKey, XPMHolder * > GraphCont;
     GraphCont M_graphics;
 
 
@@ -227,6 +229,12 @@ public:
     const
     XPMHolder * teamGraphic( const unsigned int x,
                              const unsigned int y ) const;
+
+    const
+    GraphCont & teamGraphics() const
+      {
+          return M_graphics;
+      }
 };
 
 #endif // _H_OBJECT

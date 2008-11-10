@@ -34,6 +34,7 @@
 #include "player.h"
 #include "team.h"
 #include "types.h"
+#include "xpmholder.h"
 
 #ifdef HAVE_SSTREAM
 #include <sstream>
@@ -221,19 +222,83 @@ Monitor::sendScore()
     }
 }
 
+
 void
-Monitor::sendTeamGraphic( const Side,
-                          const unsigned int,
-                          const unsigned int,
-                          const XPMHolder * )
+Monitor::sendTeamGraphics()
 {
-    // M_init_observer->sendTeamGraphic( side, x, y, holder );
+    const int MAX_SEND = 32;
+
+    int send_count = 0;
+//     int left_send_count = 0;
+//     int right_send_count = 0;
+
+    if ( M_left_sent_graphics.size() < M_stadium.teamLeft().teamGraphics().size() )
+    {
+        const Team::GraphCont::const_reverse_iterator end = M_stadium.teamLeft().teamGraphics().rend();
+        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamLeft().teamGraphics().rbegin();
+              it != end;
+              ++it )
+        {
+            if ( send_count >= MAX_SEND ) break;
+
+            if ( M_left_sent_graphics.find( it->first ) != M_left_sent_graphics.end() )
+            {
+                continue;
+            }
+
+//             std::cerr << "Monitor::sendTeamGraphics() send left "
+//                       << it->first.first << ','
+//                       << it->first.second
+//                       << '\n';
+            M_observer->sendTeamGraphic( LEFT,
+                                         it->first.first, it->first.second );
+            M_left_sent_graphics.insert( it->first );
+            ++send_count;
+//             ++left_send_count;
+        }
+    }
+
+    if ( M_right_sent_graphics.size() < M_stadium.teamRight().teamGraphics().size() )
+    {
+        const Team::GraphCont::const_reverse_iterator end = M_stadium.teamRight().teamGraphics().rend();
+        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamRight().teamGraphics().rbegin();
+              it != end;
+              ++it )
+        {
+            if ( send_count >= MAX_SEND ) break;
+
+            if ( M_right_sent_graphics.find( it->first ) != M_right_sent_graphics.end() )
+            {
+                continue;
+            }
+
+//             std::cerr << "Monitor::sendTeamGraphics() send right "
+//                       << it->first.first << ','
+//                       << it->first.second
+//                       << '\n';
+            M_observer->sendTeamGraphic( RIGHT,
+                                         it->first.first, it->first.second );
+            M_right_sent_graphics.insert( it->first );
+            ++send_count;
+//             ++right_send_count;
+        }
+    }
+
+//     if ( send_count > 0 )
+//     {
+//         std::cerr << "Monitor::sendTeamGraphics() send_count=" << send_count << '\n'
+//                   << "                            left  send_count=" << left_send_count << '\n'
+//                   << "                            right send_count=" << right_send_count << '\n'
+//                   << std::flush;
+//     }
 }
+
 
 void
 Monitor::sendShow()
 {
     M_observer->sendShow();
+    sendTeamGraphics();
 }
 
 int
