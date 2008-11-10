@@ -27,6 +27,9 @@
 class STDOutSaver
     : public ResultSaver {
 public:
+
+    static const std::string STDOUTSAVER;
+
     STDOutSaver();
 
     virtual

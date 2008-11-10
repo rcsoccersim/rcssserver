@@ -29,8 +29,8 @@ namespace rcss {
 class SerializerOnlineCoachStdv6
     : public SerializerOnlineCoachStdv1 {
 protected:
-    SerializerOnlineCoachStdv6( const SerializerCommon & common,
-                                const SerializerCoach & coach );
+    SerializerOnlineCoachStdv6( const SerializerCommon::Ptr common,
+                                const SerializerCoach::Ptr coach );
 
 public:
     virtual
@@ -38,7 +38,7 @@ public:
 
     static
     const
-    SerializerOnlineCoachStdv6 * instance();
+    Ptr create();
 
     virtual
     void

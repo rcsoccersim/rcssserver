@@ -53,6 +53,7 @@
 #include "heteroplayer.h"
 #include "random.h"
 #include "referee.h"
+#include "resultsaver.hpp"
 #include "serverparam.h"
 #include "team.h"
 #include "types.h"
@@ -179,19 +180,27 @@ Stadium::Stadium()
 
 Stadium::~Stadium()
 {
-    for ( std::list< ResultSaver * >::iterator i = m_savers.begin();
-          i != m_savers.end();
+    for ( std::list< ResultSaver * >::iterator i = M_savers.begin();
+          i != M_savers.end();
           ++i )
     {
-        delete *i;
+        if ( *i )
+        {
+            delete *i;
+            *i = static_cast< ResultSaver * >( 0 );
+        }
     }
-    m_savers.clear();
+    M_savers.clear();
 
     for ( std::list< Referee * >::iterator i = M_referees.begin();
           i != M_referees.end();
           ++i )
     {
-        delete *i;
+        if ( *i )
+        {
+            delete *i;
+            *i = static_cast< Referee * >( 0 );
+        }
     }
     M_referees.clear();
 
@@ -199,7 +208,8 @@ Stadium::~Stadium()
           i != M_monitors.end();
           ++i )
     {
-        if ( !(*i)->connected() )
+        //if ( !(*i)->connected() )
+        if ( *i )
         {
             delete *i;
             *i = static_cast< Monitor * >( 0 );
@@ -264,8 +274,10 @@ Stadium::init()
     // we create the result savers now, so that if there are any
     // errors creating them, it will be reported before
     // the game starts, not after it has finished.
-    std::list< const char * > savers = ResultSaver::factory().list();
-    for ( std::list< const char * >::iterator i = savers.begin();
+    //std::list< const char * > savers = ResultSaver::factory().list();
+    //for ( std::list< const char * >::iterator i = savers.begin();
+    std::list< std::string > savers = ResultSaver::factory().list();
+    for ( std::list< std::string >::iterator i = savers.begin();
           i != savers.end();
           ++i )
     {
@@ -274,7 +286,7 @@ Stadium::init()
         {
             ResultSaver::Ptr saver = creator();
             std::cout << saver->getName() << ": Ready\n";
-            m_savers.push_back( saver.release() );
+            M_savers.push_back( saver.release() );
         }
         else
         {
@@ -2747,14 +2759,14 @@ save_results( ResultSaver::team_id id,
 void
 Stadium::saveResults()
 {
-    if ( m_savers.empty() )
+    if ( M_savers.empty() )
     {
         return;
     }
 
     std::cout << "\nSaving Results:"  << std::endl;
-    for ( std::list< ResultSaver * >::iterator i = m_savers.begin();
-          i != m_savers.end();
+    for ( std::list< ResultSaver * >::iterator i = M_savers.begin();
+          i != M_savers.end();
           ++i )
     {
         std::cout << "\t" << (*i)->getName() << ": saving...\n";

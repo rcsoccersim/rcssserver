@@ -122,7 +122,7 @@ Logger::setSenders()
         return false;
     }
 
-    const rcss::SerializerMonitor * ser = ser_cre();
+    const rcss::SerializerMonitor::Ptr ser = ser_cre();
     if ( ! ser )
     {
         return false;
@@ -134,7 +134,7 @@ Logger::setSenders()
     {
         rcss::InitSenderLogger::Params init_params( *M_game_log,
                                                     *this,
-                                                    *ser,
+                                                    ser,
                                                     M_stadium );
         rcss::InitSenderLogger::Creator init_cre;
         if ( ! rcss::InitSenderLogger::factory().getCreator( init_cre, log_version ) )
@@ -148,7 +148,7 @@ Logger::setSenders()
     {
         rcss::DispSenderLogger::Params disp_params( *M_game_log,
                                                     *this,
-                                                    *ser,
+                                                    ser,
                                                     M_stadium );
         rcss::DispSenderLogger::Creator disp_cre;
         if ( ! rcss::DispSenderLogger::factory().getCreator( disp_cre, log_version ) )

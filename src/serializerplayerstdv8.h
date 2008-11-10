@@ -29,7 +29,8 @@ namespace rcss {
 class SerializerPlayerStdv8
     : public SerializerPlayerStdv7 {
 protected:
-    SerializerPlayerStdv8( const SerializerCommon & common );
+    explicit
+    SerializerPlayerStdv8( const SerializerCommon::Ptr common );
 
 public:
     virtual
@@ -37,7 +38,7 @@ public:
 
     static
     const
-    SerializerPlayerStdv8 * instance();
+    SerializerPlayer::Ptr create();
 
 
     virtual

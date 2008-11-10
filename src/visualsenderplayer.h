@@ -30,6 +30,8 @@
 
 #include <rcssbase/factory.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 class Stadium;
 
 namespace rcss {
@@ -54,12 +56,12 @@ public:
     public:
         std::ostream & M_transport;
         const Player & M_self;
-        const SerializerPlayer & M_serializer;
+        const boost::shared_ptr< SerializerPlayer > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const SerializerPlayer & serializer,
+                const boost::shared_ptr< SerializerPlayer > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -70,7 +72,7 @@ public:
 
 
 private:
-    const SerializerPlayer & M_serializer;
+    const boost::shared_ptr< SerializerPlayer > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
@@ -96,7 +98,7 @@ protected:
     const
     SerializerPlayer & serializer() const
       {
-          return M_serializer;
+          return *M_serializer;
       }
 
     const

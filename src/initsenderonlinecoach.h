@@ -27,6 +27,8 @@
 
 #include <rcssbase/factory.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 class Stadium;
 class Player;
 class OnlineCoach;
@@ -52,12 +54,12 @@ public:
     public:
         std::ostream & M_transport;
         const OnlineCoach & M_self;
-        const SerializerOnlineCoach & M_serializer;
+        const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const OnlineCoach & self,
-                const SerializerOnlineCoach & serializer,
+                const boost::shared_ptr< SerializerOnlineCoach > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -84,7 +86,7 @@ protected:
     const
     SerializerOnlineCoach & serializer() const
       {
-          return M_serializer;
+          return *M_serializer;
       }
 
     const
@@ -107,7 +109,7 @@ public:
     void sendPlayerClangVer( const Player & ) = 0;
 
 private:
-    const SerializerOnlineCoach & M_serializer;
+    const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for

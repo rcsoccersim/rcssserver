@@ -27,6 +27,8 @@
 
 #include <rcssbase/factory.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 class Coach;
 
 namespace rcss {
@@ -48,19 +50,19 @@ class InitSenderOfflineCoach
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        const Coach & m_self;
-        const SerializerCoach & m_ser;
-        const Stadium & m_stadium;
+        std::ostream & M_transport;
+        const Coach & M_self;
+        const boost::shared_ptr< SerializerCoach > M_serializer;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Coach & self,
-                const SerializerCoach & ser,
+                const boost::shared_ptr< SerializerCoach > serializer,
                 const Stadium & stadium )
-            : m_transport( transport )
-            , m_self( self )
-            , m_ser( ser )
-            , m_stadium( stadium )
+            : M_transport( transport ),
+              M_self( self ),
+              M_serializer( serializer ),
+              M_stadium( stadium )
           { }
     };
 
@@ -81,7 +83,7 @@ protected:
     const
     SerializerCoach & serializer() const
       {
-          return M_serializer;
+          return *M_serializer;
       }
 
     const
@@ -97,7 +99,7 @@ protected:
       }
 
 private:
-    const SerializerCoach & M_serializer;
+    const boost::shared_ptr< SerializerCoach > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for

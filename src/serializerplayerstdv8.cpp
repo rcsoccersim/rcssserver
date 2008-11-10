@@ -25,7 +25,7 @@
 
 namespace rcss {
 
-SerializerPlayerStdv8::SerializerPlayerStdv8( const SerializerCommon & common )
+SerializerPlayerStdv8::SerializerPlayerStdv8( const SerializerCommon::Ptr common )
     : SerializerPlayerStdv7( common )
 {
 
@@ -35,21 +35,6 @@ SerializerPlayerStdv8::~SerializerPlayerStdv8()
 {
 
 }
-
-const
-SerializerPlayerStdv8 *
-SerializerPlayerStdv8::instance()
-{
-    rcss::SerializerCommon::Creator cre;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 8 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerPlayerStdv8 ser( cre() );
-    return &ser;
-}
-
 
 void
 SerializerPlayerStdv8::serializeVisualPlayer( std::ostream & strm,
@@ -300,19 +285,28 @@ SerializerPlayerStdv8::serializeParam( std::ostream & strm,
     strm << "(" << name << " \"" << param << "\")";
 }
 
-namespace {
 const
-SerializerPlayer *
-create()
+SerializerPlayer::Ptr
+SerializerPlayerStdv8::create()
 {
-    return SerializerPlayerStdv8::instance();
+    SerializerCommon::Creator cre;
+    if ( ! SerializerCommon::factory().getCreator( cre, 8 ) )
+    {
+        return SerializerPlayer::Ptr();
+    }
+
+    SerializerPlayer::Ptr ptr( new SerializerPlayerStdv8( cre() ) );
+    return ptr;
 }
 
-RegHolder v8 = SerializerPlayer::factory().autoReg( &create, 8 );
-RegHolder v9 = SerializerPlayer::factory().autoReg( &create, 9 );
-RegHolder v10 = SerializerPlayer::factory().autoReg( &create, 10 );
-RegHolder v11 = SerializerPlayer::factory().autoReg( &create, 11 );
-RegHolder v12 = SerializerPlayer::factory().autoReg( &create, 12 );
+
+namespace {
+
+RegHolder v8 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv8::create, 8 );
+RegHolder v9 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv8::create, 9 );
+RegHolder v10 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv8::create, 10 );
+RegHolder v11 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv8::create, 11 );
+RegHolder v12 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv8::create, 12 );
 }
 
 }

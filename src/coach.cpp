@@ -90,7 +90,7 @@ chop_last_parenthesis( char *str,
 }
 
 Coach::Coach( Stadium & stadium )
-    : M_init_observer_coach( NULL ),
+    : M_init_observer_coach( static_cast< rcss::InitObserverOfflineCoach * >( 0 ) ),
       M_observer( new rcss::ObserverCoach ),
       M_stadium( stadium ),
       M_assigned( false ),
@@ -101,6 +101,21 @@ Coach::Coach( Stadium & stadium )
       M_done_received( false )
 {
 
+}
+
+Coach::~Coach()
+{
+    if ( M_init_observer_coach )
+    {
+        delete M_init_observer_coach;
+        M_init_observer_coach = static_cast< rcss::InitObserverOfflineCoach * >( 0 );
+    }
+
+    if ( M_observer )
+    {
+        delete M_observer;
+        M_observer = static_cast< rcss::ObserverCoach * >( 0 );
+    }
 }
 
 void
@@ -123,7 +138,7 @@ Coach::setSenders( const double & client_version )
         return false;
     }
 
-    const rcss::SerializerCoach* ser = ser_cre();
+    const rcss::SerializerCoach::Ptr ser = ser_cre();
     if( ! ser )
     {
         return false;
@@ -132,7 +147,7 @@ Coach::setSenders( const double & client_version )
     // visual
     rcss::VisualSenderCoach::Params visual_params( getTransport(),
                                                    *this,
-                                                   *ser,
+                                                   ser,
                                                    M_stadium );
     rcss::VisualSenderCoach::Creator visual_cre;
     if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
@@ -145,7 +160,7 @@ Coach::setSenders( const double & client_version )
     // audio
     rcss::AudioSenderCoach::Params audio_params( getTransport(),
                                                  *this,
-                                                 *ser,
+                                                 ser,
                                                  M_stadium );
 
     rcss::AudioSenderCoach::Creator audio_cre;
@@ -159,7 +174,7 @@ Coach::setSenders( const double & client_version )
     // init
     rcss::InitSenderOfflineCoach::Params init_params( getTransport(),
                                                       *this,
-                                                      *ser,
+                                                      ser,
                                                       M_stadium );
     rcss::InitSenderOfflineCoach::Creator init_cre;
     if ( ! rcss::InitSenderOfflineCoach::factory().getCreator( init_cre,
@@ -1129,6 +1144,18 @@ OnlineCoach::~OnlineCoach()
         M_message_queue.pop_front();
         delete msg;
     }
+
+    if ( M_init_observer_olcoach )
+    {
+        delete M_init_observer_olcoach;
+        M_init_observer_olcoach = static_cast< rcss::InitObserverOnlineCoach * >( 0 );
+    }
+
+    if ( M_observer )
+    {
+        delete M_observer;
+        M_observer = static_cast< rcss::ObserverCoach * >( 0 );
+    }
 }
 
 void
@@ -1167,7 +1194,7 @@ OnlineCoach::setSenders( const double & client_version )
         return false;
     }
 
-    const rcss::SerializerOnlineCoach* ser = creator();
+    const rcss::SerializerOnlineCoach::Ptr ser = creator();
     if ( ! ser )
     {
         return false;
@@ -1177,7 +1204,7 @@ OnlineCoach::setSenders( const double & client_version )
     // visual
     rcss::VisualSenderCoach::Params visual_params( getTransport(),
                                                    *this,
-                                                   ser->coachSerializer(),
+                                                   ser->coachSerializerPtr(),
                                                    M_stadium );
     rcss::VisualSenderCoach::Creator visual_cre;
     if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
@@ -1190,7 +1217,7 @@ OnlineCoach::setSenders( const double & client_version )
     // audio
     rcss::AudioSenderOnlineCoach::Params audio_params( getTransport(),
                                                        *this,
-                                                       *ser,
+                                                       ser,
                                                        M_stadium );
     rcss::AudioSenderOnlineCoach::Creator audio_cre;
     if ( ! rcss::AudioSenderOnlineCoach::factory().getCreator( audio_cre,
@@ -1203,7 +1230,7 @@ OnlineCoach::setSenders( const double & client_version )
     // init
     rcss::InitSenderOnlineCoach::Params init_params( getTransport(),
                                                      *this,
-                                                     *ser,
+                                                     ser,
                                                      M_stadium );
     rcss::InitSenderOnlineCoach::Creator init_cre;
     if ( ! rcss::InitSenderOnlineCoach::factory().getCreator( init_cre,

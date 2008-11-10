@@ -24,8 +24,12 @@
 #define RCSSBODYSENDER_H
 
 #include "sender.h"
+
 #include "observer.h"
+
 #include <rcssbase/factory.hpp>
+
+#include <boost/shared_ptr.hpp>
 
 class Player;
 
@@ -45,7 +49,7 @@ class SerializerPlayer;
 class BodySender
     : protected Sender {
 public:
-    BodySender( std::ostream& transport );
+    BodySender( std::ostream & transport );
 
     virtual
     ~BodySender();
@@ -53,50 +57,6 @@ public:
     virtual
     void sendBody() = 0;
 };
-
-/*!
-//===================================================================
-//
-//  CLASS: BodyObserver
-//
-//  DESC: Interface for an object that receives sense body information.
-//
-//===================================================================
-*/
-
-// template< typename S >
-// class BodyObserver
-//     : protected BaseObserver< S >
-// {
-// public:
-//     typedef S BodySender;
-
-//     BodyObserver()
-//       {}
-
-//     BodyObserver( BodySender& sender )
-//         : BaseObserver< BodySender >( sender )
-//       {}
-
-//     BodyObserver( std::auto_ptr< BodySender > sender )
-//         : BaseObserver< BodySender >( sender )
-//       {}
-
-//     ~BodyObserver()
-//       {}
-
-//     void
-//     setBodySender( BodySender& sender )
-//       { BaseObserver< BodySender >::setSender( sender ); }
-
-//     void
-//     setBodySender( std::auto_ptr< BodySender > sender )
-//       { BaseObserver< BodySender >::setSender( sender ); }
-
-//     void
-//     sendBody()
-//       { BaseObserver< BodySender >::sender().sendBody(); }
-// };
 
 /*!
 //===================================================================
@@ -113,17 +73,17 @@ class BodySenderPlayer
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        const Player & m_self;
-        const SerializerPlayer & m_ser;
+        std::ostream & M_transport;
+        const Player & M_self;
+        const boost::shared_ptr< SerializerPlayer > M_serializer;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const SerializerPlayer & ser )
-            : m_transport( transport )
-            , m_self( self )
-            , m_ser( ser )
-          {}
+                const boost::shared_ptr< SerializerPlayer > ser )
+            : M_transport( transport ),
+              M_self( self ),
+              M_serializer( ser )
+          { }
     };
 
     typedef std::auto_ptr< BodySenderPlayer > Ptr;
@@ -142,7 +102,7 @@ protected:
     const
     SerializerPlayer & serializer() const
       {
-          return M_serializer;
+          return *M_serializer;
       }
 
     const
@@ -152,7 +112,7 @@ protected:
       }
 
 private:
-    const SerializerPlayer & M_serializer;
+    const boost::shared_ptr< SerializerPlayer > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       BodyObserver and BodyObserver should have virtual functions for

@@ -87,8 +87,17 @@ Monitor::Monitor( Stadium & stadium,
 
 Monitor::~Monitor()
 {
-    delete M_init_observer;
-    M_init_observer = NULL;
+    if ( M_init_observer )
+    {
+        delete M_init_observer;
+        M_init_observer = static_cast< rcss::InitObserverMonitor * >( 0 );
+    }
+
+    if ( M_observer )
+    {
+        delete M_observer;
+        M_observer = static_cast< rcss::ObserverMonitor * >( 0 );
+    }
 }
 
 void
@@ -112,8 +121,7 @@ Monitor::parseMsg( const char * msg,
 bool
 Monitor::setSenders()
 {
-    std::cerr << "Monitor::setSenders() version=" << version() << std::endl;
-
+    //std::cerr << "Monitor::setSenders() version=" << version() << std::endl;
     rcss::SerializerMonitor::Creator ser_cre;
     if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre,
                                                           (int)version() ) )
@@ -123,7 +131,7 @@ Monitor::setSenders()
         return false;
     }
 
-    const rcss::SerializerMonitor * ser = ser_cre();
+    const rcss::SerializerMonitor::Ptr ser = ser_cre();
     if ( ! ser )
     {
         std::cout << "Could not create monitor serializer. " << std::endl;
@@ -136,7 +144,7 @@ Monitor::setSenders()
     {
         rcss::DispSenderMonitor::Params disp_params( getTransport(),
                                                      *this,
-                                                     *ser,
+                                                     ser,
                                                      M_stadium );
         rcss::DispSenderMonitor::Creator disp_cre;
         if ( ! rcss::DispSenderMonitor::factory().getCreator( disp_cre,
@@ -154,7 +162,7 @@ Monitor::setSenders()
     {
         rcss::InitSenderMonitor::Params init_params( getTransport(),
                                                      *this,
-                                                     *ser,
+                                                     ser,
                                                      M_stadium );
         rcss::InitSenderMonitor::Creator init_cre;
         if ( ! rcss::InitSenderMonitor::factory().getCreator( init_cre,

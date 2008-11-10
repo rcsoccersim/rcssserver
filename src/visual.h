@@ -53,54 +53,6 @@ public:
 };
 
 
-/*!
-//===================================================================
-//
-//  CLASS: Observer
-//
-//  DESC: Interface for an object that receives visual information.
-//
-//===================================================================
-*/
-
-// template< typename S >
-// class Observer
-//     : protected BaseObserver< S >
-// {
-// public:
-//     typedef S VisualSender;
-
-//     Observer()
-//       {}
-
-//     Observer( VisualSender& sender )
-//         : BaseObserver< VisualSender >( sender )
-//       {}
-
-//     Observer( std::auto_ptr< VisualSender > sender )
-//         : BaseObserver< VisualSender >( sender )
-//       {}
-
-//     ~Observer()
-//       {}
-
-//     void
-//     setVisualSender( VisualSender& sender )
-//       {
-//           BaseObserver< VisualSender >::setSender( sender );
-//       }
-
-//     void
-//     setVisualSender( std::auto_ptr< VisualSender > sender )
-//       {
-//           BaseObserver< VisualSender >::setSender( sender );
-//       }
-
-//     void
-//     sendVisual()
-//       { BaseObserver< VisualSender >::sender().sendVisual(); }
-// };
-
 }
 
 #endif

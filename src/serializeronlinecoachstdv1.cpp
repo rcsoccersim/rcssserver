@@ -23,8 +23,8 @@
 
 namespace rcss {
 
-SerializerOnlineCoachStdv1::SerializerOnlineCoachStdv1( const SerializerCommon & common,
-                                                        const SerializerCoach & coach )
+SerializerOnlineCoachStdv1::SerializerOnlineCoachStdv1( const SerializerCommon::Ptr common,
+                                                        const SerializerCoach::Ptr coach )
     : SerializerOnlineCoach( common, coach )
 {
 
@@ -33,26 +33,6 @@ SerializerOnlineCoachStdv1::SerializerOnlineCoachStdv1( const SerializerCommon &
 SerializerOnlineCoachStdv1::~SerializerOnlineCoachStdv1()
 {
 
-}
-
-const
-SerializerOnlineCoachStdv1 *
-SerializerOnlineCoachStdv1::instance()
-{
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 1 ) )
-    {
-        return NULL;
-    }
-
-    rcss::SerializerCoach::Creator cre_coach;
-    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 1 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerOnlineCoachStdv1 ser( cre_common(), *cre_coach() );
-    return &ser;
 }
 
 void
@@ -99,18 +79,32 @@ SerializerOnlineCoachStdv1::serializeChangedPlayer( std::ostream &,
 
 }
 
-namespace {
-const SerializerOnlineCoach *
-create()
+const
+SerializerOnlineCoach::Ptr
+SerializerOnlineCoachStdv1::create()
 {
-    return SerializerOnlineCoachStdv1::instance();
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 1 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerCoach::Creator cre_coach;
+    if ( ! SerializerCoach::factory().getCreator( cre_coach, 1 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerOnlineCoach::Ptr ptr( new SerializerOnlineCoachStdv1( cre_common(), cre_coach() ) );
+    return ptr;
 }
 
-RegHolder v1 = SerializerOnlineCoach::factory().autoReg( &create, 1 );
-RegHolder v2 = SerializerOnlineCoach::factory().autoReg( &create, 2 );
-RegHolder v3 = SerializerOnlineCoach::factory().autoReg( &create, 3 );
-RegHolder v4 = SerializerOnlineCoach::factory().autoReg( &create, 4 );
-RegHolder v5 = SerializerOnlineCoach::factory().autoReg( &create, 5 );
+namespace {
+RegHolder v1 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv1::create, 1 );
+RegHolder v2 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv1::create, 2 );
+RegHolder v3 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv1::create, 3 );
+RegHolder v4 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv1::create, 4 );
+RegHolder v5 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv1::create, 5 );
 }
 
 }

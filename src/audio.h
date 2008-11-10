@@ -23,13 +23,18 @@
 #define RCSSSERVER_AUDIO_H
 
 #include "sender.h"
+
 #include "observer.h"
 #include "param.h"
 #include "types.h"
+
+#include <rcssbase/factory.hpp>
+
+#include <boost/shared_ptr.hpp>
+
 #include <string>
 #include <map>
 #include <list>
-#include <rcssbase/factory.hpp>
 
 
 class Coach;
@@ -213,29 +218,28 @@ public:
 
 class SerializerPlayer;
 
-
 class AudioSenderPlayer
     : public AudioSender {
-protected:
-    Player& M_listener;
-    const SerializerPlayer & M_serializer;
+private:
+    Player & M_listener;
+    const boost::shared_ptr< SerializerPlayer > M_serializer;
 
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        Player & m_listener;
-        const SerializerPlayer & m_serializer;
-        const Stadium & m_stadium;
+        std::ostream & M_transport;
+        Player & M_listener;
+        const boost::shared_ptr< SerializerPlayer > M_serializer;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 Player & listener,
-                const SerializerPlayer & serializer,
+                const boost::shared_ptr< SerializerPlayer > serializer,
                 const Stadium & stadium )
-                : m_transport( transport )
-                , m_listener( listener )
-                , m_serializer( serializer )
-                , m_stadium( stadium )
+            : M_transport( transport ),
+              M_listener( listener ),
+              M_serializer( serializer ),
+              M_stadium( stadium )
           { }
     };
 
@@ -272,6 +276,17 @@ public:
       { }
 
 protected:
+
+    Player & listener() const
+      {
+          return M_listener;
+      }
+
+    const
+    SerializerPlayer & serializer() const
+      {
+          return *M_serializer;
+      }
 
     // These predicate methods allow the send funtions to change the
     // data contstruction without having to rewrite the predicate.  It
@@ -540,28 +555,28 @@ protected:
 
 class SerializerCoach;
 
-
 class AudioSenderCoach
     : public AudioSender {
-protected:
+private:
     Coach & M_listener;
-    const SerializerCoach & M_serializer;
+    const boost::shared_ptr< SerializerCoach > M_serializer;
+
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        Coach & m_listener;
-        const SerializerCoach & m_serializer;
-        const Stadium & m_stadium;
+        std::ostream & M_transport;
+        Coach & M_listener;
+        const boost::shared_ptr< SerializerCoach > M_serializer;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 Coach & listener,
-                const SerializerCoach & serializer,
+                const boost::shared_ptr< SerializerCoach > serializer,
                 const Stadium & stadium )
-            : m_transport( transport )
-            , m_listener( listener )
-            , m_serializer( serializer )
-            , m_stadium( stadium )
+            : M_transport( transport ),
+              M_listener( listener ),
+              M_serializer( serializer ),
+              M_stadium( stadium )
           { }
     };
 
@@ -578,6 +593,18 @@ public:
     ~AudioSenderCoach();
 
 protected:
+
+    Coach & listener() const
+      {
+          return M_listener;
+      }
+
+    const
+    SerializerCoach & serializer() const
+      {
+          return *M_serializer;
+      }
+
     virtual
     bool generalPredicate() const;
 };
@@ -630,30 +657,32 @@ public:
                           const char * msg );
 };
 
+
 class SerializerOnlineCoach;
 
 class AudioSenderOnlineCoach
     : public AudioSender {
-protected:
+private:
     OnlineCoach & M_listener;
-    const SerializerOnlineCoach & M_serializer;
+    const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+
 public:
     class Params {
     public:
-        std::ostream & m_transport;
-        OnlineCoach & m_listener;
-        const SerializerOnlineCoach & m_serializer;
-        const Stadium & m_stadium;
+        std::ostream & M_transport;
+        OnlineCoach & M_listener;
+        const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+        const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 OnlineCoach & listener,
-                const SerializerOnlineCoach & serializer,
+                const boost::shared_ptr< SerializerOnlineCoach > serializer,
                 const Stadium & stadium )
-            : m_transport( transport )
-            , m_listener( listener )
-            , m_serializer( serializer )
-            , m_stadium( stadium )
-          {}
+            : M_transport( transport ),
+              M_listener( listener ),
+              M_serializer( serializer ),
+              M_stadium( stadium )
+          { }
     };
 
 public:
@@ -668,6 +697,18 @@ public:
     ~AudioSenderOnlineCoach();
 
 protected:
+
+    OnlineCoach & listener() const
+      {
+          return M_listener;
+      }
+
+    const
+    SerializerOnlineCoach & serializer() const
+      {
+          return *M_serializer;
+      }
+
     virtual
     bool generalPredicate() const;
 

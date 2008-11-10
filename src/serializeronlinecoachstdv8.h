@@ -29,8 +29,8 @@ namespace rcss {
 class SerializerOnlineCoachStdv8
     : public SerializerOnlineCoachStdv7 {
 protected:
-    SerializerOnlineCoachStdv8( const SerializerCommon & common,
-                                const SerializerCoach & coach );
+    SerializerOnlineCoachStdv8( const SerializerCommon::Ptr common,
+                                const SerializerCoach::Ptr coach );
 
 public:
     virtual
@@ -38,7 +38,7 @@ public:
 
     static
     const
-    SerializerOnlineCoachStdv8 * instance();
+    Ptr create();
 
     virtual
     void serializePlayerClangVer( std::ostream & strm,

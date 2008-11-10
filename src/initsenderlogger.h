@@ -27,6 +27,8 @@
 
 #include <rcssbase/factory.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 class Logger;
 
 namespace rcss {
@@ -40,17 +42,17 @@ public:
     public:
         std::ostream & M_transport;
         const Logger & M_self;
-        const SerializerMonitor & M_serializer;
+        const boost::shared_ptr< SerializerMonitor > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Logger & self,
-                const SerializerMonitor & serializer,
+                const boost::shared_ptr< SerializerMonitor > serializer,
                 const Stadium & stadium )
-            : M_transport( transport )
-            , M_self( self )
-            , M_serializer( serializer )
-            , M_stadium( stadium )
+            : M_transport( transport ),
+              M_self( self ),
+              M_serializer( serializer ),
+              M_stadium( stadium )
           { }
     };
 
@@ -60,7 +62,7 @@ public:
 
 private:
 
-    const SerializerMonitor & M_serializer;
+    const boost::shared_ptr< SerializerMonitor > M_serializer;
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
       stuff like velocity, stamina, etc */
@@ -82,7 +84,7 @@ protected:
     const
     SerializerMonitor & serializer() const
       {
-          return M_serializer;
+          return *M_serializer;
       }
 
     const

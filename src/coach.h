@@ -63,6 +63,9 @@ public:
     explicit
     Coach( Stadium & stadim );
 
+    virtual
+    ~Coach();
+
     void disable();
 
     virtual
@@ -161,7 +164,7 @@ private:
     int M_freeform_messages_said;
     int M_freeform_messages_allowed;
 
-    std::deque< rcss::clang::Msg* > M_message_queue;
+    std::deque< rcss::clang::Msg * > M_message_queue;
 
     int M_define_messages_left;
     int M_advice_messages_left;

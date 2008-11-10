@@ -25,7 +25,7 @@
 
 namespace rcss {
 
-SerializerCoachStdv13::SerializerCoachStdv13( const SerializerCommon & common )
+SerializerCoachStdv13::SerializerCoachStdv13( const SerializerCommon::Ptr common )
     : SerializerCoachStdv8( common )
 {
 
@@ -35,20 +35,6 @@ SerializerCoachStdv13::SerializerCoachStdv13( const SerializerCommon & common )
 SerializerCoachStdv13::~SerializerCoachStdv13()
 {
 
-}
-
-const
-SerializerCoachStdv13 *
-SerializerCoachStdv13::instance()
-{
-    rcss::SerializerCommon::Creator cre;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 13 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerCoachStdv13 ser( cre() );
-    return &ser;
 }
 
 void
@@ -104,16 +90,23 @@ SerializerCoachStdv13::serializeVisualPlayer( std::ostream & strm,
 }
 
 
-namespace {
-
 const
-SerializerCoach *
-create()
+SerializerCoach::Ptr
+SerializerCoachStdv13::create()
 {
-    return SerializerCoachStdv13::instance();
+    SerializerCommon::Creator cre;
+    if ( ! SerializerCommon::factory().getCreator( cre, 13 ) )
+    {
+        return SerializerCoach::Ptr();
+    }
+
+    SerializerCoach::Ptr ptr( new SerializerCoachStdv13( cre() ) );
+    return ptr;
 }
 
-RegHolder v13 = SerializerCoach::factory().autoReg( &create, 13 );
+
+namespace {
+RegHolder v13 = SerializerCoach::factory().autoReg( &SerializerCoachStdv13::create, 13 );
 }
 
 }

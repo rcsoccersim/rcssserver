@@ -51,7 +51,7 @@ VisualSenderCoach::factory()
 
 VisualSenderCoach::VisualSenderCoach( const Params & params )
     : VisualSender( params.M_transport ),
-      M_ser( params.M_ser ),
+      M_serializer( params.M_serializer ),
       M_self( params.M_self ),
       M_stadium( params.M_stadium )
 {

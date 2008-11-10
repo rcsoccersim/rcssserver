@@ -25,7 +25,7 @@
 
 namespace rcss {
 
-SerializerPlayerStdv13::SerializerPlayerStdv13( const SerializerCommon & common )
+SerializerPlayerStdv13::SerializerPlayerStdv13( const SerializerCommon::Ptr common )
     : SerializerPlayerStdv8( common )
 {
 
@@ -34,20 +34,6 @@ SerializerPlayerStdv13::SerializerPlayerStdv13( const SerializerCommon & common 
 SerializerPlayerStdv13::~SerializerPlayerStdv13()
 {
 
-}
-
-const
-SerializerPlayerStdv13 *
-SerializerPlayerStdv13::instance()
-{
-    rcss::SerializerCommon::Creator cre;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 13 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerPlayerStdv13 ser( cre() );
-    return &ser;
 }
 
 
@@ -163,15 +149,23 @@ SerializerPlayerStdv13::serializeFSPlayerState( std::ostream & strm,
     }
 }
 
-namespace {
+
 const
-SerializerPlayer *
-create()
+SerializerPlayer::Ptr
+SerializerPlayerStdv13::create()
 {
-    return SerializerPlayerStdv13::instance();
+    SerializerCommon::Creator cre;
+    if ( ! SerializerCommon::factory().getCreator( cre, 13 ) )
+    {
+        return SerializerPlayer::Ptr();
+    }
+
+    SerializerPlayer::Ptr ptr( new SerializerPlayerStdv13( cre() ) );
+    return ptr;
 }
 
-RegHolder v13 = SerializerPlayer::factory().autoReg( &create, 13 );
+namespace {
+RegHolder v13 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv13::create, 13 );
 }
 
 }

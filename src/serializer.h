@@ -26,10 +26,14 @@
 
 #include <rcssbase/factory.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 #include <iostream>
 
+class Ball;
 class PVector;
 class Player;
+class Team;
 
 namespace rcss {
 
@@ -39,17 +43,26 @@ class Msg;
 
 
 class SerializerCommon {
-protected:
-    SerializerCommon();
-
-    virtual
-    ~SerializerCommon();
 public:
-    typedef const SerializerCommon & (*Creator)();
+    typedef boost::shared_ptr< SerializerCommon > Ptr;
+    typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
     FactoryHolder & factory();
+
+private:
+
+    SerializerCommon( const SerializerCommon & ); // not used
+    SerializerCommon & operator=( const SerializerCommon & ); // not used
+
+protected:
+    SerializerCommon();
+
+public:
+
+    virtual
+    ~SerializerCommon();
 
     virtual
     void serializeServerParamBegin( std::ostream & ) const
@@ -127,9 +140,18 @@ public:
 
 
 class Serializer {
-public:
-    Serializer( const SerializerCommon & common )
-        : m_common( common )
+private:
+
+    const SerializerCommon::Ptr M_common;
+
+    Serializer(); // not used
+    Serializer( const Serializer & ); // not used
+    Serializer & operator=( const Serializer & ); // not used
+
+protected:
+    explicit
+    Serializer( const SerializerCommon::Ptr common )
+        : M_common( common )
       { }
 
 
@@ -137,10 +159,13 @@ protected:
     const
     SerializerCommon & commonSerializer() const
       {
-          return m_common;
+          return *M_common;
       }
 
 public:
+
+    virtual
+    ~Serializer();
 
     void serializeServerParamBegin( std::ostream & strm ) const
       {
@@ -229,23 +254,22 @@ public:
       {
           commonSerializer().serializeParam( strm, name, value );
       }
-
-private:
-    const SerializerCommon & m_common;
 };
 
 
 class SerializerPlayer
     : public Serializer {
 public:
-    typedef const SerializerPlayer* (*Creator)();
+    typedef boost::shared_ptr< SerializerPlayer > Ptr;
+    typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
     FactoryHolder & factory();
 
 protected:
-    SerializerPlayer( const SerializerCommon & common );
+    explicit
+    SerializerPlayer( const SerializerCommon::Ptr common );
 
     virtual
     ~SerializerPlayer();
@@ -703,14 +727,16 @@ public:
 class SerializerCoach
     : public Serializer {
 public:
-    typedef const rcss::SerializerCoach* (*Creator)();
+    typedef boost::shared_ptr< SerializerCoach > Ptr;
+    typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
     static
     FactoryHolder & factory();
 
 protected:
-    SerializerCoach( const SerializerCommon & common );
+    explicit
+    SerializerCoach( const SerializerCommon::Ptr common );
 
     virtual
     ~SerializerCoach();
@@ -840,12 +866,13 @@ public:
 class SerializerOnlineCoach
     : public Serializer {
 public:
-    typedef const rcss::SerializerOnlineCoach* (*Creator)();
+    typedef boost::shared_ptr< SerializerOnlineCoach > Ptr;
+    typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
 private:
 
-    const SerializerCoach & M_coach;
+    const SerializerCoach::Ptr M_coach;
 
 public:
 
@@ -854,8 +881,8 @@ public:
 
 protected:
 
-    SerializerOnlineCoach( const SerializerCommon & common,
-                           const SerializerCoach & cosch );
+    SerializerOnlineCoach( const SerializerCommon::Ptr common,
+                           const SerializerCoach::Ptr cosch );
 
     virtual
     ~SerializerOnlineCoach();
@@ -863,9 +890,15 @@ protected:
 
 public:
     const
-    SerializerCoach & coachSerializer() const
+    SerializerCoach::Ptr coachSerializerPtr() const
       {
           return M_coach;
+      }
+
+    const
+    SerializerCoach & coachSerializer() const
+      {
+          return *M_coach;
       }
 
     virtual
@@ -1015,6 +1048,109 @@ public:
 
 
 };
+
+
+
+/*!
+  \class SerializerMonitor
+  \brief base class of the serialization for monitors.
+*/
+class SerializerMonitor
+    : public Serializer {
+public:
+    typedef boost::shared_ptr< SerializerMonitor > Ptr;
+    typedef const Ptr (*Creator)();
+    typedef rcss::Factory< Creator, int > FactoryHolder;
+
+public:
+
+    static
+    FactoryHolder & factory();
+
+protected:
+
+    explicit
+    SerializerMonitor( const SerializerCommon::Ptr common );
+
+public:
+
+    virtual
+    ~SerializerMonitor();
+
+    virtual
+    void serializeTeam( std::ostream &,
+                        const int,
+                        const Team &,
+                        const Team & ) const
+      { }
+
+    virtual
+    void serializePlayMode( std::ostream &,
+                            const int,
+                            const PlayMode ) const
+      { }
+
+    virtual
+    void serializeShowBegin( std::ostream &,
+                             const int ) const
+      { }
+    virtual
+    void serializeShowEnd( std::ostream & ) const
+      { }
+    virtual
+    void serializePlayModeId( std::ostream &,
+                              const PlayMode ) const
+      { }
+    virtual
+    void serializeScore( std::ostream &,
+                         const Team &,
+                         const Team & ) const
+      { }
+    virtual
+    void serializeBall( std::ostream &,
+                        const Ball & ) const
+      { }
+
+    virtual
+    void serializePlayerBegin( std::ostream &,
+                               const Player & ) const
+      { }
+    virtual
+    void serializePlayerEnd( std::ostream & ) const
+      { }
+    virtual
+    void serializePlayerPos( std::ostream &,
+                             const Player & ) const
+      { }
+    virtual
+    void serializePlayerArm( std::ostream &,
+                             const Player & ) const
+      { }
+    virtual
+    void serializePlayerViewMode( std::ostream &,
+                                  const Player & ) const
+      { }
+    virtual
+    void serializePlayerStamina( std::ostream &,
+                                 const Player & ) const
+      { }
+    virtual
+    void serializePlayerFocus( std::ostream &,
+                               const Player & ) const
+      { }
+    virtual
+    void serializePlayerCounts( std::ostream &,
+                                const Player & ) const
+      { }
+
+    virtual
+    void serializeTeamGraphic( std::ostream &,
+                               const int,
+                               const int,
+                               const char * ) const
+      { }
+};
+
 
 }
 
