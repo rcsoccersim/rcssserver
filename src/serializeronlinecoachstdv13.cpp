@@ -23,8 +23,8 @@
 
 namespace rcss {
 
-SerializerOnlineCoachStdv13::SerializerOnlineCoachStdv13( const SerializerCommon & common,
-                                                          const SerializerCoach & coach )
+SerializerOnlineCoachStdv13::SerializerOnlineCoachStdv13( const SerializerCommon::Ptr common,
+                                                          const SerializerCoach::Ptr coach )
     : SerializerOnlineCoachStdv8( common, coach )
 {
 
@@ -36,34 +36,27 @@ SerializerOnlineCoachStdv13::~SerializerOnlineCoachStdv13()
 }
 
 const
-SerializerOnlineCoachStdv13 *
-SerializerOnlineCoachStdv13::instance()
+SerializerOnlineCoach::Ptr
+SerializerOnlineCoachStdv13::create()
 {
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 13 ) )
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 13 ) )
     {
-        return NULL;
+        return SerializerOnlineCoach::Ptr();
     }
 
-    rcss::SerializerCoach::Creator cre_coach;
-    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 13 ) )
+    SerializerCoach::Creator cre_coach;
+    if ( ! SerializerCoach::factory().getCreator( cre_coach, 13 ) )
     {
-        return NULL;
+        return SerializerOnlineCoach::Ptr();
     }
 
-    static SerializerOnlineCoachStdv13 ser( cre_common(), *cre_coach() );
-    return &ser;
+    SerializerOnlineCoach::Ptr ptr( new SerializerOnlineCoachStdv13( cre_common(), cre_coach() ) );
+    return ptr;
 }
 
 namespace {
-const
-SerializerOnlineCoach *
-create()
-{
-    return SerializerOnlineCoachStdv13::instance();
-}
-
-RegHolder v13 = SerializerOnlineCoach::factory().autoReg( &create, 13 );
+RegHolder v13 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv13::create, 13 );
 }
 
 }

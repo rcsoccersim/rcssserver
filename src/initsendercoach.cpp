@@ -51,10 +51,10 @@ InitSenderOfflineCoach::factory()
 
 InitSenderOfflineCoach::InitSenderOfflineCoach( const Params & params,
                                                 const boost::shared_ptr< InitSenderCommon > common )
-    : InitSender( params.m_transport, common ),
-      M_serializer( params.m_ser ),
-      M_self( params.m_self ),
-      M_stadium( params.m_stadium )
+    : InitSender( params.M_transport, common ),
+      M_serializer( params.M_serializer ),
+      M_self( params.M_self ),
+      M_stadium( params.M_stadium )
 {
 
 }
@@ -79,10 +79,10 @@ InitSenderOfflineCoach::~InitSenderOfflineCoach()
 InitSenderOfflineCoachV1::InitSenderOfflineCoachV1( const Params & params )
     : InitSenderOfflineCoach( params,
                               boost::shared_ptr< InitSenderCommon >
-                              ( new InitSenderCommonV1( params.m_transport,
-                                                        params.m_ser,
-                                                        params.m_stadium,
-                                                        (unsigned int)params.m_self.version() ) ) )
+                              ( new InitSenderCommonV1( params.M_transport,
+                                                        params.M_serializer,
+                                                        params.M_stadium,
+                                                        (unsigned int)params.M_self.version() ) ) )
 {
 
 }
@@ -133,10 +133,10 @@ InitSenderOfflineCoachV1::sendScore()
 InitSenderOfflineCoachV7::InitSenderOfflineCoachV7( const Params & params )
     : InitSenderOfflineCoachV1( params,
                                 boost::shared_ptr< rcss::InitSenderCommon >
-                                ( new InitSenderCommonV7( params.m_transport,
-                                                          params.m_ser,
-                                                          params.m_stadium,
-                                                          (unsigned int)params.m_self.version() ) ) )
+                                ( new InitSenderCommonV7( params.M_transport,
+                                                          params.M_serializer,
+                                                          params.M_stadium,
+                                                          (unsigned int)params.M_self.version() ) ) )
 {
 
 }
@@ -167,10 +167,10 @@ InitSenderOfflineCoachV7::~InitSenderOfflineCoachV7()
 InitSenderOfflineCoachV8::InitSenderOfflineCoachV8( const Params & params )
     : InitSenderOfflineCoachV7( params,
                                 boost::shared_ptr< rcss::InitSenderCommon >
-                                ( new InitSenderCommonV8( params.m_transport,
-                                                          params.m_ser,
-                                                          params.m_stadium,
-                                                          (unsigned int)params.m_self.version() ) ) )
+                                ( new InitSenderCommonV8( params.M_transport,
+                                                          params.M_serializer,
+                                                          params.M_stadium,
+                                                          (unsigned int)params.M_self.version() ) ) )
 {
 
 }

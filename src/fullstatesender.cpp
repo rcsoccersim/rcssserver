@@ -71,10 +71,10 @@ FullStateSenderPlayer::factory()
 }
 
 FullStateSenderPlayer::FullStateSenderPlayer( const Params & params )
-    : FullStateSender( params.m_transport ),
-      M_serializer( params.m_serializer ),
-      M_self( params.m_self ),
-      M_stadium( params.m_stadium )
+    : FullStateSender( params.M_transport ),
+      M_serializer( params.M_serializer ),
+      M_self( params.M_self ),
+      M_stadium( params.M_stadium )
 {
     //std::cerr << "create FullStateSenderPlayer" << std::endl;
 }

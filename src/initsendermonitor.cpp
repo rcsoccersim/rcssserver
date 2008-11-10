@@ -243,7 +243,7 @@ InitSenderMonitorV3::InitSenderMonitorV3( const Params & params )
                                                      999 ) ) )
 {
     // The version of the common sender has to be "8".
-    // The client version is "999" in order to send all parameters.
+    // But, the client version is "999" in order to send all parameters.
 }
 
 InitSenderMonitorV3::InitSenderMonitorV3( const Params & params,

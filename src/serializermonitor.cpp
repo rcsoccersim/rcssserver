@@ -36,40 +36,12 @@ namespace rcss {
 /*
 //===================================================================
 //
-//  SerializerMonitor
-//
-//===================================================================
-*/
-
-SerializerMonitor::FactoryHolder &
-SerializerMonitor::factory()
-{
-    static FactoryHolder rval;
-    return rval;
-}
-
-
-SerializerMonitor::SerializerMonitor( const SerializerCommon & common )
-    : Serializer( common )
-{
-
-}
-
-SerializerMonitor::~SerializerMonitor()
-{
-
-}
-
-
-/*
-//===================================================================
-//
 //  SerializerMonitorStdv1
 //
 //===================================================================
 */
 
-SerializerMonitorStdv1::SerializerMonitorStdv1( const SerializerCommon & common )
+SerializerMonitorStdv1::SerializerMonitorStdv1( const SerializerCommon::Ptr common )
     : SerializerMonitor( common )
 {
 
@@ -81,18 +53,19 @@ SerializerMonitorStdv1::~SerializerMonitorStdv1()
 }
 
 const
-SerializerMonitorStdv1 *
-SerializerMonitorStdv1::instance()
+SerializerMonitor::Ptr
+SerializerMonitorStdv1::create()
 {
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 8 ) )
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 8 ) )
     {
-        return NULL;
+        return SerializerMonitor::Ptr();
     }
 
-    static SerializerMonitorStdv1 ser( cre_common() );
-    return &ser;
+    SerializerMonitor::Ptr ptr( new SerializerMonitorStdv1( cre_common() ) );
+    return ptr;
 }
+
 
 /*
 //===================================================================
@@ -105,7 +78,7 @@ SerializerMonitorStdv1::instance()
 const double SerializerMonitorStdv3::PREC = 0.0001;
 const double SerializerMonitorStdv3::DPREC = 0.001;
 
-SerializerMonitorStdv3::SerializerMonitorStdv3( const SerializerCommon & common )
+SerializerMonitorStdv3::SerializerMonitorStdv3( const SerializerCommon::Ptr common )
     : SerializerMonitorStdv1( common )
 {
 
@@ -117,17 +90,17 @@ SerializerMonitorStdv3::~SerializerMonitorStdv3()
 }
 
 const
-SerializerMonitorStdv3 *
-SerializerMonitorStdv3::instance()
+SerializerMonitor::Ptr
+SerializerMonitorStdv3::create()
 {
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 8 ) )
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 8 ) )
     {
-        return NULL;
+        return SerializerMonitor::Ptr();
     }
 
-    static SerializerMonitorStdv3 ser( cre_common() );
-    return &ser;
+    SerializerMonitor::Ptr ptr( new SerializerMonitorStdv3( cre_common() ) );
+    return ptr;
 }
 
 
@@ -339,7 +312,7 @@ SerializerMonitorStdv3::serializeTeamGraphic( std::ostream & os,
 //===================================================================
 */
 
-SerializerMonitorStdv4::SerializerMonitorStdv4( const SerializerCommon & common )
+SerializerMonitorStdv4::SerializerMonitorStdv4( const SerializerCommon::Ptr common )
     : SerializerMonitorStdv3( common )
 {
 
@@ -351,17 +324,17 @@ SerializerMonitorStdv4::~SerializerMonitorStdv4()
 }
 
 const
-SerializerMonitorStdv4 *
-SerializerMonitorStdv4::instance()
+SerializerMonitor::Ptr
+SerializerMonitorStdv4::create()
 {
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 13 ) )
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 13 ) )
     {
-        return NULL;
+        return SerializerMonitor::Ptr();
     }
 
-    static SerializerMonitorStdv4 ser( cre_common() );
-    return &ser;
+    SerializerMonitor::Ptr ptr( new SerializerMonitorStdv4( cre_common() ) );
+    return ptr;
 }
 
 void
@@ -377,30 +350,10 @@ SerializerMonitorStdv4::serializePlayerStamina( std::ostream & os,
 
 
 namespace {
-const
-SerializerMonitor *
-create1()
-{
-    return SerializerMonitorStdv1::instance();
-}
-
-const
-SerializerMonitor *
-create3()
-{
-    return SerializerMonitorStdv3::instance();
-}
-const
-SerializerMonitor *
-create4()
-{
-    return SerializerMonitorStdv4::instance();
-}
-
-RegHolder v1 = SerializerMonitor::factory().autoReg( &create1, 1 );
-RegHolder v2 = SerializerMonitor::factory().autoReg( &create1, 2 );
-RegHolder v3 = SerializerMonitor::factory().autoReg( &create3, 3 );
-RegHolder v4 = SerializerMonitor::factory().autoReg( &create4, 4 );
+RegHolder v1 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv1::create, 1 );
+RegHolder v2 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv1::create, 2 );
+RegHolder v3 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv3::create, 3 );
+RegHolder v4 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv4::create, 4 );
 }
 
 }

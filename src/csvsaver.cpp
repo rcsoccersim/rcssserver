@@ -44,6 +44,9 @@
 // #endif
 // const std::string CSVSaverParam::CSVSAVER_CONF = "CSVSaver.conf";
 
+const std::string CSVSaver::CSVSAVER = "CSVSaver";
+
+
 CSVSaverParam &
 CSVSaverParam::instance()
 {
@@ -355,5 +358,6 @@ create()
     return ResultSaver::Ptr( new Saver() );
 }
 
-rcss::RegHolder csv = ResultSaver::factory().autoReg( &create< CSVSaver >, "CSVSaver" );
+//rcss::RegHolder csv = ResultSaver::factory().autoReg( &create< CSVSaver >, "CSVSaver" );
+rcss::RegHolder csv = ResultSaver::factory().autoReg( &create< CSVSaver >, CSVSaver::CSVSAVER );
 }

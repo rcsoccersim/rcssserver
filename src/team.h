@@ -67,7 +67,7 @@ private:
     OnlineCoach *M_olcoach;
 
     typedef std::pair< unsigned int, unsigned int > GraphKey;
-    typedef std::map< GraphKey, XPMHolder* > GraphCont;
+    typedef std::map< GraphKey, XPMHolder * > GraphCont;
     GraphCont M_graphics;
 
 

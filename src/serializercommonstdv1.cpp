@@ -34,14 +34,6 @@ SerializerCommonStdv1::~SerializerCommonStdv1()
 
 }
 
-const
-SerializerCommonStdv1 &
-SerializerCommonStdv1::instance()
-{
-    static SerializerCommonStdv1 ser;
-    return ser;
-}
-
 void
 SerializerCommonStdv1::serializeServerParamBegin( std::ostream & ) const
 {
@@ -113,20 +105,22 @@ SerializerCommonStdv1::serializeParam( std::ostream &,
 
 }
 
-namespace {
 const
-SerializerCommon &
-create()
+SerializerCommon::Ptr
+SerializerCommonStdv1::create()
 {
-    return SerializerCommonStdv1::instance();
+    Ptr ptr( new SerializerCommonStdv1() );
+    return ptr;
 }
 
-RegHolder v1 = SerializerCommon::factory().autoReg( &create, 1 );
-RegHolder v2 = SerializerCommon::factory().autoReg( &create, 2 );
-RegHolder v3 = SerializerCommon::factory().autoReg( &create, 3 );
-RegHolder v4 = SerializerCommon::factory().autoReg( &create, 4 );
-RegHolder v5 = SerializerCommon::factory().autoReg( &create, 5 );
-RegHolder v6 = SerializerCommon::factory().autoReg( &create, 6 );
+
+namespace {
+RegHolder v1 = SerializerCommon::factory().autoReg( &SerializerCommonStdv1::create, 1 );
+RegHolder v2 = SerializerCommon::factory().autoReg( &SerializerCommonStdv1::create, 2 );
+RegHolder v3 = SerializerCommon::factory().autoReg( &SerializerCommonStdv1::create, 3 );
+RegHolder v4 = SerializerCommon::factory().autoReg( &SerializerCommonStdv1::create, 4 );
+RegHolder v5 = SerializerCommon::factory().autoReg( &SerializerCommonStdv1::create, 5 );
+RegHolder v6 = SerializerCommon::factory().autoReg( &SerializerCommonStdv1::create, 6 );
 }
 
 }

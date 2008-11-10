@@ -42,7 +42,6 @@
 #include "timeable.h"
 
 #include "object.h"
-#include "resultsaver.hpp"
 #include "serverparam.h"
 #include "logger.h"
 
@@ -50,6 +49,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <algorithm>
 #include <memory>
 #include <cstdio>
@@ -63,6 +63,7 @@ class OnlineCoach;
 class Team;
 
 class Referee;
+class ResultSaver;
 
 struct timeval;
 
@@ -193,7 +194,7 @@ protected:
 
     tm m_real_time;
 
-    std::list< ResultSaver * > m_savers;
+    std::list< ResultSaver * > M_savers;
 
 public:
 

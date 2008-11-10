@@ -93,6 +93,9 @@ public:
 class CSVSaver
     : public ResultSaver {
 public:
+
+    static const std::string CSVSAVER;
+
     CSVSaver();
 
     virtual

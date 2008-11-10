@@ -36,7 +36,7 @@ public:
 
     typedef std::auto_ptr< ResultSaver > Ptr;
     typedef Ptr (*Creator)();
-    typedef rcss::Factory< Creator > FactoryHolder;
+    typedef rcss::Factory< Creator, std::string > FactoryHolder;
 
     static
     FactoryHolder & factory();

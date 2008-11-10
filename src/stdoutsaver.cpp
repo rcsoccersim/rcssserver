@@ -28,6 +28,8 @@
 #include <iostream>
 #include <ctime>
 
+const std::string STDOutSaver::STDOUTSAVER = "STDOutSaver";
+
 STDOutSaver::STDOutSaver()
     : ResultSaver()
     , M_left_coin( false )
@@ -45,7 +47,6 @@ STDOutSaver::~STDOutSaver()
 {
     //std::cerr << "delete STDOutSaver" << std::endl;
 }
-
 
 bool
 STDOutSaver::doEnabled() const
@@ -163,7 +164,6 @@ STDOutSaver::doSaveComplete()
                   << " (" << M_pen_taken[ TEAM_LEFT ] << ") - "
                   << M_pen_scored[ TEAM_RIGHT ]
                   << " (" << M_pen_taken[ TEAM_RIGHT ] << ")\n";
-
     }
 
     if ( M_left_coin )
@@ -193,5 +193,6 @@ create()
     return ResultSaver::Ptr( new Saver() );
 }
 
-rcss::RegHolder stdout = ResultSaver::factory().autoReg( &create< STDOutSaver >, "STDOutSaver" );
+//rcss::RegHolder stdout = ResultSaver::factory().autoReg( &create< STDOutSaver >, "STDOutSaver" );
+rcss::RegHolder stdout = ResultSaver::factory().autoReg( &create< STDOutSaver >, STDOutSaver::STDOUTSAVER );
 }

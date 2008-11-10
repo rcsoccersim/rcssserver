@@ -34,14 +34,6 @@ SerializerCommonStdv7::~SerializerCommonStdv7()
 
 }
 
-const
-SerializerCommonStdv7 &
-SerializerCommonStdv7::instance()
-{
-    static SerializerCommonStdv7 ser;
-    return ser;
-}
-
 void
 SerializerCommonStdv7::serializeServerParamBegin( std::ostream & strm ) const
 {
@@ -113,15 +105,16 @@ SerializerCommonStdv7::serializeParam( std::ostream & strm,
     strm << ' ' << param;
 }
 
-namespace {
 const
-SerializerCommon &
-create()
+SerializerCommon::Ptr
+SerializerCommonStdv7::create()
 {
-    return SerializerCommonStdv7::instance();
+    Ptr ptr( new SerializerCommonStdv7() );
+    return ptr;
 }
 
-RegHolder v7 = SerializerCommon::factory().autoReg( &create, 7 );
+namespace {
+RegHolder v7 = SerializerCommon::factory().autoReg( &SerializerCommonStdv7::create, 7 );
 }
 
 }

@@ -23,8 +23,8 @@
 
 namespace rcss {
 
-SerializerOnlineCoachStdv7::SerializerOnlineCoachStdv7( const SerializerCommon & common,
-                                                        const SerializerCoach & coach )
+SerializerOnlineCoachStdv7::SerializerOnlineCoachStdv7( const SerializerCommon::Ptr common,
+                                                        const SerializerCoach::Ptr coach )
     : SerializerOnlineCoachStdv6( common, coach )
 {
 
@@ -33,26 +33,6 @@ SerializerOnlineCoachStdv7::SerializerOnlineCoachStdv7( const SerializerCommon &
 SerializerOnlineCoachStdv7::~SerializerOnlineCoachStdv7()
 {
 
-}
-
-const
-SerializerOnlineCoachStdv7 *
-SerializerOnlineCoachStdv7::instance()
-{
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 7 ) )
-    {
-        return NULL;
-    }
-
-    rcss::SerializerCoach::Creator cre_coach;
-    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 7 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerOnlineCoachStdv7 ser( cre_common(), *cre_coach() );
-    return &ser;
 }
 
 void
@@ -86,15 +66,29 @@ SerializerOnlineCoachStdv7::serializeChangedPlayer( std::ostream & strm,
     strm << ')';
 }
 
-namespace {
 const
-SerializerOnlineCoach *
-create()
+SerializerOnlineCoach::Ptr
+SerializerOnlineCoachStdv7::create()
 {
-    return SerializerOnlineCoachStdv7::instance();
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 7 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerCoach::Creator cre_coach;
+    if ( ! SerializerCoach::factory().getCreator( cre_coach, 7 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerOnlineCoach::Ptr ptr( new SerializerOnlineCoachStdv7( cre_common(), cre_coach() ) );
+    return ptr;
 }
 
-RegHolder v7 = SerializerOnlineCoach::factory().autoReg( &create, 7 );
+
+namespace {
+RegHolder v7 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv7::create, 7 );
 }
 
 }

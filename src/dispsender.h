@@ -27,6 +27,8 @@
 
 #include <rcssbase/factory.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 class Stadium;
 class Logger;
 class Monitor;
@@ -72,12 +74,12 @@ public:
     public:
         std::ostream & M_transport;
         const Monitor & M_self;
-        const SerializerMonitor & M_serializer;
+        const boost::shared_ptr< SerializerMonitor > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Monitor & self,
-                const SerializerMonitor & serializer,
+                const boost::shared_ptr< SerializerMonitor > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -88,7 +90,7 @@ public:
 
 
 private:
-    const SerializerMonitor & M_serializer;
+    const boost::shared_ptr< SerializerMonitor > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
@@ -113,7 +115,7 @@ protected:
     const
     SerializerMonitor & serializer() const
       {
-          return M_serializer;
+          return *M_serializer;
       }
 
     const
@@ -274,22 +276,22 @@ public:
     public:
         std::ostream & M_transport;
         const Logger & M_self;
-        const SerializerMonitor & M_serializer;
+        const boost::shared_ptr< SerializerMonitor > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Logger & self,
-                const SerializerMonitor & serializer,
+                const boost::shared_ptr< SerializerMonitor > serializer,
                 const Stadium & stadium )
-            : M_transport( transport )
-            , M_self( self )
-            , M_serializer( serializer )
-            , M_stadium( stadium )
+            : M_transport( transport ),
+              M_self( self ),
+              M_serializer( serializer ),
+              M_stadium( stadium )
           { }
     };
 
 private:
-    const SerializerMonitor & M_serializer;
+    const boost::shared_ptr< SerializerMonitor > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
@@ -314,7 +316,7 @@ protected:
     const
     SerializerMonitor & serializer() const
       {
-          return M_serializer;
+          return *M_serializer;
       }
 
     const
@@ -332,7 +334,7 @@ protected:
 };
 
 /*!
-  \class ObserverMonitor
+  \class ObserverLogger
   \brief Interface for logger to recorde the display information.
 */
 class ObserverLogger

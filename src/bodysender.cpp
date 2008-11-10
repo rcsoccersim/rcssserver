@@ -70,9 +70,9 @@ BodySenderPlayer::factory()
 }
 
 BodySenderPlayer::BodySenderPlayer( const Params & params )
-    : BodySender( params.m_transport ),
-      M_serializer( params.m_ser ),
-      M_self( params.m_self )
+    : BodySender( params.M_transport ),
+      M_serializer( params.M_serializer ),
+      M_self( params.M_self )
 {
 
 }

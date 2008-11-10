@@ -26,7 +26,7 @@
 
 namespace rcss {
 
-SerializerCoachStdv1::SerializerCoachStdv1( const SerializerCommon & common )
+SerializerCoachStdv1::SerializerCoachStdv1( const SerializerCommon::Ptr common )
     : SerializerCoach( common )
 {
 
@@ -35,20 +35,6 @@ SerializerCoachStdv1::SerializerCoachStdv1( const SerializerCommon & common )
 SerializerCoachStdv1::~SerializerCoachStdv1()
 {
 
-}
-
-const
-SerializerCoachStdv1 *
-SerializerCoachStdv1::instance()
-{
-    rcss::SerializerCommon::Creator cre;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 1 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerCoachStdv1 ser( cre() );
-    return &ser;
 }
 
 void
@@ -209,21 +195,28 @@ SerializerCoachStdv1::serializeOKEye( std::ostream & strm,
 }
 
 
-namespace {
-
 const
-SerializerCoach *
-create()
+SerializerCoach::Ptr
+SerializerCoachStdv1::create()
 {
-    return SerializerCoachStdv1::instance();
+    SerializerCommon::Creator cre;
+    if ( ! SerializerCommon::factory().getCreator( cre, 1 ) )
+    {
+        return SerializerCoach::Ptr();
+    }
+
+    SerializerCoach::Ptr ptr( new SerializerCoachStdv1( cre() ) );
+    return ptr;
 }
 
-RegHolder v1 = SerializerCoach::factory().autoReg( &create, 1 );
-RegHolder v2 = SerializerCoach::factory().autoReg( &create, 2 );
-RegHolder v3 = SerializerCoach::factory().autoReg( &create, 3 );
-RegHolder v4 = SerializerCoach::factory().autoReg( &create, 4 );
-RegHolder v5 = SerializerCoach::factory().autoReg( &create, 5 );
-RegHolder v6 = SerializerCoach::factory().autoReg( &create, 6 );
+
+namespace {
+RegHolder v1 = SerializerCoach::factory().autoReg( &SerializerCoachStdv1::create, 1 );
+RegHolder v2 = SerializerCoach::factory().autoReg( &SerializerCoachStdv1::create, 2 );
+RegHolder v3 = SerializerCoach::factory().autoReg( &SerializerCoachStdv1::create, 3 );
+RegHolder v4 = SerializerCoach::factory().autoReg( &SerializerCoachStdv1::create, 4 );
+RegHolder v5 = SerializerCoach::factory().autoReg( &SerializerCoachStdv1::create, 5 );
+RegHolder v6 = SerializerCoach::factory().autoReg( &SerializerCoachStdv1::create, 6 );
 }
 
 }

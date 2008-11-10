@@ -30,6 +30,8 @@
 
 #include <rcssbase/factory.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 class Stadium;
 class Player;
 class Coach;
@@ -56,17 +58,17 @@ public:
     public:
         std::ostream & M_transport;
         const Coach & M_self;
-        const SerializerCoach & M_ser;
+        const boost::shared_ptr< SerializerCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Coach & self,
-                const SerializerCoach & ser,
+                const boost::shared_ptr< SerializerCoach > serializer,
                 const Stadium & stadium )
-            : M_transport( transport )
-            , M_self( self )
-            , M_ser( ser )
-            , M_stadium( stadium )
+            : M_transport( transport ),
+              M_self( self ),
+              M_serializer( serializer ),
+              M_stadium( stadium )
           { }
     };
 
@@ -87,7 +89,7 @@ protected:
     const
     SerializerCoach & serializer() const
       {
-          return M_ser;
+          return *M_serializer;
       }
 
     const
@@ -111,7 +113,7 @@ public:
 
 private:
 
-    const SerializerCoach & M_ser;
+    const boost::shared_ptr< SerializerCoach > M_serializer;
 
     const Coach & M_self;
     const Stadium & M_stadium;

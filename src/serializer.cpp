@@ -21,6 +21,8 @@
 
 #include "serializer.h"
 
+//#include <iostream>
+
 namespace rcss {
 
 SerializerCommon::FactoryHolder &
@@ -32,12 +34,18 @@ SerializerCommon::factory()
 
 SerializerCommon::SerializerCommon()
 {
-
+    //std::cerr << "create SerializerCommon" << std::endl;
 }
 
 SerializerCommon::~SerializerCommon()
 {
+    //std::cerr << "delete SerializerCommon" << std::endl;
+}
 
+
+Serializer::~Serializer()
+{
+    //std::cerr << "delete Serializer" << std::endl;
 }
 
 
@@ -48,15 +56,15 @@ SerializerPlayer::factory()
     return rval;
 }
 
-SerializerPlayer::SerializerPlayer( const SerializerCommon & common )
+SerializerPlayer::SerializerPlayer( const SerializerCommon::Ptr common )
     : Serializer( common )
 {
-
+    //std::cerr << "create SerializerPlayer" << std::endl;
 }
 
 SerializerPlayer::~SerializerPlayer()
 {
-
+    //std::cerr << "delete SerializerPlayer" << std::endl;
 }
 
 
@@ -67,15 +75,15 @@ SerializerCoach::factory()
     return rval;
 }
 
-SerializerCoach::SerializerCoach( const SerializerCommon & common )
+SerializerCoach::SerializerCoach( const SerializerCommon::Ptr common )
     : Serializer( common )
 {
-
+    //std::cerr << "create SerializerCoach" << std::endl;
 }
 
 SerializerCoach::~SerializerCoach()
 {
-
+    //std::cerr << "delete SerializerCoach" << std::endl;
 }
 
 SerializerOnlineCoach::FactoryHolder &
@@ -86,17 +94,45 @@ SerializerOnlineCoach::factory()
 }
 
 
-SerializerOnlineCoach::SerializerOnlineCoach( const SerializerCommon & common,
-                                              const SerializerCoach & coach )
+SerializerOnlineCoach::SerializerOnlineCoach( const SerializerCommon::Ptr common,
+                                              const SerializerCoach::Ptr coach )
     : Serializer( common ),
       M_coach( coach )
 {
-
+    //std::cerr << "create SerializerOnlineCoach" << std::endl;
 }
 
 SerializerOnlineCoach::~SerializerOnlineCoach()
 {
+    //std::cerr << "delete SerializerOnlineCoach" << std::endl;
+}
 
+
+/*
+//===================================================================
+//
+//  SerializerMonitor
+//
+//===================================================================
+*/
+
+SerializerMonitor::FactoryHolder &
+SerializerMonitor::factory()
+{
+    static FactoryHolder rval;
+    return rval;
+}
+
+
+SerializerMonitor::SerializerMonitor( const SerializerCommon::Ptr common )
+    : Serializer( common )
+{
+    //std::cerr << "create SerializerMonitor" << std::endl;
+}
+
+SerializerMonitor::~SerializerMonitor()
+{
+    //std::cerr << "delete SerializerMonitor" << std::endl;
 }
 
 }

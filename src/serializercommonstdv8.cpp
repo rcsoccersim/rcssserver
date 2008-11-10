@@ -22,21 +22,16 @@
 #include "serializercommonstdv8.h"
 #include "clangmsg.h"
 
-namespace rcss
-{
+namespace rcss {
 
 SerializerCommonStdv8::SerializerCommonStdv8()
-{}
+{
+
+}
 
 SerializerCommonStdv8::~SerializerCommonStdv8()
-{}
-
-const
-SerializerCommonStdv8 &
-SerializerCommonStdv8::instance()
 {
-    static SerializerCommonStdv8 ser;
-    return ser;
+
 }
 
 void
@@ -89,20 +84,21 @@ SerializerCommonStdv8::serializeParam( std::ostream & strm,
     strm << "(" << name << " \"" << param << "\")";
 }
 
-namespace {
 const
-SerializerCommon &
-create()
+SerializerCommon::Ptr
+SerializerCommonStdv8::create()
 {
-    return SerializerCommonStdv8::instance();
+    Ptr ptr( new SerializerCommonStdv8() );
+    return ptr;
 }
 
-RegHolder v8 = SerializerCommon::factory().autoReg( &create, 8 );
-RegHolder v9 = SerializerCommon::factory().autoReg( &create, 9 );
-RegHolder v10 = SerializerCommon::factory().autoReg( &create, 10 );
-RegHolder v11 = SerializerCommon::factory().autoReg( &create, 11 );
-RegHolder v12 = SerializerCommon::factory().autoReg( &create, 12 );
-RegHolder v13 = SerializerCommon::factory().autoReg( &create, 13 );
+namespace {
+RegHolder v8 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 8 );
+RegHolder v9 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 9 );
+RegHolder v10 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 10 );
+RegHolder v11 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 11 );
+RegHolder v12 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 12 );
+RegHolder v13 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 13 );
 }
 
 }

@@ -23,8 +23,8 @@
 
 namespace rcss {
 
-SerializerOnlineCoachStdv6::SerializerOnlineCoachStdv6( const SerializerCommon & common,
-                                                        const SerializerCoach & coach )
+SerializerOnlineCoachStdv6::SerializerOnlineCoachStdv6( const SerializerCommon::Ptr common,
+                                                        const SerializerCoach::Ptr coach )
     : SerializerOnlineCoachStdv1( common, coach )
 {
 
@@ -33,26 +33,6 @@ SerializerOnlineCoachStdv6::SerializerOnlineCoachStdv6( const SerializerCommon &
 SerializerOnlineCoachStdv6::~SerializerOnlineCoachStdv6()
 {
 
-}
-
-const
-SerializerOnlineCoachStdv6 *
-SerializerOnlineCoachStdv6::instance()
-{
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 6 ) )
-    {
-        return NULL;
-    }
-
-    rcss::SerializerCoach::Creator cre_coach;
-    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 6 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerOnlineCoachStdv6 ser( cre_common(), *cre_coach() );
-    return &ser;
 }
 
 void
@@ -64,15 +44,28 @@ SerializerOnlineCoachStdv6::serializeInit( std::ostream& strm,
          << " ok)";
 }
 
-namespace {
 const
-SerializerOnlineCoach *
-create()
+SerializerOnlineCoach::Ptr
+SerializerOnlineCoachStdv6::create()
 {
-    return SerializerOnlineCoachStdv6::instance();
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 6 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerCoach::Creator cre_coach;
+    if ( ! SerializerCoach::factory().getCreator( cre_coach, 6 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerOnlineCoach::Ptr ptr( new SerializerOnlineCoachStdv6( cre_common(), cre_coach() ) );
+    return ptr;
 }
 
-RegHolder v6 = SerializerOnlineCoach::factory().autoReg( &create, 6 );
+namespace {
+RegHolder v6 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv6::create, 6 );
 }
 
 }

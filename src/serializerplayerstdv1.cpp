@@ -28,7 +28,7 @@ static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
 namespace rcss {
 
-SerializerPlayerStdv1::SerializerPlayerStdv1( const SerializerCommon & common )
+SerializerPlayerStdv1::SerializerPlayerStdv1( const SerializerCommon::Ptr common )
     : SerializerPlayer( common )
 {
 
@@ -37,20 +37,6 @@ SerializerPlayerStdv1::SerializerPlayerStdv1( const SerializerCommon & common )
 SerializerPlayerStdv1::~SerializerPlayerStdv1()
 {
 
-}
-
-const
-SerializerPlayerStdv1 *
-SerializerPlayerStdv1::instance()
-{
-    SerializerCommon::Creator cre;
-    if ( ! SerializerCommon::factory().getCreator( cre, 1 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerPlayerStdv1 ser( cre() );
-    return &ser;
 }
 
 void
@@ -426,20 +412,28 @@ SerializerPlayerStdv1::serializeScore( std::ostream & strm,
     strm << "(score " << time << ' ' << our << ' ' << opp << ')';
 }
 
-namespace {
+
 const
-SerializerPlayer *
-create()
+SerializerPlayer::Ptr
+SerializerPlayerStdv1::create()
 {
-    return SerializerPlayerStdv1::instance();
+    SerializerCommon::Creator cre;
+    if ( ! SerializerCommon::factory().getCreator( cre, 1 ) )
+    {
+        return SerializerPlayer::Ptr();
+    }
+
+    SerializerPlayer::Ptr ptr( new SerializerPlayerStdv1( cre() ) );
+    return ptr;
 }
 
-RegHolder v1 = SerializerPlayer::factory().autoReg( &create, 1 );
-RegHolder v2 = SerializerPlayer::factory().autoReg( &create, 2 );
-RegHolder v3 = SerializerPlayer::factory().autoReg( &create, 3 );
-RegHolder v4 = SerializerPlayer::factory().autoReg( &create, 4 );
-RegHolder v5 = SerializerPlayer::factory().autoReg( &create, 5 );
-RegHolder v6 = SerializerPlayer::factory().autoReg( &create, 6 );
+namespace {
+RegHolder v1 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 1 );
+RegHolder v2 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 2 );
+RegHolder v3 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 3 );
+RegHolder v4 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 4 );
+RegHolder v5 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 5 );
+RegHolder v6 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 6 );
 }
 
 }

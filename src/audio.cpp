@@ -25,6 +25,8 @@
 
 #include "audio.h"
 
+#include "object.h"
+#include "serializer.h"
 #include "clangmsg.h"
 #include "clangunsuppmsg.h"
 #include "coach.h"
@@ -32,7 +34,6 @@
 #include "player.h"
 #include "random.h"
 #include "utility.h"
-#include "serializer.h"
 
 #include <rcssbase/factory.hpp>
 
@@ -113,10 +114,10 @@ AudioSenderPlayer::factory()
 
 
 AudioSenderPlayer::AudioSenderPlayer( const Params & params )
-    : AudioSender( params.m_stadium,
-                   params.m_transport ),
-      M_listener( params.m_listener ),
-      M_serializer( params.m_serializer )
+    : AudioSender( params.M_stadium,
+                   params.M_transport ),
+      M_listener( params.M_listener ),
+      M_serializer( params.M_serializer )
 {
 
 }
@@ -144,14 +145,14 @@ AudioSenderPlayer::sendPlayerAudio( const Player & player,
 bool
 AudioSenderPlayer::generalPredicate() const
 {
-    return M_listener.state() != DISABLE;
+    return listener().state() != DISABLE;
 }
 
 bool
 AudioSenderPlayer::coachStdPredicate( const rcss::clang::Msg & msg ) const
 {
     return ( generalPredicate()
-             && M_listener.side() == msg.getSide() );
+             && listener().side() == msg.getSide() );
 }
 
 
@@ -162,23 +163,23 @@ AudioSenderPlayer::nonSelfPlayerPredicate( const Player & player ) const
     // a nightmare to understand
     if( generalPredicate() )
     {
-        if ( M_listener.canHearFullFrom( player )
-             && player.pos().distance( M_listener.pos() )
+        if ( listener().canHearFullFrom( player )
+             && player.pos().distance( listener().pos() )
              <= ServerParam::instance().audioCutDist() )
         {
             return true;
         }
-//         if( player.pos().distance( M_listener.pos() )
+//         if( player.pos().distance( listener().pos() )
 //             <= ServerParam::instance().audio_dist )
 //         {
-//             if ( M_listener.team() == player.team() )
+//             if ( listener().team() == player.team() )
 //             {
-//                 return ( M_listener.hear_capacity_from_teammate
+//                 return ( listener().hear_capacity_from_teammate
 //                          >= (int)ServerParam::instance().hearDecay() );
 //             }
 //             else
 //             {
-//                 return ( M_listener.hear_capacity_from_opponent
+//                 return ( listener().hear_capacity_from_opponent
 //                          >= (int)ServerParam::instance().hearDecay() );
 //            }
 //        }
@@ -189,12 +190,12 @@ AudioSenderPlayer::nonSelfPlayerPredicate( const Player & player ) const
 bool
 AudioSenderPlayer::postNonSelfPlayer( const Player & player )
 {
-    M_listener.decrementHearCapacity( player );
-//     if ( M_listener.team() == player.team() )
-//         M_listener.hear_capacity_from_teammate
+    listener().decrementHearCapacity( player );
+//     if ( listener().team() == player.team() )
+//         listener().hear_capacity_from_teammate
 //             -= ServerParam::instance().hearDecay();
 //     else
-//         M_listener.hear_capacity_from_opponent
+//         listener().hear_capacity_from_opponent
 //             -= ServerParam::instance().hearDecay();
     return true;
 }
@@ -205,7 +206,7 @@ AudioSenderPlayerv1::sendRefereeAudio( const char * msg )
 {
     if ( generalPredicate () )
     {
-        M_serializer.serializeRefereeAudio( transport(), M_stadium.time(), msg );
+        serializer().serializeRefereeAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
     }
 }
@@ -235,7 +236,7 @@ AudioSenderPlayerv1::sendCoachAudio( const Coach & coach,
             // don't know what we have here so don't send anything
             return;
         }
-        M_serializer.serializeCoachAudio( transport(),
+        serializer().serializeCoachAudio( transport(),
                                           M_stadium.time(),
                                           name,
                                           msg );
@@ -264,17 +265,17 @@ AudioSenderPlayerv1::sendCoachStdAudio( const rcss::clang::Msg & msg )
             return;
         }
 
-        if ( msg.isSupported( M_listener.clangMinVer(),
-                              M_listener.clangMaxVer() ) )
+        if ( msg.isSupported( listener().clangMinVer(),
+                              listener().clangMaxVer() ) )
         {
-            M_serializer.serializeCoachStdAudio( transport(),
+            serializer().serializeCoachStdAudio( transport(),
                                                  msg.getTimeSend(),
                                                  name,
                                                  msg );
         }
         else
         {
-            M_serializer.serializeCoachStdAudio( transport(),
+            serializer().serializeCoachStdAudio( transport(),
                                                  msg.getTimeSend(),
                                                  name,
                                                  rcss::clang::UnsuppMsg() );
@@ -289,7 +290,7 @@ AudioSenderPlayerv1::sendSelfAudio( const char * msg )
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializeSelfAudio( transport(), M_stadium.time(), msg );
+        serializer().serializeSelfAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
     }
 }
@@ -300,8 +301,8 @@ AudioSenderPlayerv1::sendNonSelfPlayerAudio( const Player & player,
 {
     if ( nonSelfPlayerPredicate( player ) )
     {
-        int dir = Rad2IDeg( M_listener.angleFromBody( player ) );
-        M_serializer.serializePlayerAudio( transport(),
+        int dir = Rad2IDeg( listener().angleFromBody( player ) );
+        serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            dir,
                                            msg );
@@ -313,16 +314,16 @@ AudioSenderPlayerv1::sendNonSelfPlayerAudio( const Player & player,
 void
 AudioSenderPlayerv1::sendOKClang()
 {
-    M_serializer.serializeOKClang( transport(),
-                                   M_listener.clangMinVer(),
-                                   M_listener.clangMaxVer() );
+    serializer().serializeOKClang( transport(),
+                                   listener().clangMinVer(),
+                                   listener().clangMaxVer() );
     transport() << std::ends << std::flush;
 }
 
 void
 AudioSenderPlayerv1::sendErrorNoTeamName( const std::string& team_name )
 {
-    M_serializer.serializeErrorNoTeamName( transport(), team_name );
+    serializer().serializeErrorNoTeamName( transport(), team_name );
     transport() << std::ends << std::flush;
 }
 
@@ -351,7 +352,7 @@ AudioSenderPlayerv7::sendCoachAudio( const Coach & coach,
             // don't know what we have hear so don't send anything
             return;
         }
-        M_serializer.serializeCoachAudio( transport(),
+        serializer().serializeCoachAudio( transport(),
                                           M_stadium.time(),
                                           name,
                                           msg );
@@ -365,8 +366,8 @@ AudioSenderPlayerv7::sendNonSelfPlayerAudio( const Player & player,
 {
     if ( nonSelfPlayerPredicate( player ) )
     {
-        int dir = Rad2IDegRound( M_listener.angleFromBody( player ) );
-        M_serializer.serializePlayerAudio( transport(),
+        int dir = Rad2IDegRound( listener().angleFromBody( player ) );
+        serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            dir,
                                            msg );
@@ -410,22 +411,22 @@ bool
 AudioSenderPlayerv8::nonSelfPlayerPredicate( const Player & player ) const
 {
     return ( generalPredicate()
-             && ( player.pos().distance( M_listener.pos() )
+             && ( player.pos().distance( listener().pos() )
                   <= ServerParam::instance().audioCutDist() ) );
 }
 
 bool
 AudioSenderPlayerv8::nonSelfPlayerFullPredicate( const Player & player ) const
 {
-    return M_listener.canHearFullFrom( player );
-//     if ( M_listener.team() == player.team() )
+    return listener().canHearFullFrom( player );
+//     if ( listener().team() == player.team() )
 //     {
-//         return ( M_listener.hear_capacity_from_teammate
+//         return ( listener().hear_capacity_from_teammate
 //                  >= (int)ServerParam::instance().hearDecay() );
 //     }
 //     else
 //     {
-//         return ( M_listener.hear_capacity_from_opponent
+//         return ( listener().hear_capacity_from_opponent
 //                  >= (int)ServerParam::instance().hearDecay() );
 //     }
 }
@@ -570,10 +571,10 @@ AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player & player,
             if ( ( player.side() == LEFT && M_left_complete )
                  || ( player.side() == RIGHT && M_right_complete ) )
             {
-                int dir = Rad2IDeg( M_listener.angleFromBody( player ) );
-                if ( M_listener.team() == player.team() )
+                int dir = Rad2IDeg( listener().angleFromBody( player ) );
+                if ( listener().team() == player.team() )
                 {
-                    M_serializer.serializeAllyAudioFull( transport(),
+                    serializer().serializeAllyAudioFull( transport(),
                                                          M_stadium.time(),
                                                          dir,
                                                          player.unum(),
@@ -581,7 +582,7 @@ AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player & player,
                 }
                 else
                 {
-                    M_serializer.serializeOppAudioFull( transport(),
+                    serializer().serializeOppAudioFull( transport(),
                                                         M_stadium.time(),
                                                         dir,
                                                         msg );
@@ -595,15 +596,15 @@ AudioSenderPlayerv8::sendCachedNonSelfPlayerAudio( const Player & player,
             if ( ( player.side() == LEFT && M_left_partial )
                  || ( player.side() == RIGHT && M_right_partial ) )
             {
-                if ( M_listener.team() == player.team() )
+                if ( listener().team() == player.team() )
                 {
-                    M_serializer.serializeAllyAudioShort( transport(),
+                    serializer().serializeAllyAudioShort( transport(),
                                                           M_stadium.time(),
                                                           player.unum() );
                 }
                 else
                 {
-                    M_serializer.serializeOppAudioShort( transport(),
+                    serializer().serializeOppAudioShort( transport(),
                                                          M_stadium.time() );
                 }
                 transport() << std::ends << std::flush;
@@ -738,11 +739,12 @@ AudioSenderCoach::factory()
     return rval;
 }
 
+
 AudioSenderCoach::AudioSenderCoach( const Params & params )
-    : AudioSender( params.m_stadium,
-                   params.m_transport ),
-      M_listener( params.m_listener ),
-      M_serializer( params.m_serializer )
+    : AudioSender( params.M_stadium,
+                   params.M_transport ),
+      M_listener( params.M_listener ),
+      M_serializer( params.M_serializer )
 {
 
 }
@@ -758,7 +760,7 @@ AudioSenderCoach::generalPredicate() const
 {
     return ( ( ServerParam::instance().coachMode()
                || ServerParam::instance().coachWithRefereeMode() )
-             && M_listener.isEarOn() );
+             && listener().isEarOn() );
 }
 
 
@@ -768,7 +770,7 @@ AudioSenderCoachv1::sendRefereeAudio( const char * msg )
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializeRefereeAudio( transport(), M_stadium.time(), msg );
+        serializer().serializeRefereeAudio( transport(), M_stadium.time(), msg );
         transport() << std::ends << std::flush;
     }
 }
@@ -797,7 +799,7 @@ AudioSenderCoachv1::sendCoachAudio( const Coach & coach,
             // don't know what we have hear so don't send anything
             return;
         }
-        M_serializer.serializeCoachAudio( transport(),
+        serializer().serializeCoachAudio( transport(),
                                           M_stadium.time(),
                                           name,
                                           msg );
@@ -824,7 +826,7 @@ AudioSenderCoachv1::sendCoachStdAudio( const rcss::clang::Msg & msg )
             // don't know what we have hear so don't send anything
             return;
         }
-        M_serializer.serializeCoachStdAudio( transport(),
+        serializer().serializeCoachStdAudio( transport(),
                                              M_stadium.time(),
                                              name,
                                              msg );
@@ -838,7 +840,7 @@ AudioSenderCoachv1::sendPlayerAudio( const Player & player,
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializePlayerAudio( transport(),
+        serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            player.name(),
                                            msg );
@@ -852,7 +854,7 @@ AudioSenderCoachv7::sendPlayerAudio( const Player & player,
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializePlayerAudio( transport(),
+        serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            player.shortName(),
                                            msg );
@@ -870,9 +872,10 @@ AudioSenderOnlineCoach::factory()
 
 
 AudioSenderOnlineCoach::AudioSenderOnlineCoach( const Params & params )
-    : AudioSender( params.m_stadium, params.m_transport ),
-      M_listener( params.m_listener ),
-      M_serializer( params.m_serializer )
+    : AudioSender( params.M_stadium,
+                   params.M_transport ),
+      M_listener( params.M_listener ),
+      M_serializer( params.M_serializer )
 {
 
 }
@@ -886,7 +889,7 @@ AudioSenderOnlineCoach::~AudioSenderOnlineCoach()
 bool
 AudioSenderOnlineCoach::generalPredicate() const
 {
-    return M_listener.assigned();
+    return listener().assigned();
 }
 
 
@@ -902,7 +905,7 @@ AudioSenderOnlineCoachv1::sendRefereeAudio( const char * msg )
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializeRefereeAudio( transport(),
+        serializer().serializeRefereeAudio( transport(),
                                             M_stadium.time(),
                                             REFEREE_NAME,
                                             msg );
@@ -916,7 +919,7 @@ AudioSenderOnlineCoachv1::sendCoachAudio( const Coach & coach,
 {
     if ( coachPredicate( coach ) )
     {
-        M_serializer.serializeRefereeAudio ( transport(),
+        serializer().serializeRefereeAudio ( transport(),
                                              M_stadium.time(),
                                              REFEREE_NAME,
                                              msg );
@@ -930,7 +933,7 @@ AudioSenderOnlineCoachv1::sendPlayerAudio( const Player & player,
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializePlayerAudio( transport(),
+        serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            player.name(),
                                            msg );
@@ -944,7 +947,7 @@ AudioSenderOnlineCoachv7::sendPlayerAudio( const Player & player,
 {
     if ( generalPredicate() )
     {
-        M_serializer.serializePlayerAudio( transport(),
+        serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
                                            player.shortName(),
                                            msg );

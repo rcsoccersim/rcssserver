@@ -1,5 +1,77 @@
 2008-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/audio.cpp:
+	* src/audio.h:
+	* src/bodysender.cpp:
+	* src/bodysender.h:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/csvsaver.cpp:
+	* src/csvsaver.h:
+	* src/dispsender.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/fullstatesender.cpp:
+	* src/fullstatesender.h:
+	* src/initsender.cpp:
+	* src/initsender.h:
+	* src/initsendercoach.cpp:
+	* src/initsendercoach.h:
+	* src/initsenderlogger.h:
+	* src/initsendermonitor.cpp:
+	* src/initsendermonitor.h:
+	* src/initsenderonlinecoach.h:
+	* src/initsenderplayer.h:
+	* src/logger.cpp:
+	* src/monitor.cpp:
+	* src/player.cpp:
+	* src/resultsaver.hpp:
+	* src/serializer.cpp:
+	* src/serializer.h:
+	* src/serializercoachstdv1.cpp:
+	* src/serializercoachstdv1.h:
+	* src/serializercoachstdv13.cpp:
+	* src/serializercoachstdv13.h:
+	* src/serializercoachstdv7.cpp:
+	* src/serializercoachstdv7.h:
+	* src/serializercoachstdv8.cpp:
+	* src/serializercoachstdv8.h:
+	* src/serializercommonstdv1.cpp:
+	* src/serializercommonstdv1.h:
+	* src/serializercommonstdv7.cpp:
+	* src/serializercommonstdv7.h:
+	* src/serializercommonstdv8.cpp:
+	* src/serializercommonstdv8.h:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/serializeronlinecoachstdv1.cpp:
+	* src/serializeronlinecoachstdv1.h:
+	* src/serializeronlinecoachstdv13.cpp:
+	* src/serializeronlinecoachstdv13.h:
+	* src/serializeronlinecoachstdv6.cpp:
+	* src/serializeronlinecoachstdv6.h:
+	* src/serializeronlinecoachstdv7.cpp:
+	* src/serializeronlinecoachstdv7.h:
+	* src/serializeronlinecoachstdv8.cpp:
+	* src/serializeronlinecoachstdv8.h:
+	* src/serializerplayerstdv1.cpp:
+	* src/serializerplayerstdv1.h:
+	* src/serializerplayerstdv13.cpp:
+	* src/serializerplayerstdv13.h:
+	* src/serializerplayerstdv7.cpp:
+	* src/serializerplayerstdv7.h:
+	* src/serializerplayerstdv8.cpp:
+	* src/serializerplayerstdv8.h:
+	* src/stdoutsaver.cpp:
+	* src/stdoutsaver.h:
+	* src/team.h:
+	* src/visual.h:
+	* src/visualsendercoach.cpp:
+	* src/visualsendercoach.h:
+	* src/visualsenderplayer.h:
+	- changed the policy of the management of serialier
+	instance. reimplemented all serializers' creator.
+
 	* src/rcsoccersim.in:
 	- fixed a library path.
 	- fixed a usage message.

@@ -26,30 +26,15 @@
 
 namespace rcss {
 
-SerializerCoachStdv8::SerializerCoachStdv8( const SerializerCommon & common )
+SerializerCoachStdv8::SerializerCoachStdv8( const SerializerCommon::Ptr common )
     : SerializerCoachStdv7( common )
 {
 
 }
 
-
 SerializerCoachStdv8::~SerializerCoachStdv8()
 {
 
-}
-
-const
-SerializerCoachStdv8 *
-SerializerCoachStdv8::instance()
-{
-    rcss::SerializerCommon::Creator cre;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre, 8 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerCoachStdv8 ser( cre() );
-    return &ser;
 }
 
 void
@@ -96,7 +81,6 @@ SerializerCoachStdv8::serializeVisualObject( std::ostream & strm,
     strm << ')';
 }
 
-
 void
 SerializerCoachStdv8::serializeVisualPlayer( std::ostream & strm,
                                              const Player & player,
@@ -142,19 +126,26 @@ SerializerCoachStdv8::serializeVisualPlayer( std::ostream & strm,
 }
 
 
-namespace {
 const
-SerializerCoach *
-create()
+SerializerCoach::Ptr
+SerializerCoachStdv8::create()
 {
-    return SerializerCoachStdv8::instance();
+    SerializerCommon::Creator cre;
+    if ( ! SerializerCommon::factory().getCreator( cre, 8 ) )
+    {
+        return SerializerCoach::Ptr();
+    }
+
+    SerializerCoach::Ptr ptr( new SerializerCoachStdv8( cre() ) );
+    return ptr;
 }
 
-RegHolder v8 = SerializerCoach::factory().autoReg( &create, 8 );
-RegHolder v9 = SerializerCoach::factory().autoReg( &create, 9 );
-RegHolder v10 = SerializerCoach::factory().autoReg( &create, 10 );
-RegHolder v11 = SerializerCoach::factory().autoReg( &create, 11 );
-RegHolder v12 = SerializerCoach::factory().autoReg( &create, 12 );
+namespace {
+RegHolder v8 = SerializerCoach::factory().autoReg( &SerializerCoachStdv8::create, 8 );
+RegHolder v9 = SerializerCoach::factory().autoReg( &SerializerCoachStdv8::create, 9 );
+RegHolder v10 = SerializerCoach::factory().autoReg( &SerializerCoachStdv8::create, 10 );
+RegHolder v11 = SerializerCoach::factory().autoReg( &SerializerCoachStdv8::create, 11 );
+RegHolder v12 = SerializerCoach::factory().autoReg( &SerializerCoachStdv8::create, 12 );
 }
 
 }

@@ -32,106 +32,7 @@ class Team;
 namespace rcss {
 
 /*!
-  \class SerializerMonitor
-  \brief base class of the serialization for monitors.
-*/
-class SerializerMonitor
-    : public Serializer {
-public:
-    typedef const rcss::SerializerMonitor* (*Creator)();
-    typedef rcss::Factory< Creator, int > FactoryHolder;
-
-public:
-
-    static
-    FactoryHolder & factory();
-
-protected:
-
-    explicit
-    SerializerMonitor( const SerializerCommon & common );
-
-public:
-
-    virtual
-    ~SerializerMonitor();
-
-    virtual
-    void serializeTeam( std::ostream &,
-                        const int,
-                        const Team &,
-                        const Team & ) const
-      { }
-
-    virtual
-    void serializePlayMode( std::ostream &,
-                            const int,
-                            const PlayMode ) const
-      { }
-
-    virtual
-    void serializeShowBegin( std::ostream &,
-                             const int ) const
-      { }
-    virtual
-    void serializeShowEnd( std::ostream & ) const
-      { }
-    virtual
-    void serializePlayModeId( std::ostream &,
-                              const PlayMode ) const
-      { }
-    virtual
-    void serializeScore( std::ostream &,
-                         const Team &,
-                         const Team & ) const
-      { }
-    virtual
-    void serializeBall( std::ostream &,
-                        const Ball & ) const
-      { }
-
-    virtual
-    void serializePlayerBegin( std::ostream &,
-                               const Player & ) const
-      { }
-    virtual
-    void serializePlayerEnd( std::ostream & ) const
-      { }
-    virtual
-    void serializePlayerPos( std::ostream &,
-                             const Player & ) const
-      { }
-    virtual
-    void serializePlayerArm( std::ostream &,
-                             const Player & ) const
-      { }
-    virtual
-    void serializePlayerViewMode( std::ostream &,
-                                  const Player & ) const
-      { }
-    virtual
-    void serializePlayerStamina( std::ostream &,
-                                 const Player & ) const
-      { }
-    virtual
-    void serializePlayerFocus( std::ostream &,
-                               const Player & ) const
-      { }
-    virtual
-    void serializePlayerCounts( std::ostream &,
-                                const Player & ) const
-      { }
-
-    virtual
-    void serializeTeamGraphic( std::ostream &,
-                               const int,
-                               const int,
-                               const char * ) const
-      { }
-};
-
-/*!
-  \class SerializerMonitor
+  \class SerializerMonitorStdv1
   \brief class of the version 1 serialization for monitors.
 */
 class SerializerMonitorStdv1
@@ -139,7 +40,7 @@ class SerializerMonitorStdv1
 protected:
 
     explicit
-    SerializerMonitorStdv1( const SerializerCommon & common );
+    SerializerMonitorStdv1( const SerializerCommon::Ptr common );
 
 public:
 
@@ -148,13 +49,13 @@ public:
 
     static
     const
-    SerializerMonitorStdv1 * instance();
+    SerializerMonitor::Ptr create();
 
 };
 
 
 /*!
-  \class SerializerMonitor
+  \class SerializerMonitorStdv3
   \brief class of the version 3 serialization for monitors.
 */
 class SerializerMonitorStdv3
@@ -165,7 +66,7 @@ protected:
     static const double DPREC; // precision for degree info
 
     explicit
-    SerializerMonitorStdv3( const SerializerCommon & common );
+    SerializerMonitorStdv3( const SerializerCommon::Ptr common );
 
 public:
 
@@ -174,7 +75,7 @@ public:
 
     static
     const
-    SerializerMonitorStdv3 * instance();
+    Ptr create();
 
     virtual
     void serializeTeam( std::ostream & os,
@@ -233,9 +134,8 @@ public:
 };
 
 
-
 /*!
-  \class SerializerMonitor
+  \class SerializerMonitorStdv4
   \brief class of the version 4 serialization for monitors.
 */
 class SerializerMonitorStdv4
@@ -243,7 +143,7 @@ class SerializerMonitorStdv4
 protected:
 
     explicit
-    SerializerMonitorStdv4( const SerializerCommon & common );
+    SerializerMonitorStdv4( const SerializerCommon::Ptr common );
 
 public:
 
@@ -252,13 +152,12 @@ public:
 
     static
     const
-    SerializerMonitorStdv4 * instance();
+    Ptr create();
 
     virtual
     void serializePlayerStamina( std::ostream & os,
                                  const Player & player ) const;
 };
-
 
 }
 

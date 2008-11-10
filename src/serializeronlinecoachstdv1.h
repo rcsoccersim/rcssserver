@@ -29,8 +29,8 @@ namespace rcss {
 class SerializerOnlineCoachStdv1
     : public SerializerOnlineCoach {
 protected:
-    SerializerOnlineCoachStdv1( const SerializerCommon & common,
-                                const SerializerCoach & coach );
+    SerializerOnlineCoachStdv1( const SerializerCommon::Ptr common,
+                                const SerializerCoach::Ptr coach );
 
 public:
     virtual
@@ -38,7 +38,7 @@ public:
 
     static
     const
-    SerializerOnlineCoachStdv1 * instance();
+    Ptr create();
 
     virtual
     void serializeRefereeAudio( std::ostream & strm,

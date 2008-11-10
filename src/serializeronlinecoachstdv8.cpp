@@ -23,8 +23,8 @@
 
 namespace rcss {
 
-SerializerOnlineCoachStdv8::SerializerOnlineCoachStdv8( const SerializerCommon & common,
-                                                        const SerializerCoach & coach )
+SerializerOnlineCoachStdv8::SerializerOnlineCoachStdv8( const SerializerCommon::Ptr common,
+                                                        const SerializerCoach::Ptr coach )
     : SerializerOnlineCoachStdv7( common, coach )
 {
 
@@ -33,26 +33,6 @@ SerializerOnlineCoachStdv8::SerializerOnlineCoachStdv8( const SerializerCommon &
 SerializerOnlineCoachStdv8::~SerializerOnlineCoachStdv8()
 {
 
-}
-
-const
-SerializerOnlineCoachStdv8 *
-SerializerOnlineCoachStdv8::instance()
-{
-    rcss::SerializerCommon::Creator cre_common;
-    if ( ! rcss::SerializerCommon::factory().getCreator( cre_common, 8 ) )
-    {
-        return NULL;
-    }
-
-    rcss::SerializerCoach::Creator cre_coach;
-    if ( ! rcss::SerializerCoach::factory().getCreator( cre_coach, 8 ) )
-    {
-        return NULL;
-    }
-
-    static SerializerOnlineCoachStdv8 ser( cre_common(), *cre_coach() );
-    return &ser;
 }
 
 void
@@ -64,19 +44,34 @@ SerializerOnlineCoachStdv8::serializePlayerClangVer( std::ostream& strm,
     strm << "(clang (ver " << name << ' ' << min << ' ' << max << "))";
 }
 
-namespace {
+
 const
-SerializerOnlineCoach *
-create()
+SerializerOnlineCoach::Ptr
+SerializerOnlineCoachStdv8::create()
 {
-    return SerializerOnlineCoachStdv8::instance();
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 8 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerCoach::Creator cre_coach;
+    if ( ! SerializerCoach::factory().getCreator( cre_coach, 8 ) )
+    {
+        return SerializerOnlineCoach::Ptr();
+    }
+
+    SerializerOnlineCoach::Ptr ptr( new SerializerOnlineCoachStdv8( cre_common(), cre_coach() ) );
+    return ptr;
 }
 
-RegHolder v8 = SerializerOnlineCoach::factory().autoReg( &create, 8 );
-RegHolder v9 = SerializerOnlineCoach::factory().autoReg( &create, 9 );
-RegHolder v10 = SerializerOnlineCoach::factory().autoReg( &create, 10 );
-RegHolder v11 = SerializerOnlineCoach::factory().autoReg( &create, 11 );
-RegHolder v12 = SerializerOnlineCoach::factory().autoReg( &create, 12 );
+
+namespace {
+RegHolder v8 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv8::create, 8 );
+RegHolder v9 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv8::create, 9 );
+RegHolder v10 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv8::create, 10 );
+RegHolder v11 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv8::create, 11 );
+RegHolder v12 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv8::create, 12 );
 }
 
 }
