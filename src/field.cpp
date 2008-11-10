@@ -713,13 +713,13 @@ Stadium::initPlayer( const char * init_message,
 }
 
 
-Player*
+Player *
 Stadium::newPlayer( const char * teamname,
                     const double & version,
                     const bool goalie_flag,
                     const rcss::net::Addr & addr )
 {
-    Team *tm;
+    Team * tm;
 
     if ( M_team_l->name().empty() )
     {
@@ -752,7 +752,7 @@ Stadium::newPlayer( const char * teamname,
 
     if ( p == NULL )
     {
-        sendToPlayer( "(error no_more_player_or_goalie_or_invalid_client_version)", addr );
+        sendToPlayer( "(error no_more_player_or_goalie_or_illegal_client_version)", addr );
         return NULL;
     }
 
@@ -2297,11 +2297,11 @@ Stadium::doRecvFromClients()
 
     udp_recv_message();
     udp_recv_from_online_coach();
-    if ( ServerParam::instance().coachMode()
-         || ServerParam::instance().coachWithRefereeMode() )
-    {
-        udp_recv_from_coach();
-    }
+    //if ( ServerParam::instance().coachMode()
+    //     || ServerParam::instance().coachWithRefereeMode() )
+    //{
+    udp_recv_from_coach();
+    //}
 
     removeDisconnectedClients();
 

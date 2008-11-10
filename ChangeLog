@@ -1,3 +1,17 @@
+2008-11-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/dispsender.cpp:
+	* src/dispsender.h:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/monitor.cpp:
+	- cleaned up the message sender of monitor and logger.
+
+	* src/field.cpp:
+	* src/netif.cpp:
+	- added an error message for offline coaches when they try to
+	connect to the server without coach mode.
+
 2008-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/audio.cpp:
@@ -69,7 +83,7 @@
 	* src/visualsendercoach.cpp:
 	* src/visualsendercoach.h:
 	* src/visualsenderplayer.h:
-	- changed the policy of the management of serialier
+	- changed the policy of the management of serializer
 	instance. reimplemented all serializers' creator.
 
 	* src/rcsoccersim.in:

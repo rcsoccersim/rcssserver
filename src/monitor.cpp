@@ -240,33 +240,34 @@ int
 Monitor::sendMsg( const BoardType board,
                   const char * msg )
 {
-    if ( version() >= 3.0 )
-    {
-        char buf[MaxMesg];
-        snprintf( buf, MaxMesg,
-                  "(msg %d %d \"%s\")",
-                  M_stadium.time(), board, msg );
-        return RemoteClient::send( buf, std::strlen( buf ) + 1 );
-    }
-    else if ( version() >= 2.0 )
-    {
-        dispinfo_t2 minfo;
-        minfo.mode = htons( MSG_MODE );
-        minfo.body.msg.board = htons( board );
-        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-        return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
-                                   sizeof( dispinfo_t2 ) );
-    }
-    else if ( version() >= 1.0 )
-    {
-        dispinfo_t minfo;
-        minfo.mode = htons( MSG_MODE );
-        minfo.body.msg.board = htons( board );
-        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-        return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
-                                   sizeof( dispinfo_t ) );
-    }
+    M_observer->sendMsg( board, msg );
 
+//     if ( version() >= 3.0 )
+//     {
+//         char buf[MaxMesg];
+//         snprintf( buf, MaxMesg,
+//                   "(msg %d %d \"%s\")",
+//                   M_stadium.time(), board, msg );
+//         return RemoteClient::send( buf, std::strlen( buf ) + 1 );
+//     }
+//     else if ( version() >= 2.0 )
+//     {
+//         dispinfo_t2 minfo;
+//         minfo.mode = htons( MSG_MODE );
+//         minfo.body.msg.board = htons( board );
+//         std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+//         return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
+//                                    sizeof( dispinfo_t2 ) );
+//     }
+//     else if ( version() >= 1.0 )
+//     {
+//         dispinfo_t minfo;
+//         minfo.mode = htons( MSG_MODE );
+//         minfo.body.msg.board = htons( board );
+//         std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+//         return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
+//                                    sizeof( dispinfo_t ) );
+//     }
     return 0;
 }
 

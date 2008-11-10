@@ -85,7 +85,7 @@
 
 template < class T >
 void
-Stadium::recv( std::vector< T >& clients )
+Stadium::recv( std::vector< T > & clients )
 {
     std::random_shuffle( clients.begin(), clients.end(),
                          irand ); //rcss::random::UniformRNG::instance() );
@@ -225,60 +225,29 @@ Stadium::parseMonitorInit( const char * message,
                            const rcss::net::Addr & addr )
 {
     double ver = 1.0;
-    if ( ! std::strcmp( message, "(dispinit)" ) )
+    if ( ! std::strcmp( message, "(dispinit)" )
+         || std::sscanf( message, "(dispinit version %lf)", &ver ) == 1 )
     {
         if ( ServerParam::instance().maxMonitors() > 0
-             && ( static_cast< int >( M_monitors.size() )
-                  >= ServerParam::instance().maxMonitors()  ) )
+             && static_cast< int >( M_monitors.size() ) >= ServerParam::instance().maxMonitors() )
         {
             sendToPlayer( "(error no_more_monitor)", addr );
             return true;
         }
-
-        Monitor * mon = new Monitor( *this, 1 );
-        if( ! mon->connect( addr ) )
-        {
-            delete mon;
-            return true;
-        }
-        if ( ! mon->setSenders() )
-        {
-            delete mon;
-            return true;
-        }
-        std::cout << "a new (v1) monitor connected\n";
-        mon->setEnforceDedicatedPort( false );
-        M_monitors.push_back( mon );
-        return true;
-    }
-    else if ( std::sscanf( message, "(dispinit version %lf)", &ver ) == 1 )
-    {
-        if ( ServerParam::instance().maxMonitors() > 0
-             && ( static_cast< int >( M_monitors.size() )
-                  >= ServerParam::instance().maxMonitors()  ) )
-        {
-            sendToPlayer( "(error no_more_monitor)", addr );
-            return true;
-        }
-
-//         if ( ver < 1.0 || 5.0 <= ver )
-//         {
-//             std::cout << "Unsupported monitor protocol version. " << ver
-//                       << std::endl;
-//             return true;
-//         }
 
         // a new monitor connected
         Monitor * mon = new Monitor( *this, ver );
 
         if( ! mon->connect( addr ) )
         {
+            sendToPlayer( "(error connection_failed)", addr );
             delete mon;
             return true;
         }
 
         if ( ! mon->setSenders() )
         {
+            sendToPlayer( "(error illegal_client_version)", addr );
             delete mon;
             return true;
         }
@@ -288,18 +257,7 @@ Stadium::parseMonitorInit( const char * message,
         M_monitors.push_back( mon );
 
         // send server parameter information to monitor
-        if ( ver >= 3.0 )
-        {
-            mon->sendInit();
-        }
-        else if ( ver >= 2.0 )
-        {
-            mon->sendInit();
-        }
-        else if ( ver >= 1.0 )
-        {
-            // nothing to do
-        }
+        mon->sendInit();
         return true;
     }
 
@@ -309,7 +267,13 @@ Stadium::parseMonitorInit( const char * message,
 void
 Stadium::udp_recv_from_coach()
 {
-    recv( M_remote_offline_coaches );
+    const bool allow_coach = ( ServerParam::instance().coachMode()
+                               || ServerParam::instance().coachWithRefereeMode() );
+
+    if ( allow_coach )
+    {
+        recv( M_remote_offline_coaches );
+    }
 
     while ( 1 )
     {
@@ -322,6 +286,12 @@ Stadium::udp_recv_from_coach()
 
         if ( len > 0 )
         {
+            if ( ! allow_coach )
+            {
+                sendToCoach( "(error connected_offline_coach_without_coach_mode)", cli_addr );
+                continue;
+            }
+
             bool found = false;
             for ( OfflineCoachCont::iterator i = M_remote_offline_coaches.begin();
                   i != M_remote_offline_coaches.end();

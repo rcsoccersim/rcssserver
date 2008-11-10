@@ -129,7 +129,7 @@ public:
 
     void writeMsgToGameLog( const BoardType board_type,
                             const char * msg,
-                            const bool compulsion = false );
+                            const bool force = false );
 
     /*!
       \brief write current status

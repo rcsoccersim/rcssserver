@@ -617,64 +617,71 @@ Logger::writeToGameLog( const char * str,
 void
 Logger::writeMsgToGameLog( const BoardType board_type,
                            const char * msg,
-                           const bool compulsion )
+                           const bool force )
 {
     if ( ! isGameLogOpen() )
     {
         return;
     }
 
-    if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_4 )
+    if ( force
+         || ServerParam::instance().recordMessages()
+         || ServerParam::instance().gameLogVersion() == REC_OLD_VERSION )
     {
-        if ( compulsion
-             || ServerParam::instance().recordMessages() )
-        {
-            std::string str( msg );
-            std::replace( str.begin(), str.end(), '\n', ' ' );
+        M_observer->sendMsg( board_type, msg );
+    }
 
-            *M_game_log << "(msg " << M_stadium.time()
-                        << ' ' << board_type << " \"" << str << "\")\n";
-        }
-    }
-    else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
-    {
-        if ( compulsion
-             || ServerParam::instance().recordMessages() )
-        {
-            Int16 mode = htons( MSG_MODE );
-            writeToGameLog( reinterpret_cast< const char * >( &mode ),
-                            sizeof( mode ) );
-            Int16 board = htons( board_type );
-            writeToGameLog( reinterpret_cast< const char * >( &board ),
-                            sizeof( board ) );
-            // calculate the string length and write it
+//     if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_4 )
+//     {
+//         if ( force
+//              || ServerParam::instance().recordMessages() )
+//         {
+//             std::string str( msg );
+//             std::replace( str.begin(), str.end(), '\n', ' ' );
 
-            const Int16 max_len = std::min( Int16( std::strlen( msg ) ), Int16( 2048 ) );
-            Int16 len = 1;
-            while ( (msg[len-1] != '\0') && (len < max_len) )
-            {
-                ++len;
-            }
-            /* pfr 1/7/00 Need to put length in network byte order */
-            Int16 nlen = htons( len );
-            writeToGameLog( reinterpret_cast< const char* >( &nlen ),
-                            sizeof( nlen ) );
-            // write the message
-            writeToGameLog( msg, len );
-        }
-    }
-    else
-    {
-        dispinfo_t disp;
-        disp.mode = htons( MSG_MODE );
-        disp.body.msg.board = htons( board_type );
-        std::strncpy( disp.body.msg.message,
-                      msg,
-                      std::min( sizeof( disp.body.msg.message ),
-                                std::strlen( msg ) ) );
-        writeToGameLog( reinterpret_cast< const char * >( &disp ),
-                        sizeof( dispinfo_t ) );
-    }
+//             *M_game_log << "(msg " << M_stadium.time()
+//                         << ' ' << board_type << " \"" << str << "\")\n";
+//         }
+//     }
+//     else if ( ServerParam::instance().gameLogVersion() != REC_OLD_VERSION )
+//     {
+//         if ( force
+//              || ServerParam::instance().recordMessages() )
+//         {
+//             Int16 mode = htons( MSG_MODE );
+//             writeToGameLog( reinterpret_cast< const char * >( &mode ),
+//                             sizeof( mode ) );
+//             Int16 board = htons( board_type );
+//             writeToGameLog( reinterpret_cast< const char * >( &board ),
+//                             sizeof( board ) );
+//             // calculate the string length and write it
+
+//             const Int16 max_len = std::min( Int16( std::strlen( msg ) ), Int16( 2048 ) );
+//             Int16 len = 1;
+//             while ( (msg[len-1] != '\0') && (len < max_len) )
+//             {
+//                 ++len;
+//             }
+//             /* pfr 1/7/00 Need to put length in network byte order */
+//             Int16 nlen = htons( len );
+//             writeToGameLog( reinterpret_cast< const char* >( &nlen ),
+//                             sizeof( nlen ) );
+//             // write the message
+//             writeToGameLog( msg, len );
+//         }
+//     }
+//     else
+//     {
+//         dispinfo_t disp;
+//         disp.mode = htons( MSG_MODE );
+//         disp.body.msg.board = htons( board_type );
+//         std::strncpy( disp.body.msg.message,
+//                       msg,
+//                       std::min( sizeof( disp.body.msg.message ),
+//                                 std::strlen( msg ) ) );
+//         writeToGameLog( reinterpret_cast< const char * >( &disp ),
+//                         sizeof( dispinfo_t ) );
+//     }
 }
 
 void
@@ -772,7 +779,7 @@ Logger::writeGameLogImpl()
     M_observer->sendShow();
 }
 
-// TODO: replaced with DispSender
+// This method has no longer be used.
 void
 Logger::writeGameLogV1()
 {
@@ -830,7 +837,7 @@ Logger::writeGameLogV1()
                     sizeof( dispinfo_t ) );
 }
 
-// TODO: replaced with DispSender
+// This method has no longer be used.
 void
 Logger::writeGameLogV2()
 {
@@ -893,7 +900,7 @@ Logger::writeGameLogV2()
                     sizeof( showinfo_t ) );
 }
 
-// TODO: replaced with DispSender
+// This method has no longer be used.
 void
 Logger::writeGameLogV3()
 {
@@ -992,7 +999,7 @@ Logger::writeGameLogV3()
                     sizeof( short_showinfo_t2 ) );
 }
 
-// TODO: replaced with DispSender
+// This method has no longer be used.
 void
 Logger::writeGameLogV4()
 {
