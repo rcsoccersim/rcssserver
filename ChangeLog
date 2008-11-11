@@ -1,3 +1,10 @@
+2008-11-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/pcomparser.cpp:
+	* src/pcomparser.h:
+	* src/player_command_parser.ypp:
+	- fixed build problems with bison-2.4.
+
 2008-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/audio.cpp:

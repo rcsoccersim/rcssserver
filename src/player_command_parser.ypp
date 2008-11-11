@@ -101,23 +101,30 @@ namespace
 %token RCSS_PCOM_EAR "ear"
 %token RCSS_PCOM_SYNCH_SEE "synch_see"
 
-%token < rcss:pcom::VIEW_WIDTH > RCSS_PCOM_VIEW_WIDTH_NARROW "narrow"
-%token < rcss:pcom::VIEW_WIDTH > RCSS_PCOM_VIEW_WIDTH_NORMAL "normal"
-%token < rcss:pcom::VIEW_WIDTH > RCSS_PCOM_VIEW_WIDTH_WIDE "wide"
-%token < rcss:pcom::VIEW_QUALITY > RCSS_PCOM_VIEW_QUALITY_LOW "low"
-%token < rcss:pcom::VIEW_QUALITY > RCSS_PCOM_VIEW_QUALITY_HIGH "high"
-%token < bool > RCSS_PCOM_ON "on"
-%token < bool > RCSS_PCOM_OFF "off"
-%token < rcss:pcom::TEAM > RCSS_PCOM_OUR "our"
-%token < rcss:pcom::TEAM > RCSS_PCOM_OPP "opp"
-%token < rcss:pcom::TEAM > RCSS_PCOM_LEFT 'l'
-%token < rcss:pcom::TEAM > RCSS_PCOM_RIGHT 'r'
-%token < rcss:pcom::EAR_MODE > RCSS_PCOM_EAR_PARTIAL "partial"
-%token < rcss:pcom::EAR_MODE > RCSS_PCOM_EAR_COMPLETE "complete"
+%token < m_view_w > RCSS_PCOM_VIEW_WIDTH_NARROW "narrow"
+%token < m_view_w > RCSS_PCOM_VIEW_WIDTH_NORMAL "normal"
+%token < m_view_w > RCSS_PCOM_VIEW_WIDTH_WIDE "wide"
+%token < m_view_q > RCSS_PCOM_VIEW_QUALITY_LOW "low"
+%token < m_view_q > RCSS_PCOM_VIEW_QUALITY_HIGH "high"
+%token < m_bool > RCSS_PCOM_ON "on"
+%token < m_bool > RCSS_PCOM_OFF "off"
+%token < m_team > RCSS_PCOM_OUR "our"
+%token < m_team > RCSS_PCOM_OPP "opp"
+%token < m_team > RCSS_PCOM_LEFT 'l'
+%token < m_team > RCSS_PCOM_RIGHT 'r'
+%token < m_ear > RCSS_PCOM_EAR_PARTIAL "partial"
+%token < m_ear > RCSS_PCOM_EAR_COMPLETE "complete"
 %token RCSS_PCOM_CLANG_VERSION "ver"
 
 /* the ERROR token is an error from lex and is never used below */
 %token RCSS_PCOM_ERROR
+
+%type < m_view_w > view_width
+%type < m_view_q > view_quality
+%type < m_bool > on_off
+%type < m_team > team_side
+%type < m_ear > partial_complete
+%type < m_double > floating_point_number
 
 %start command_list
 
@@ -126,7 +133,8 @@ namespace
 /* Grammar RULES */
 
 command_list : command
-               | command_list command;
+               | command_list command
+;
 
 command : dash_com
           | turn_com
@@ -146,215 +154,238 @@ command : dash_com
           | tackle_com
           | clang_com
           | ear_com
-					| synch_see_com ;
+          | synch_see_com
+;
 
 dash_com : RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number RCSS_PCOM_RP
            {
-	       BUILDER.dash( $3.m_double );
+             BUILDER.dash( $< m_double >3 );
            }
            | RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number floating_point_number RCSS_PCOM_RP
            {
-	       BUILDER.dash( $3.m_double, $4.m_double );
-           } ;
+	           BUILDER.dash( $< m_double >3, $< m_double >4 );
+           }
+;
 
 turn_com : RCSS_PCOM_LP RCSS_PCOM_TURN floating_point_number RCSS_PCOM_RP
            {
-             BUILDER.turn( $3.m_double );
-           } ;
+             BUILDER.turn( $< m_double >3 );
+           }
+;
 
 turn_neck_com : RCSS_PCOM_LP RCSS_PCOM_TURN_NECK floating_point_number RCSS_PCOM_RP
                 {
-                  BUILDER.turn_neck( $3.m_double );
-                } ;
+                  BUILDER.turn_neck( $< m_double >3 );
+                }
+;
 
 kick_com : RCSS_PCOM_LP RCSS_PCOM_KICK floating_point_number floating_point_number RCSS_PCOM_RP
            {
-             BUILDER.kick( $3.m_double, $4.m_double );
-           } ;
+             BUILDER.kick( $< m_double >3, $< m_double >4 );
+           }
+;
 
 catch_com : RCSS_PCOM_LP RCSS_PCOM_CATCH floating_point_number RCSS_PCOM_RP
             {
-              BUILDER.goalieCatch( $3.m_double );
-            } ;
+              BUILDER.goalieCatch( $< m_double >3 );
+            }
+;
 
 say_com : RCSS_PCOM_UNQ_SAY
           {
-            BUILDER.say( $1.m_str );
+            BUILDER.say( $< m_str >1 );
           }
           | RCSS_PCOM_LP RCSS_PCOM_SAY RCSS_PCOM_STR RCSS_PCOM_RP
           {
-            BUILDER.say( rcss::stripQuotes( $3.m_str ) );
-          } ;
+            BUILDER.say( rcss::stripQuotes( $< m_str >3 ) );
+          }
+;
 
 sense_body_com : RCSS_PCOM_LP RCSS_PCOM_SENSE_BODY RCSS_PCOM_RP
                  {
                    BUILDER.sense_body();
-                 } ;
+                 }
+;
 
 score_com : RCSS_PCOM_LP RCSS_PCOM_SCORE RCSS_PCOM_RP
             {
               BUILDER.score();
-            } ;
+            }
+;
 
 move_com : RCSS_PCOM_LP RCSS_PCOM_MOVE floating_point_number floating_point_number RCSS_PCOM_RP
            {
-             BUILDER.move( $3.m_double, $4.m_double );
-           } ;
+             BUILDER.move( $< m_double >3, $< m_double >4 );
+           }
+;
 
 change_view_com : RCSS_PCOM_LP RCSS_PCOM_CHANGE_VIEW view_width view_quality RCSS_PCOM_RP
                  {
-                   BUILDER.change_view( $3.m_view_w, $4.m_view_q );
+                   BUILDER.change_view( $< m_view_w >3, $< m_view_q >4 );
                  }
                  | RCSS_PCOM_LP RCSS_PCOM_CHANGE_VIEW view_width RCSS_PCOM_RP
                  {
-                   BUILDER.change_view( $3.m_view_w );
+                   BUILDER.change_view( $< m_view_w >3 );
                  }
-                 ;
+;
 
 view_width : RCSS_PCOM_VIEW_WIDTH_NARROW
              {
-               $$.m_view_w = rcss::pcom::NARROW;
+               $< m_view_w >$ = rcss::pcom::NARROW;
              }
              | RCSS_PCOM_VIEW_WIDTH_NORMAL
              {
-               $$.m_view_w = rcss::pcom::NORMAL;
+               $< m_view_w >$ = rcss::pcom::NORMAL;
              }
              | RCSS_PCOM_VIEW_WIDTH_WIDE
              {
-               $$.m_view_w = rcss::pcom::WIDE;
-             } ;
+               $< m_view_w >$ = rcss::pcom::WIDE;
+             }
+;
 
 view_quality : RCSS_PCOM_VIEW_QUALITY_LOW
                {
-                 $$.m_view_q = rcss::pcom::LOW;
+                 $< m_view_q >$ = rcss::pcom::LOW;
                }
                | RCSS_PCOM_VIEW_QUALITY_HIGH
                {
-                 $$.m_view_q = rcss::pcom::HIGH;
-               };
+                 $< m_view_q >$ = rcss::pcom::HIGH;
+               }
+;
 
 compression_com : RCSS_PCOM_LP RCSS_PCOM_COMPRESSION RCSS_PCOM_INT RCSS_PCOM_RP
                   {
-                    BUILDER.compression( $3.m_int );
-                  } ;
+                    BUILDER.compression( $< m_int >3 );
+                  }
+;
 
 bye_com : RCSS_PCOM_LP RCSS_PCOM_BYE RCSS_PCOM_RP
           {
             BUILDER.bye();
-          } ;
+          }
+;
 
 done_com : RCSS_PCOM_LP RCSS_PCOM_DONE RCSS_PCOM_RP
            {
              BUILDER.done();
-           } ;
+           }
+;
 
 pointto_com : RCSS_PCOM_LP RCSS_PCOM_POINTTO floating_point_number floating_point_number RCSS_PCOM_RP
               {
-                BUILDER.pointto( true, $3.m_double, $4.m_double );
+                BUILDER.pointto( true, $< m_double >3, $< m_double >4 );
               }
               | RCSS_PCOM_LP RCSS_PCOM_POINTTO RCSS_PCOM_OFF RCSS_PCOM_RP
               {
                 BUILDER.pointto( false, 0.0, 0.0 );
-              } ;
+              }
+;
 
 attentionto_com : RCSS_PCOM_LP RCSS_PCOM_ATTENTIONTO team_side RCSS_PCOM_INT RCSS_PCOM_RP
                   {
-                    BUILDER.attentionto( true, $3.m_team, "", $4.m_int );
+                    BUILDER.attentionto( true, $< m_team >3, "", $< m_int >4 );
                   }
                   | RCSS_PCOM_LP RCSS_PCOM_ATTENTIONTO RCSS_PCOM_STR RCSS_PCOM_INT RCSS_PCOM_RP
                   {
-                    BUILDER.attentionto( true, rcss::pcom::UNKNOWN_TEAM, $3.m_str, $4.m_int );
+                    BUILDER.attentionto( true, rcss::pcom::UNKNOWN_TEAM, $< m_str >3, $< m_int >4 );
                   }
                   | RCSS_PCOM_LP RCSS_PCOM_ATTENTIONTO RCSS_PCOM_OFF RCSS_PCOM_RP
                   {
                     BUILDER.attentionto( false, rcss::pcom::UNKNOWN_TEAM, "", 0 );
-                  } ;
+                  }
+;
 
 tackle_com : RCSS_PCOM_LP RCSS_PCOM_TACKLE floating_point_number RCSS_PCOM_RP
              {
-               BUILDER.tackle( $3.m_double );
-             } ;
+               BUILDER.tackle( $< m_double >3 );
+             }
+;
 
 clang_com : RCSS_PCOM_LP RCSS_PCOM_CLANG RCSS_PCOM_LP RCSS_PCOM_CLANG_VERSION RCSS_PCOM_INT RCSS_PCOM_INT RCSS_PCOM_RP RCSS_PCOM_RP
            {
-             BUILDER.clang( $5.m_int, $6.m_int );
-           } ;
+             BUILDER.clang( $< m_int >5, $< m_int >6 );
+           }
+;
 
 ear_com : RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off team_side partial_complete RCSS_PCOM_RP RCSS_PCOM_RP
           {
-            BUILDER.ear( $4.m_bool, $5.m_team, "", $6.m_ear );
+            BUILDER.ear( $< m_bool >4, $< m_team >5, "", $< m_ear >6 );
           }
           | RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off RCSS_PCOM_STR partial_complete RCSS_PCOM_RP RCSS_PCOM_RP
           {
-            BUILDER.ear( $4.m_bool, rcss::pcom::UNKNOWN_TEAM, $5.m_str, $6.m_ear );
+            BUILDER.ear( $< m_bool >4, rcss::pcom::UNKNOWN_TEAM, $< m_str >5, $< m_ear >6 );
           }
           | RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off team_side RCSS_PCOM_RP RCSS_PCOM_RP
           {
-            BUILDER.ear( $4.m_bool, $5.m_team, "", rcss::pcom::UNKNOWN_EAR_MODE );
+            BUILDER.ear( $< m_bool >4, $< m_team >5, "", rcss::pcom::UNKNOWN_EAR_MODE );
           }
           | RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off RCSS_PCOM_STR RCSS_PCOM_RP RCSS_PCOM_RP
           {
-            BUILDER.ear( $4.m_bool, rcss::pcom::UNKNOWN_TEAM, $5.m_str, rcss::pcom::UNKNOWN_EAR_MODE );
+            BUILDER.ear( $< m_bool >4, rcss::pcom::UNKNOWN_TEAM, $< m_str >5, rcss::pcom::UNKNOWN_EAR_MODE );
           }
           | RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off partial_complete RCSS_PCOM_RP RCSS_PCOM_RP
           {
-            BUILDER.ear( $4.m_bool, rcss::pcom::UNKNOWN_TEAM, "", $5.m_ear );
+            BUILDER.ear( $< m_bool >4, rcss::pcom::UNKNOWN_TEAM, "", $< m_ear >5 );
           }
           | RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off RCSS_PCOM_RP RCSS_PCOM_RP
           {
-            BUILDER.ear( $4.m_bool, rcss::pcom::UNKNOWN_TEAM, "", rcss::pcom::UNKNOWN_EAR_MODE );
+            BUILDER.ear( $< m_bool >4, rcss::pcom::UNKNOWN_TEAM, "", rcss::pcom::UNKNOWN_EAR_MODE );
           }
-          ;
+;
 
 synch_see_com : RCSS_PCOM_LP RCSS_PCOM_SYNCH_SEE RCSS_PCOM_RP
                 {
                    BUILDER.synch_see();
                 }
-                ;
+;
 
 on_off : RCSS_PCOM_ON
          {
-           $$.m_bool = true;
+           $< m_bool >$ = true;
          }
          | RCSS_PCOM_OFF
          {
-           $$.m_bool = false;
-         } ;
+           $< m_bool >$ = false;
+         }
+;
 
 team_side : RCSS_PCOM_OUR
             {
-              $$.m_team = rcss::pcom::OUR;
+              $< m_team >$ = rcss::pcom::OUR;
             }
             | RCSS_PCOM_OPP
             {
-              $$.m_team = rcss::pcom::OPP;
+              $< m_team >$ = rcss::pcom::OPP;
             }
             | RCSS_PCOM_LEFT
             {
-              $$.m_team = rcss::pcom::LEFT_SIDE;
+              $< m_team >$ = rcss::pcom::LEFT_SIDE;
             }
             | RCSS_PCOM_RIGHT
             {
-              $$.m_team = rcss::pcom::RIGHT_SIDE;
-            } ;
+              $< m_team >$ = rcss::pcom::RIGHT_SIDE;
+            }
+;
 
 partial_complete : RCSS_PCOM_EAR_PARTIAL
                    {
-                     $$.m_ear = rcss::pcom::PARTIAL;
+                     $< m_ear >$ = rcss::pcom::PARTIAL;
                    }
                    | RCSS_PCOM_EAR_COMPLETE
                    {
-                     $$.m_ear = rcss::pcom::COMPLETE;
-                   } ;
+                     $< m_ear >$ = rcss::pcom::COMPLETE;
+                   }
+;
 
 floating_point_number : RCSS_PCOM_INT
                         {
-                          $$.m_double = static_cast<double>( $1.m_int );
+                          $< m_double >$ = static_cast< double >( $< m_int >1 );
                         }
                         | RCSS_PCOM_REAL
                         {
-                          $$ = $1;
-                        } ;
+                          $< m_double >$ = $< m_double >1;
+                        }
+;
 
 %%
 

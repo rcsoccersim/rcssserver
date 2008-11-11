@@ -34,9 +34,9 @@ namespace pcom {
 class Builder;
 
 class Parser
-    : public ::rcss::Parser {
+    : public rcss::Parser {
 public:
-    typedef ::rcss::pcom::Lexer Lexer;
+    typedef rcss::pcom::Lexer Lexer;
     typedef int (*ParserFunc)( void * );
 
     class Param {
