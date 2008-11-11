@@ -49,7 +49,7 @@ Parser::parse( const char * msg )
 #else
     std::istrstream strm( msg );
 #endif
-    return ( ::rcss::Parser::parse( strm ) ? 0 : 1 );
+    return ( rcss::Parser::parse( strm ) ? 0 : 1 );
 }
 
 }
