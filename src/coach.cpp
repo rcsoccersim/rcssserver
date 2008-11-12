@@ -46,12 +46,12 @@
 #include <cstring>
 #include <cmath>
 
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
-#endif
+// #ifdef HAVE_NETINET_IN_H
+// #include <netinet/in.h>
+// #endif
+// #ifdef HAVE_WINSOCK2_H
+// #include <winsock2.h>
+// #endif
 
 namespace {
 

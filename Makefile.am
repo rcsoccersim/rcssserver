@@ -9,8 +9,7 @@ SUBDIRS = \
 	src \
 	.
 
-EXTRA_DIST = \
-	missingflex
+EXTRA_DIST = 
 
 CLEANFILES = \
 	*~ \

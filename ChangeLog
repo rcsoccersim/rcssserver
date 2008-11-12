@@ -1,9 +1,79 @@
+2008-11-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* Makefile.am:
+	* configure.ac:
+	* rcssbase/conf/parser.cpp:
+	* rcssbase/conf/streamstatushandler.cpp:
+	* rcssbase/net/addr.cpp:
+	* rcssbase/net/handler.cpp:
+	* rcssbase/net/handler.hpp:
+	* rcssbase/net/socket.cpp:
+	* rcssbase/net/socket.hpp:
+	* rcssbase/net/tcpsocket.cpp:
+	* rcssbase/net/udpsocket.cpp:
+	* src/client.cpp:
+	* src/coach.cpp:
+	* src/csvsaver.cpp:
+	* src/dispsender.cpp:
+	* src/heteroplayer.cpp:
+	* src/initsenderlogger.cpp:
+	* src/initsendermonitor.cpp:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/monitor.cpp:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	* src/stdoutsaver.cpp:
+	* src/stdtimer.cpp:
+	* src/stdtimer.h:
+	* src/utility.cpp:
+	* src/utility.h:
+	- removed an unused file from distribution target.
+	- fixed build problems on Cygwin.
+	- fixed defects of boost::filesystem.
+	  repladed boost::filesystem::create_directry with
+	  boost::filesystem::create_directories.
+	  replaced boost::filesystem::portable_posix_name with
+	  boost::filesystem::native.
+	  added the strict check of BOOST_FILESYSTEM_NO_DEPRECATED.
+	- changed a default configuration file location for windows
+	environments.
+
 2008-11-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/pcomparser.cpp:
 	* src/pcomparser.h:
 	* src/player_command_parser.ypp:
 	- fixed build problems with bison-2.4.
+
+2008-11-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/dispsender.cpp:
+	* src/dispsender.h:
+	* src/field.cpp:
+	* src/initsendermonitor.cpp:
+	* src/initsendermonitor.h:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/monitor.cpp:
+	* src/monitor.h:
+	* src/serializer.h:
+	* src/serializermonitor.cpp:
+	* src/serializermonitor.h:
+	* src/team.h:
+	- reimplemented team_graphic senders.
+
+	* src/dispsender.cpp:
+	* src/dispsender.h:
+	* src/logger.cpp:
+	* src/logger.h:
+	* src/monitor.cpp:
+	- cleaned up the message sender of monitor and logger.
+
+	* src/field.cpp:
+	* src/netif.cpp:
+	- added an error message for offline coaches when they try to
+	connect to the server without coach mode.
 
 2008-11-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

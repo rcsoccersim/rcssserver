@@ -31,6 +31,7 @@
 #include "player.h"
 #include "field.h"
 #include "types.h"
+#include "xpmholder.h"
 
 #include <sstream>
 #include <cmath>
@@ -38,8 +39,8 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 
 namespace rcss {
@@ -222,9 +223,39 @@ DispSenderMonitorV1::sendShow()
 }
 
 void
-DispSenderMonitorV1::sendMsg()
+DispSenderMonitorV1::sendMsg( const BoardType board,
+                              const char * msg )
 {
+    dispinfo_t minfo;
+    minfo.mode = htons( MSG_MODE );
+    minfo.body.msg.board = htons( board );
+    std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
 
+    transport().write( reinterpret_cast< const char * >( &minfo ),
+                       sizeof( dispinfo_t ) );
+    transport().flush();
+}
+
+void
+DispSenderMonitorV1::sendTeamGraphic( const Side side,
+                                      const unsigned int x,
+                                      const unsigned int y )
+{
+    const XPMHolder * xpm = ( side == LEFT
+                              ? stadium().teamLeft().teamGraphic( x, y )
+                              : side == RIGHT
+                              ? stadium().teamRight().teamGraphic( x, y )
+                              : static_cast< const XPMHolder * >( 0 ) );
+    if ( ! xpm )
+    {
+        return;
+    }
+
+    std::ostringstream data;
+
+    serializer().serializeTeamGraphic( data, side, x, y, xpm );
+
+    sendMsg( MSG_BOARD, data.str().c_str() );
 }
 
 /*!
@@ -373,9 +404,17 @@ DispSenderMonitorV2::sendShow()
 }
 
 void
-DispSenderMonitorV2::sendMsg()
+DispSenderMonitorV2::sendMsg( const BoardType board,
+                              const char * msg )
 {
+    dispinfo_t2 minfo;
+    minfo.mode = htons( MSG_MODE );
+    minfo.body.msg.board = htons( board );
+    std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
 
+    transport().write( reinterpret_cast< char * >( &minfo ),
+                       sizeof( dispinfo_t2 ) );
+    transport().flush();
 }
 
 /*!
@@ -461,99 +500,51 @@ DispSenderMonitorV3::sendShow()
 }
 
 void
-DispSenderMonitorV3::sendMsg()
+DispSenderMonitorV3::sendMsg( const BoardType board,
+                              const char * msg )
 {
+    char buf[MaxMesg];
+    snprintf( buf, MaxMesg,
+              "(msg %d %d \"%s\")",
+              stadium().time(), board, msg );
 
+    transport() << buf << std::ends << std::flush;
 }
 
 
-/*!
-//===================================================================
-//
-//  CLASS: DispSenderMonitorV4
-//
-//  DESC: version 4 of display protocol.
-//
-//===================================================================
-*/
+// /*!
+// //===================================================================
+// //
+// //  CLASS: DispSenderMonitorV4
+// //
+// //  DESC: version 4 of display protocol.
+// //
+// //===================================================================
+// */
 
-DispSenderMonitorV4::DispSenderMonitorV4( const Params & params )
-    : DispSenderMonitorV3( params )
-{
+// DispSenderMonitorV4::DispSenderMonitorV4( const Params & params )
+//     : DispSenderMonitorV3( params )
+// {
 
-}
+// }
 
-DispSenderMonitorV4::~DispSenderMonitorV4()
-{
+// DispSenderMonitorV4::~DispSenderMonitorV4()
+// {
 
-}
+// }
 
-void
-DispSenderMonitorV4::sendShow()
-{
-    static std::string message;
-    static int last_sent_time = -1;
-    static int last_sent_stoppage_time = -1;
+// void
+// DispSenderMonitorV4::sendShow()
+// {
 
-    //
-    // send cached data
-    //
+// }
 
-    if ( stadium().time() == last_sent_time
-         && stadium().stoppageTime() == last_sent_stoppage_time )
-    {
-        transport() << message << std::ends << std::flush;
-        return;
-    }
+// void
+// DispSenderMonitorV4::sendMsg( const BoardType board,
+//                               const char * msg )
+// {
 
-    last_sent_time = stadium().time();
-    last_sent_stoppage_time = stadium().stoppageTime();
-
-    message.erase();
-
-    //
-    // create new data
-    //
-
-    std::ostringstream ostr;
-
-    serializer().serializeShowBegin( ostr,
-                                     stadium().time() );
-    serializer().serializePlayModeId( ostr,
-                                      stadium().playmode() );
-    serializer().serializeScore( ostr,
-                                 stadium().teamLeft(),
-                                 stadium().teamRight() );
-
-    serializer().serializeBall( ostr,
-                                stadium().ball() );
-
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
-    {
-        serializer().serializePlayerBegin( ostr, **p );
-        serializer().serializePlayerPos( ostr, **p );
-        serializer().serializePlayerArm( ostr, **p );
-        serializer().serializePlayerViewMode( ostr, **p );
-        serializer().serializePlayerStamina( ostr, **p );
-        serializer().serializePlayerFocus( ostr, **p );
-        serializer().serializePlayerCounts( ostr, **p );
-        serializer().serializePlayerEnd( ostr );
-    }
-
-    serializer().serializeShowEnd( ostr );
-
-    message = ostr.str();
-    transport() << message << std::ends << std::flush;
-}
-
-void
-DispSenderMonitorV4::sendMsg()
-{
-
-}
+// }
 
 
 /*!
@@ -669,12 +660,42 @@ DispSenderLoggerV1::sendShow()
 }
 
 void
-DispSenderLoggerV1::sendMsg()
+DispSenderLoggerV1::sendMsg( const BoardType board,
+                             const char * msg )
 {
+    dispinfo_t disp;
+    disp.mode = htons( MSG_MODE );
+    disp.body.msg.board = htons( board );
+    std::strncpy( disp.body.msg.message,
+                  msg,
+                  std::min( sizeof( disp.body.msg.message ),
+                            std::strlen( msg ) ) );
 
+    transport().write( reinterpret_cast< const char * >( &disp ),
+                       sizeof( dispinfo_t ) );
 }
 
+void
+DispSenderLoggerV1::sendTeamGraphic( const Side side,
+                                     const unsigned int x,
+                                     const unsigned int y )
+{
+    const XPMHolder * xpm = ( side == LEFT
+                              ? stadium().teamLeft().teamGraphic( x, y )
+                              : side == RIGHT
+                              ? stadium().teamRight().teamGraphic( x, y )
+                              : static_cast< const XPMHolder * >( 0 ) );
+    if ( ! xpm )
+    {
+        return;
+    }
 
+    std::ostringstream data;
+
+    serializer().serializeTeamGraphic( data, side, x, y, xpm );
+
+    sendMsg( MSG_BOARD, data.str().c_str() );
+}
 
 /*!
 //===================================================================
@@ -762,9 +783,32 @@ DispSenderLoggerV2::sendShow()
 }
 
 void
-DispSenderLoggerV2::sendMsg()
+DispSenderLoggerV2::sendMsg( const BoardType board,
+                             const char * msg )
 {
+    Int16 mode = htons( MSG_MODE );
+    transport().write( reinterpret_cast< const char * >( &mode ),
+                       sizeof( mode ) );
 
+    Int16 board_value = htons( board );
+    transport().write( reinterpret_cast< const char * >( &board_value ),
+                       sizeof( board_value ) );
+    // calculate the string length and write it
+
+    const Int16 max_len = std::min( Int16( std::strlen( msg ) ), Int16( 2048 ) );
+    Int16 len = 1;
+    while ( (msg[len-1] != '\0') && (len < max_len) )
+    {
+        ++len;
+    }
+
+    /* pfr 1/7/00 Need to put length in network byte order */
+    Int16 nlen = htons( len );
+    transport().write( reinterpret_cast< const char* >( &nlen ),
+                       sizeof( nlen ) );
+
+    // write the message
+    transport().write( msg, len );
 }
 
 
@@ -840,11 +884,11 @@ DispSenderLoggerV3::sendShow()
     //transport().flush();
 }
 
-void
-DispSenderLoggerV3::sendMsg()
-{
-
-}
+// void
+// DispSenderLoggerV3::sendMsg( const BoardType board,
+//                              const char * msg )
+// {
+// }
 
 /*!
 //===================================================================
@@ -898,9 +942,14 @@ DispSenderLoggerV4::sendShow()
 }
 
 void
-DispSenderLoggerV4::sendMsg()
+DispSenderLoggerV4::sendMsg( const BoardType board,
+                             const char * msg )
 {
+    std::string str( msg );
+    std::replace( str.begin(), str.end(), '\n', ' ' );
 
+    transport() << "(msg " << stadium().time()
+                << ' ' << board << " \"" << str << "\")\n";
 }
 
 
@@ -932,7 +981,8 @@ DispSenderLoggerV4::sendMsg()
 // }
 
 // void
-// DispSenderLoggerV4::sendMsg()
+// DispSenderLoggerV4::sendMsg( const BoardType board,
+//                              const char * msg )
 // {
 
 // }
@@ -950,7 +1000,7 @@ create( const DispSenderMonitor::Params & params )
 RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV1 >, 1 );
 RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
 RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
-RegHolder vm4 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV4 >, 4 );
+RegHolder vm4 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 4 );
 
 
 template< typename Sender >

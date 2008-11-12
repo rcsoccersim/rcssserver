@@ -43,7 +43,8 @@
 #include <rcssbase/conf/paramsetter.hpp>
 #include <rcssbase/conf/paramgetter.hpp>
 
-#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/convenience.hpp>
 
 #include <algorithm>
 #include <string>
@@ -58,16 +59,43 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
+
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#define RCSS_WIN
 #ifdef HAVE_WINSOCK2_H
-#include <Winsock2.h> /* needed for htonl, htons, ... */
+#include <winsock2.h> /* needed for htonl, htons, ... */
+#endif
 #endif
 
-
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-#  ifndef WIN32
-#    define WIN32
-#  endif
+#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+#define BOOST_FS_FILE_STRING file_string
+#define BOOST_FS_DIRECTORY_STRING directory_string
+#else
+#define BOOST_FS_FILE_STRING native_file_string
+#define BOOST_FS_DIRECTORY_STRING native_directory_string
 #endif
+
+namespace {
+
+//! Lowest Common Multiple
+int
+lcm( int a,
+     int b )
+{
+    int tmp = 0, idx = 0, larger = std::max( a, b );
+    do
+    {
+        ++idx;
+        tmp = larger * idx;
+    }
+    while ( tmp % a != 0 || tmp % b != 0 );
+    return tmp;
+}
+
+}
+
 
 bool ServerParam::S_in_init = false;
 std::string ServerParam::S_program_name = "rcssserver";
@@ -184,11 +212,11 @@ const double ServerParam::WIND_WEIGHT = 10000.0;
 const double ServerParam::OFFSIDE_ACTIVE_AREA_SIZE = 2.5;
 const double ServerParam::OFFSIDE_KICK_MARGIN = 9.15;
 
-#ifdef WIN32
-const std::string ServerParam::LANDMARK_FILE = "~\\.rcssserver-landmark.xml";
-const std::string ServerParam::CONF_DIR = "~\\.rcssserver\\";
+#if defined(RCSS_WIN) || defined(__CYGWIN__)
+const std::string ServerParam::LANDMARK_FILE = "rcssserver-landmark.xml";
+const std::string ServerParam::CONF_DIR = ".";  //"~\\.rcssserver\\";
 const std::string ServerParam::SERVER_CONF = "server.conf";
-const std::string ServerParam::OLD_SERVER_CONF = "~\\.rcssserver-server.conf";
+const std::string ServerParam::OLD_SERVER_CONF = "rcssserver-server.conf";
 #else
 const std::string ServerParam::LANDMARK_FILE = "~/.rcssserver-landmark.xml";
 const std::string ServerParam::CONF_DIR = "~/.rcssserver/";
@@ -201,8 +229,13 @@ const int ServerParam::SEND_COMMS = false;
 const int ServerParam::TEXT_LOGGING = true;
 const int ServerParam::GAME_LOGGING = true;
 const int ServerParam::GAME_LOG_VERSION = DEFAULT_REC_VERSION;
+#ifdef RCSS_WIN
+const std::string ServerParam::TEXT_LOG_DIR = ".\\";
+const std::string ServerParam::GAME_LOG_DIR = ".\\";
+#else
 const std::string ServerParam::TEXT_LOG_DIR = "./";
 const std::string ServerParam::GAME_LOG_DIR = "./";
+#endif
 const std::string ServerParam::TEXT_LOG_FIXED_NAME = "rcssserver";
 const std::string ServerParam::GAME_LOG_FIXED_NAME = "rcssserver";
 const int ServerParam::TEXT_LOG_FIXED = false;
@@ -217,7 +250,11 @@ const int ServerParam::GAME_LOG_COMPRESSION = 0;
 const bool ServerParam::PROFILE = false;
 
 const int ServerParam::KAWAY_LOGGING = true;
+#ifdef RCSS_WIN
+const std::string ServerParam::KAWAY_LOG_DIR = ".\\";
+#else
 const std::string ServerParam::KAWAY_LOG_DIR = "./";
+#endif
 const std::string ServerParam::KAWAY_LOG_FIXED_NAME = "rcssserver";
 const int ServerParam::KAWAY_LOG_FIXED = false;
 const int ServerParam::KAWAY_LOG_DATED = true;
@@ -328,16 +365,6 @@ ServerParam::init( const int & argc,
         conf_dir = env_conf_dir;
     }
 
-    boost::filesystem::path conf_path( tildeExpand( conf_dir ),
-                                       boost::filesystem::portable_posix_name );
-    if ( ! boost::filesystem::exists( conf_path )
-         && ! boost::filesystem::create_directory( conf_path ) )
-    {
-        std::cerr << "Could not read or create config directory '" << conf_path.string()
-                  << std::endl;
-        instance().clear();
-        return false;
-    }
 //         DIR* config_dir = opendir( config_dir_name.c_str() );
 //         if ( config_dir == NULL )
 //         {
@@ -351,64 +378,90 @@ ServerParam::init( const int & argc,
 //             }
 //         }
 
-    conf_path /= ServerParam::SERVER_CONF;
+    boost::filesystem::path conf_path;
+    try
+    {
+        conf_path = boost::filesystem::path( tildeExpand( conf_dir )
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+                                             , &boost::filesystem::native
+#endif
+                                             );
+        if ( ! boost::filesystem::exists( conf_path )
+             && ! boost::filesystem::create_directories( conf_path ) )
+        {
+            std::cerr << "Could not read or create config directory '"
+                      << conf_path.BOOST_FS_FILE_STRING() << "'"
+                      << std::endl;
+            instance().clear();
+            return false;
+        }
 
-    instance().convertOldConf( conf_path.string() );
+        conf_path /= ServerParam::SERVER_CONF;
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << "\nCould not read or create config directory '"
+                  << tildeExpand( conf_dir ) << "'"
+                  << std::endl;
+        instance().clear();
+        return false;
+    }
+
+    instance().convertOldConf( conf_path.BOOST_FS_FILE_STRING() );
 
     if ( ! instance().M_conf_parser->parseCreateConf( conf_path, "server" ) )
     {
         std::cerr << "could not create or parse configuration file '"
-                  << conf_path.string()
-                  << "'\n";
+                  << conf_path.BOOST_FS_FILE_STRING() << "'"
+                  << std::endl;
         instance().M_builder->displayHelp();
         instance().clear();
         return false;
     }
-    else
+
+    if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
     {
-        //std::cerr << "server.conf = "  << conf_path.string() << std::endl;
-        if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
-        {
-            std::cerr << "Version mismatched in the configuration file. "
-                      << "You need to regenerate '" << tildeExpand( ServerParam::SERVER_CONF ) << "'"
-                      << " or set '" << instance().M_builder->version() << "' to the 'version' option."
-                      << std::endl;
-//             std::cerr << "registered version = ["
-//                       << instance().m_builder->version() << "]\n"
-//                       << "parsed version = ["
-//                       << instance().m_builder->parsedVersion() << "]\n"
-//                       << std::flush;
-            instance().clear();
-            return false;
-        }
+        std::cerr << "Version mismatched in the configuration file. "
+                  << "You need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
+                  << " or set '" << instance().M_builder->version() << "' to the 'version' option."
+                  << std::endl;
+        //             std::cerr << "registered version = ["
+        //                       << instance().m_builder->version() << "]\n"
+        //                       << "parsed version = ["
+        //                       << instance().m_builder->parsedVersion() << "]\n"
+        //                       << std::flush;
+        instance().clear();
+        return false;
+    }
 
-        if ( ! PlayerParam::init( instance().M_builder.get() ) )
-        {
-            instance().M_builder->displayHelp();
-            instance().clear();
-            return false;
-        }
+    if ( ! PlayerParam::init( instance().M_builder.get() ) )
+    {
+        instance().M_builder->displayHelp();
+        instance().clear();
+        return false;
+    }
 
-        if ( ! CSVSaverParam::init( instance().M_builder.get() ) )
-        {
-            instance().M_builder->displayHelp();
-            instance().clear();
-            return false;
-        }
+    if ( ! CSVSaverParam::init( instance().M_builder.get() ) )
+    {
+        instance().M_builder->displayHelp();
+        instance().clear();
+        return false;
+    }
 
-        if ( ! instance().M_conf_parser->parse( argc, argv ) )
-        {
-            instance().M_builder->displayHelp();
-            instance().clear();
-            return false;
-        }
+    if ( ! instance().M_conf_parser->parse( argc, argv ) )
+    {
+        instance().M_builder->displayHelp();
+        instance().clear();
+        return false;
+    }
 
-        if ( instance().M_builder->genericHelpRequested() )
-        {
-            instance().M_builder->displayHelp();
-            instance().clear();
-            return false;
-        }
+    if ( instance().M_builder->genericHelpRequested() )
+    {
+        instance().M_builder->displayHelp();
+        instance().clear();
+        return false;
     }
 
     instance().setSlowDownFactor();
@@ -420,7 +473,7 @@ ServerParam::init( const int & argc,
 void
 ServerParam::convertOldConf( const std::string & new_conf )
 {
-#ifndef WIN32
+#ifndef RCSS_WIN
     if ( std::system( ( "ls " + tildeExpand( OLD_SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
          && std::system( ( "ls " + tildeExpand( new_conf ) + " > /dev/null 2>&1" ).c_str() ) != 0
          && std::system( "which awk > /dev/null 2>&1" ) == 0 )

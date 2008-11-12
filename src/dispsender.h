@@ -24,6 +24,7 @@
 
 #include "sender.h"
 #include "observer.h"
+#include "types.h"
 
 #include <rcssbase/factory.hpp>
 
@@ -54,8 +55,13 @@ public:
     void sendShow() = 0;
 
     virtual
-    void sendMsg() = 0;
+    void sendMsg( const BoardType board,
+                  const char * msg ) = 0;
 
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y ) = 0;
 };
 
 //===================================================================
@@ -129,7 +135,6 @@ protected:
       {
           return M_stadium;
       }
-
 };
 
 
@@ -170,11 +175,18 @@ public:
           BaseObserver< DispSenderMonitor >::sender().sendShow();
       }
 
-    void sendMsg()
+    void sendMsg( const BoardType board,
+                  const char * msg )
       {
-          BaseObserver< DispSenderMonitor >::sender().sendMsg();
+          BaseObserver< DispSenderMonitor >::sender().sendMsg( board, msg );
       }
 
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y )
+      {
+          BaseObserver< DispSenderMonitor >::sender().sendTeamGraphic( side, x, y );
+      }
 };
 
 
@@ -195,8 +207,13 @@ public:
     void sendShow();
 
     virtual
-    void sendMsg();
+    void sendMsg( const BoardType board,
+                  const char * msg );
 
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y );
 };
 
 
@@ -217,8 +234,13 @@ public:
     void sendShow();
 
     virtual
-    void sendMsg();
+    void sendMsg( const BoardType board,
+                  const char * msg );
 
+    //virtual
+    //void sendTeamGraphic( const Side side,
+    //                      const unsigned int x,
+    //                      const unsigned int y );
 };
 
 /*!
@@ -238,30 +260,41 @@ public:
     void sendShow();
 
     virtual
-    void sendMsg();
+    void sendMsg( const BoardType board,
+                  const char * msg );
 
+    //virtual
+    //void sendTeamGraphic( const Side side,
+    //                      const unsigned int x,
+    //                      const unsigned int y );
 };
 
 
-/*!
-  \class DispSenderMonitorV4
-  \brief class for the version 4 display protocol.
-*/
-class DispSenderMonitorV4
-    : public DispSenderMonitorV3 {
-public:
+// /*!
+//   \class DispSenderMonitorV4
+//   \brief class for the version 4 display protocol.
+// */
+// class DispSenderMonitorV4
+//     : public DispSenderMonitorV3 {
+// public:
 
-    DispSenderMonitorV4( const Params & params );
+//     DispSenderMonitorV4( const Params & params );
 
-    virtual
-    ~DispSenderMonitorV4();
+//     virtual
+//     ~DispSenderMonitorV4();
 
-    virtual
-    void sendShow();
+//     virtual
+//     void sendShow();
 
-    virtual
-    void sendMsg();
-};
+//     virtual
+//     void sendMsg( const BoardType board,
+//                   const char * msg );
+
+//     virtual
+//     void sendTeamGraphic( const Side side,
+//                           const unsigned int x,
+//                           const unsigned int y );
+// };
 
 
 //===================================================================
@@ -370,9 +403,17 @@ public:
           BaseObserver< DispSenderLogger >::sender().sendShow();
       }
 
-    void sendMsg()
+    void sendMsg( const BoardType board,
+                  const char * msg )
       {
-          BaseObserver< DispSenderLogger >::sender().sendMsg();
+          BaseObserver< DispSenderLogger >::sender().sendMsg( board, msg );
+      }
+
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y )
+      {
+          BaseObserver< DispSenderLogger >::sender().sendTeamGraphic( side, x, y );
       }
 };
 
@@ -394,7 +435,13 @@ public:
     void sendShow();
 
     virtual
-    void sendMsg();
+    void sendMsg( const BoardType board,
+                  const char * msg );
+
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y );
 
 };
 
@@ -416,7 +463,8 @@ public:
     void sendShow();
 
     virtual
-    void sendMsg();
+    void sendMsg( const BoardType board,
+                  const char * msg );
 
 };
 
@@ -437,8 +485,9 @@ public:
     virtual
     void sendShow();
 
-    virtual
-    void sendMsg();
+    //virtual
+    //void sendMsg( const BoardType board,
+    //              const char * msg );
 
 };
 
@@ -459,7 +508,8 @@ public:
     void sendShow();
 
     virtual
-    void sendMsg();
+    void sendMsg( const BoardType board,
+                  const char * msg );
 
 };
 
@@ -480,7 +530,8 @@ public:
 //     void sendShow();
 
 //     virtual
-//     void sendMsg();
+//     void sendMsg( const BoardType board,
+//                   const char * msg );
 
 // };
 

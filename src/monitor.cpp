@@ -34,6 +34,7 @@
 #include "player.h"
 #include "team.h"
 #include "types.h"
+#include "xpmholder.h"
 
 #ifdef HAVE_SSTREAM
 #include <sstream>
@@ -41,12 +42,12 @@
 #include <strstream>
 #endif
 
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
-#endif
+// #ifdef HAVE_NETINET_IN_H
+// #include <netinet/in.h>
+// #endif
+// #ifdef HAVE_WINDOWS_H
+// #include <windows.h>
+// #endif
 
 namespace {
 
@@ -221,52 +222,119 @@ Monitor::sendScore()
     }
 }
 
+
 void
-Monitor::sendTeamGraphic( const Side,
-                          const unsigned int,
-                          const unsigned int,
-                          const XPMHolder * )
+Monitor::sendTeamGraphics()
 {
-    // M_init_observer->sendTeamGraphic( side, x, y, holder );
+    const int MAX_SEND = ( M_stadium.playmode() == PM_BeforeKickOff
+                           ? 32
+                           : 8 );
+
+    int send_count = 0;
+//     int left_send_count = 0;
+//     int right_send_count = 0;
+
+    if ( M_left_sent_graphics.size() < M_stadium.teamLeft().teamGraphics().size() )
+    {
+        const Team::GraphCont::const_reverse_iterator end = M_stadium.teamLeft().teamGraphics().rend();
+        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamLeft().teamGraphics().rbegin();
+              it != end;
+              ++it )
+        {
+            if ( send_count >= MAX_SEND ) break;
+
+            if ( M_left_sent_graphics.find( it->first ) != M_left_sent_graphics.end() )
+            {
+                continue;
+            }
+
+//             std::cerr << "Monitor::sendTeamGraphics() send left "
+//                       << it->first.first << ','
+//                       << it->first.second
+//                       << '\n';
+            M_observer->sendTeamGraphic( LEFT,
+                                         it->first.first, it->first.second );
+            M_left_sent_graphics.insert( it->first );
+            ++send_count;
+//             ++left_send_count;
+        }
+    }
+
+    if ( M_right_sent_graphics.size() < M_stadium.teamRight().teamGraphics().size() )
+    {
+        const Team::GraphCont::const_reverse_iterator end = M_stadium.teamRight().teamGraphics().rend();
+        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamRight().teamGraphics().rbegin();
+              it != end;
+              ++it )
+        {
+            if ( send_count >= MAX_SEND ) break;
+
+            if ( M_right_sent_graphics.find( it->first ) != M_right_sent_graphics.end() )
+            {
+                continue;
+            }
+
+//             std::cerr << "Monitor::sendTeamGraphics() send right "
+//                       << it->first.first << ','
+//                       << it->first.second
+//                       << '\n';
+            M_observer->sendTeamGraphic( RIGHT,
+                                         it->first.first, it->first.second );
+            M_right_sent_graphics.insert( it->first );
+            ++send_count;
+//             ++right_send_count;
+        }
+    }
+
+//     if ( send_count > 0 )
+//     {
+//         std::cerr << "Monitor::sendTeamGraphics() send_count=" << send_count << '\n'
+//                   << "                            left  send_count=" << left_send_count << '\n'
+//                   << "                            right send_count=" << right_send_count << '\n'
+//                   << std::flush;
+//     }
 }
+
 
 void
 Monitor::sendShow()
 {
     M_observer->sendShow();
+    sendTeamGraphics();
 }
 
 int
 Monitor::sendMsg( const BoardType board,
                   const char * msg )
 {
-    if ( version() >= 3.0 )
-    {
-        char buf[MaxMesg];
-        snprintf( buf, MaxMesg,
-                  "(msg %d %d \"%s\")",
-                  M_stadium.time(), board, msg );
-        return RemoteClient::send( buf, std::strlen( buf ) + 1 );
-    }
-    else if ( version() >= 2.0 )
-    {
-        dispinfo_t2 minfo;
-        minfo.mode = htons( MSG_MODE );
-        minfo.body.msg.board = htons( board );
-        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-        return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
-                                   sizeof( dispinfo_t2 ) );
-    }
-    else if ( version() >= 1.0 )
-    {
-        dispinfo_t minfo;
-        minfo.mode = htons( MSG_MODE );
-        minfo.body.msg.board = htons( board );
-        std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
-        return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
-                                   sizeof( dispinfo_t ) );
-    }
+    M_observer->sendMsg( board, msg );
 
+//     if ( version() >= 3.0 )
+//     {
+//         char buf[MaxMesg];
+//         snprintf( buf, MaxMesg,
+//                   "(msg %d %d \"%s\")",
+//                   M_stadium.time(), board, msg );
+//         return RemoteClient::send( buf, std::strlen( buf ) + 1 );
+//     }
+//     else if ( version() >= 2.0 )
+//     {
+//         dispinfo_t2 minfo;
+//         minfo.mode = htons( MSG_MODE );
+//         minfo.body.msg.board = htons( board );
+//         std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+//         return RemoteClient::send( reinterpret_cast< char * >( &minfo ),
+//                                    sizeof( dispinfo_t2 ) );
+//     }
+//     else if ( version() >= 1.0 )
+//     {
+//         dispinfo_t minfo;
+//         minfo.mode = htons( MSG_MODE );
+//         minfo.body.msg.board = htons( board );
+//         std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+//         return RemoteClient::send( reinterpret_cast< const char * >( &minfo ),
+//                                    sizeof( dispinfo_t ) );
+//     }
     return 0;
 }
 

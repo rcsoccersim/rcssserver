@@ -26,6 +26,7 @@
 #include "remoteclient.h"
 #include "types.h"
 
+#include <set>
 #include <string>
 
 class Stadium;
@@ -54,6 +55,10 @@ protected:
     int M_team_l_pen_taken;
     int M_team_r_pen_taken;
 
+    typedef std::pair< unsigned int, unsigned int > GraphKey;
+    std::set< GraphKey > M_left_sent_graphics;
+    std::set< GraphKey > M_right_sent_graphics;
+
 public:
     Monitor( Stadium & stadium,
              const double & version );
@@ -73,10 +78,8 @@ public:
     void sendInit();
     void sendPlayMode();
     void sendScore();
-    void sendTeamGraphic( const Side side,
-                          const unsigned int x,
-                          const unsigned int y,
-                          const XPMHolder * holder );
+
+    void sendTeamGraphics();
 
     void sendShow();
     int sendMsg( const BoardType board,

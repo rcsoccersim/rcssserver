@@ -46,16 +46,21 @@
 typedef int socklen_t;
 #endif
 
-#ifdef HAVE_WINSOCK2_H
-#include "Winsock2.h"
-#endif
-
 #include <iostream>
+
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#define RCSS_WIN
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
+#endif
 
 namespace rcss {
 namespace net {
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
 const Socket::SocketDesc Socket::INVALIDSOCKET = INVALID_SOCKET;
 #else
 const Socket::SocketDesc Socket::INVALIDSOCKET = -1;
@@ -65,7 +70,7 @@ const Socket::SocketDesc Socket::INVALIDSOCKET = -1;
 void
 Socket::closeFD( SocketDesc* s )
 {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
     ::closesocket( *s );
 #else
     ::close( *s );
@@ -101,7 +106,7 @@ Socket::open()
 
     M_handle = boost::shared_ptr< SocketDesc >( new SocketDesc( s ),
                                                 Socket::closeFD );
-#if !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
+#ifndef RCSS_WIN
     int err = setCloseOnExec();
     if ( err < 0 )
     {
@@ -121,7 +126,7 @@ Socket::bind( const Addr & addr )
         int err = ::bind( getFD(),
                           (struct sockaddr *)&( addr.getAddr() ),
                           sizeof( addr.getAddr() ) );
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
         if ( err == SOCKET_ERROR )
         {
             return false;
@@ -147,7 +152,7 @@ Socket::getName() const
         int err = ::getsockname( getFD(),
                                  (struct sockaddr *)&name,
                                  &from_len );
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
         if( err == SOCKET_ERROR )
         {
             err = WSAGetLastError();
@@ -175,7 +180,7 @@ Socket::connect( const Addr & addr )
         int err = ::connect( getFD(),
                              (const struct sockaddr *)&( addr.getAddr() ),
                              sizeof( addr.getAddr() ) );
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
         if ( err == SOCKET_ERROR )
         {
             return false;
@@ -205,7 +210,7 @@ Socket::getPeer() const
         int err = ::getpeername( getFD(),
                                  (struct sockaddr *)&name,
                                  &from_len );
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
         if ( err == SOCKET_ERROR )
         {
             return Addr();
@@ -235,7 +240,7 @@ Socket::setCloseOnExec( bool on )
 {
     if ( isOpen() )
     {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
         errno = EPERM;
         return -1;
 #else
@@ -255,7 +260,7 @@ Socket::setNonBlocking( bool on )
 {
     if ( isOpen() )
     {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
         u_long tmp = on;
         return ioctlsocket( getFD(), FIONBIO, &tmp );
 #else
@@ -318,7 +323,7 @@ Socket::setBroadcast( bool on )
         int ison = on;
         return setsockopt( getFD(), SOL_SOCKET,
                            SO_BROADCAST,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                            (const char*)&ison,
 #else
                            (void*)&ison,
@@ -364,7 +369,7 @@ Socket::send( const char * msg,
     if ( check == DONT_CHECK )
     {
         return ::sendto( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                          (int)len,
 #else
                          len,
@@ -378,7 +383,7 @@ Socket::send( const char * msg,
         for ( ; ; )
         {
             int sent = ::sendto( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                                  (int)len,
 #else
                                  len,
@@ -388,7 +393,7 @@ Socket::send( const char * msg,
                                  sizeof( dest.getAddr() ) );
             if ( sent != -1
                  || ( errno != EINTR
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                       && errno != WSAEWOULDBLOCK
 #else
                       && errno != EWOULDBLOCK
@@ -410,7 +415,7 @@ Socket::send( const char * msg,
     if ( check == DONT_CHECK )
     {
         return ::send( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                        (int)len,
 #else
                        len,
@@ -422,7 +427,7 @@ Socket::send( const char * msg,
         for ( ; ; )
         {
             int sent = ::send( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                                (int)len,
 #else
                                len,
@@ -430,7 +435,7 @@ Socket::send( const char * msg,
                                flags );
             if ( sent != -1
                  || ( errno != EINTR
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                       && errno != WSAEWOULDBLOCK
 #else
                       && errno != EWOULDBLOCK
@@ -455,7 +460,7 @@ Socket::recv( char * msg,
         Addr::AddrType addr;
         socklen_t from_len = sizeof( addr );
         int rval = ::recvfrom( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                                (int)len,
 #else
                                len,
@@ -472,7 +477,7 @@ Socket::recv( char * msg,
             Addr::AddrType addr;
             socklen_t from_len = sizeof( addr );
             int received = ::recvfrom( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                                        (int)len,
 #else
                                        len,
@@ -499,7 +504,7 @@ Socket::recv( char * msg,
     if ( check == DONT_CHECK )
     {
         return ::recv( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                        (int)len,
 #else
                        len,
@@ -511,7 +516,7 @@ Socket::recv( char * msg,
         for ( ; ; )
         {
             int received = ::recv( getFD(), msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                                    (int)len,
 #else
                                    len,
@@ -544,7 +549,7 @@ Socket::recv( int timeout,
     else if ( res == 1 )
     {
         return recv( msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                      (int)len,
 #else
                      len,
@@ -578,7 +583,7 @@ Socket::recv( int timeout,
     else if ( res == 1 )
     {
         return recv( msg,
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#ifdef RCSS_WIN
                      (int)len,
 #else
                      len,

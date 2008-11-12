@@ -129,7 +129,7 @@ public:
 
     void writeMsgToGameLog( const BoardType board_type,
                             const char * msg,
-                            const bool compulsion = false );
+                            const bool force = false );
 
     /*!
       \brief write current status
@@ -138,12 +138,16 @@ public:
 private:
     void writeGameLogImpl();
 
-    void writeGameLogV1();
-    void writeGameLogV2();
-    void writeGameLogV3();
-    void writeGameLogV4();
+    //void writeGameLogV1();
+    //void writeGameLogV2();
+    //void writeGameLogV3();
+    //void writeGameLogV4();
 
 public:
+
+    void writeTeamGraphic( const Side side,
+                           const unsigned int x,
+                           const unsigned int y );
 
     void writeTextLog( const char * message,
                        const TextLogFlag flag );

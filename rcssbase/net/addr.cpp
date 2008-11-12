@@ -40,12 +40,17 @@
 #include <arpa/inet.h>
 #endif
 
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#define RCSS_WIN
 #ifdef HAVE_WINSOCK2_H
-#include "Winsock2.h"
+#include <winsock2.h>
+#endif
 #endif
 
 #include <iostream>
-#include <errno.h>
+#include <cerrno>
 #include <cstring>
 
 namespace rcss {
@@ -100,7 +105,7 @@ public:
       {
           if ( port.empty() )
           {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
               errno = WSAHOST_NOT_FOUND;
 #else
               errno = HOST_NOT_FOUND;
@@ -130,7 +135,7 @@ public:
       {
           if ( host.empty() )
           {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
               errno = WSAHOST_NOT_FOUND;
 #else
               errno = HOST_NOT_FOUND;
@@ -141,7 +146,7 @@ public:
               = (struct hostent*)gethostbyname( host.c_str() );
           if ( host_ent == NULL )
           {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
               return false;
 #else
               return false;

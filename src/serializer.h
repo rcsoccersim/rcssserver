@@ -34,6 +34,7 @@ class Ball;
 class PVector;
 class Player;
 class Team;
+class XPMHolder;
 
 namespace rcss {
 
@@ -1145,9 +1146,10 @@ public:
 
     virtual
     void serializeTeamGraphic( std::ostream &,
-                               const int,
-                               const int,
-                               const char * ) const
+                               const Side,
+                               const unsigned int,
+                               const unsigned int,
+                               const XPMHolder * ) const
       { }
 };
 

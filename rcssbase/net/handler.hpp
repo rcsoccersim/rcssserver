@@ -21,8 +21,10 @@
 #ifndef RCSS_NET_HANDLER_HPP
 #define RCSS_NET_HANDLER_HPP
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
-#include "Winsock2.h"
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#include <winsock2.h>
 #endif
 
 namespace rcss {
@@ -48,7 +50,9 @@ private:
 
     ~Handler();
 
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
     WSADATA M_WSAData;
 #endif
     bool M_valid;

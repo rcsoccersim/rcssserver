@@ -131,19 +131,19 @@ bound( const T & low,
 
 }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// #ifdef __cplusplus
+// extern "C" {
+// #endif
 
-extern int lcm(int a, int b);
+// extern int lcm(int a, int b);
 
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif
 
 
-#define nstonl(x) htonl((Int32)(((double)(Int16)ntohs(x) / SHOWINFO_SCALE) * SHOWINFO_SCALE2))
-#define nltons(x) htons((Int16)(((double)(Int32)ntohl(x) / SHOWINFO_SCALE2) * SHOWINFO_SCALE))
+//#define nstonl(x) htonl((Int32)(((double)(Int16)ntohs(x) / SHOWINFO_SCALE) * SHOWINFO_SCALE2))
+//#define nltons(x) htons((Int16)(((double)(Int32)ntohl(x) / SHOWINFO_SCALE2) * SHOWINFO_SCALE))
 
 
 std::string

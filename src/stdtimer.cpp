@@ -35,9 +35,12 @@
 #include <sys/time.h>       // needed for itimerval
 #endif
 
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#define RCSS_WIN
+#endif
 
-StandardTimer* StandardTimer::s_instance = NULL;
-unsigned int StandardTimer::s_ref_count = 0;
 
 bool StandardTimer::gotsig = false;
 int StandardTimer::timedelta = 0;
@@ -52,24 +55,21 @@ StandardTimer::StandardTimer( Timeable & timeable )
 }
 
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef RCSS_WIN
 VOID
 CALLBACK
 StandardTimer::check( PVOID ptr, BOOL )
 {
     static int td_mult = 1;
-    //if( StandardTimer::instance().lock_timedelta )
     if ( lock_timedelta )
     {
         td_mult += 1;
     }
     else
     {
-        //StandardTimer::instance().timedelta += td_mult * TIMEDELTA;
         timedelta += td_mult * TIMEDELTA;
         td_mult = 1;
     }
-    //StandardTimer::instance().gotsig = true;
     gotsig = true;
     SetEvent((HANDLE)ptr);
 }
@@ -78,57 +78,20 @@ void
 StandardTimer::check( void )
 {
     static int td_mult = 1;
-    //if( StandardTimer::instance().lock_timedelta )
-    if( lock_timedelta )
+    if ( lock_timedelta )
     {
         td_mult += 1;
     }
     else
     {
-        //StandardTimer::instance().timedelta += td_mult * TIMEDELTA;
         timedelta += td_mult * TIMEDELTA;
         td_mult = 1;
     }
-    //StandardTimer::instance().gotsig = true;
     gotsig = true;
 }
 #endif
 
-// StandardTimer&
-// StandardTimer::instance( Timeable& timeable )
-// {
-//     if( s_instance == NULL )
-//     {
-//         s_instance = new StandardTimer( timeable );
-//         //s_ref_count = 1;
-//         s_ref_count = 0;
-//     }
-//     ++s_ref_count;
-//     return *s_instance;
-// }
-
-// StandardTimer&
-// StandardTimer::instance() throw( rcss::util::NullErr )
-// {
-//     if( s_instance == NULL )
-//         throw rcss::util::NullErr( __FILE__, __LINE__,
-//                                    "StandardTimer method instance is called before it was created" );
-//     //++s_ref_count;
-//     return *s_instance;
-// }
-
-// void
-// StandardTimer::destroy( StandardTimer* )
-// {
-//     if ( --s_ref_count <= 0 )
-//     {
-//         delete s_instance;
-//         s_instance = NULL;
-//         s_ref_count = 0;
-//     }
-// }
-
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef RCSS_WIN
 static
 void
 initTimer( HANDLE gDoneEvent )
@@ -138,33 +101,33 @@ initTimer( HANDLE gDoneEvent )
     int arg = 123;
 
     // Use an event object to track the TimerRoutine execution
-    gDoneEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    if (!gDoneEvent)
+    gDoneEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+    if ( ! gDoneEvent )
     {
-        printf("CreateEvent failed (%d)\n", GetLastError());
+        printf( "CreateEvent failed (%d)\n", GetLastError() );
         //         return 1;
     }
 
     // Create the timer queue.
     hTimerQueue = CreateTimerQueue();
-    if (!hTimerQueue)
+    if ( ! hTimerQueue )
     {
-        printf("CreateTimerQueue failed (%d)\n", GetLastError());
+        printf( "CreateTimerQueue failed (%d)\n", GetLastError() );
         //         return 2;
     }
 
     // Set a timer to call the timer routine in 10 seconds.
-    if (!CreateTimerQueueTimer( &hTimer, hTimerQueue,
-                                (WAITORTIMERCALLBACK)&StandardTimer::check,
-                                &gDoneEvent , TIMEDELTA, TIMEDELTA, 0 ) )
+    if ( ! CreateTimerQueueTimer( &hTimer, hTimerQueue,
+                                  (WAITORTIMERCALLBACK)&StandardTimer::check,
+                                  &gDoneEvent , TIMEDELTA, TIMEDELTA, 0 ) )
     {
-        printf("CreateTimerQueueTimer failed (%d)\n", GetLastError());
+        printf( "CreateTimerQueueTimer failed (%d)\n", GetLastError() );
         //         return 3;
     }
 
     // TODO: Do other useful work here
 
-    printf("Call timer routine in 10 seconds...\n");
+    printf( "Call timer routine in 10 seconds...\n" );
 
     //     // Wait for the timer-queue thread to complete using an event
     //     // object. The thread will signal the event at that time.
@@ -192,20 +155,20 @@ initTimer( struct itimerval & itv_prev,
     alarm_action.sa_handler = (void (*)(int))StandardTimer::check ;
     alarm_action.sa_flags = 0; // [2000/11/20.frehberg.cs.tu-berlin.de]
 
-    sigaction(SIGALRM, &alarm_action, &alarm_prev) ;
-    setitimer(ITIMER_REAL, &itv, &itv_prev) ;
+    sigaction( SIGALRM, &alarm_action, &alarm_prev );
+    setitimer( ITIMER_REAL, &itv, &itv_prev );
 }
 #endif
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef RCSS_WIN
 #else
 static
 void
 restoreTimer( struct itimerval & itv_prev,
               struct sigaction & alarm_prev )
 {
-    setitimer(ITIMER_REAL, &itv_prev, NULL) ;   // restore the old timer
-    sigaction(SIGALRM, &alarm_prev, NULL) ;     // restore the old alaram handler
+    setitimer( ITIMER_REAL, &itv_prev, NULL );   // restore the old timer
+    sigaction( SIGALRM, &alarm_prev, NULL );     // restore the old alaram handler
 }
 #endif
 
@@ -243,7 +206,7 @@ StandardTimer::run()
     // this timer is called, lcmt is raised and it is checked which message
     // should be processed according to the part of the sequence we are in
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef RCSS_WIN
     HANDLE gDoneEvent = NULL;
     initTimer(gDoneEvent);
 #else
@@ -254,7 +217,7 @@ StandardTimer::run()
     //for (;;)
     while ( getTimeableRef().alive() )
     {
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef RCSS_WIN
         if ( WaitForSingleObject(gDoneEvent, INFINITE) != WAIT_OBJECT_0 )
             printf( "WaitForSingleObject failed (%d)\n", GetLastError() );
 #else
@@ -349,7 +312,7 @@ StandardTimer::run()
             c_synch_see = 1;
         }
     }
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef RCSS_WIN
 #else
     restoreTimer( itv_prev, alarm_prev );
 #endif

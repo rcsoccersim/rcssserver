@@ -34,8 +34,8 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h>
 #endif
 
 namespace rcss {
@@ -138,11 +138,6 @@ InitSenderMonitorV1::sendScore()
 
 }
 
-void
-InitSenderMonitorV1::sendTeamGraphic()
-{
-
-}
 
 void
 InitSenderMonitorV1::sendPlayMode()
@@ -284,13 +279,6 @@ InitSenderMonitorV3::sendScore()
                                 stadium().teamLeft(),
                                 stadium().teamRight() );
     transport() << std::ends << std::flush;
-}
-
-void
-InitSenderMonitorV3::sendTeamGraphic()
-{
-    // TODO
-    // serializer.serializeTeamGraphic( transport(), ...
 }
 
 void

@@ -28,6 +28,7 @@
 class Ball;
 class Player;
 class Team;
+class XPMHolder;
 
 namespace rcss {
 
@@ -51,6 +52,13 @@ public:
     const
     SerializerMonitor::Ptr create();
 
+
+    virtual
+    void serializeTeamGraphic( std::ostream & os,
+                               const Side side,
+                               const unsigned int x,
+                               const unsigned int y,
+                               const XPMHolder * xpm ) const;
 };
 
 
@@ -126,11 +134,6 @@ public:
     virtual
     void serializePlayerCounts( std::ostream & os,
                                 const Player & player ) const;
-    virtual
-    void serializeTeamGraphic( std::ostream & os,
-                               const int x,
-                               const int y,
-                               const char * msg ) const;
 };
 
 

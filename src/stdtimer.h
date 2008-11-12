@@ -22,10 +22,12 @@
 #ifndef STDTIMER_H
 #define STDTIMER_H
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
 #define _WIN32_WINNT 0x0500
-#include <Winsock2.h>
-#include <Windows.h>
+#include <winsock2.h>
+#include <windows.h>
 #endif
 
 #include "timer.h"
@@ -41,49 +43,33 @@
     StandardTimer::instance( Std );<BR>
     StnadardTimer::instance().run(). */
 class StandardTimer
-    : public Timer
-{
+    : public Timer {
 private:
-    static StandardTimer* s_instance;
-    static unsigned int s_ref_count;
 
-    static bool                   gotsig;            // variables needed to keep track
-    static int                    timedelta;         // of amount of arrived signals
-    static bool                   lock_timedelta;
+    static bool gotsig;            // variables needed to keep track
+    static int  timedelta;         // of amount of arrived signals
+    static bool lock_timedelta;
 
     StandardTimer( const StandardTimer& t );
 public:
 
     StandardTimer( Timeable &timeable );
 
-//     static
-//     StandardTimer&
-//     instance( Timeable& timeable );
-
-//     static
-//     StandardTimer&
-//     instance() throw( rcss::util::NullErr );
-
-//     static
-//     Ptr
-//     create( Timeable& t);
-
-//     static
-//     void
-//     destroy( StandardTimer* timer );
-
     void
     run();
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#ifdef __CYGWIN__
+// cygwin is not win32
+    static
+    void check();
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
     static
     VOID
     CALLBACK
-    check(PVOID lpParam, BOOL TimerOrWaitFired);
+    check( PVOID lpParam, BOOL TimerOrWaitFired );
 #else
     static
-    void
-    check();
+    void check();
 #endif
 
 };

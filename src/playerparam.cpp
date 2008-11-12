@@ -48,12 +48,26 @@
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h> /* needed for htonl, htons, ... */
 #endif
-#ifdef HAVE_WINSOCK2_H
-#include <Winsock2.h> /* needed for htonl, htons, ... */
-#endif
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#define RCSS_WIN
+#ifdef HAVE_WINSOCK2_H
+#include <winsock2.h> /* needed for htonl, htons, ... */
+#endif
+#endif
+
+#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+#define BOOST_FS_FILE_STRING file_string
+#define BOOST_FS_DIRECTORY_STRING directory_string
+#else
+#define BOOST_FS_FILE_STRING native_file_string
+#define BOOST_FS_DIRECTORY_STRING native_directory_string
 #endif
 
 inline
@@ -63,16 +77,10 @@ roundint( const double & value )
     return static_cast< Int32 >( value + 0.5 );
 }
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-#  ifndef WIN32
-#    define WIN32
-#  endif
-#endif
-
-#ifdef WIN32
-const std::string PlayerParam::CONF_DIR = "~\\.rcssserver\\";
+#if defined(RCSS_WIN) || defined(__CYGWIN__)
+const std::string PlayerParam::CONF_DIR = "."; //"~\\.rcssserver\\";
 const std::string PlayerParam::PLAYER_CONF = "player.conf";
-const std::string PlayerParam::OLD_PLAYER_CONF = "~\\.rcssserver-player.conf";
+const std::string PlayerParam::OLD_PLAYER_CONF = "rcssserver-player.conf";
 #else
 const std::string PlayerParam::CONF_DIR = "~/.rcssserver/";
 const std::string PlayerParam::PLAYER_CONF = "player.conf";
@@ -167,17 +175,33 @@ PlayerParam::init( rcss::conf::Builder * parent )
         conf_dir = env_conf_dir;
     }
 
-    //boost::filesystem::path conf_path( tildeExpand( PlayerParam::PLAYER_CONF ),
-    boost::filesystem::path conf_path( tildeExpand( conf_dir ),
-                                       boost::filesystem::portable_posix_name );
-    conf_path /= PlayerParam::PLAYER_CONF;
+    boost::filesystem::path conf_path;
+    try
+    {
 
-    instance().convertOldConf( conf_path.string() );
+        conf_path = boost::filesystem::path( tildeExpand( conf_dir )
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+                                             , &boost::filesystem::native
+#endif
+                                             );
+        conf_path /= PlayerParam::PLAYER_CONF;
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ": " << __LINE__
+                  << " Exception caught! " << e.what()
+                  << "\nCould not read config directory '"
+                  << tildeExpand( conf_dir ) << "'"
+                  << std::endl;
+        return false;
+    }
+
+    instance().convertOldConf( conf_path.BOOST_FS_FILE_STRING() );
 
     if ( ! instance().m_builder->parser()->parseCreateConf( conf_path, "player" ) )
     {
         std::cerr << "could not parse configuration file '"
-                  << conf_path.string()
+                  << conf_path.BOOST_FS_FILE_STRING()
                   << "'\n";
         return false;
     }
@@ -185,7 +209,7 @@ PlayerParam::init( rcss::conf::Builder * parent )
     if ( instance().m_builder->version() != instance().m_builder->parsedVersion() )
     {
         std::cerr << "Version mismatched in the configuration file. "
-                  << "Need to regenerate '" << tildeExpand( PlayerParam::PLAYER_CONF ) << "'"
+                  << "Need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
                   << " or set '" << instance().m_builder->version() << "' to the 'version' option."
                   << std::endl;
 //         std::cerr << "registered version = ["
@@ -203,7 +227,7 @@ PlayerParam::init( rcss::conf::Builder * parent )
 void
 PlayerParam::convertOldConf( const std::string & new_conf )
 {
-#ifndef WIN32
+#ifndef RCSS_WIN
     if ( std::system( ( "ls " + tildeExpand( PlayerParam::OLD_PLAYER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
          && std::system( ( "ls " + tildeExpand( new_conf ) + " > /dev/null 2>&1" ).c_str() ) != 0
          && std::system( "which awk > /dev/null 2>&1" ) == 0 )
