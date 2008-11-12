@@ -138,10 +138,10 @@ public:
 private:
     void writeGameLogImpl();
 
-    void writeGameLogV1();
-    void writeGameLogV2();
-    void writeGameLogV3();
-    void writeGameLogV4();
+    //void writeGameLogV1();
+    //void writeGameLogV2();
+    //void writeGameLogV3();
+    //void writeGameLogV4();
 
 public:
 

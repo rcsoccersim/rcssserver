@@ -36,16 +36,21 @@
 #include <cerrno>
 #include <ctime>
 
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#define RCSS_WIN
+#endif
 
-// #ifdef WIN32
-// const std::string CSVSaverParam::CONF_DIR = "~\\.rcssserver\\";
-// #else
-// const std::string CSVSaverParam::CONF_DIR = "~/.rcssserver/";
-// #endif
-// const std::string CSVSaverParam::CSVSAVER_CONF = "CSVSaver.conf";
+#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+#define BOOST_FS_FILE_STRING file_string
+#define BOOST_FS_DIRECTORY_STRING directory_string
+#else
+#define BOOST_FS_FILE_STRING native_file_string
+#define BOOST_FS_DIRECTORY_STRING native_directory_string
+#endif
 
 const std::string CSVSaver::CSVSAVER = "CSVSaver";
-
 
 CSVSaverParam &
 CSVSaverParam::instance()
@@ -84,11 +89,11 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
         return false;
     }
 
-    //std::string conf_dir = CSVSaverParam::CONF_DIR;
-#ifdef WIN32
-    std::string conf_dir = "~\\.rcssserver\\";
+#if defined(RCSS_WIN) || defined(__CYGWIN__)
+    //std::string conf_dir = "~\\.rcssserver\\";
+    std::string conf_dir = ".";
 #else
-    std::string conf_dir = "~/.rcssserver/";
+    std::string conf_dir = "~/.rcssserver";
 #endif
     const char * env_conf_dir = std::getenv( "RCSS_CONF_DIR" );
     if ( env_conf_dir )
@@ -96,17 +101,31 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
         conf_dir = env_conf_dir;
     }
 
-    //boost::filesystem::path conf_path( tildeExpand( CSVSaverParam::CSVSAVER_CONF ),
-    boost::filesystem::path conf_path( tildeExpand( conf_dir ),
-                                       boost::filesystem::portable_posix_name );
-    //conf_path /= CSVSaverParam::CSVSAVER_CONF;
-    conf_path /= "CSVSaver.conf";
+    boost::filesystem::path conf_path;
+    try
+    {
+        conf_path = boost::filesystem::path( tildeExpand( conf_dir )
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+                                             , &boost::filesystem::native
+#endif
+                                             );
+
+        conf_path /= "CSVSaver.conf";
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ": " << __LINE__
+                  << " Exception caught! " << e.what()
+                  << "\nCould not read config directory '"
+                  << tildeExpand( conf_dir ) << "'"
+                  << std::endl;
+    }
 
     if ( ! instance().M_builder->parser()->parseCreateConf( conf_path,
                                                             "CSVSaver" ) )
     {
         std::cerr << "could not create or parse configuration file '"
-                  << conf_path.string()
+                  << conf_path.BOOST_FS_FILE_STRING()
                   << "'" << std::endl;
         return false;
     }
@@ -114,7 +133,7 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
     if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
     {
         std::cerr << "Version mismatched in the configuration file. "
-                  << "Need to regenerate '" << conf_path.string() << "'"
+                  << "Need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
                   << " or set '" << instance().M_builder->version() << "' to the 'version' option."
                   << std::endl;
 //         std::cerr << "registered version = ["

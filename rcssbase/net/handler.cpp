@@ -24,6 +24,12 @@
 
 #include "handler.hpp"
 
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#define RCSS_WIN
+#endif
+
 namespace rcss {
 namespace net {
 
@@ -37,7 +43,7 @@ Handler::instance()
 Handler::Handler()
     : M_valid( true )
 {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
     WORD wVersionRequested;
     int err;
 
@@ -60,7 +66,7 @@ Handler::Handler()
 
 Handler::~Handler()
 {
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(CYGWIN)
+#ifdef RCSS_WIN
     WSACleanup();
 #endif
 }

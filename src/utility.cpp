@@ -40,18 +40,18 @@
 #include "config.h"
 #endif
 
+#include "utility.h"
+
+#include <iostream>
 #include <cstdlib>
 #include <ctime>
+
 #include <sys/types.h>
 #ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
-#include "param.h"
-#include "types.h"
-#include "utility.h"
-#include <iostream>
 
-#include "random.h"
+//#include "random.h"
 /*
  *===================================================================
  *Part:      Random number utility
@@ -88,17 +88,19 @@
  *Part:     Lowest Common Multiple
  *==================================================================
  */
-int
-lcm( int a, int b )
-{
-    int tmp = 0, idx = 0, larger = std::max( a, b );
-    do {
-        ++idx;
-        tmp = larger * idx;
-    } while ( tmp % a != 0 || tmp % b != 0 );
-    return tmp;
-}
-
+// int
+// lcm( int a,
+//      int b )
+// {
+//     int tmp = 0, idx = 0, larger = std::max( a, b );
+//     do
+//     {
+//         ++idx;
+//         tmp = larger * idx;
+//     }
+//     while ( tmp % a != 0 || tmp % b != 0 );
+//     return tmp;
+// }
 
 /*
  *==================================================================
@@ -110,25 +112,53 @@ lcm( int a, int b )
 //
 // Throws when an OS API gives us something unusable like a NULL pointer.
 
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-#ifndef _WIN32_IE
-#define _WIN32_IE 0x0400
-#endif
-#ifndef _WIN32_WINDOWS
-#define _WIN32_WINDOWS 0x0490
-#endif
-#  include <windows.h>
-#  include <shlobj.h>
-#  include <stdio.h>
-#  ifndef WIN32
-#    define WIN32
+#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined(__CYGWIN__)
+#  ifndef __CYGWIN__
+#    define RCSS_WIN
 #  endif
+#  ifndef _WIN32_IE
+#    define _WIN32_IE 0x0400
+#  endif
+#  ifndef _WIN32_WINDOWS
+#    define _WIN32_WINDOWS 0x0490
+#  endif
+//#  include <windows.h>
+#  include <shlobj.h>
+//#  include <stdio.h>
 #endif
-
 
 std::string
 tildeExpand( const std::string & path_name )
 {
+#ifdef __CYGWIN__
+
+    std::string new_path = path_name;
+    std::replace( new_path.begin(), new_path.end(), '\\', '/' );
+
+    // There must be a ~ at the start of the path for a valid
+    // expansioin.
+    if ( new_path.length() == 0
+         || new_path[0] != '~' )
+    {
+        return new_path;
+    }
+
+    if ( new_path.length() == 1
+         || new_path[1] == '/' )
+    {
+        char szpath[MAX_PATH];
+        if ( SHGetSpecialFolderPath( NULL, szpath, CSIDL_PERSONAL, TRUE ) )
+        {
+            std::string userdir = szpath;
+            std::replace( userdir.begin(), userdir.end(), '\\', '/' );
+            return userdir + new_path.substr( 1 );
+        }
+    }
+
+    return new_path;
+
+#elif defined(RCSS_WIN)
+
     // There must be a ~ at the start of the path for a valid
     // expansioin.
     if ( path_name.length() == 0
@@ -137,73 +167,75 @@ tildeExpand( const std::string & path_name )
         return path_name;
     }
 
-    std::string newPath;    // Used to store the new ~ expanded path.
-    std::string username;  // Used to store user name of interest.
-
     if ( path_name.length() == 1
-#ifdef WIN32
-         || path_name[1] == '\\'
-#else
-         || path_name[1] == '/'
-#endif
-        )
+         || path_name[1] == '\\' )
     {
-#ifdef WIN32
         char szpath[MAX_PATH];
         if ( SHGetSpecialFolderPath( NULL, szpath, CSIDL_PERSONAL, TRUE ) )
         {
-            return szpath + path_name.substr( 1, path_name.length() );
+            return szpath + path_name.substr( 1 );
         }
-        else
-        {
-            return path_name;
-        }
+    }
+
+    return path_name;
+
 #else
 
-        // Get the current user.
-        char * err = getenv( "USER" );
-        if ( err == NULL )
-        {
-            // On Windows USERNAME is used instead
-            err = getenv( "USERNAME" );
-            if ( err == 0 )
-                return path_name;
-        }
-
-        username = err;
-#endif
-        // if succeeded, remove the tilde
-        newPath = path_name.substr( 1, path_name.length() );
-    }
-    else
-#ifdef WIN32
+    // There must be a ~ at the start of the path for a valid
+    // expansioin.
+    if ( path_name.length() == 0
+         || path_name[0] != '~' )
     {
         return path_name;
     }
-#else
+
+    std::string new_path;  // Used to store the new ~ expanded path.
+    std::string username;  // Used to store user name of interest.
+
+    if ( path_name.length() == 1
+         || path_name[1] == '/' )
+    {
+        // Get the current user.
+        const char * err = std::getenv( "USER" );
+        if ( err == NULL )
+        {
+            // On Windows USERNAME is used instead
+            err = std::getenv( "USERNAME" );
+            if ( err == NULL )
+            {
+                return path_name;
+            }
+        }
+
+        username = err;
+        // if succeeded, remove the tilde
+        new_path = path_name.substr( 1 );
+    }
+    else
     {
         // Fish out the user name from path_name and remove it
-        // from newPath.
-        std::string::size_type userEnd = path_name.find( '/' );
-        if ( userEnd == std::string::npos )
+        // from new_path.
+        std::string::size_type user_end = path_name.find( '/' );
+        if ( user_end == std::string::npos )
         {
             // No / so whole path must be the username.
-            userEnd = path_name.length();
+            user_end = path_name.length();
         }
-        username = path_name.substr(1, userEnd - 1);
-        newPath = path_name.substr(userEnd, path_name.length());
+        username = path_name.substr( 1, user_end - 1 );
+        new_path = path_name.substr( user_end );
     }
 
     // Get the passwd file entry for the user and place their home
     // directory path at the start of newPath.
-    struct passwd * pwdEntry = getpwnam( username.c_str() );
-    if ( pwdEntry == NULL )
+    struct passwd * pwd_entry = getpwnam( username.c_str() );
+    if ( pwd_entry == NULL )
     {
         return path_name;
     }
 
-    newPath.insert( 0, pwdEntry->pw_dir );
+    new_path.insert( 0, pwd_entry->pw_dir );
 
-    return newPath;
+    return new_path;
+
 #endif
 }

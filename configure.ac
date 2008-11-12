@@ -48,7 +48,8 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h])
 AC_CHECK_HEADERS([inttypes.h libintl.h libintl.h malloc.h netdb.h])
 AC_CHECK_HEADERS([netinet/in.h poll.h pwd.h stddef.h stdlib.h sys/param.h])
-AC_CHECK_HEADERS([sys/socket.h sys/time.h sys/types.h unistd.h winsock2.h])
+AC_CHECK_HEADERS([sys/socket.h sys/time.h sys/types.h unistd.h])
+#AC_CHECK_HEADERS([winsock2.h])
 
 AC_CHECK_FUNCS([memset], [], [
   echo "************** ERROR ****************"

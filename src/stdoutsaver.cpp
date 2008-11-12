@@ -193,6 +193,6 @@ create()
     return ResultSaver::Ptr( new Saver() );
 }
 
-//rcss::RegHolder stdout = ResultSaver::factory().autoReg( &create< STDOutSaver >, "STDOutSaver" );
-rcss::RegHolder stdout = ResultSaver::factory().autoReg( &create< STDOutSaver >, STDOutSaver::STDOUTSAVER );
+//rcss::RegHolder stdoutsaver = ResultSaver::factory().autoReg( &create< STDOutSaver >, "STDOutSaver" );
+rcss::RegHolder stdoutsaver = ResultSaver::factory().autoReg( &create< STDOutSaver >, STDOutSaver::STDOUTSAVER );
 }

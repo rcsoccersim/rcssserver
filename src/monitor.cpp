@@ -42,12 +42,12 @@
 #include <strstream>
 #endif
 
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
-#endif
+// #ifdef HAVE_NETINET_IN_H
+// #include <netinet/in.h>
+// #endif
+// #ifdef HAVE_WINDOWS_H
+// #include <windows.h>
+// #endif
 
 namespace {
 
@@ -226,7 +226,9 @@ Monitor::sendScore()
 void
 Monitor::sendTeamGraphics()
 {
-    const int MAX_SEND = 32;
+    const int MAX_SEND = ( M_stadium.playmode() == PM_BeforeKickOff
+                           ? 32
+                           : 8 );
 
     int send_count = 0;
 //     int left_send_count = 0;

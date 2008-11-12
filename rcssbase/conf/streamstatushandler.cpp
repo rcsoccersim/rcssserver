@@ -144,8 +144,13 @@ StreamStatusHandler::loadFailed( const std::string & libname,
         for( std::vector< boost::filesystem::path >::const_iterator i = avail.begin();
              i != avail.end(); ++i )
         {
-            //M_errstrm << "\t" << i->native_file_string() << std::endl;
-            M_errstrm << "\t" << i->file_string() << std::endl;
+            M_errstrm << "\t"
+#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+                      << i->file_string()
+#else
+                      << i->native_file_string()
+#endif
+                      << std::endl;
         }
     }
 }

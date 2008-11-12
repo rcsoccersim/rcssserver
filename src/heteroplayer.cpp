@@ -40,7 +40,7 @@
 #include <sys/param.h> /* needed for htonl, htons, ... */
 #endif
 #ifdef HAVE_WINSOCK2_H
-#include <Winsock2.h> /* needed for htonl, htons, ... */
+#include <winsock2.h> /* needed for htonl, htons, ... */
 #endif
 
 #ifdef HAVE_NETINET_IN_H

@@ -41,13 +41,18 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifndef WIN32
-#include <unistd.h> // select()
-#include <sys/select.h> // select()
-#include <sys/time.h> // select()
-#include <sys/types.h> // select()
-#else
-#include <winsock2.h>
+#ifdef __CYGWIN__
+// cygwin is not win32
+#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
+#  define RCSS_WIN
+#  include <winsock2.h>
+#endif
+
+#ifndef RCSS_WIN
+#  include <unistd.h> // select()
+#  include <sys/select.h> // select()
+#  include <sys/time.h> // select()
+#  include <sys/types.h> // select()
 #endif
 
 
@@ -238,7 +243,7 @@ private:
           FD_SET( M_socket.getFD(), &read_fds );
           read_fds_back = read_fds;
 
-#ifdef WIN32
+#ifdef RCSS_WIN
           int max_fd = 0;
 #else
           int max_fd = M_socket.getFD() + 1;

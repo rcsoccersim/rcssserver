@@ -44,19 +44,27 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/convenience.hpp>
 
 #include <sstream>
 
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
+// #ifdef HAVE_SYS_TIME_H
+// #include <sys/time.h>
+// #endif
+// #ifdef HAVE_NETINET_IN_H
+// #include <netinet/in.h>
+// #endif
+// #ifdef HAVE_WINSOCK2_H
+// #include <winsock2.h>
+// #endif
 
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
+
+#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+#define BOOST_FS_FILE_STRING file_string
+#define BOOST_FS_DIRECTORY_STRING directory_string
+#else
+#define BOOST_FS_FILE_STRING native_file_string
+#define BOOST_FS_DIRECTORY_STRING native_directory_string
 #endif
 
 const std::string Logger::DEF_TEXT_NAME = "incomplete";
@@ -96,24 +104,10 @@ Logger::setSenders()
     }
 
     int log_version = ServerParam::instance().gameLogVersion();
-    int monitor_version = 3;
-    switch ( log_version ) {
-    case REC_VERSION_5:
-        monitor_version = 4;
-        break;
-    case REC_VERSION_4:
-        monitor_version = 3;
-        break;
-    case REC_VERSION_3:
-        monitor_version = 2;
-        break;
-    case REC_VERSION_2:
-    case REC_OLD_VERSION:
+    int monitor_version = log_version - 1;
+    if ( log_version == REC_OLD_VERSION )
+    {
         monitor_version = 1;
-        break;
-    default:
-        monitor_version = log_version - 1;
-        break;
     }
 
     rcss::SerializerMonitor::Creator ser_cre;
@@ -205,41 +199,53 @@ Logger::close()
 bool
 Logger::openGameLog()
 {
-    boost::filesystem::path dir( ServerParam::instance().gameLogDir(),
-                                 boost::filesystem::portable_posix_name );
-    if ( ! boost::filesystem::exists( dir )
-         && ! boost::filesystem::create_directory( dir ) )
+    // create the log directory & file path string
+    try
+    {
+        boost::filesystem::path game_log( ServerParam::instance().gameLogDir()
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+                                          , &boost::filesystem::native
+#endif
+                                          );
+        if ( ! boost::filesystem::exists( game_log )
+             && ! boost::filesystem::create_directories( game_log ) )
+        {
+            std::cerr << __FILE__ << ": " << __LINE__
+                      << ": can't create game log directory '"
+                      << game_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+            return false;
+        }
+
+        if ( ServerParam::instance().gameLogFixed() )
+        {
+            game_log /= ServerParam::instance().gameLogFixedName() + Logger::DEF_GAME_SUFFIX;
+        }
+        else
+        {
+            game_log /= Logger::DEF_GAME_NAME + Logger::DEF_GAME_SUFFIX;
+        }
+
+        M_game_log_name = game_log.BOOST_FS_FILE_STRING();
+    }
+    catch ( std::exception & e )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't create game log dir. game_log_dir = ["
-                  << ServerParam::instance().gameLogDir() << ']'
-                  << std::endl;
+                  << " Exception caught! " << e.what()
+                  << "\nCould not create game log directory '"
+                  << ServerParam::instance().gameLogDir()
+                  << "'" << std::endl;
         return false;
     }
 
-    M_game_log_name = ServerParam::instance().gameLogDir();
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-    if ( *M_game_log_name.rbegin() != '\\' )
+    // open the output file stream
+#ifndef HAVE_LIBZ
+    if ( ServerParam::instance().gameLogCompression() > 0 )
     {
-        M_game_log_name += '\\';
-    }
-#else
-    if ( *M_game_log_name.rbegin() != '/' )
-    {
-        M_game_log_name += '/';
+        std::cerr << "No zlib. Ignored game log compression." << std::endl;
     }
 #endif
 
-    if ( ServerParam::instance().gameLogFixed() )
-    {
-        M_game_log_name += ServerParam::instance().gameLogFixedName();
-    }
-    else
-    {
-        M_game_log_name += Logger::DEF_GAME_NAME;
-    }
-    M_game_log_name += Logger::DEF_GAME_SUFFIX;
-
+#ifdef HAVE_LIBZ
     if ( ServerParam::instance().gameLogCompression() > 0 )
     {
         M_game_log_name += ".gz";
@@ -249,6 +255,7 @@ Logger::openGameLog()
         M_game_log = f;
     }
     else
+#endif
     {
         std::ofstream * f
             = new std::ofstream( M_game_log_name.c_str(),
@@ -265,6 +272,7 @@ Logger::openGameLog()
         return false;
     }
 
+    // write header and configration parameters
     if ( ! setSenders() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
@@ -284,41 +292,53 @@ Logger::openGameLog()
 bool
 Logger::openTextLog()
 {
-    boost::filesystem::path dir( ServerParam::instance().textLogDir(),
-                                 boost::filesystem::portable_posix_name );
-    if ( ! boost::filesystem::exists( dir )
-         && ! boost::filesystem::create_directory( dir ) )
+    // create the log directory & file path string
+    try
+    {
+        boost::filesystem::path text_log( ServerParam::instance().textLogDir()
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+                                          , &boost::filesystem::native
+#endif
+                                          );
+        if ( ! boost::filesystem::exists( text_log )
+             && ! boost::filesystem::create_directories( text_log ) )
+        {
+            std::cerr << __FILE__ << ": " << __LINE__
+                      << ": can't create text log directory '"
+                      << text_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+            return false;
+        }
+
+        if ( ServerParam::instance().textLogFixed() )
+        {
+            text_log /= ServerParam::instance().textLogFixedName() + Logger::DEF_TEXT_SUFFIX;
+        }
+        else
+        {
+            text_log /= Logger::DEF_TEXT_NAME + Logger::DEF_TEXT_SUFFIX;
+        }
+
+        M_text_log_name = text_log.BOOST_FS_FILE_STRING();
+    }
+    catch ( std::exception & e )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't create text log dir. text_log_dir = ["
-                  << ServerParam::instance().textLogDir() << ']'
-                  << std::endl;
+                  << " Exception caught! " << e.what()
+                  << "\nCould not create text log directory '"
+                  << ServerParam::instance().textLogDir()
+                  << "'" << std::endl;
         return false;
     }
 
-    M_text_log_name = ServerParam::instance().textLogDir();
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-    if ( *M_text_log_name.rbegin() != '\\' )
+    // open the output file stream
+#ifndef HAVE_LIBZ
+    if ( ServerParam::instance().textLogCompression() > 0 )
     {
-        M_text_log_name += '\\';
-    }
-#else
-    if ( *M_text_log_name.rbegin() != '/' )
-    {
-        M_text_log_name += '/';
+        std::cerr << "No zlib. Ignored text log compression." << std::endl;
     }
 #endif
 
-    if ( ServerParam::instance().textLogFixed() )
-    {
-        M_text_log_name += ServerParam::instance().textLogFixedName();
-    }
-    else
-    {
-        M_text_log_name += Logger::DEF_TEXT_NAME;
-    }
-    M_text_log_name += Logger::DEF_TEXT_SUFFIX;
-
+#ifdef HAVE_LIBZ
     if ( ServerParam::instance().textLogCompression() > 0 )
     {
         M_text_log_name += std::string ( ".gz" );
@@ -328,6 +348,7 @@ Logger::openTextLog()
         M_text_log = f;
     }
     else
+#endif
     {
         std::ofstream * f = new std::ofstream( M_text_log_name.c_str() );
         M_text_log = f;
@@ -336,7 +357,8 @@ Logger::openTextLog()
     if ( ! isTextLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open the text log file " << M_text_log_name << std::endl;
+                  << ": can't open the text log file '" << M_text_log_name
+                  << "'" << std::endl;
         return false;
     }
 
@@ -347,40 +369,45 @@ Logger::openTextLog()
 bool
 Logger::openKawayLog()
 {
-    boost::filesystem::path dir( ServerParam::instance().kawayLogDir(),
-                                 boost::filesystem::portable_posix_name );
-    if ( ! boost::filesystem::exists( dir )
-         && ! boost::filesystem::create_directory( dir ) )
+    // create the log directory & file path string
+    try
+    {
+        boost::filesystem::path kaway_log( ServerParam::instance().kawayLogDir()
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+                                           , &boost::filesystem::native
+#endif
+                                           );
+        if ( ! boost::filesystem::exists( kaway_log )
+             && ! boost::filesystem::create_directories( kaway_log ) )
+        {
+            std::cerr << __FILE__ << ": " << __LINE__
+                      << ": can't create keepaway log directory '"
+                      << kaway_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+            return false;
+        }
+
+        if ( ServerParam::instance().kawayLogFixed() )
+        {
+            kaway_log /= ServerParam::instance().kawayLogFixedName() + Logger::DEF_KAWAY_SUFFIX;
+        }
+        else
+        {
+            kaway_log /= Logger::DEF_KAWAY_NAME + Logger::DEF_KAWAY_SUFFIX;
+        }
+
+        M_kaway_log_name = kaway_log.BOOST_FS_FILE_STRING();
+    }
+    catch ( std::exception & e )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't create keepaway log dir."
-                  << std::endl;
+                  << " Exception caught! " << e.what()
+                  << "\nCould not create keepaway log directory '"
+                  << ServerParam::instance().kawayLogDir()
+                  << "'" << std::endl;
         return false;
     }
 
-    M_kaway_log_name = ServerParam::instance().kawayLogDir();
-#if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
-    if ( *M_kaway_log_name.rbegin() != '\\' )
-    {
-        M_kaway_log_name += '\\';
-    }
-#else
-    if ( *M_kaway_log_name.rbegin() != '/' )
-    {
-        M_kaway_log_name += '/';
-    }
-#endif
-
-    if ( ServerParam::instance().kawayLogFixed() )
-    {
-        M_kaway_log_name += ServerParam::instance().kawayLogFixedName();
-    }
-    else
-    {
-        M_kaway_log_name += Logger::DEF_KAWAY_NAME;
-    }
-    M_kaway_log_name += Logger::DEF_KAWAY_SUFFIX;
-
+    // open the output file stream
     M_kaway_log.open( M_kaway_log_name.c_str() );
 
     if ( ! M_kaway_log.is_open() )
@@ -779,6 +806,7 @@ Logger::writeGameLogImpl()
     M_observer->sendShow();
 }
 
+#if 0
 // This method has no longer be used.
 void
 Logger::writeGameLogV1()
@@ -1131,6 +1159,7 @@ Logger::writeGameLogV4()
 
     os << ")\n";
 }
+#endif
 
 void
 Logger::writeTeamGraphic( const Side side,
