@@ -3,7 +3,8 @@
 
   * Fixed defects on FreeBSD and MacOSX.
 
-  * Fixed defects of the directory creation.
+  * Fixed defects of the directory creation. Now, rcssserver can
+    create a nested directory for configuration files or log files.
 
   * Supported cygwin.
 
