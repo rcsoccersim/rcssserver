@@ -31,6 +31,7 @@
 #include <rcssbase/conf/parser.hpp>
 
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <fstream>
 #include <cerrno>
@@ -50,7 +51,7 @@
 #define BOOST_FS_DIRECTORY_STRING native_directory_string
 #endif
 
-const std::string CSVSaver::CSVSAVER = "CSVSaver";
+const std::string CSVSaver::NAME = "CSVSaver";
 
 CSVSaverParam &
 CSVSaverParam::instance()
@@ -188,33 +189,64 @@ CSVSaverParam::addParams()
 
 CSVSaver::CSVSaver()
     : ResultSaver(),
-      m_left_coin( false ),
-      m_right_coin( false )
+      M_left_coin( false ),
+      M_right_coin( false )
 {
     for ( int i = 0; i < TEAM_RIGHT + 1; ++i )
     {
-        m_score[ i ] = 0;
-        m_pen_taken[ i ] = 0;
-        m_pen_scored[ i ] = 0;
-    }
-
-    if ( CSVSaverParam::instance().save() )
-    {
-        m_file.open( CSVSaverParam::instance().filename().c_str(),
-                     std::ofstream::out | std::ostream::app );
-        if ( ! m_file.is_open() )
-        {
-            std::cerr << "Error: could not open results file:"
-                      << strerror( errno ) << std::endl;
-        }
+        M_score[ i ] = 0;
+        M_pen_taken[ i ] = 0;
+        M_pen_scored[ i ] = 0;
     }
 }
 
 CSVSaver::~CSVSaver()
 {
-    if ( CSVSaverParam::instance().save() )
+    if ( M_file.is_open() )
     {
-        m_file.close();
+        M_file.close();
+    }
+}
+
+void
+CSVSaver::openResultsFile()
+{
+    bool new_file = false;
+    boost::filesystem::path file_path;
+    try
+    {
+        file_path = boost::filesystem::path( tildeExpand( CSVSaverParam::instance().filename() )
+#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+                                             , &boost::filesystem::native
+#endif
+                                             );
+        new_file = ! boost::filesystem::exists( file_path );
+    }
+    catch ( std::exception & e )
+    {
+        std::cerr << __FILE__ << ':' << __LINE__
+                  << " Exception caught! " << e.what()
+                  << "\nCould not open result file: "
+                  << tildeExpand( CSVSaverParam::instance().filename() )
+                  << std::endl;
+        return;
+    }
+
+    M_file.open( file_path.BOOST_FS_FILE_STRING().c_str(),
+                 std::ofstream::out | std::ostream::app );
+    if ( ! M_file.is_open() )
+    {
+        std::cerr << "Error: could not open results file:"
+                  << strerror( errno ) << std::endl;
+        return;
+    }
+
+    if ( new_file )
+    {
+        M_file << "time, left team, right team, left coach, right coach,"
+               << " left score, right score, left pen taken, right pen taken,"
+               << " left pen score, right pen score, cointoss"
+               << std::endl;
     }
 }
 
@@ -227,48 +259,51 @@ CSVSaver::doEnabled() const
 void
 CSVSaver::doSaveStart()
 {
-
+    if ( CSVSaverParam::instance().save() )
+    {
+        openResultsFile();
+    }
 }
 
 void
 CSVSaver::doSaveTime( const tm & time )
 {
-    m_time = time;
+    M_time = time;
 }
 
 void
 CSVSaver::doSaveTeamName( team_id id,
                           const std::string & name )
 {
-    m_team_name[ id ] = name;
+    M_team_name[ id ] = name;
 }
 
 void
 CSVSaver::doSaveCoachName( team_id id,
                            const std::string & name )
 {
-    m_coach_name[ id ] = name;
+    M_coach_name[ id ] = name;
 }
 
 void
 CSVSaver::doSaveScore( team_id id,
                        unsigned int score )
 {
-    m_score[ id ] = score;
+    M_score[ id ] = score;
 }
 
 void
 CSVSaver::doSavePenTaken( team_id id,
                           unsigned int taken )
 {
-    m_pen_taken[ id ] = taken;
+    M_pen_taken[ id ] = taken;
 }
 
 void
 CSVSaver::doSavePenScored( team_id id,
                            unsigned int scored )
 {
-    m_pen_scored[ id ] = scored;
+    M_pen_scored[ id ] = scored;
 }
 
 void
@@ -276,16 +311,16 @@ CSVSaver::doSaveCoinTossWinner( team_id id )
 {
     switch ( id ) {
     case TEAM_LEFT:
-        m_left_coin = true;
-        m_right_coin = false;
+        M_left_coin = true;
+        M_right_coin = false;
         break;
     case TEAM_RIGHT:
-        m_left_coin = false;
-        m_right_coin = true;
+        M_left_coin = false;
+        M_right_coin = true;
         break;
     default:
-        m_left_coin = false;
-        m_right_coin = false;
+        M_left_coin = false;
+        M_right_coin = false;
         break;
     }
 }
@@ -293,61 +328,77 @@ CSVSaver::doSaveCoinTossWinner( team_id id )
 bool
 CSVSaver::doSaveComplete()
 {
-    if ( m_file.is_open() )
+    if ( M_file.is_open() )
     {
-        m_file.seekp( std::ofstream::end );
+        M_file.seekp( std::ofstream::end );
         char time_str[256];
-        strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &m_time );
-        m_file << time_str << ", ";
+        std::strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &M_time );
+        M_file << time_str << ", ";
 
-        if ( m_team_name[ TEAM_LEFT ].empty() )
-            m_file << "NULL, ";
-        else
-            m_file << "\"" << m_team_name[ TEAM_LEFT ] << "\", ";
-
-        if ( m_team_name[ TEAM_RIGHT ].empty() )
-            m_file << "NULL, ";
-        else
-            m_file << "\"" << m_team_name[ TEAM_RIGHT ] << "\", ";
-
-
-        if ( m_coach_name[ TEAM_LEFT ].empty() )
-            m_file << "NULL, ";
-        else
-            m_file << "\"" << m_coach_name[ TEAM_LEFT ] << "\", ";
-
-        if ( m_coach_name[ TEAM_RIGHT ].empty() )
-            m_file << "NULL, ";
-        else
-            m_file << "\"" << m_coach_name[ TEAM_RIGHT ] << "\", ";
-
-        m_file << m_score[ TEAM_LEFT ] << ", " << m_score[ TEAM_RIGHT ] << ", ";
-        if ( m_pen_taken[ TEAM_LEFT ] || m_pen_taken[ TEAM_RIGHT ] )
+        if ( M_team_name[ TEAM_LEFT ].empty() )
         {
-            m_file << m_pen_taken[ TEAM_LEFT ] << ", " << m_pen_taken[ TEAM_RIGHT ];
-            m_file << m_pen_scored[ TEAM_LEFT ] << ", " << m_pen_scored[ TEAM_RIGHT ];
+            M_file << "NULL, ";
         }
         else
         {
-            m_file << "NULL, NULL, ";
-            m_file << "NULL, NULL, ";
+            M_file << "\"" << M_team_name[ TEAM_LEFT ] << "\", ";
         }
 
-        if ( m_left_coin )
+        if ( M_team_name[ TEAM_RIGHT ].empty() )
         {
-            m_file << "LEFT";
-        }
-        else if ( m_right_coin )
-        {
-            m_file << "RIGHT";
+            M_file << "NULL, ";
         }
         else
         {
-            m_file << "NULL";
+            M_file << "\"" << M_team_name[ TEAM_RIGHT ] << "\", ";
         }
-        m_file << std::endl;
 
-        if ( ! m_file.good() )
+
+        if ( M_coach_name[ TEAM_LEFT ].empty() )
+        {
+            M_file << "NULL, ";
+        }
+        else
+        {
+            M_file << "\"" << M_coach_name[ TEAM_LEFT ] << "\", ";
+        }
+
+        if ( M_coach_name[ TEAM_RIGHT ].empty() )
+        {
+            M_file << "NULL, ";
+        }
+        else
+        {
+            M_file << "\"" << M_coach_name[ TEAM_RIGHT ] << "\", ";
+        }
+
+        M_file << M_score[ TEAM_LEFT ] << ", " << M_score[ TEAM_RIGHT ] << ", ";
+        if ( M_pen_taken[ TEAM_LEFT ] || M_pen_taken[ TEAM_RIGHT ] )
+        {
+            M_file << M_pen_taken[ TEAM_LEFT ] << ", " << M_pen_taken[ TEAM_RIGHT ];
+            M_file << M_pen_scored[ TEAM_LEFT ] << ", " << M_pen_scored[ TEAM_RIGHT ];
+        }
+        else
+        {
+            M_file << "NULL, NULL, ";
+            M_file << "NULL, NULL, ";
+        }
+
+        if ( M_left_coin )
+        {
+            M_file << "LEFT";
+        }
+        else if ( M_right_coin )
+        {
+            M_file << "RIGHT";
+        }
+        else
+        {
+            M_file << "NULL";
+        }
+        M_file << std::endl;
+
+        if ( ! M_file.good() )
         {
             std::cerr << CSVSaverParam::instance().filename()
                       << ": Error writing results: "
@@ -364,19 +415,24 @@ CSVSaver::doSaveComplete()
 const char *
 CSVSaver::doGetName() const
 {
-    return "CSVSaver";
+    //return "CSVSaver";
+    return CSVSaver::NAME.c_str();
 }
 
+ResultSaver::Ptr
+CSVSaver::create()
+{
+    return ResultSaver::Ptr( new CSVSaver() );
+}
 
 namespace {
+// template< typename Saver >
+// ResultSaver::Ptr
+// create()
+// {
+//     return ResultSaver::Ptr( new Saver() );
+// }
+//rcss::RegHolder s = ResultSaver::factory().autoReg( &create< CSVSaver >, "CSVSaver" );
 
-template< typename Saver >
-ResultSaver::Ptr
-create()
-{
-    return ResultSaver::Ptr( new Saver() );
-}
-
-//rcss::RegHolder csv = ResultSaver::factory().autoReg( &create< CSVSaver >, "CSVSaver" );
-rcss::RegHolder csv = ResultSaver::factory().autoReg( &create< CSVSaver >, CSVSaver::CSVSAVER );
+rcss::RegHolder s = ResultSaver::factory().autoReg( &CSVSaver::create, CSVSaver::NAME );
 }

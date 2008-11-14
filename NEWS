@@ -1,3 +1,24 @@
+[13.0.1]
+  * Fixed build problems wigh bison 2.4
+
+  * Fixed defects on FreeBSD and MacOSX.
+
+  * Fixed defects of the directory creation.
+
+  * Supported cygwin.
+
+  * Changed the default configuration file location on Windows. Now,
+    configuration files are generated under the rcssserver's working
+    folder.
+
+  * Fixed defects of the team graphic broadcasting. Now, team graphic
+    messages are sent to all monitors connected after coaches.
+
+  * Now, an offline coach receive an error messag if an offline
+    coach tries to connect without coach mode.
+
+  * Added a header line to the first CSVSaver output.
+
 [13.0.0]
   * RCSSBase is now integrated into RCSSServer. It is not necessary
     for you to install RCSSBase before the RCSSServer installation.
