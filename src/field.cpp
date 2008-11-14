@@ -274,10 +274,8 @@ Stadium::init()
     // we create the result savers now, so that if there are any
     // errors creating them, it will be reported before
     // the game starts, not after it has finished.
-    //std::list< const char * > savers = ResultSaver::factory().list();
-    //for ( std::list< const char * >::iterator i = savers.begin();
-    std::list< std::string > savers = ResultSaver::factory().list();
-    for ( std::list< std::string >::iterator i = savers.begin();
+    std::list< ResultSaver::FactoryHolder::Index > savers = ResultSaver::factory().list();
+    for ( std::list< ResultSaver::FactoryHolder::Index >::iterator i = savers.begin();
           i != savers.end();
           ++i )
     {
@@ -2726,8 +2724,7 @@ Stadium::disable()
 
 #include "resultsaver.hpp"
 
-namespace rcss
-{
+namespace rcss {
 void
 save_results( ResultSaver::team_id id,
               const Team & team,
@@ -2738,7 +2735,8 @@ save_results( ResultSaver::team_id id,
         saver->saveTeamName( id, team.name() );
     }
 
-    if ( team.olcoach() && ! team.olcoach()->name().empty() )
+    if ( team.olcoach()
+         && ! team.olcoach()->name().empty() )
     {
         saver->saveCoachName( id, team.name() );
     }
@@ -2777,13 +2775,19 @@ Stadium::saveResults()
             (*i)->saveStart();
             (*i)->saveTime( realTime() );
             if ( M_team_l )
+            {
                 rcss::save_results( ResultSaver::TEAM_LEFT,
                                     *M_team_l,
                                     *i );
+            }
+
             if ( M_team_r )
+            {
                 rcss::save_results( ResultSaver::TEAM_RIGHT,
                                     *M_team_r,
                                     *i );
+            }
+
             if ( (*i)->saveComplete() )
             {
                 std::cout << "\t" << (*i)->getName() << ": ...saved\n";
@@ -2798,6 +2802,6 @@ Stadium::saveResults()
             std::cout << "\t" << (*i)->getName() << ": ...disabled\n";
         }
     }
-    std::cout << std::endl;
+    std::cout << '\n';
     std::cout << "Saving Results Complete" << std::endl;
 }

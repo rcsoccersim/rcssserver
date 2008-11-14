@@ -28,12 +28,12 @@
 #include <iostream>
 #include <ctime>
 
-const std::string STDOutSaver::STDOUTSAVER = "STDOutSaver";
+const std::string STDOutSaver::NAME = "STDOutSaver";
 
 STDOutSaver::STDOutSaver()
-    : ResultSaver()
-    , M_left_coin( false )
-    , M_right_coin( false )
+    : ResultSaver(),
+      M_left_coin( false ),
+      M_right_coin( false )
 {
     for ( int i = 0; i < TEAM_RIGHT + 1; ++i )
     {
@@ -181,18 +181,25 @@ STDOutSaver::doSaveComplete()
 const char *
 STDOutSaver::doGetName() const
 {
-    return "STDOutSaver";
+    //return "STDOutSaver";
+    return NAME.c_str();
 }
 
+
+ResultSaver::Ptr
+STDOutSaver::create()
+{
+    return ResultSaver::Ptr( new STDOutSaver() );
+}
 
 namespace {
-template< typename Saver >
-ResultSaver::Ptr
-create()
-{
-    return ResultSaver::Ptr( new Saver() );
-}
+// template< typename Saver >
+// ResultSaver::Ptr
+// create()
+// {
+//     return ResultSaver::Ptr( new Saver() );
+// }
+//rcss::RegHolder s = ResultSaver::factory().autoReg( &create< STDOutSaver >, "STDOutSaver" );
 
-//rcss::RegHolder stdoutsaver = ResultSaver::factory().autoReg( &create< STDOutSaver >, "STDOutSaver" );
-rcss::RegHolder stdoutsaver = ResultSaver::factory().autoReg( &create< STDOutSaver >, STDOutSaver::STDOUTSAVER );
+rcss::RegHolder s = ResultSaver::factory().autoReg( &STDOutSaver::create, STDOutSaver::NAME );
 }

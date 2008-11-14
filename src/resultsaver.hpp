@@ -23,6 +23,7 @@
 #define RCSSRESULTSAVER_HPP
 
 #include <string>
+#include <memory>
 #include <rcssbase/factory.hpp>
 
 struct tm;
@@ -41,10 +42,11 @@ public:
     static
     FactoryHolder & factory();
 
-
+protected:
     ResultSaver()
       { }
 
+public:
     virtual
     ~ResultSaver()
       { }
@@ -109,7 +111,7 @@ public:
           return doGetName();
       }
 
-private:
+protected:
 
     virtual
     bool doEnabled() const
@@ -132,7 +134,7 @@ private:
 
     virtual
     void doSaveCoachName( team_id,
-                          const std::string& )
+                          const std::string & )
       { }
 
     virtual

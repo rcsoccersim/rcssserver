@@ -1,3 +1,20 @@
+2008-11-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated release notes for 13.0.1 in the NEWS file.
+	- updated a point version. Official release 13.0.1.
+
+	* src/csvsaver.cpp:
+	* src/csvsaver.h:
+	* src/field.cpp:
+	* src/resultsaver.hpp:
+	* src/stdoutsaver.cpp:
+	* src/stdoutsaver.h:
+	- reimplemented ResultSaver creators as a static member method.
+	- added a header line to the first CSVSaver output.
+	- fixed coding style.
+
 2008-11-12  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* Makefile.am:

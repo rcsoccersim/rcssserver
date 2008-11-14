@@ -28,12 +28,17 @@ class STDOutSaver
     : public ResultSaver {
 public:
 
-    static const std::string STDOUTSAVER;
+    static const std::string NAME;
 
+private:
     STDOutSaver();
 
+public:
     virtual
     ~STDOutSaver();
+
+    static
+    ResultSaver::Ptr create();
 
 private:
     virtual

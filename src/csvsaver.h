@@ -94,14 +94,22 @@ class CSVSaver
     : public ResultSaver {
 public:
 
-    static const std::string CSVSAVER;
+    static const std::string NAME;
 
+private:
     CSVSaver();
 
+public:
     virtual
     ~CSVSaver();
 
+    static
+    ResultSaver::Ptr create();
+
 private:
+
+    void openResultsFile();
+
     virtual
     bool doEnabled() const;
 
@@ -140,17 +148,15 @@ private:
     virtual
     const char * doGetName() const;
 
-    tm m_time;
-    std::string m_team_name[ 2 ];
-    std::string m_coach_name[ 2 ];
-    unsigned int m_score[ 2 ];
-    unsigned int m_pen_taken[ 2 ];
-    unsigned int m_pen_scored[ 2 ];
-    bool m_left_coin;
-    bool m_right_coin;
+    tm M_time;
+    std::string M_team_name[ 2 ];
+    std::string M_coach_name[ 2 ];
+    unsigned int M_score[ 2 ];
+    unsigned int M_pen_taken[ 2 ];
+    unsigned int M_pen_scored[ 2 ];
+    bool M_left_coin;
+    bool M_right_coin;
 
-    bool m_save;
-    std::string m_filename;
-    std::ofstream m_file;
+    std::ofstream M_file;
 
 };
