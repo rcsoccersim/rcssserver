@@ -1,3 +1,13 @@
+2008-11-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	* m4/ax_boost_system.m4:
+	* m4/ax_boost_filesystem.m4:
+	* src/Makefile.am:
+	- fixed build problems with boost::system.
+	- updated a point version. Official release 12.1.5.
+
 2008-09-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

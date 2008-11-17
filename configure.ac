@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([RCSSServer], 12.1.4, sserver-admin@users.sf.net, rcssserver)
+AC_INIT([RCSSServer], 12.1.5, sserver-admin@users.sf.net, rcssserver)
 
 AC_PREREQ(2.61)
 
@@ -161,6 +161,7 @@ if test "$RCSSBASE"; then
 fi
 
 AX_BOOST_BASE([1.32.0])
+AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
 CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"

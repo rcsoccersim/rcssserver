@@ -68,7 +68,7 @@ libcsvsaver_la_SOURCES = csvsaver.cpp
 libcsvsaver_la_LDFLAGS = -module
 libcsvsaver_la_LIBADD = librcssresultsaver.la \
 	-lrcssconfparser -lrcsslib \
-	$(BOOST_FILESYSTEM_LIB)
+	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
 
 pkginclude_HEADERS = \
