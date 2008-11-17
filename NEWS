@@ -3,14 +3,14 @@
 
   * Fixed defects on FreeBSD and MacOSX.
 
-  * Fixed defects of the directory creation. Now, rcssserver can
-    create a nested directory for configuration files or log files.
-
   * Supported cygwin.
 
   * Changed the default configuration file location on Windows. Now,
     configuration files are generated under the rcssserver's working
     folder.
+
+  * Fixed defects of the directory creation. Now, rcssserver can
+    create a nested directory for configuration files or log files.
 
   * Fixed defects of the team graphic broadcasting. Now, team graphic
     messages are sent to all monitors connected after coaches.
