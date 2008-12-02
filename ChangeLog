@@ -1,3 +1,13 @@
+2008-12-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version. Official release 13.0.2.
+
+	* src/referee.cpp:
+	- fixed a ball catcher bug that causes a strange penalty shoot
+	outs play.
+
 2008-11-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
