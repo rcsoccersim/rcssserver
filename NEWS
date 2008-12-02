@@ -1,5 +1,9 @@
+[13.0.2]
+  * Fixed a ball catcher bug that causes a strange penalty shoot outs
+    play. Thanks go to Ke Shi for reporting the problem.
+
 [13.0.1]
-  * Fixed build problems wigh bison 2.4
+  * Fixed build problems with bison 2.4
 
   * Fixed defects on FreeBSD and MacOSX.
 

@@ -79,7 +79,7 @@
 #include <cerrno>
 
 #include <sys/time.h>
-#include <netinet/in.h>
+#include <unistd.h>
 
 /*
  *===================================================================

@@ -2421,6 +2421,7 @@ PenaltyRef::startPenaltyShootout()
             M_pen_side = RIGHT;
         }
 
+        M_stadium.clearBallCatcher();
         M_stadium.sendRefereeAudio( M_pen_side == LEFT
                                     ? "penalty_onfield_l"
                                     : "penalty_onfield_r" );
