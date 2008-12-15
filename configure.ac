@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([RCSSServer], 13.0.2, sserver-admin@users.sf.net, rcssserver)
+AC_INIT([RCSSServer], 13.1.0, sserver-admin@users.sf.net, rcssserver)
 
 AC_PREREQ(2.61)
 
@@ -7,11 +7,7 @@ AC_PREREQ(2.61)
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
-AC_PROG_MAKE_SET
-
-AC_PROG_AWK
-AC_EXEEXT
-AC_LANG(C++)
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -20,6 +16,9 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_LANG(C++)
+AC_PROG_AWK
+
 #ACX_PTHREAD([LIBS="$PTHREAD_LIBS $LIBS"
 #             CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 #             CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
@@ -94,13 +93,17 @@ AC_CHECK_FUNCS([socket sqrt strdup strerror])
 AC_SUBST([FLEX])
 AC_SUBST([FLEXFLAGS])
 AC_SUBST([AM_FLEXFLAGS])
-AC_CHECK_PROG([FLEX],
-              [flex],
-              flex)
-#AC_CHECK_PROG([FLEX],
-#              [flex],
-#              flex,
-#              $srcdir/missingflex)
+#AC_ARG_WITH([flex],
+#            [  --with-flex=FLEX_PATH   set the flex path. it is possible to specify a
+#                          certain flex to generate lexer sources.])
+#if test x$with_flex != x && test -x "$with_flex" ; then
+#  FLEX="$with_flex"
+AC_ARG_VAR(FLEX, [name and location of the fast lexical analyser generator.
+If it is not set, configure looks for flex in your PATH])
+if test -z "$FLEX" ; then
+#  AC_CHECK_PROG([FLEX],[flex],flex)
+  AX_PROG_FLEX([FLEX="$LEX"],[FLEX=""])
+fi
 AM_FLEXFLAGS="-olex.yy.c"
 
 if test -z "$FLEX" ; then
@@ -122,32 +125,34 @@ AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 ##LIBS="$LIBS $lt_cv_dlopen_libs"
 
-AC_ARG_VAR(SED, [name and location of sed executable.  If it is not
-set, it configure looks for sed in your PATH])
-
-grep "SED=" ./libtool >& /dev/null
-if test "$?" -ne 0; then
-    AC_PATH_PROG(SED, sed)
-    if test -z "$SED"; then
-        AC_MSG_ERROR([
-            sed cannot be found on your system.  Please install it in
-            your PATH, or specify it's location to configure.  e.g.
-            `./configure SED=/bin/sed`], 1)
-    fi
-    mv libtool libtool.tmp
-    ${AWK} -v SED="$SED" '/# libtool/ \
-    { if( done != "true" ) { print "SED=\"" SED "\""; done = "true"; } } \
-    { print; }' libtool.tmp > libtool
-    chmod +x libtool
-fi
-
-echo `pwd`
-mv libtool libtool.tmp
-${AWK} -v EGREP="${EGREP}" '/# libtool/ \
-{ if( done != "true" ) { print "EGREP=\"" EGREP "\""; done = "true"; } } \
-{ print; }' libtool.tmp > libtool
-chmod +x libtool
-rm -f libtool.tmp
+#AC_ARG_VAR(SED, [name and location of sed executable.  If it is not
+#set, configure looks for sed in your PATH])
+#
+#grep "SED=" ./libtool >& /dev/null
+#if test "$?" -ne 0; then
+#    if test -z "$SED" ; then
+#      AC_PATH_PROG(SED, sed)
+#    fi
+#    if test -z "$SED"; then
+#        AC_MSG_ERROR([
+#            sed cannot be found on your system.  Please install it in
+#            your PATH, or specify it's location to configure.  e.g.
+#            `./configure SED=/bin/sed`], 1)
+#    fi
+#    mv libtool libtool.tmp
+#    ${AWK} -v SED="$SED" '/# libtool/ \
+#    { if( done != "true" ) { print "SED=\"" SED "\""; done = "true"; } } \
+#    { print; }' libtool.tmp > libtool
+#    chmod +x libtool
+#fi
+#
+#echo `pwd`
+#mv libtool libtool.tmp
+#${AWK} -v EGREP="${EGREP}" '/# libtool/ \
+#{ if( done != "true" ) { print "EGREP=\"" EGREP "\""; done = "true"; } } \
+#{ print; }' libtool.tmp > libtool
+#chmod +x libtool
+#rm -f libtool.tmp
 
 AX_BOOST_BASE([1.32.0])
 AX_BOOST_SYSTEM

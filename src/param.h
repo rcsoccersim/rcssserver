@@ -223,8 +223,8 @@ enum TextLogFlag {
 #define O_TYPE_BALL_NAME_SHORT		"(B)"
 #define O_TYPE_PLAYER_NAME_SHORT     	"(P)"
 
-#define SAY_MESSAGE_SCAN_FORMAT	"(%s %[-0-9a-zA-Z ().+*/?<>_]"
-#define SAY_MESSAGE_SCAN_FORMAT_NEW "(%s \"%[-0-9a-zA-Z ().+*/?<>_]\")"
+#define SAY_MESSAGE_SCAN_FORMAT	" ( %s %[-0-9a-zA-Z ().+*/?<>_]"
+#define SAY_MESSAGE_SCAN_FORMAT_NEW " ( %s \"%[-0-9a-zA-Z ().+*/?<>_]\" ) "
 
 #define TEAM_L_DIRECTION 0
 #define TEAM_R_DIRECTION M_PI

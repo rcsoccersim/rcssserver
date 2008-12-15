@@ -225,8 +225,8 @@ Stadium::parseMonitorInit( const char * message,
                            const rcss::net::Addr & addr )
 {
     double ver = 1.0;
-    if ( ! std::strcmp( message, "(dispinit)" )
-         || std::sscanf( message, "(dispinit version %lf)", &ver ) == 1 )
+    if ( ! std::strncmp( message, "(dispinit)", 10 )
+         || std::sscanf( message, " ( dispinit version %lf ) ", &ver ) == 1 )
     {
         if ( ServerParam::instance().maxMonitors() > 0
              && static_cast< int >( M_monitors.size() ) >= ServerParam::instance().maxMonitors() )
@@ -344,7 +344,7 @@ Stadium::parseCoachInit( const char * message,
     }
 
     char command[128];
-    int n = std::sscanf( message, "(%127[-0-9a-zA-Z.+*/?<>_]", command );
+    int n = std::sscanf( message, " ( %127[-0-9a-zA-Z.+*/?<>_] ", command );
     if( n < 1 )
     {
         sendToCoach( "(error illegal_command_form)", cli_addr );

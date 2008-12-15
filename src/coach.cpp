@@ -44,6 +44,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <cctype>
 #include <cmath>
 
 // #ifdef HAVE_NETINET_IN_H
@@ -71,7 +72,7 @@ play_mode_id( const char * mode )
 }
 
 void
-chop_last_parenthesis( char *str,
+chop_last_parenthesis( char * str,
                        int max_size )
 {
     int l = std::strlen( str );
@@ -242,11 +243,12 @@ Coach::parseMsg( const char * msg,
 
 
 void
-Coach::parse_command( const char *command )
+Coach::parse_command( const char * command )
 {
+#if 1
     char com[128];
 
-    if ( std::sscanf( command, "(%127[-0-9a-zA-Z.+*/?<>_]", com ) != 1 )
+    if ( std::sscanf( command, " ( %127[-0-9a-zA-Z.+*/?<>_] ", com ) != 1 )
     {
         send( "(error illegal_command_form)" );
         return;
@@ -283,7 +285,7 @@ Coach::parse_command( const char *command )
     }
     else if( ! std::strcmp( com, "say" ) )
     {
-        static char msg[MaxMesg] ;
+        char msg[MaxMesg] ;
         if ( std::sscanf( command, SAY_MESSAGE_SCAN_FORMAT, com, msg ) != 2 )
         {
             send( "(error illegal_command_form)" );
@@ -293,10 +295,10 @@ Coach::parse_command( const char *command )
         M_stadium.sendCoachAudio( *this, msg );
         send( "(ok say)" );
     }
-    else if ( ! std::strcmp( com,"ear" ) )
+    else if ( ! std::strcmp( com, "ear" ) )
     {
         char mode[16] ;
-        if ( std::sscanf( command,"(ear %15[^ ()])", mode ) != 1 )
+        if ( std::sscanf( command," ( ear %15[^ ()] ) ", mode ) != 1 )
         {
             send( "(error illegal_command_form)" );
             return;
@@ -308,7 +310,7 @@ Coach::parse_command( const char *command )
     else if ( ! std::strcmp( com, "eye" ) )
     {
         char mode[16] ;
-        if ( std::sscanf( command, "(eye %15[^ ()])", mode ) != 1 )
+        if ( std::sscanf( command, " ( eye %15[^ ()] ) ", mode ) != 1 )
         {
             send( "(error illegal_command_form)" );
             return;
@@ -321,8 +323,8 @@ Coach::parse_command( const char *command )
     {
         char name[128];
         int unum, player_type;
-        if ( std::sscanf( command, "(%s %s %d %d)",
-                          com, name, &unum, &player_type ) < 4 )
+        if ( std::sscanf( command, " ( change_player_type %s %d %d ) ",
+                          name, &unum, &player_type ) != 3 )
         {
             send( "(error illegal_command_form)" );
             return;
@@ -341,7 +343,7 @@ Coach::parse_command( const char *command )
     else if ( ! std::strcmp( com, "compression" ) )
     {
         int level;
-        if ( std::sscanf( command, "(%s %d)", com, &level ) < 2 )
+        if ( std::sscanf( command, " ( compression %d ) ", &level ) != 1 )
         {
             send( "(error illegal_command_form)" );
             return;
@@ -355,6 +357,178 @@ Coach::parse_command( const char *command )
         send( "(error unknown_command)" );
         return;
     }
+#else
+    const char * buf = command;;
+    int n_read = 0;
+    int count = 0;
+
+    while ( *buf != '\0' )
+    {
+        while ( std::isspace( *buf ) ) ++buf;
+        if ( *buf == '\0' ) break;
+
+        if ( ! std::strncmp( buf, "(start)", 7 ) )
+        {
+            buf += 7;
+            Stadium::_Start( M_stadium );
+            send( "(ok start)" );
+        }
+        else if ( ! std::strncmp( buf, "(change_mode ", 13 ) )
+        {
+            int n = parse_change_mode( buf );
+            if ( n == 0 )
+            {
+                send( "(error illegal_command_form)" );
+                //std::cerr << "Error parsing >" << buf << "<\n";
+                return;
+            }
+            buf += n;
+        }
+        else if ( ! std::strcmp( buf, "move" ) )
+        {
+            int n = parse_move( buf );
+            if ( n == 0 )
+            {
+                send( "(error illegal_command_form)" );
+                //std::cerr << "Error parsing >" << buf << "<\n";
+                return;
+            }
+            buf += n;
+        }
+        else if ( ! std::strncmp( buf, "(look)", 6 ) )
+        {
+            buf += 6;
+            look();
+        }
+        else if ( ! std::strncmp( buf, "(team_names)", 12 ) )
+        {
+            buf += 12;
+            team_names();
+        }
+        else if ( ! std::strncmp( buf, "(recover)", 9 ) )
+        {
+            buf += 9;
+            recover();
+        }
+        else if ( ! std::strncmp( buf, "(check_ball)", 12 ) )
+        {
+            buf += 12;
+            check_ball();
+        }
+        else if( ! std::strncmp( buf, "(say ", 5 ) )
+        {
+            buf += 5;
+            char msg[MaxMesg];
+            if ( *buf == '"'
+                 && std::sscanf( buf, " \"%[-0-9a-zA-Z ().+*/?<>_]\" ) %n ",
+                                 msg, &n_read ) == 1 )
+            {
+                buf += n_read;
+            }
+            else if ( std::sscanf( buf, "%[-0-9a-zA-Z ().+*/?<>_]",
+                                   msg ) == 1 )
+            {
+                //chop_last_parenthesis( msg, ServerParam::instance().freeformMsgSize() );
+                int l = std::strlen( msg );
+                if ( msg[l-1] == ')' )
+                {
+                    msg[l-1] = '\0';
+                }
+                else
+                {
+                    send( "(error illegal_command_form)" );
+                    //std::cerr << "Error parsing >" << buf << "<\n";
+                    return;
+                }
+            }
+            else
+            {
+                send( "(error illegal_command_form)" );
+                //std::cerr << "Error parsing >" << buf << "<\n";
+                return;
+            }
+
+            M_stadium.sendCoachAudio( *this, msg );
+            send( "(ok say)" );
+        }
+        else if ( ! std::strncmp( buf, "(ear ", 5 ) )
+        {
+            char mode[16] ;
+            if ( std::sscanf( buf," ( ear %15[^ ()] ) %n ",
+                              mode, &n_read ) != 1 )
+            {
+                send( "(error illegal_command_form)" );
+                return;
+            }
+            buf += n_read;
+
+            ear( mode );
+            return;
+        }
+        else if ( ! std::strncmp( buf, "(eye ", 5 ) )
+        {
+            char mode[16] ;
+            if ( std::sscanf( buf, " ( eye %15[^ ()] ) %n ",
+                              mode, &n_read ) != 1 )
+            {
+                send( "(error illegal_command_form)" );
+                return;
+            }
+
+            eye( mode );
+            return;
+        }
+        else if ( ! std::strncmp( buf, "(change_player_type ", 20 ) )
+        {
+            char name[128];
+            int unum, player_type;
+            if ( std::sscanf( buf, " ( change_player_type %s %d %d ) %n ",
+                              name, &unum, &player_type, &n_read ) != 3 )
+            {
+                send( "(error illegal_command_form)" );
+                return;
+            }
+            buf += n_read;
+
+            change_player_type( name, unum, player_type );
+            return;
+        }
+        //pfr:SYNCH
+        else if ( ! std::strncmp( buf, "(done)", 6 ) )
+        {
+            //std::cerr << "Recv trainer done" << std::endl;
+            M_done_received = true;
+            return;
+        }
+        else if ( ! std::strncmp( buf, "(compression ", 13 ) )
+        {
+            int level;
+            if ( std::sscanf( buf, " ( compression %d ) %n ",
+                              &level, &n_read ) != 1 )
+            {
+                send( "(error illegal_command_form)" );
+                return;
+            }
+            buf += n_read;
+
+            compression( level );
+            return;
+        }
+        else
+        {
+            send( "(error unknown_command)" );
+            return;
+        }
+
+        ++count;
+    }
+
+
+    if ( count == 0 )
+    {
+        send( "(error illegal_command_form)" );
+    }
+#endif
 }
 
 
@@ -412,19 +586,21 @@ Coach::sendExternalMsg()
     send( msg.c_str() );
 }
 
-void
+int
 Coach::parse_change_mode( const char * command )
 {
+    int n_read = 0;
     char new_mode[128];
     if ( std::sscanf( command,
-                      "(change_mode %127[-0-9a-zA-Z.+*/?<>_])",
-                      new_mode ) != 1 )
+                      " ( change_mode %127[-0-9a-zA-Z.+*/?<>_] ) %n ",
+                      new_mode, &n_read ) != 1 )
     {
         send( "(error illegal_command_form)" );
-        return;
+        return 0;
     }
 
     change_mode( new_mode );
+    return n_read;
 }
 
 void
@@ -442,15 +618,17 @@ Coach::change_mode( std::string mode )
     send( "(ok change_mode)" );
 }
 
-void
+int
 Coach::parse_move( const char * command )
 {
+    int n_read = 0;
     char obj[128];
     double x = 0.0, y = 0.0, ang = 0.0, velx = 0.0, vely = 0.0;
 
     int n = std::sscanf( command,
-                         " (move (%127[^)]) %lf %lf %lf %lf %lf ) ",
-                         obj, &x, &y, &ang, &velx, &vely );
+                         " ( move ( %127[^)] ) %lf %lf %lf %lf %lf ) %n ",
+                         obj, &x, &y, &ang, &velx, &vely,
+                         &n_read );
 
     if ( n < 3
          || std::isnan( x ) != 0
@@ -460,7 +638,7 @@ Coach::parse_move( const char * command )
          || std::isnan( vely ) != 0 )
     {
         send( "(error illegal_object_form)" );
-        return;
+        return 0;
     }
 
     std::string obj_name = "(";
@@ -482,7 +660,7 @@ Coach::parse_move( const char * command )
         else
         {
             send( "(error illegal_command_form)" );
-            return;
+            return 0;
         }
     }
     else
@@ -497,7 +675,7 @@ Coach::parse_move( const char * command )
              || MAX_PLAYER < unum )
         {
             send( "(error illegal_object_form)" );
-            return;
+            return 0;
         }
 
         Side side = ( M_stadium.teamLeft().name() == teamname
@@ -526,11 +704,13 @@ Coach::parse_move( const char * command )
         else
         {
             send( "(error illegal_command_form)" );
-            return;
+            return 0;
         }
     }
 
     send( "(ok move)" );
+
+    return n_read;
 }
 
 void
@@ -773,7 +953,7 @@ OnlineCoach::change_player_types( const char * command )
     }
 
     int n_read = 0;
-    std::sscanf( command, " (change_player_types %n ", &n_read );
+    std::sscanf( command, " ( change_player_types %n ", &n_read );
     if ( n_read == 0 )
     {
         send( "(error illegal_command_form)" );
@@ -1297,10 +1477,10 @@ OnlineCoach::parseMsg( const char * msg,
 void
 OnlineCoach::parse_command( const char * command )
 {
-    char com[MaxMesg];
+    char com[128];
     int n;
 
-    n = std::sscanf( command, "(%[-0-9a-zA-Z.+*/?<>_]", com );
+    n = std::sscanf( command, " ( %127[-0-9a-zA-Z.+*/?<>_] ", com );
     if ( n < 1 )
     {
         send( "(error illegal_command_form)" );
@@ -1484,8 +1664,8 @@ OnlineCoach::parse_command( const char * command )
             //pre v7.0
             if ( M_stadium.playmode() != PM_PlayOn )
             {
-                if( M_freeform_messages_said < M_freeform_messages_allowed
-                    || M_freeform_messages_allowed < 0 )
+                if ( M_freeform_messages_said < M_freeform_messages_allowed
+                     || M_freeform_messages_allowed < 0 )
                 {
                     static char msg[MaxMesg];
                     n = std::sscanf( command, SAY_MESSAGE_SCAN_FORMAT, com, msg );
@@ -1519,7 +1699,7 @@ OnlineCoach::parse_command( const char * command )
     else if ( ! std::strcmp( com, "eye" ) )
     {
         char mode[16] ;
-        if ( std::sscanf( command, "(eye %15[^ ()])", mode ) != 1 )
+        if ( std::sscanf( command, " ( eye %15[^ ()] ) ", mode ) != 1 )
         {
             send( "(error illegal_command_form)" );
             return;
@@ -1536,7 +1716,8 @@ OnlineCoach::parse_command( const char * command )
     else if ( ! std::strcmp ( com, "change_player_type" ) )
     {
         int unum, player_type;
-        if ( std::sscanf( command, "(%s %d %d)", com, &unum, &player_type ) != 3 )
+        if ( std::sscanf( command, " ( change_player_type %d %d )",
+                          &unum, &player_type ) != 2 )
         {
             send( "(error illegal_command_form)" );
             return;
@@ -1555,7 +1736,7 @@ OnlineCoach::parse_command( const char * command )
     else if ( ! std::strcmp( com, "compression" ) )
     {
         int level ;
-        if ( std::sscanf( command, "(%s %d)", com, &level ) < 2 )
+        if ( std::sscanf( command, " ( compression %d ) ", &level ) != 1 )
         {
             send( "(error illegal_command_form)" );
             return;
@@ -1812,7 +1993,7 @@ OnlineCoach::team_graphic( const char * command )
     }
 
     unsigned int x, y;
-    if ( std::sscanf( command, "(team_graphic (%u %u", &x, &y ) != 2 )
+    if ( std::sscanf( command, " ( team_graphic ( %u %u ", &x, &y ) != 2 )
     {
         send( "(error illegal_command_form)" );
         return;

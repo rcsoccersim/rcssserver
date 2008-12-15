@@ -44,6 +44,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cctype>
 
 #ifdef HAVE_SSTREAM
 #include <sstream>
@@ -67,10 +68,10 @@ NormalizeDashPower( const double & p )
 
 inline
 double
-NormalizeDashAngle( const double & p )
+NormalizeDashAngle( const double & d )
 {
     return rcss::bound( ServerParam::instance().minDashAngle(),
-                        p,
+                        d,
                         ServerParam::instance().maxDashAngle() );
 }
 
@@ -438,8 +439,14 @@ Player::parseMsg( const char * msg,
     M_stadium.logger().writePlayerLog( *this, command, RECV );
 
     /** Call the PlayerCommandParser */
-    if ( M_parser.parse( command ) != 0 )
-    //if ( ! parseCommand( command ) )
+    if (
+#ifndef __CYGWIN__
+        M_parser.parse( command ) != 0
+#else
+        // Cygwin's flex/bison may cause problems.
+        ! parseCommand( command )
+#endif
+        )
     {
         send( "(error illegal_command_form)" );
         std::cerr << "Error parsing >" << command << "<\n";
@@ -455,13 +462,14 @@ Player::parseCommand( const char * command )
     int count = 0;
     while ( *buf != '\0' )
     {
-        while ( *buf == ' ' || *buf == '\t' || *buf == '\n' ) ++buf;
+        //while ( *buf == ' ' || *buf == '\t' || *buf == '\n' ) ++buf;
+        while ( std::isspace( *buf ) ) ++buf;
         if ( *buf == '\0' ) break;
 
         if ( ! std::strncmp( buf, "(turn ", 6 ) )
         {
             double moment = 0.0;
-            if ( std::sscanf( buf, "(turn %lf) %n",
+            if ( std::sscanf( buf, " ( turn %lf ) %n ",
                               &moment, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -473,21 +481,22 @@ Player::parseCommand( const char * command )
         }
         else if ( ! std::strncmp( buf, "(dash ", 6 ) )
         {
-            double power = 0.0;
-            if ( std::sscanf( buf, "(dash %lf) %n",
-                              &power, &n_read ) != 1 )
+            double power = 0.0, dir = 0.0;
+            if ( std::sscanf( buf, " ( dash %lf %lf ) %n ", &power, &dir, &n_read ) != 2
+                 && std::sscanf( buf, " ( dash %lf ) %n ", &power, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
                 return false;
             }
+
             buf += n_read;
 
-            dash( power );
+            dash( power, dir );
         }
         else if ( ! std::strncmp( buf, "(turn_neck ", 11 ) )
         {
             double moment = 0.0;
-            if ( std::sscanf( buf, "(turn_neck %lf) %n",
+            if ( std::sscanf( buf, " ( turn_neck %lf ) %n ",
                               &moment, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -502,7 +511,7 @@ Player::parseCommand( const char * command )
             buf += 5;
             char msg[MaxMesg];
             if ( *buf == '"'
-                 && std::sscanf( buf, "\"%[-0-9a-zA-Z ().+*/?<>_]\") %n",
+                 && std::sscanf( buf, " \"%[-0-9a-zA-Z ().+*/?<>_]\" ) %n ",
                                  msg, &n_read ) == 1 )
             {
                 buf += n_read;
@@ -513,7 +522,7 @@ Player::parseCommand( const char * command )
                                    msg ) == 1 )
             {
                 int l = std::strlen( msg );
-                if ( msg[l-1] == ')')
+                if ( msg[l-1] == ')' )
                 {
                     msg[l-1] = '\0';
                 }
@@ -547,7 +556,7 @@ Player::parseCommand( const char * command )
                 rcss::pcom::TEAM at_side = rcss::pcom::UNKNOWN_TEAM;
                 char at_team_name[256];
                 int at_unum = 0;
-                if ( std::sscanf( buf, "(attentionto %s %d) %n",
+                if ( std::sscanf( buf, " ( attentionto %s %d ) %n ",
                                   at_team_name, &at_unum, &n_read ) != 2 )
                 {
                     std::cerr << "Error parsing attentionto >" << buf << "<\n";
@@ -579,7 +588,7 @@ Player::parseCommand( const char * command )
         {
             double power = 0.0;
             double dir = 0.0;
-            if ( std::sscanf( buf, "(kick %lf %lf) %n",
+            if ( std::sscanf( buf, " ( kick %lf %lf ) %n ",
                               &power, &dir, &n_read ) != 2 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -592,7 +601,7 @@ Player::parseCommand( const char * command )
         else if ( ! std::strncmp( buf, "(tackle ", 8 ) )
         {
             double power_or_dir = 0.0;
-            if ( std::sscanf( buf, "(tackle %lf) %n",
+            if ( std::sscanf( buf, " ( tackle %lf ) %n ",
                               &power_or_dir, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -612,7 +621,7 @@ Player::parseCommand( const char * command )
             else
             {
                 double dist, head;
-                if ( std::sscanf( buf, "(pointto %lf %lf) %n",
+                if ( std::sscanf( buf, " ( pointto %lf %lf ) %n ",
                                   &dist, &head, &n_read ) != 2 )
                 {
                     std::cerr << "Error parsing >" << buf << "<\n";
@@ -626,7 +635,7 @@ Player::parseCommand( const char * command )
         else if ( ! std::strncmp( buf, "(catch ", 7 ) )
         {
             double dir = 0.0;
-            if ( std::sscanf( buf, "(catch %lf) %n",
+            if ( std::sscanf( buf, " ( catch %lf ) %n ",
                               &dir, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -639,9 +648,9 @@ Player::parseCommand( const char * command )
         else if ( ! std::strncmp( buf, "(move ", 6 ) )
         {
             double x, y;
-            if ( std::sscanf( buf, "(move %lf %lf) %n",
+            if ( std::sscanf( buf, " ( move %lf %lf ) %n ",
                               &x, &y, &n_read ) != 2
-                 && std::sscanf( buf, "(move ( %lf %lf ) ) %n",
+                 && std::sscanf( buf, " ( move ( %lf %lf ) ) %n ",
                                  &x, &y, &n_read ) != 2 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -660,9 +669,9 @@ Player::parseCommand( const char * command )
             std::memset( width, 0, 16 );
             std::memset( quality, 0, 16 );
 
-            if ( std::sscanf( buf, "(change_view %15[^ )] %15[^ )]) %n",
+            if ( std::sscanf( buf, " ( change_view %15[^ )] %15[^ )] ) %n ",
                               width, quality, &n_read ) != 2
-                 && std::sscanf( buf, "(change_view %15[^ )]) %n",
+                 && std::sscanf( buf, " ( change_view %15[^ )] ) %n ",
                                  width, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -693,7 +702,7 @@ Player::parseCommand( const char * command )
         else if ( ! std::strncmp( buf, "(compression ", 13 ) )
         {
             int level = 0;
-            if ( std::sscanf( buf, "(compression %d) %n",
+            if ( std::sscanf( buf, " ( compression %d ) %n ",
                               &level, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -726,7 +735,7 @@ Player::parseCommand( const char * command )
         else if ( ! std::strncmp( buf, "(clang ", 7 ) )
         {
             int min_ver, max_ver;
-            if ( std::sscanf( buf, "(clang (ver %d %d) ) %n",
+            if ( std::sscanf( buf, " ( clang ( ver %d %d ) ) %n ",
                               &min_ver, &max_ver, &n_read ) != 2 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -776,7 +785,7 @@ Player::parseEar( const char * command )
     rcss::pcom::TEAM team_side = rcss::pcom::UNKNOWN_TEAM;
     rcss::pcom::EAR_MODE mode = rcss::pcom::UNKNOWN_EAR_MODE;
 
-    if ( std::sscanf( command, "(ear (%15[^ )] %255[^ )] %15[^ )])) %n",
+    if ( std::sscanf( command, " ( ear ( %15[^ )] %255[^ )] %15[^ )] ) ) %n ",
                       onoff, team_str, mode_str, &n_read ) == 3 )
     {
         bool on = false;
@@ -817,7 +826,7 @@ Player::parseEar( const char * command )
         ear( on, team_side, team_str, mode );
         return n_read;
     }
-    else if ( std::sscanf( command, "(ear (%[^ )] %[^ )])) %n",
+    else if ( std::sscanf( command, " ( ear ( %[^ )] %[^ )] ) ) %n ",
                            onoff, team_str, &n_read ) == 2 )
     {
         bool on;
@@ -853,7 +862,7 @@ Player::parseEar( const char * command )
         ear( on, team_side, team_str, mode );
         return n_read;
     }
-    else if ( std::sscanf( command, "(ear (%[^ )])) %n",
+    else if ( std::sscanf( command, " ( ear ( %[^ )] ) ) %n ",
                            onoff, &n_read ) == 1 )
     {
         bool on;
@@ -938,14 +947,17 @@ Player::dash( double power,
         power = NormalizeDashPower( power );
         dir = NormalizeDashAngle( dir );
 
-        bool back_dash = power < 0.0;
+        if ( param.dashAngleStep() < EPS )
+        {
+            // players can dash in any direction.
+        }
+        else
+        {
+            // The dash direction is discretized by server::dash_angle_step
+            dir = param.dashAngleStep() * rint( dir / param.dashAngleStep() );
+        }
 
-        double dir_rate = ( std::fabs( dir ) > 90.0
-                            ? param.backDashRate() - ( ( param.backDashRate() - param.sideDashRate() )
-                                                       * ( 1.0 - ( std::fabs( dir ) - 90.0 ) / 90.0 ) )
-                            : param.sideDashRate() + ( ( 1.0 - param.sideDashRate() )
-                                                       * ( 1.0 - std::fabs( dir ) / 90.0 ) )
-                            );
+        bool back_dash = power < 0.0;
 
         double power_need = ( back_dash
                               ? power * -2.0
@@ -956,6 +968,14 @@ Player::dash( double power,
         power = ( back_dash
                   ? power_need / -2.0
                   : power_need );
+
+        double dir_rate = ( std::fabs( dir ) > 90.0
+                            ? param.backDashRate() - ( ( param.backDashRate() - param.sideDashRate() )
+                                                       * ( 1.0 - ( std::fabs( dir ) - 90.0 ) / 90.0 ) )
+                            : param.sideDashRate() + ( ( 1.0 - param.sideDashRate() )
+                                                       * ( 1.0 - std::fabs( dir ) / 90.0 ) )
+                            );
+        dir_rate = rcss::bound( 0.0, dir_rate, 1.0 );
 
         double effective_dash_power = std::fabs( effort()
                                                  * power
@@ -968,29 +988,17 @@ Player::dash( double power,
                                       : param.slownessOnTopForRight() );
         }
 
-        double actual_dir = dir;
-        if ( param.dashAngleStep() < EPS )
-        {
-            // players can dash in any direction.
-        }
-        else
-        {
-            // The dash direction is discretized by server::dash_angle_step
-            actual_dir = param.dashAngleStep() * rint( actual_dir / param.dashAngleStep() );
-        }
-
         if ( back_dash )
         {
-            actual_dir += 180.0;
+            dir += 180.0;
         }
 
         push( PVector::fromPolar( effective_dash_power,
-                                  normalize_angle( angleBodyCommitted() + Deg2Rad( actual_dir ) ) ) );
+                                  normalize_angle( angleBodyCommitted() + Deg2Rad( dir ) ) ) );
 
         ++M_dash_count;
         M_command_done = true;
     }
-
 }
 
 

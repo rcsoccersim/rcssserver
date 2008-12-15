@@ -285,16 +285,16 @@ EXTRA_DIST = \
 	rcsoccersim.in
 
 CLEANFILES = \
-	*~ \
-	core
-
-DISTCLEANILES = \
 	coach_lang_parser.cpp \
 	coach_lang_parser.h \
 	coach_lang_tok.cpp \
 	player_command_parser.cpp \
 	player_command_parser.h \
 	player_command_tok.cpp \
+	*~ \
+	core
+
+DISTCLEANFILES = \
 	rcsoccersim
 
 #MAINTAINERCLEANFILES = \

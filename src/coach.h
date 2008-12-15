@@ -116,8 +116,8 @@ public:
       }
 
 private:
-    void parse_change_mode( const char * command );
-    void parse_move( const char * command );
+    int parse_change_mode( const char * command );
+    int parse_move( const char * command );
 
     void change_mode( std::string mode );
 

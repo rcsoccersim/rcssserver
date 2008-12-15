@@ -418,7 +418,7 @@ Monitor::dispfoul( const char * command )
     // foul or drop_ball
     int x, y, side;
     if ( std::sscanf( command,
-                      "(dispfoul %d %d %d)",
+                      " ( dispfoul %d %d %d ) ",
                       &x, &y, &side ) != 3 )
     {
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );
@@ -448,7 +448,7 @@ Monitor::dispplayer( const char * command )
     int side, unum;
     int x, y, a;
     if ( std::sscanf( command,
-                      "(dispplayer %d %d %d %d %d)",
+                      " ( dispplayer %d %d %d %d %d ) ",
                       &side, &unum, &x, &y, &a ) != 5 )
     {
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );
@@ -473,7 +473,7 @@ Monitor::dispdiscard( const char * command )
     // a player is discarded by the monitor
     int side = 0, unum = 0;
     if ( std::sscanf( command,
-                      "(dispdiscard %d %d)",
+                      " ( dispdiscard %d %d ) ",
                       &side, &unum ) != 2 )
     {
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );
@@ -488,7 +488,7 @@ bool
 Monitor::compression( const char * command )
 {
     int level = 0;
-    if ( std::sscanf( command, "(compression %d)",
+    if ( std::sscanf( command, " ( compression %d ) ",
                       &level ) != 1 )
     {
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );
@@ -524,7 +524,7 @@ Monitor::coach_change_mode( const char * command )
 {
     char new_mode[128];
     if ( std::sscanf( command,
-                      "(change_mode %127[-0-9a-zA-Z.+*/?<>_])",
+                      " ( change_mode %127[-0-9a-zA-Z.+*/?<>_] ) ",
                       new_mode ) != 1 )
     {
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );
@@ -551,7 +551,7 @@ Monitor::coach_move( const char * command )
     double x = 0.0, y = 0.0, ang = 0.0, velx = 0.0, vely = 0.0;
 
     int n = std::sscanf( command,
-                         " (move (%127[^)]) %lf %lf %lf %lf %lf ) ",
+                         " ( move ( %127[^)] ) %lf %lf %lf %lf %lf ) ",
                          obj, &x, &y, &ang, &velx, &vely );
 
     if ( n < 3
@@ -680,7 +680,7 @@ Monitor::coach_change_player_type( const char * command )
     char teamname[128];
     int unum, player_type;
     if ( std::sscanf( command,
-                      "(change_player_type %127s %d %d)",
+                      " ( change_player_type %127s %d %d ) ",
                       teamname, &unum, &player_type ) != 3 )
     {
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );

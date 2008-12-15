@@ -215,7 +215,7 @@ private:
           if ( ! std::strncmp( msg, "(ok compression", 15 ) )
           {
               int level;
-              if ( std::sscanf( msg, "(ok compression %d)", &level ) == 1 )
+              if ( std::sscanf( msg, " ( ok compression %d )", &level ) == 1 )
               {
                   setCompression( level );
               }

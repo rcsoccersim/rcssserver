@@ -780,7 +780,7 @@ Stadium::reconnectPlayer( const char * reconnect_message,
     int rnum;
 
     if ( std::sscanf( reconnect_message,
-                      "(reconnect %127s %d)",
+                      " ( reconnect %127s %d ) ",
                       teamname, &rnum ) < 2 )
     {
         if ( ServerParam::instance().verboseMode() )
@@ -851,7 +851,7 @@ Stadium::initCoach( const char * init_message,
     }
 
     double ver = 3.0;
-    int n = std::sscanf( init_message, "(init (version %lf))", &ver );
+    int n = std::sscanf( init_message, " ( init ( version %lf ) ) ", &ver );
     if ( ( n != 0 && n != 1 )
          || ver < 1.0 )
     {

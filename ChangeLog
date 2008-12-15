@@ -1,3 +1,23 @@
+2008-12-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a minor version. Official release 13.1.0.
+
+	* src/Makefile.am:
+	- fixed clean target files.
+
+	* src/client.cpp:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.cpp:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	* src/param.h:
+	* src/player.cpp:
+	- fixed a defect of the new dash model.
+	- fixed a defect of the player command parser on Cygwin.
+
 2008-12-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
