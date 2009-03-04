@@ -27,6 +27,7 @@
 
 #include "player_command_tok.h"
 #include "player_command_parser.h"
+#include <cstdio>
 
 %}
 

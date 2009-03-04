@@ -28,6 +28,7 @@
 #include "coach_lang_tok.h"
 #include "coach_lang_parser.h"
 #include "types.h"
+#include <cstdio>
 
 %}
 

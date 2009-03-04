@@ -1,3 +1,9 @@
+2009-03-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach_lang_tok.lpp:
+	* src/player_command_tok.lpp:
+	- applied a gcc-4.4 patch provided by Hedayat Vatankhah.
+
 2008-12-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
