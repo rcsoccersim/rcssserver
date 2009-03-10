@@ -2738,7 +2738,7 @@ save_results( ResultSaver::team_id id,
     if ( team.olcoach()
          && ! team.olcoach()->name().empty() )
     {
-        saver->saveCoachName( id, team.name() );
+        saver->saveCoachName( id, team.olcoach()->name() );
     }
 
     saver->saveScore( id, team.point() );

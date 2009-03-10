@@ -1,3 +1,9 @@
+2009-03-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	- fixed an incorrect online coach name for savers. Thanks go to
+	Andreas Hechenblaickner	for reporting the problem.
+
 2009-03-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach_lang_tok.lpp:
