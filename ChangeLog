@@ -1,3 +1,8 @@
+2009-03-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/referee.cpp:
+	- fixed a bug of the indirect free kick referee.
+
 2009-03-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:

@@ -1722,39 +1722,47 @@ TouchRef::analyseImpl()
 void
 TouchRef::kickTaken( const Player & kicker )
 {
-    if ( M_stadium.playmode() == PM_PlayOn
-         && M_last_indirect_kicker
-         && M_last_indirect_kicker != &kicker )
+    if ( std::fabs( M_stadium.ball().pos().x )
+         <= ServerParam::PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
     {
-        M_last_indirect_kicker = NULL;
-        M_indirect_mode = false;
-    }
+        if ( M_stadium.playmode() == PM_PlayOn
+             && M_last_indirect_kicker
+             && M_last_indirect_kicker != &kicker )
+        {
+            M_last_indirect_kicker = NULL;
+            M_indirect_mode = false;
+        }
 
-    if ( M_indirect_mode )
-    {
-        M_last_indirect_kicker = &kicker;
-    }
+        if ( M_indirect_mode )
+        {
+            M_last_indirect_kicker = &kicker;
+        }
 
-    M_last_touched = &kicker;
+        M_last_touched = &kicker;
+    }
 }
 
 void
 TouchRef::ballTouched( const Player & kicker )
 {
-    if ( M_stadium.playmode() == PM_PlayOn
-         && M_last_indirect_kicker
-         && M_last_indirect_kicker != &kicker )
+    if ( std::fabs( M_stadium.ball().pos().x )
+         <= ServerParam::PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
     {
-        M_last_indirect_kicker = NULL;
-        M_indirect_mode = false;
-    }
+        if ( M_stadium.playmode() == PM_PlayOn
+             && M_last_indirect_kicker
+             && M_last_indirect_kicker != &kicker )
+        {
+            M_last_indirect_kicker = NULL;
+            M_indirect_mode = false;
+        }
 
-    if ( M_indirect_mode )
-    {
-        M_last_indirect_kicker = &kicker;
-    }
+        if ( M_indirect_mode )
+        {
+            M_last_indirect_kicker = &kicker;
+        }
 
-    M_last_touched = &kicker;
+        M_last_touched = &kicker;
+    }
 }
 
 

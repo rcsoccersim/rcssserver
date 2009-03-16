@@ -669,6 +669,7 @@ Stadium::initPlayer( const char * init_message,
     {
         if ( ! std::strncmp( msg, "(version ", std::strlen( "(version " ) ) )
         {
+            n_read = 0;
             if ( std::sscanf( msg, " ( version %lf ) %n ",
                               &version, &n_read ) != 1
                  || n_read == 0 )
