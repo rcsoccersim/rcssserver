@@ -1,3 +1,9 @@
+2009-03-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version. Official release 13.1.1.
+
 2009-03-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:
@@ -6,8 +12,8 @@
 2009-03-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/field.cpp:
-	- fixed an incorrect online coach name for savers. Thanks go to
-	Andreas Hechenblaickner	for reporting the problem.
+	- fixed an incorrect online coach names for result savers. Thanks
+	go to Andreas Hechenblaickner for reporting the problem.
 
 2009-03-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

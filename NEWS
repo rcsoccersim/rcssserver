@@ -1,3 +1,12 @@
+[13.1.1]
+  * Fixed a bug of the indirect free kick referee.
+
+  * Fixed an incorrect online coach names for result savers. Thanks
+	go to Andreas Hechenblaickner for reporting the problem.
+
+  * Fixed gcc-4.4 compilation problems. Thanks go to Hedayat Vatankhah
+    providing the patch.
+
 [13.1.0]
   * Fixed a defect of a new dash model. Now, a dash direction is
     discretized before calculating a dash power effectiveness.
