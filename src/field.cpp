@@ -669,6 +669,7 @@ Stadium::initPlayer( const char * init_message,
     {
         if ( ! std::strncmp( msg, "(version ", std::strlen( "(version " ) ) )
         {
+            n_read = 0;
             if ( std::sscanf( msg, " ( version %lf ) %n ",
                               &version, &n_read ) != 1
                  || n_read == 0 )
@@ -2738,7 +2739,7 @@ save_results( ResultSaver::team_id id,
     if ( team.olcoach()
          && ! team.olcoach()->name().empty() )
     {
-        saver->saveCoachName( id, team.name() );
+        saver->saveCoachName( id, team.olcoach()->name() );
     }
 
     saver->saveScore( id, team.point() );
