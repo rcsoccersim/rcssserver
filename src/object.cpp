@@ -11,9 +11,10 @@
 
  Copyright (C) 1996-2000 Electrotechnical Laboratory.
  Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
- Copyright (C) 2000-2007 RoboCup Soccer Server Maintainance Group.
+ Copyright (C) 2000,2001 RoboCup Soccer Server Maintainance Group.
  Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
  Mikhail Prokopenko, Jan Wendler
+ Copyright (C) 2002- RoboCup Soccer Simulator Maintainance Group.
 
  This file is a part of SoccerServer.
 
@@ -490,17 +491,22 @@ void
 MPObject::_inc()
 {
     if ( M_accel.x || M_accel.y )
-	  {
+    {
         double max_a = maxAccel();
         double max_s = maxSpeed();
 
         double tmp = M_accel.r();
         if ( tmp > max_a )
-            M_accel *= (max_a / tmp);
+        {
+            M_accel *= ( max_a / tmp );
+        }
+
         M_vel += M_accel;
         tmp = M_vel.r();
         if ( tmp > max_s )
-            M_vel *= (max_s / tmp);
+        {
+            M_vel *= ( max_s / tmp );
+        }
     }
 
     updateAngle();

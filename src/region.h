@@ -4,6 +4,7 @@
 
  Copyright (C) 2001 RoboCup Soccer Server Maintainance Group.
  Patrick Riley, Tom Howard, Itsuki Noda,	Mikhail Prokopenko, Jan Wendler
+ Copyright (C) 2002- RoboCup Soccer Simulator Maintainance Group.
 
  This file is a part of SoccerServer.
 

@@ -3,34 +3,35 @@
 /*
  *Copyright:
 
-    Copyright (C) 1996-2000 Electrotechnical Laboratory. 
-    	Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
-    Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
-    	Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
-	Mikhail Prokopenko, Jan Wendler 
+ Copyright (C) 1996-2000 Electrotechnical Laboratory.
+ Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
+ Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
+ Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
+ Mikhail Prokopenko, Jan Wendler
+ Copyright (C) 2002- RoboCup Soccer Simulator Maintainance Group.
 
-    This file is a part of SoccerServer.
+ This file is a part of SoccerServer.
 
-    This code is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+ This code is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  *EndCopyright:
  */
 
 
-#ifndef _XMLREADER_H_
-#define _XMLREADER_H_
+#ifndef XMLREADER_H
+#define XMLREADER_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -53,9 +54,9 @@ public:
   XmlReader();
   virtual ~XmlReader();
 
-  friend void 
+  friend void
   _XML_READER_start ( void *data, const char *el, const char **attr );
-  friend void 
+  friend void
   _XML_READER_end ( void *data, const char *el );
 
   friend ostream& operator<< ( ostream& o, const XmlReader& xml )
@@ -67,7 +68,7 @@ public:
 
 protected:
   string path;
- 
+
   XML_Parser parser;
   long line;
 
@@ -78,10 +79,10 @@ protected:
 
   bool createFile ( const string& path );
 
-  bool 
-  extract ( const string& attr, 
-	    const string& val, 
-	    double& dest, 
+  bool
+  extract ( const string& attr,
+	    const string& val,
+	    double& dest,
 	    double start = 0.0, double end = 100.0 )
   {
     istrstream str ( val.c_str (), val.length () );
@@ -89,14 +90,14 @@ protected:
     if ( !str.fail () && str.get () == '%' )
       {
         dest *= 0.01;
-        dest = ( start * ( 1 - dest ) 
+        dest = ( start * ( 1 - dest )
                  + end * ( 1 + dest ) ) * 0.5;
       }
     if ( str.fail () || str.peek () > 0 )
       {
         // error
         cerr << path << ": " << line
-             << ": Cannot convert " << attr 
+             << ": Cannot convert " << attr
              << " attribute from " << val << endl;
         return false;
       }
@@ -109,7 +110,7 @@ protected:
       {
         // error
         cerr << path << ": " << line
-             << ": Cannot convert " << attr 
+             << ": Cannot convert " << attr
              << " attribute from \"\"" << endl;
         return false;
       }
@@ -123,7 +124,7 @@ protected:
       {
         // error
         cerr << path << ": " << line
-             << ": Cannot convert " << attr 
+             << ": Cannot convert " << attr
              << " attribute from \"\"" << endl;
         return false;
       }
