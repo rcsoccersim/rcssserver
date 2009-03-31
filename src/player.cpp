@@ -14,7 +14,7 @@
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU LGPL as published by the Free Software  *
- *   Foundation; either version 2 of the License, or (at your option) any  *
+ *   Foundation; either version 3 of the License, or (at your option) any  *
  *   later version.                                                        *
  *                                                                         *
  ***************************************************************************/
@@ -2312,6 +2312,7 @@ Player::place( const PVector & pos,
                const PVector & accel )
 {
     M_pos = pos;
+    M_angle_body = angle;
     M_angle_body_committed = angle;
     M_vel = vel;
     M_accel = accel;
