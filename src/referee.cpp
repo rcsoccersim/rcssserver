@@ -2860,8 +2860,8 @@ PenaltyRef::playModeChange( PlayMode pm )
     {
         M_timer = ServerParam::instance().penTakenWait();
     }
-    else if ( pm == PM_PenaltyMiss_Left   || pm == PM_PenaltyMiss_Right ||
-              pm == PM_PenaltyScore_Right || pm == PM_PenaltyScore_Right )
+    else if ( pm == PM_PenaltyMiss_Left  || pm == PM_PenaltyMiss_Right ||
+              pm == PM_PenaltyScore_Left || pm == PM_PenaltyScore_Right )
     {
         M_last_taker = NULL;
         M_timer = ServerParam::instance().penBeforeSetupWait();

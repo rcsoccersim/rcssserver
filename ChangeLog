@@ -1,3 +1,8 @@
+2009-04-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/referee.cpp:
+	- fixed a timer bug in the penalty kick referee.
+
 2009-03-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
