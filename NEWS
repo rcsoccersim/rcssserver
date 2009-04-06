@@ -1,3 +1,14 @@
+[13.2.0]
+  * Changed parameters:
+    - server::synch_see_offset (30 -> 0)
+    - server::pen_max_extra_kicks (10 -> 5)
+    - server::pen_before_setup_wait (30 -> 10)
+    - server::pen_ready_wait (50 -> 10)
+    - server::pen_setup_wait (100 -> 70)
+    - server::pen_taken_wait (200 -> 150)
+
+  * Fixed a timer bug of the penalty kick referee.
+
 [13.1.1]
   * Fixed a bug of the indirect free kick referee.
 

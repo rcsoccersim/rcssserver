@@ -1343,6 +1343,8 @@ Player::move( double x,
         if ( M_stadium.playmode() == PM_BeforeKickOff ||
              M_stadium.playmode() == PM_AfterGoal_Right ||
              M_stadium.playmode() == PM_AfterGoal_Left
+             //|| M_stadium.playmode() == PM_PenaltySetup_Left
+             //|| M_stadium.playmode() == PM_PenaltySetup_Right
              )
         {
             M_pos.x = x * side();

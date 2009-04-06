@@ -1,7 +1,22 @@
+2009-04-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a minior version. Official release 13.2.0.
+
+	* COPYING.LESSER:
+	- updated the license from LGPLv2 to LGPLv3.
+
+	* src/client.cpp:
+	- fixed compiler warnings.
+
+	* src/serverparam.cpp:
+	- changed default value of some parameters.
+
 2009-04-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:
-	- fixed a timer bug in the penalty kick referee.
+	- fixed a timer bug of the penalty kick referee.
 
 2009-03-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

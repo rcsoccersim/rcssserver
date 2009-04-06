@@ -280,12 +280,12 @@ const int ServerParam::NR_NORMAL_HALFS = 2;
 const int ServerParam::NR_EXTRA_HALFS = 2;
 const bool ServerParam::PENALTY_SHOOT_OUTS = true;
 
-const int    ServerParam::PEN_BEFORE_SETUP_WAIT = 30;
-const int    ServerParam::PEN_SETUP_WAIT = 100;
-const int    ServerParam::PEN_READY_WAIT =  50;
-const int    ServerParam::PEN_TAKEN_WAIT = 200;
+const int    ServerParam::PEN_BEFORE_SETUP_WAIT = 10; // [13.2.0] 30 -> 10
+const int    ServerParam::PEN_SETUP_WAIT = 70; // [13.2.0] 100 -> 70
+const int    ServerParam::PEN_READY_WAIT = 10; // [13.2.0] 50 -> 10
+const int    ServerParam::PEN_TAKEN_WAIT = 150; // [13.2.0] 200 -> 150
 const int    ServerParam::PEN_NR_KICKS = 5;
-const int    ServerParam::PEN_MAX_EXTRA_KICKS = 10;
+const int    ServerParam::PEN_MAX_EXTRA_KICKS = 5; // [13.2.0] 10 -> 5
 const double ServerParam::PEN_DIST_X = 42.5;
 const bool   ServerParam::PEN_RANDOM_WINNER = false;
 const double ServerParam::PEN_MAX_GOALIE_DIST_X = 14;
@@ -328,7 +328,7 @@ const double ServerParam::MAX_TACKLE_POWER = 100.0;
 const double ServerParam::MAX_BACK_TACKLE_POWER = 0.0; // [13.0.0] 50.0 -> 0.0
 const double ServerParam::PLAYER_SPEED_MAX_MIN = 0.75; // [13.0.0] 0.8 -> 0.75
 const double ServerParam::EXTRA_STAMINA = 50.0; // [13.0.0] 0.0 -> 50.0
-const int ServerParam::SYNCH_SEE_OFFSET = 30;
+const int ServerParam::SYNCH_SEE_OFFSET = 0; // [13.2.0] 30 -> 0;
 
 // 12.1.3
 const int ServerParam::EXTRA_HALF_TIME = 100; // [13.0.0] 300 -> 100

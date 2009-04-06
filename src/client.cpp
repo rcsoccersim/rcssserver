@@ -263,10 +263,9 @@ private:
                   // read from stdin
                   if ( FD_ISSET( in, &read_fds ) )
                   {
-                      std::fgets( buf, sizeof( buf ), stdin );
-                      size_t len = std::strlen( buf );
-                      if ( len > 1 )
+                      if ( std::fgets( buf, sizeof( buf ), stdin ) != NULL )
                       {
+                          size_t len = std::strlen( buf );
                           if ( buf[len-1] == '\n' )
                           {
                               buf[len-1] = '\0';
