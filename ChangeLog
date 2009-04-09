@@ -1,3 +1,8 @@
+2009-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	- replaced AC_PROG_LIBTOOL with LT_INIT.
+
 2009-04-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

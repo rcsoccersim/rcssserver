@@ -1,7 +1,10 @@
-dnl Process this file with autoconf to produce a configure script.
-AC_INIT([RCSSServer], 13.2.0, sserver-admin@users.sf.net, rcssserver)
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
+AC_INIT([RCSSServer],[13.2.0],[sserver-admin@users.sf.net],[rcssserver])
+
+LT_PREREQ([2.2.4])
 
 #AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news])
@@ -9,22 +12,26 @@ AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
-dnl Checks for programs.
+##################################################
+# Checks for programs.
+##################################################
+
+AC_PROG_CXX
+AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
-AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_LANG(C++)
-AC_PROG_AWK
 
 #ACX_PTHREAD([LIBS="$PTHREAD_LIBS $LIBS"
 #             CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 #             CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
 #             CC="$PTHREAD_CC"])
 
-dnl Checks for libraries.
+##################################################
+# Checks for libraries.
+##################################################
 AC_CHECK_LIB([m], [cos])
 dnl AC_CHECK_LIB(expat, XML_Parse)
 #AC_CHECK_LIB([z], [deflate])
@@ -41,7 +48,10 @@ if test "$use_sstream" = "yes"; then
    AC_CXX_HAVE_SSTREAM
 fi
 
-dnl Checks for header files.
+##################################################
+# Checks for header files.
+##################################################
+
 AC_FUNC_ALLOCA
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h])
@@ -50,26 +60,22 @@ AC_CHECK_HEADERS([netinet/in.h poll.h pwd.h stddef.h stdlib.h sys/param.h])
 AC_CHECK_HEADERS([sys/socket.h sys/time.h sys/types.h unistd.h])
 #AC_CHECK_HEADERS([winsock2.h])
 
-AC_CHECK_FUNCS([memset], [], [
-  echo "************** ERROR ****************"
-  echo "Could not find memset function."
-  echo "Please upgrade you system"
-  exit 1
-])
+##################################################
+# Checks for typedefs, structures, and compiler characteristics.
+##################################################
 
-dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_CONST
 AC_C_INLINE
-#AC_TYPE_INT16_T
-#AC_TYPE_INT32_T
-#AC_TYPE_INT8_T
-#AC_TYPE_SIZE_T
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT8_T
+AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
-#AC_TYPE_UINT16_T
-#AC_TYPE_UINT32_T
-#AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
 
 AC_CHECK_TYPES([socklen_t], [], [], [
 #include <sys/types.h>
@@ -81,14 +87,27 @@ AC_CHECK_TYPES([size_t], [], [], [
 ])
 
 
-dnl Checks for library functions.
+##################################################
+# Checks for library functions.
+##################################################
+
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
+AC_CHECK_FUNCS([memset], [], [
+  echo "************** ERROR ****************"
+  echo "Could not find memset function."
+  echo "Please upgrade you system"
+  exit 1
+])
 AC_CHECK_FUNCS([floor gethostbyname gettimeofday inet_ntoa memset mkdir pow rint])
 AC_CHECK_FUNCS([socket sqrt strdup strerror])
+
+##################################################
+# check flex
+##################################################
 
 AC_SUBST([FLEX])
 AC_SUBST([FLEXFLAGS])
@@ -111,17 +130,19 @@ if test -z "$FLEX" ; then
     \`flex' is missing on your system.  Please install it first.]);
 fi
 
+##################################################
+# check bison
+##################################################
+
 AC_PROG_YACC
 
-AC_DISABLE_STATIC
-#AC_LIBTOOL_DLOPEN
+##################################################
+# libtool settings
+##################################################
 
-# due to a problem with libtool 1.4.2 and autoconf 2.53 and
-# automake 1.6.3, I need to use the following line to
-# enable dlopen support. I don't know how good or bad this is
-##AC_DEFUN([AC_PROVIDE_AC_LIBTOOL_DLOPEN])
-# AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
+LT_INIT([shared disable-static])
+LT_LANG([C++])
+AC_DISABLE_STATIC
 AC_SUBST(LIBTOOL_DEPS)
 ##LIBS="$LIBS $lt_cv_dlopen_libs"
 
@@ -154,6 +175,10 @@ AC_SUBST(LIBTOOL_DEPS)
 #chmod +x libtool
 #rm -f libtool.tmp
 
+##################################################
+# check boost
+##################################################
+
 AX_BOOST_BASE([1.32.0])
 AX_BOOST_SYSTEM
 AX_BOOST_FILESYSTEM
@@ -161,6 +186,10 @@ CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 #OLDLIBS="$LIBS"
 #LIBS="$LIBS $BOOST_FILESYSTEM_LIB"
+
+##################################################
+# enable/disable rcssclient
+##################################################
 
 AC_SUBST(RCSSCLIENT)
 AC_ARG_ENABLE(rcssclient,
@@ -193,6 +222,9 @@ if ! test -z "$RCSSCLIENT"; then
 #  fi
 fi
 
+##################################################
+# generated files
+##################################################
 
 AC_CONFIG_FILES([Makefile
                 rcssbase/Makefile
