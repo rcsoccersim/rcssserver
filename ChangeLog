@@ -1,7 +1,7 @@
 2009-04-09  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:
-	- replaced AC_PROG_LIBTOOL with LT_INIT.
+	- tested LT_INIT macro with libtool-2.2.4.
 
 2009-04-06  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

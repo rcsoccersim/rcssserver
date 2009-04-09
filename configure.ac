@@ -1,10 +1,10 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
+AC_PREREQ(2.63)
 AC_INIT([RCSSServer],[13.2.0],[sserver-admin@users.sf.net],[rcssserver])
 
-LT_PREREQ([2.2.4])
+#LT_PREREQ([2.2.4])
 
 #AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news])
@@ -94,7 +94,18 @@ AC_CHECK_TYPES([size_t], [], [], [
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_TYPE_SIGNAL
+AC_DIAGNOSE([obsolete],[your code may safely assume C89 semantics that RETSIGTYPE is void.
+Remove this warning and the `AC_CACHE_CHECK' when you adjust the code.])dnl
+AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[AC_COMPILE_IFELSE(
+[AC_LANG_PROGRAM([#include <sys/types.h>
+#include <signal.h>
+],
+		 [return *(signal (0, 0)) (0) == 1;])],
+		   [ac_cv_type_signal=int],
+		   [ac_cv_type_signal=void])])
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[$ac_cv_type_signal],[Define as the return type of signal handlers
+		    (`int' or `void').])
+
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([memset], [], [
   echo "************** ERROR ****************"
@@ -140,9 +151,13 @@ AC_PROG_YACC
 # libtool settings
 ##################################################
 
-LT_INIT([shared disable-static])
-LT_LANG([C++])
+AC_ENABLE_SHARED
 AC_DISABLE_STATIC
+#LT_INIT([shared disable-static])
+#LT_LANG([C++])
+AC_PROG_LIBTOOL
+#AC_ENABLE_SHARED
+#AC_DISABLE_STATIC
 AC_SUBST(LIBTOOL_DEPS)
 ##LIBS="$LIBS $lt_cv_dlopen_libs"
 
