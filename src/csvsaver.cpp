@@ -375,8 +375,8 @@ CSVSaver::doSaveComplete()
         M_file << M_score[ TEAM_LEFT ] << ", " << M_score[ TEAM_RIGHT ] << ", ";
         if ( M_pen_taken[ TEAM_LEFT ] || M_pen_taken[ TEAM_RIGHT ] )
         {
-            M_file << M_pen_taken[ TEAM_LEFT ] << ", " << M_pen_taken[ TEAM_RIGHT ];
-            M_file << M_pen_scored[ TEAM_LEFT ] << ", " << M_pen_scored[ TEAM_RIGHT ];
+            M_file << M_pen_taken[ TEAM_LEFT ] << ", " << M_pen_taken[ TEAM_RIGHT ] << ", "
+                   << M_pen_scored[ TEAM_LEFT ] << ", " << M_pen_scored[ TEAM_RIGHT ] << ", ";
         }
         else
         {
