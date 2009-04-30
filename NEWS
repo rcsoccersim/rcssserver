@@ -1,3 +1,7 @@
+[13.2.1]
+  * Added the missing comma in CSVSaver. Thanks go to Andreas
+    Hechenblaickner for reporting the problem.
+
 [13.2.0]
   * Changed parameters:
     - server::synch_see_offset (30 -> 0)
