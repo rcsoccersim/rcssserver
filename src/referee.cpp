@@ -1308,6 +1308,15 @@ FreeKickRef::analyse()
         return;
     }
 
+    if ( pm == PM_Back_Pass_Left
+         || pm == PM_Back_Pass_Right
+         || pm == PM_CatchFault_Left
+         || pm == PM_CatchFault_Right )
+    {
+        // analyzed by CatchRef
+        return;
+    }
+
     if ( goalKick( pm ) )
     {
         placePlayersForGoalkick();
@@ -2139,7 +2148,11 @@ CatchRef::kickTaken( const Player & kicker )
         else if ( M_last_back_passer != &kicker )
         {
             M_last_back_passer = &kicker;
-            M_last_back_passer_time = M_stadium.time();
+            if ( ! M_last_back_passer
+                 || M_last_back_passer->side() != kicker.side() )
+            {
+                M_last_back_passer_time = M_stadium.time();
+            }
         }
     }
 //     else if ( M_last_back_passer != NULL

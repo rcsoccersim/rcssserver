@@ -554,11 +554,11 @@ MPObject::_inc()
         }
 
         post = nearestPost( pos(), M_size );
-        std::cout << M_stadium.time() << ": Colliding with post\n"
-                  << "  pos = " << pos() << '\n'
-                  << "  vel = " << vel() << '\n'
-                  << "  nearest post = " << post.center() << '\n'
-                  << "  dist = " << ( pos() - post.center() ).r() << std::endl;
+        //         std::cout << M_stadium.time() << ": Colliding with post\n"
+        //                   << "  pos = " << pos() << '\n'
+        //                   << "  vel = " << vel() << '\n'
+        //                   << "  nearest post = " << post.center() << '\n'
+        //                   << "  dist = " << ( pos() - post.center() ).r() << std::endl;
 
         collidedWithPost();
     }
