@@ -1,3 +1,11 @@
+[13.2.2]
+  * Fixed a bug of the player clearance from the ball.
+
+  * Fixed a bug of the back passer update in the referee module.
+
+  * Fixed a bug that offense side players are cleared from the ball
+    in back_pass_? and catch_fault_? playmode.
+
 [13.2.1]
   * Added the missing comma in CSVSaver. Thanks go to Andreas
     Hechenblaickner for reporting the problem.
