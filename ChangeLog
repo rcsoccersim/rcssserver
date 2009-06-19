@@ -1,10 +1,16 @@
 2009-06-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a point version. Official release 13.2.2.
+
 	* src/object.cpp:
 	- commented out unnecessary debug messages.
 
 	* src/referee.cpp:
 	- fixed a defect of back passer analysis.
+	- fixed a defect of player clearance from the ball when referee
+	moves players to out of pitch.
 	- fixed a defect of player clearance from the ball while back_pass
 	and catch_fault.
 

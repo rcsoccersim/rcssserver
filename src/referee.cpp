@@ -625,9 +625,18 @@ Referee::clearPlayersFromBall( const Side side )
                                   || pm == PM_Back_Pass_Right )
                                 ? ServerParam::GOAL_AREA_LENGTH
                                 : ServerParam::KICK_OFF_CLEAR_DISTANCE );
-    const bool indirect = ( pm == PM_IndFreeKick_Left
+    const bool indirect = ( pm == PM_Back_Pass_Left
+                            || pm == PM_Back_Pass_Right
+                            || pm == PM_IndFreeKick_Left
                             || pm == PM_IndFreeKick_Right );
     const double goal_half_width = ServerParam::instance().goalWidth()*0.5;
+
+    const double max_x = ServerParam::PITCH_LENGTH*0.5 + ServerParam::PITCH_MARGIN;
+    const double max_y = ServerParam::PITCH_WIDTH*0.5 + ServerParam::PITCH_MARGIN;
+
+    const bool ball_at_corner
+        = ( std::fabs( M_stadium.ball().pos().x ) > max_x - clear_dist
+            && std::fabs( M_stadium.ball().pos().y ) > max_y - clear_dist );
 
     const Stadium::PlayerCont::iterator end = M_stadium.players().end();
     for ( int loop = 0; loop < 10; ++loop )
@@ -657,7 +666,19 @@ Referee::clearPlayersFromBall( const Side side )
                                   clear_dist + (*it)->size() );
                 if ( clear_area.inArea( (*it)->pos() ) )
                 {
-                    PVector new_pos = clear_area.nearestEdge( (*it)->pos() );
+                    CArea expand_clear_area( M_stadium.ball().pos(),
+                                             clear_dist + (*it)->size() + 1.0e-5 );
+                    PVector new_pos = expand_clear_area.nearestEdge( (*it)->pos() );
+
+                    if ( ball_at_corner
+                         && std::fabs( new_pos.x ) > ServerParam::PITCH_LENGTH*0.5
+                         && std::fabs( new_pos.y ) > ServerParam::PITCH_WIDTH*0.5 )
+                    {
+                        new_pos -= M_stadium.ball().pos();
+                        new_pos.rotate( M_PI );
+                        new_pos += M_stadium.ball().pos();
+                    }
+
                     if ( indirect
                          && std::fabs( new_pos.x ) > ServerParam::PITCH_LENGTH*0.5
                          && std::fabs( new_pos.y ) < goal_half_width )
@@ -670,13 +691,36 @@ Referee::clearPlayersFromBall( const Side side )
                         new_pos.y = M_stadium.ball().pos().y
                             + tangent * ( new_pos.x - M_stadium.ball().pos().x );
                     }
-                    else if ( std::fabs( new_pos.x ) > ( ServerParam::PITCH_LENGTH*0.5
-                                                         + ServerParam::PITCH_MARGIN )
-                              && std::fabs( new_pos.x ) > ( ServerParam::PITCH_WIDTH*0.5
-                                                            + ServerParam::PITCH_MARGIN ) )
+
+                    if ( std::fabs( new_pos.x ) > max_x )
+                    {
+                        double r = clear_dist + (*it)->size();
+                        double theta = std::acos( ( max_x - std::fabs( M_stadium.ball().pos().x ) ) / r );
+                        double tmp_y = std::fabs( r * std::sin( theta ) );
+                        new_pos.x = ( new_pos.x < 0.0 ? -max_x : +max_x );
+                        new_pos.y = ( M_stadium.ball().pos().y
+                                      + ( new_pos.y < M_stadium.ball().pos().y
+                                          ? - tmp_y - 1.0e-5
+                                          : + tmp_y + 1.0e-5 ) );
+                    }
+
+                    if ( std::fabs( new_pos.y ) > max_y )
+                    {
+                        double r = clear_dist + (*it)->size();
+                        double theta = std::acos( ( max_y - std::fabs( M_stadium.ball().pos().y ) ) / r );
+                        double tmp_x = std::fabs( r * std::sin( theta ) );
+                        new_pos.x = ( M_stadium.ball().pos().x
+                                      + ( new_pos.x < M_stadium.ball().pos().x
+                                          ? - tmp_x - 1.0e-5
+                                          : + tmp_x + 1.0e-5 ) );
+                        new_pos.y = ( new_pos.y < 0.0 ? -max_y : +max_y );
+                    }
+
+                    if ( std::fabs( new_pos.x ) > max_x
+                         || std::fabs( new_pos.y ) > max_y )
                     {
                         new_pos -= M_stadium.ball().pos();
-                        new_pos.rotate( 180.0 );
+                        new_pos.rotate( M_PI );
                         new_pos += M_stadium.ball().pos();
                     }
 
