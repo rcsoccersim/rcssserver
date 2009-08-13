@@ -967,7 +967,7 @@ Stadium::initOnlineCoach( const char * init_message,
             if ( ServerParam::instance().verboseMode() )
                 std::cerr << "Warning: Illegal coach version.\n"
                           << "   message = " << init_message << std::endl;
-            sendToPlayer( "(error illegal_command_form)", addr );
+            sendToOnlineCoach( "(error illegal_command_form)", addr );
             return NULL;
         }
         msg += n_read;

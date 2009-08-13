@@ -2081,7 +2081,7 @@ KeepawayRef::logHeader()
 }
 
 void
-KeepawayRef::logEpisode( const char *endCond )
+KeepawayRef::logEpisode( const char * endCond )
 {
     if ( M_stadium.logger().kawayLog() )
     {
@@ -2147,6 +2147,8 @@ KeepawayRef::resetField()
     M_stadium.set_ball( NEUTRAL,
                         PVector( -ServerParam::instance().keepAwayLength() * 0.5 + 4.0,
                                  -ServerParam::instance().keepAwayWidth() * 0.5 + 4.0 ) );
+    M_stadium.recoveryPlayers();
+
     M_take_time = 0;
 }
 

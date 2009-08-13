@@ -253,13 +253,13 @@ SerializerPlayerStdv1::serializeCollision( std::ostream & strm,
     if ( player_collide )
     {
         collide = true;
-        strm<< " (player)";
+        strm << " (player)";
     }
 
     if ( post_collide )
     {
         collide = true;
-        strm<< " (post)";
+        strm << " (post)";
     }
 
     if ( ! collide )
