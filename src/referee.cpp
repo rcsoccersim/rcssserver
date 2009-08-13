@@ -1959,13 +1959,13 @@ KeepawayRef::analyse()
     {
         if ( M_stadium.playmode() == PM_PlayOn )
         {
-            if( !ballInKeepawayArea() )
+            if ( ! ballInKeepawayArea() )
             {
                 logEpisode( "o" );
                 M_stadium.sendRefereeAudio( trainingMsg );
                 resetField();
             }
-            else if( M_take_time >= TURNOVER_TIME )
+            else if ( M_take_time >= TURNOVER_TIME )
             {
                 logEpisode( "t" );
                 M_stadium.sendRefereeAudio( trainingMsg );
@@ -1993,7 +1993,7 @@ KeepawayRef::analyse()
                         else if ( (*p)->side() == RIGHT )
                         {
                             keeperPoss = false;
-                            M_take_time++;
+                            ++M_take_time;
                             break;
                         }
                     }
@@ -2004,9 +2004,10 @@ KeepawayRef::analyse()
         }
         else if ( ServerParam::instance().kawayStart() >= 0 )
         {
-            if ( difftime( time( NULL ), M_start_time ) >
-                 ServerParam::instance().kawayStart() )
+            if ( difftime( time( NULL ), M_start_time ) > ServerParam::instance().kawayStart() )
+            {
                 M_stadium.change_play_mode( PM_PlayOn );
+            }
         }
     }
 }
@@ -2038,9 +2039,13 @@ KeepawayRef::playModeChange( PlayMode pm )
                 if ( (*p)->state() != DISABLE )
                 {
                     if ( (*p)->side() == LEFT )
-                        M_keepers++;
+                    {
+                        ++M_keepers;
+                    }
                     else if ( (*p)->side() == RIGHT )
-                        M_takers++;
+                    {
+                        ++M_takers;
+                    }
                 }
             }
 

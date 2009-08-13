@@ -1598,6 +1598,12 @@ Stadium::_Start( Stadium & stad )
 {
     const ServerParam & param = ServerParam::instance();
 
+    if ( param.keepAwayMode() )
+    {
+        stad.change_play_mode( PM_PlayOn );
+        return;
+    }
+
     int normal_time = param.halfTime() * param.nrNormalHalfs();
 
     if ( param.halfTime() < 0

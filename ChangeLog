@@ -2,6 +2,11 @@
 
 	* src/field.cpp:
 	* src/referee.cpp:
+	- changed the policy of kick off action when keepaway mode is
+	enabled.
+
+	* src/field.cpp:
+	* src/referee.cpp:
 	* src/serializerplayerstdv1.cpp:
 	- fixed coding style.
 	- fixed destination of error message for online coach.
