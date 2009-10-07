@@ -35,6 +35,9 @@
 
 #include "heteroplayer.h"
 
+#include "serverparam.h"
+#include "playerparam.h"
+
 #include <boost/random.hpp>
 
 #ifdef HAVE_SYS_PARAM_H
@@ -46,6 +49,10 @@
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h> // gettimeofday
 #endif
 
 double
@@ -61,21 +68,28 @@ HeteroPlayer::delta( const double & min,
         {
             std::cout << "Using given Hetero Player Seed: "
                       << PlayerParam::instance().randomSeed() << std::endl;
-            //srandom( PlayerParam::instance().randomSeed() );
+            s_engine.seed( PlayerParam::instance().randomSeed() );
+        }
+        else if ( ServerParam::instance().randomSeed() >= 0 )
+        {
+            std::cout << "Using simulator's random seed for Hetero Player: "
+                      << ServerParam::instance().randomSeed() << std::endl;
+            PlayerParam::instance().setRandomSeed( ServerParam::instance().randomSeed() );
             s_engine.seed( PlayerParam::instance().randomSeed() );
         }
         else
         {
             timeval now;
             gettimeofday ( &now, NULL );
-            std::cout << "Hetero Player Seed: " << now.tv_usec << std::endl;
-            //srandom( now.tv_usec );
-            s_engine.seed( static_cast< boost::mt19937::result_type >( now.tv_usec ) );
+
+            int seed = static_cast< int >( now.tv_usec );
+            PlayerParam::instance().setRandomSeed( seed );
+            std::cout << "Hetero Player Seed: " << seed << std::endl;
+            s_engine.seed( PlayerParam::instance().randomSeed() );
         }
         s_seeded = true;
     }
 
-    //return drand( min, max );
     if ( min == max )
     {
         return min;

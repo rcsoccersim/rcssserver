@@ -489,6 +489,7 @@ TimeRef::analyse()
                 return;
             }
         }
+        // overtime
         else if ( M_stadium.time() >= normal_time )
         {
             if ( ! M_stadium.teamLeft().enabled()
@@ -498,7 +499,8 @@ TimeRef::analyse()
                 M_stadium.change_play_mode( PM_TimeOver );
                 return;
             }
-            else if ( M_stadium.teamLeft().point() != M_stadium.teamRight().point() )
+            else if ( param.goldenGoal()
+                      && M_stadium.teamLeft().point() != M_stadium.teamRight().point() )
             {
                 M_stadium.sendRefereeAudio( "time_up" );
                 M_stadium.change_play_mode( PM_TimeOver );
@@ -507,7 +509,7 @@ TimeRef::analyse()
             else if ( M_stadium.time() >= ( normal_time
                                             + ( param.extraHalfTime()
                                                 * ( extra_count + 1 ) ) )
-                        )
+                      )
             {
                 ++s_half_time_count;
                 M_stadium.sendRefereeAudio( "time_extended" );
@@ -1855,6 +1857,8 @@ TouchRef::checkGoal()
         return false;
     }
 
+    const ServerParam & param = ServerParam::instance();
+
     // FIFA rules:  Ball has to be completely outside of the pitch to be considered out
     //    static RArea pt( PVector(0.0,0.0),
     //                       PVector( ServerParam::PITCH_LENGTH
@@ -1863,7 +1867,7 @@ TouchRef::checkGoal()
     //                                + ServerParam::instance().ballSize() * 2 ) );
 
     if ( std::fabs( M_stadium.ball().pos().x )
-         <= ServerParam::PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
+         <= ServerParam::PITCH_LENGTH * 0.5 + param.ballSize() )
     {
         return false;
     }
@@ -1878,10 +1882,9 @@ TouchRef::checkGoal()
         announceGoal( M_stadium.teamRight() );
         M_after_goal_time = 0;
         M_stadium.set_ball( LEFT, M_stadium.ball().pos() );
-        if ( ServerParam::instance().halfTime() >= 0
-             && M_stadium.time()
-             >= ServerParam::instance().halfTime()
-             * ServerParam::instance().nrNormalHalfs() )
+        if ( param.halfTime() >= 0
+             && param.goldenGoal()
+             && M_stadium.time() >= param.halfTime() * param.nrNormalHalfs() )
         {
             M_stadium.change_play_mode( PM_TimeOver );
         }
@@ -1900,10 +1903,9 @@ TouchRef::checkGoal()
         announceGoal( M_stadium.teamLeft() );
         M_after_goal_time = 0;
         M_stadium.set_ball( RIGHT, M_stadium.ball().pos() );
-        if ( ServerParam::instance().halfTime() >= 0
-             && M_stadium.time()
-             >= ServerParam::instance().halfTime()
-             * ServerParam::instance().nrNormalHalfs() )
+        if ( param.halfTime() >= 0
+             && param.goldenGoal()
+             && M_stadium.time() >= param.halfTime() * param.nrNormalHalfs() )
         {
             M_stadium.change_play_mode( PM_TimeOver );
         }

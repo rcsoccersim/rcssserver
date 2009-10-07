@@ -69,7 +69,7 @@ public:
           RemoteClient::close();
       }
 
-    void parseMsg( const char * msg,
+    void parseMsg( char * msg,
                    const size_t & len );
     bool parseCommand( const char * message );
 

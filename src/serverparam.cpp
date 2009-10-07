@@ -343,6 +343,7 @@ const double ServerParam::BACK_DASH_RATE = 0.5;
 const double ServerParam::MAX_DASH_POWER = +100.0;
 const double ServerParam::MIN_DASH_POWER = -100.0;
 
+
 ServerParam &
 ServerParam::instance()
 {
@@ -821,11 +822,19 @@ ServerParam::addParams()
 
     addParam( "keepaway_start", M_keepaway_start, "", 9 );
 
-    addParam( "nr_normal_halfs", M_nr_normal_halfs, "Number of normal halfs in a game", 9 );
-    addParam( "nr_extra_halfs", M_nr_extra_halfs, "Number if extra-time periods in a game if it is drawn", 9 );
+    addParam( "nr_normal_halfs",
+              rcss::conf::makeSetter( this, &ServerParam::setNrNormalHalfs ),
+              rcss::conf::makeGetter( M_nr_normal_halfs ),
+              "Number of normal halfs in a game",
+              9 );
+    addParam( "nr_extra_halfs",
+              rcss::conf::makeSetter( this, &ServerParam::setNrExtraHalfs ),
+              rcss::conf::makeGetter( M_nr_extra_halfs ),
+              "Number if extra-time periods in a game if it is drawn",
+              9 );
     addParam( "penalty_shoot_outs", M_penalty_shoot_outs,
-              "Set to true to enable penalty shootouts after normal time and extra time if the game is drawn.\nTo have the game go straight into penalty shoot outs, set this to true and nr_normal_halfs and nr_extra_halfs to 0"
-              , 9 );
+              "Set to true to enable penalty shootouts after normal time and extra time if the game is drawn.\nTo have the game go straight into penalty shoot outs, set this to true and nr_normal_halfs and nr_extra_halfs to 0",
+              9 );
 
     addParam( "pen_before_setup_wait", M_pen_before_setup_wait, "", 9 );
     addParam( "pen_setup_wait",        M_pen_setup_wait, "", 9 );
@@ -871,6 +880,10 @@ ServerParam::addParams()
     addParam( "back_dash_rate", M_back_dash_rate, "", 13 );
     addParam( "max_dash_power", M_max_dash_power, "", 13 );
     addParam( "min_dash_power", M_min_dash_power, "", 13 );
+
+    // v14
+    //addParam( "random_seed", M_random_seed, "", 14 );
+    addParam( "golden_goal", M_golden_goal, "", 14 );
 
     // test
     addParam( "reliable_catch_area_l", M_reliable_catch_area_l, "", 999 );
@@ -1169,6 +1182,10 @@ ServerParam::setDefaults()
     M_back_dash_rate = BACK_DASH_RATE;
     M_max_dash_power = MAX_DASH_POWER;
     M_min_dash_power = MIN_DASH_POWER;
+
+    // 14.0.0
+    M_random_seed = -1;
+    M_golden_goal = true;
 
     // test
     M_reliable_catch_area_l = GOALIE_CATCHABLE_AREA_LENGTH;

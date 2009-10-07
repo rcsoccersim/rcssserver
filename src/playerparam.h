@@ -86,6 +86,11 @@ public:
           return m_ver_map;
       }
 
+    void setRandomSeed( const int seed )
+      {
+          random_seed = seed;
+      }
+
 protected:
 
     void convertOldConf( const std::string & new_conf );

@@ -33,15 +33,10 @@
 #define HETEROPLAYER_H
 
 #include "types.h"
-#include <cstdlib>
-#include <sys/time.h>
-#include "serverparam.h"
-#include "playerparam.h"
 
 #include <iostream>
 
-class HeteroPlayer
-{
+class HeteroPlayer {
 public:
     HeteroPlayer();
     HeteroPlayer( int );

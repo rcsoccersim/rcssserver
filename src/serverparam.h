@@ -582,6 +582,10 @@ private:
     double M_max_dash_power;
     double M_min_dash_power;
 
+    // 14.0.0
+    int M_random_seed;
+    bool M_golden_goal;
+
     // test parameters for future specification
     double M_reliable_catch_area_l; /* goalie reliable catchable area length */
     double M_min_catch_probability;
@@ -656,6 +660,16 @@ private:
           return M_raw_extra_half_time;
       }
 
+    void setNrNormalHalfs( int value )
+      {
+          M_nr_normal_halfs = value < 0 ? 0 : value;
+      }
+
+    void setNrExtraHalfs( int value )
+      {
+          M_nr_extra_halfs = value < 0 ? 0 : value;
+      }
+
     int getRawSimStep() const
       {
           return M_simulator_step / M_slow_down_factor;
@@ -713,6 +727,11 @@ public:
     VerMap & verMap() const
       {
           return M_ver_map;
+      }
+
+    void setRandomSeed( const int seed )
+      {
+          M_random_seed = seed;
       }
 
     server_params_t convertToStruct() const;
@@ -985,6 +1004,10 @@ public:
     const double & backDashRate() const { return M_back_dash_rate; }
     const double & maxDashPower() const { return M_max_dash_power; }
     const double & minDashPower() const { return M_min_dash_power; }
+
+    // v14
+    int randomSeed() const { return M_random_seed; }
+    bool goldenGoal() const { return M_golden_goal; }
 
     // test
     const double & reliableCatchAreaLength() const { return M_reliable_catch_area_l; }

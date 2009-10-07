@@ -56,6 +56,7 @@
 #include "referee.h"
 #include "resultsaver.hpp"
 #include "serverparam.h"
+#include "playerparam.h"
 #include "team.h"
 #include "types.h"
 #include "utility.h"
@@ -148,6 +149,7 @@ Stadium::Stadium()
       M_left_child( 0 ),
       M_right_child( 0 )
 {
+#if 0
     time_t tmp_time = std::time( NULL );
     tm * tmp_local_time = std::localtime( &tmp_time );
     if ( tmp_local_time == NULL )
@@ -164,6 +166,7 @@ Stadium::Stadium()
     srand( tmp_time );
     srandom( tmp_time );
     rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( tmp_time ) );
+#endif
 
     // !!! registration order is very important !!!
     // TODO: fix the dependencies between referees.
@@ -270,6 +273,39 @@ Stadium::~Stadium()
 bool
 Stadium::init()
 {
+    time_t tmp_time = std::time( NULL );
+    tm * tmp_local_time = std::localtime( &tmp_time );
+    if ( tmp_local_time == NULL )
+    {
+        std::cerr << __FILE__ << ":" << __LINE__
+                  << ": Error getting time: "
+                  << strerror( errno ) << std::endl;
+        //this->exit( EXIT_FAILURE );
+        disable();
+        return false;
+    }
+    m_real_time = *tmp_local_time;
+
+    if ( ServerParam::instance().randomSeed() >= 0 )
+    {
+        int seed = ServerParam::instance().randomSeed();
+        std::cerr << "Using given Simulator Random Seed: " << seed << std::endl;
+        srand( seed );
+        srandom( seed );
+        rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( seed ) );
+    }
+    else
+    {
+        int seed = static_cast< int >( tmp_time );
+        std::cerr << "Generate Simulator Random Seed: " << seed << std::endl;
+        ServerParam::instance().setRandomSeed( seed );
+        srand( seed );
+        srandom( seed );
+        rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( seed ) );
+    }
+
+    std::cout << "Simulator Random Seed: " << ServerParam::instance().randomSeed() << std::endl;
+
     M_game_over_wait = ServerParam::instance().gameOverWait();
 
     // we create the result savers now, so that if there are any
@@ -1606,10 +1642,11 @@ Stadium::_Start( Stadium & stad )
 
     int normal_time = param.halfTime() * param.nrNormalHalfs();
 
-    if ( param.halfTime() < 0
+    if ( param.halfTime() <= 0
          || ( stad.time() <= normal_time
               && stad.time() % param.halfTime() == 0 )
          || ( stad.time() > normal_time
+              && param.extraHalfTime() > 0
               && ( stad.time() - normal_time ) % param.extraHalfTime() == 0 )
          )
     {
@@ -1621,7 +1658,8 @@ Stadium::_Start( Stadium & stad )
             half_time = param.extraHalfTime();
         }
 
-        if ( ( time / half_time ) % 2 == 0 )
+        if ( half_time <= 0
+             || ( time / half_time ) % 2 == 0 )
         {
             if ( param.nrNormalHalfs() >= 0
                  && stad.time() < param.halfTime() * param.nrNormalHalfs() )
@@ -2305,11 +2343,7 @@ Stadium::doRecvFromClients()
 
     udp_recv_message();
     udp_recv_from_online_coach();
-    //if ( ServerParam::instance().coachMode()
-    //     || ServerParam::instance().coachWithRefereeMode() )
-    //{
     udp_recv_from_coach();
-    //}
 
     removeDisconnectedClients();
 
@@ -2547,13 +2581,14 @@ Stadium::doSendCoachMessages()
 bool
 Stadium::doSendThink()
 {
+    const char * think_command = "(think)";
+    const double max_msec_waited = 25 * 50;
+    const int max_cycles_missed = 20;
+
+    static int cycles_missed = 0; //number of cycles where someone missed
+
     bool shutdown = false;
     timeval tv_start, tv_now;
-    //  const int        max_alrms_wait = 25;
-    const int max_msec_waited = 25 * 50;
-    const char * think_command = "(think)";
-    static int cycles_missed = 0; //number of cycles where someone missed
-    const int max_cycles_missed = 20;
 
     if ( time() <= 0 )
     {
@@ -2572,17 +2607,18 @@ Stadium::doSendThink()
 
     //figure out who we are going to wait for
     bool wait_players[MAX_PLAYER*2];
-    bool waitCoach[2];
     for ( int i = 0; i < MAX_PLAYER*2; ++i )
     {
         wait_players[i] = ! ( M_players[i]->state() == DISABLE );
     }
 
+    bool wait_coach[2];
     for ( int i = 0; i < 2; ++i )
     {
-        waitCoach[i] = M_olcoaches[i]->isEyeOn();
+        wait_coach[i] = M_olcoaches[i]->isEyeOn();
     }
-    bool waitTrainer = M_coach->isEyeOn();
+
+    bool wait_trainer = M_coach->isEyeOn();
 
     //tell the clients they should start thinking
     for ( int i = 0; i < MAX_PLAYER*2; ++i )
@@ -2595,13 +2631,13 @@ Stadium::doSendThink()
 
     for ( int i = 0; i < 2; ++i )
     {
-        if ( waitCoach[i] && M_olcoaches[i]->connected() )
+        if ( wait_coach[i] && M_olcoaches[i]->connected() )
         {
             M_olcoaches[i]->send( think_command );
         }
     }
 
-    if ( waitTrainer
+    if ( wait_trainer
          && M_coach->connected() )
     {
         M_coach->send( think_command );
@@ -2642,7 +2678,7 @@ Stadium::doSendThink()
 
         for ( int i = 0; i < 2; ++i )
         {
-            if ( waitCoach[i]
+            if ( wait_coach[i]
                  && M_olcoaches[i]->connected()
                  && ! M_olcoaches[i]->doneReceived()
                  && M_olcoaches[i]->assigned() )
@@ -2652,7 +2688,7 @@ Stadium::doSendThink()
             }
         }
 
-        if ( waitTrainer
+        if ( wait_trainer
              && M_coach->connected()
              && ! M_coach->doneReceived() )
         {
@@ -2662,11 +2698,14 @@ Stadium::doSendThink()
         // get time differnce with start of loop, first get time difference in
         // seconds, then multiply with 1000 to get msec.
         gettimeofday( &tv_now, NULL );
-        double time_diff=((double)tv_now.tv_sec + (double)tv_now.tv_usec/1000000)-
-            ((double)tv_start.tv_sec + (double)tv_start.tv_usec/1000000);
+        double time_diff
+            = ( static_cast< double >( tv_now.tv_sec )
+                + static_cast< double >( tv_now.tv_usec ) / 1000000 )
+            - ( static_cast< double >( tv_start.tv_sec )
+                + static_cast< double >( tv_start.tv_usec ) / 1000000 );
         time_diff *= 1000;
 
-        if ( (int)time_diff > max_msec_waited )
+        if ( time_diff > max_msec_waited )
         {
             done = DS_TRUE_BUT_INCOMPLETE;
             if ( time() > 0 )

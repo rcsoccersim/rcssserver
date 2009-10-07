@@ -102,10 +102,10 @@ Monitor::~Monitor()
 }
 
 void
-Monitor::parseMsg( const char * msg,
+Monitor::parseMsg( char * msg,
                    const size_t & len )
 {
-    char * str = const_cast< char * >( msg );
+    char * str = msg;
     if ( str[ len - 1 ] != 0 )
     {
         if ( version() >= 2.0 )

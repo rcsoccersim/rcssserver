@@ -58,9 +58,13 @@ SyncTimer::run()
         {
             getTimeableRef().newSimulatorStep();
             if ( q_simt <= c_simt )
+            {
                 c_simt = 1;
+            }
             else
+            {
                 c_simt++;
+            }
             sent_synch_see = false;
         }
 
@@ -69,10 +73,14 @@ SyncTimer::run()
         {
             getTimeableRef().sendSenseBody();
             c_sbt = static_cast< int >( std::floor( lcmt / ServerParam::instance().senseBodyStep() ) );
-            if (q_sbt <= c_sbt)
+            if ( q_sbt <= c_sbt )
+            {
                 c_sbt = 1;
+            }
             else
+            {
                 c_sbt++;
+            }
         }
 
         // send visuals
@@ -81,9 +89,13 @@ SyncTimer::run()
             getTimeableRef().sendVisuals();
             c_sent = static_cast< int >( std::floor( lcmt / (ServerParam::instance().sendStep() * 0.25 ) ) );
             if ( q_sent <= c_sent )
+            {
                 c_sent = 1;
+            }
             else
+            {
                 c_sent++;
+            }
         }
 
         // send synch visual message
@@ -102,9 +114,13 @@ SyncTimer::run()
             getTimeableRef().sendCoachMessages();
             c_svt = static_cast< int >( std::floor( lcmt / ServerParam::instance().coachVisualStep() ) );
             if ( q_svt <= c_svt )
+            {
                 c_svt = 1;
+            }
             else
+            {
                 c_svt++;
+            }
         }
 
         //we do a c_synch-1 because of the offset

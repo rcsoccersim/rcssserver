@@ -69,21 +69,25 @@ void
 RemoteClient::close()
 {
     M_socket.close();
+
     if ( M_transport )
     {
         delete M_transport;
         M_transport = NULL;
     }
+
     if ( M_gz_buf )
     {
         delete M_gz_buf;
         M_gz_buf = NULL;
     }
+
     if ( M_socket_buf )
     {
         delete M_socket_buf;
         M_socket_buf = NULL;
     }
+
     setEnforceDedicatedPort( false );
 }
 
@@ -200,7 +204,7 @@ RemoteClient::undedicatedRecv( char * msg,
 }
 
 void
-RemoteClient::processMsg( char* msg,
+RemoteClient::processMsg( char * msg,
                           const size_t & len )
 {
 #ifdef HAVE_LIBZ

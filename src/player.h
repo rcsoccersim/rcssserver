@@ -183,7 +183,7 @@ public:
     void sendInit();
     void sendReconnect();
 
-    void parseMsg( const char * msg,
+    void parseMsg( char * msg,
                    const size_t & len );
 
     void send( const char * msg );

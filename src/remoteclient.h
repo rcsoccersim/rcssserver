@@ -76,7 +76,7 @@ protected:
                      const size_t & len );
 
     virtual
-    void parseMsg( const char * msg,
+    void parseMsg( char * msg,
                    const size_t & len ) = 0;
 
 public:

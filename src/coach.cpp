@@ -225,10 +225,10 @@ Coach::send( const char* msg )
 }
 
 void
-Coach::parseMsg( const char * msg,
+Coach::parseMsg( char * msg,
                  const size_t & len )
 {
-    char * str = const_cast< char * >( msg );
+    char * str = msg;
     if ( str[ len - 1 ] != 0 )
     {
         if ( version() >= 8.0 )
@@ -918,6 +918,10 @@ OnlineCoach::change_player_types( const char * command )
         send( "(warning only_before_kick_off)" );
         return;
     }
+    else if ( ServerParam::instance().halfTime() < 0 )
+    {
+        // OK
+    }
     else if ( M_stadium.time()
               >= ( ( ServerParam::instance().halfTime()
                      * ServerParam::instance().nrNormalHalfs() )
@@ -1456,10 +1460,10 @@ OnlineCoach::send( const char * msg )
 
 
 void
-OnlineCoach::parseMsg( const char * msg,
+OnlineCoach::parseMsg( char * msg,
                        const size_t & len )
 {
-    char * str = const_cast< char * >( msg );
+    char * str = msg;
     if ( str[ len - 1 ] != 0 )
     {
         if ( version() >= 8.0 )

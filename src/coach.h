@@ -78,7 +78,7 @@ public:
     void send( const char * msg );
 
     virtual
-    void parseMsg( const char * msg,
+    void parseMsg( char * msg,
                    const size_t & len );
 
     virtual
@@ -200,7 +200,7 @@ public:
     void send( const char * msg );
 
     virtual
-    void parseMsg( const char * msg,
+    void parseMsg( char * msg,
                    const size_t & len );
 
     virtual

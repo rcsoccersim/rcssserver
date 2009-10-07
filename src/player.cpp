@@ -58,9 +58,6 @@ inline
 double
 NormalizeDashPower( const double & p )
 {
-//     return rcss::bound( ServerParam::instance().minPower(),
-//                         p,
-//                         ServerParam::instance().maxPower() );
     return rcss::bound( ServerParam::instance().minDashPower(),
                         p,
                         ServerParam::instance().maxDashPower() );
@@ -424,10 +421,10 @@ Player::discard()
 }
 
 void
-Player::parseMsg( const char * msg,
+Player::parseMsg( char * msg,
                   const size_t & len )
 {
-    char * command = const_cast< char * >( msg );
+    char * command = msg;
     if ( command[ len - 1 ] != 0 )
     {
         if ( version() >= 8.0 )
