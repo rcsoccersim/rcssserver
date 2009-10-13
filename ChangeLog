@@ -1,3 +1,12 @@
+2009-10-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	- updated version number string to '14.0.0a'.
+
+	* src/serverparam.cpp:
+	- updated the default parameter value of server::dash_angle_step,
+	server::side_dash_rate and server::back_dash_rate.
+
 2009-09-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach.cpp:

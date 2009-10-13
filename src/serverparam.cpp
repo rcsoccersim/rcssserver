@@ -334,12 +334,12 @@ const int ServerParam::SYNCH_SEE_OFFSET = 0; // [13.2.0] 30 -> 0;
 const int ServerParam::EXTRA_HALF_TIME = 100; // [13.0.0] 300 -> 100
 
 // 13.0.0
-const double ServerParam::STAMINA_CAPACITY = 148600.0; //127000.0;
+const double ServerParam::STAMINA_CAPACITY = 130600.0; // [14.0.0] 148600.0 -> 130600.0
 const double ServerParam::MAX_DASH_ANGLE = +180.0;
 const double ServerParam::MIN_DASH_ANGLE = -180.0;
-const double ServerParam::DASH_ANGLE_STEP = 90.0;
-const double ServerParam::SIDE_DASH_RATE = 0.25;
-const double ServerParam::BACK_DASH_RATE = 0.5;
+const double ServerParam::DASH_ANGLE_STEP = 45.0; // [14.0.0] 90.0 -> 45.0
+const double ServerParam::SIDE_DASH_RATE = 0.4; // [14.0.0] 0.25 -> 0.4
+const double ServerParam::BACK_DASH_RATE = 0.6; // [14.0.0] 0.5 -> 0.6
 const double ServerParam::MAX_DASH_POWER = +100.0;
 const double ServerParam::MIN_DASH_POWER = -100.0;
 
