@@ -31,6 +31,7 @@
 #include <boost/shared_ptr.hpp>
 
 class Stadium;
+class HeteroPlayer;
 
 namespace rcss {
 
@@ -247,6 +248,12 @@ public:
 
     virtual
     void sendPlayerTypes();
+
+protected:
+    virtual
+    void serializePlayerType( const int id,
+                              const HeteroPlayer & type );
+
 };
 
 /*!
@@ -286,22 +293,64 @@ public:
           doSendServerParam( param );
       }
 
-    virtual
-    void doSendServerParam( ServerParam::VerMap::value_type param );
-
     void sendPlayerParam( PlayerParam::VerMap::value_type param )
       {
           doSendPlayerParam( param );
       }
 
     virtual
-    void doSendPlayerParam( PlayerParam::VerMap::value_type param );
-
-    virtual
     void sendPlayerParams();
 
     virtual
     void sendPlayerTypes();
+
+protected:
+    virtual
+    void doSendServerParam( ServerParam::VerMap::value_type param );
+
+    virtual
+    void doSendPlayerParam( PlayerParam::VerMap::value_type param );
+
+    virtual
+    void serializePlayerType( const int id,
+                              const HeteroPlayer & type );
+
+};
+
+
+/*!
+//===================================================================
+//
+//  CLASS: InitSenderCommonV14
+//
+//  DESC: version 14 of the init protocol for all clients.
+//
+//===================================================================
+*/
+
+class InitSenderCommonV14
+    : public InitSenderCommonV8 {
+public:
+    InitSenderCommonV14( std::ostream & transport,
+                         const boost::shared_ptr< Serializer > serializer,
+                         const Stadium & stad,
+                         unsigned int version,
+                         const bool new_line = false )
+        : InitSenderCommonV8( transport,
+                              serializer,
+                              stad,
+                              version,
+                              new_line )
+      { }
+
+    virtual
+    ~InitSenderCommonV14()
+      { }
+
+protected:
+    virtual
+    void serializePlayerType( const int id,
+                              const HeteroPlayer & type );
 
 };
 

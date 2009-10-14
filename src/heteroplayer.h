@@ -54,6 +54,8 @@ public:
     const double & effortMax() const { return effort_max; }
     const double & effortMin() const { return effort_min; }
 
+    const double & tackleRand() const { return M_tackle_rand; }
+
     std::ostream & print( std::ostream & o ) const;
 
     player_type_t convertToStruct ( int id ) const;
@@ -75,6 +77,8 @@ private:
     double effort_max;
     double effort_min;
 
+    // v14
+    double M_tackle_rand;
 };
 
 inline

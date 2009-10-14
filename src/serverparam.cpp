@@ -343,6 +343,12 @@ const double ServerParam::BACK_DASH_RATE = 0.6; // [14.0.0] 0.5 -> 0.6
 const double ServerParam::MAX_DASH_POWER = +100.0;
 const double ServerParam::MIN_DASH_POWER = -100.0;
 
+// 14.0.0
+const double ServerParam::TACKLE_RAND_FACTOR = 2.0;
+const double ServerParam::TACKLE_FOUL_PROBABILITY = 0.5;
+const int ServerParam::FOUL_EXPONENT = 10;
+const int ServerParam::FOUL_CYCLES = 5;
+
 
 ServerParam &
 ServerParam::instance()
@@ -882,12 +888,16 @@ ServerParam::addParams()
     addParam( "min_dash_power", M_min_dash_power, "", 13 );
 
     // v14
+    addParam( "tackle_rand_factor", M_tackle_rand_factor, "", 14 );
+    addParam( "tackle_foul_probability", M_tackle_foul_probability, "", 14 );
+    addParam( "foul_exponent", M_foul_exponent, "", 14 );
+    addParam( "foul_cycles", M_foul_cycles, "", 14 );
     //addParam( "random_seed", M_random_seed, "", 14 );
     addParam( "golden_goal", M_golden_goal, "", 14 );
 
     // test
-    addParam( "reliable_catch_area_l", M_reliable_catch_area_l, "", 999 );
-    addParam( "min_catch_probability", M_min_catch_probability, "", 999 );
+    //addParam( "reliable_catch_area_l", M_reliable_catch_area_l, "", 999 );
+    //addParam( "min_catch_probability", M_min_catch_probability, "", 999 );
 }
 
 
@@ -1184,6 +1194,10 @@ ServerParam::setDefaults()
     M_min_dash_power = MIN_DASH_POWER;
 
     // 14.0.0
+    M_tackle_rand_factor = TACKLE_RAND_FACTOR;
+    M_tackle_foul_probability = TACKLE_FOUL_PROBABILITY;
+    M_foul_exponent = FOUL_EXPONENT;
+    M_foul_cycles = FOUL_CYCLES;
     M_random_seed = -1;
     M_golden_goal = true;
 

@@ -1,10 +1,24 @@
+2009-10-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* src/initsender.cpp:
+	* src/initsender.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	- added servr::tackle_rand_factor,
+	server::tackle_foul_probability, server::foul_exponent and
+	server::foul_cycles. but new tackle model is not implemented yet.
+	- added InitSenderCommonV14 to inform tackle_rand parameter.
+
 2009-10-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* configure.ac:
 	- updated version number string to '14.0.0a'.
 
 	* src/serverparam.cpp:
-	- updated the default parameter value of server::dash_angle_step,
+	- updated the default parameter value of
+	server::stramina_capacity, server::dash_angle_step,
 	server::side_dash_rate and server::back_dash_rate.
 
 2009-09-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>

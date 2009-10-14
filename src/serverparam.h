@@ -329,6 +329,11 @@ private:
     static const double BACK_DASH_RATE;
     static const double MAX_DASH_POWER;
     static const double MIN_DASH_POWER;
+    // 14.0.0
+    static const double TACKLE_RAND_FACTOR;
+    static const double TACKLE_FOUL_PROBABILITY;
+    static const int FOUL_EXPONENT;
+    static const int FOUL_CYCLES;
 
     double M_goal_width; /* goal width */
     double M_inertia_moment; /* intertia moment for turn */
@@ -583,6 +588,11 @@ private:
     double M_min_dash_power;
 
     // 14.0.0
+    double M_tackle_rand_factor;
+    double M_tackle_foul_probability;
+    int M_foul_exponent;
+    int M_foul_cycles;
+
     int M_random_seed;
     bool M_golden_goal;
 
@@ -1006,6 +1016,11 @@ public:
     const double & minDashPower() const { return M_min_dash_power; }
 
     // v14
+    const double & tackleRandFactor() const { return M_tackle_rand_factor; }
+    const double & tackleFoulProbability() const { return M_tackle_foul_probability; }
+    int foulExponent() const { return M_foul_exponent; }
+    int foulCycles() const { return M_foul_cycles; }
+
     int randomSeed() const { return M_random_seed; }
     bool goldenGoal() const { return M_golden_goal; }
 

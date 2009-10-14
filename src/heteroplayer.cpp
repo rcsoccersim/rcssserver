@@ -207,6 +207,8 @@ HeteroPlayer::HeteroPlayer()
         effort_max = ServerParam::instance().effortInit();
         effort_min = ServerParam::instance().effortMin();
     }
+
+    M_tackle_rand = kick_rand * ServerParam::instance().tackleRandFactor();
 }
 
 HeteroPlayer::HeteroPlayer( int )
@@ -226,10 +228,13 @@ HeteroPlayer::HeteroPlayer( int )
     extra_stamina = ServerParam::instance().extraStamina();
     effort_max = ServerParam::instance().effortInit();
     effort_min = ServerParam::instance().effortMin();
+
+    M_tackle_rand = kick_rand * ServerParam::instance().tackleRandFactor();
 }
 
 HeteroPlayer::~HeteroPlayer()
 {
+
 }
 
 std::ostream&
@@ -244,6 +249,7 @@ HeteroPlayer::print( std::ostream & o ) const
     o << "\tPlayer size = " << playerSize () << '\n';
     o << "\tKickable margin = " << kickableMargin () << '\n';;
     o << "\tKick rand = " << kickRand () << '\n';
+    o << "\tTackle rand = " << tackleRand () << '\n';
     o << "\tExtra stamina = " << extraStamina () << '\n';
     o << "\tEffort max = " << effortMax () << '\n';
     o << "\tEffort min = " << effortMin () << '\n';
