@@ -79,12 +79,14 @@ bool
 PVector::between( const PVector & begin,
                   const PVector & end ) const
 {
-    if( begin.x > end.x )
-        return between( end, begin );
-
-    if( begin.x <= x && x <= end.x )
+    if ( begin.x > end.x )
     {
-        if( begin.y < end.y )
+        return between( end, begin );
+    }
+
+    if ( begin.x <= x && x <= end.x )
+    {
+        if ( begin.y < end.y )
         {
             return begin.y <= y && y <= end.y;
         }
@@ -116,24 +118,26 @@ PVector::between( const PVector & begin,
 PVector
 RArea::nearestHEdge( const PVector & p ) const
 {
-    return PVector( std::min( std::max( p.x, left ), right ),
-                    ( std::fabs( p.y - top ) < std::fabs( p.y - bottom )
-                      ? top : bottom ) );
+    return PVector( std::min( std::max( p.x, left() ), right() ),
+                    ( std::fabs( p.y - top() ) < std::fabs( p.y - bottom() )
+                      ? top()
+                      : bottom() ) );
 }
 
 PVector
 RArea::nearestVEdge( const PVector & p ) const
 {
-    return PVector( ( std::fabs( p.x - left ) < std::fabs( p.x - right )
-                      ? left : right ),
-                    std::min( std::max( p.y, top ), bottom ) );
+    return PVector( ( std::fabs( p.x - left() ) < std::fabs( p.x - right() )
+                      ? left()
+                      : right() ),
+                    std::min( std::max( p.y, top() ), bottom() ) );
 }
 
 PVector
 RArea::nearestEdge( const PVector & p ) const
 {
-    if ( std::min( std::fabs( p.x - left ), std::fabs( p.x - right ) )
-         < std::min( std::fabs( p.y - top ), std::fabs( p.y - bottom ) ) )
+    if ( std::min( std::fabs( p.x - left() ), std::fabs( p.x - right() ) )
+         < std::min( std::fabs( p.y - top() ), std::fabs( p.y - bottom() ) ) )
     {
         return nearestVEdge( p );
     }
@@ -146,15 +150,15 @@ RArea::nearestEdge( const PVector & p ) const
 PVector
 RArea::randomize() const
 {
-    return PVector( drand( left, right ),
-                    drand( bottom, top ) );
+    return PVector( drand( left(), right() ),
+                    drand( bottom(), top() ) );
 }
 
 std::ostream &
 RArea::print( std::ostream& o ) const
 {
-    return o << "#A[h:" << left << "~" << right
-             << ",v:" << top << "~" << bottom << "]";
+    return o << "#A[h:" << left() << "~" << right()
+             << ",v:" << top() << "~" << bottom() << "]";
 }
 
 
@@ -188,11 +192,15 @@ intersect( const PVector & begin,
            PVector & inter )
 {
     if ( begin == end )
+    {
         return false;
+    }
 
     if ( ( begin - end ).r() < ( begin - circle.center() ).r() - circle.radius() )
+    {
         // object wont get within circles range
         return false;
+    }
 
     if ( circle.center() == PVector() )
     {

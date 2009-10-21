@@ -28,14 +28,14 @@
 
 #include "types.h"
 #include "object.h"
+
 #include <set>
 
 class Stadium;
 class Player;
 class Team;
 
-class Referee
-{
+class Referee {
 private:
     // not used
     Referee();
@@ -43,60 +43,85 @@ private:
 
 protected:
     Stadium & M_stadium;
+
 public:
     explicit
     Referee( Stadium & stadium )
         : M_stadium( stadium )
-      {}
+      { }
 
     virtual
     ~Referee()
-      {}
+      { }
 
     virtual
-    void
-    kickTaken( const Player & )
-      {}
+    void kickTaken( const Player & )
+      { }
 
     virtual
-    void
-    ballCaught( const Player & )
-      {}
+    void tackleTaken( const Player & )
+      { }
+
+    virtual
+    void ballCaught( const Player & )
+      { }
 
 
     virtual
-    void
-    ballTouched( const Player & )
-      {}
+    void ballTouched( const Player & )
+      { }
 
     virtual
-    void
-    analyse()
-      {}
+    void analyse()
+      { }
 
     virtual
-    void
-    playModeChange( PlayMode )
-      {}
+    void playModeChange( PlayMode )
+      { }
 
-    class
-    doKickTaken
-    {
+    //
+    //
+    //
+
+    static
+    void doAnalyse( Referee * ref )
+      {
+          ref->analyse();
+      }
+
+    //
+    //
+    //
+
+    class doKickTaken {
     private:
         const Player & M_kicker;
     public:
-        doKickTaken( const Player& kicker )
+        doKickTaken( const Player & kicker )
             : M_kicker( kicker )
-          {}
+          { }
 
-        void
-        operator()( Referee* ref )
-          { ref->kickTaken( M_kicker ); }
+        void operator()( Referee * ref )
+          {
+              ref->kickTaken( M_kicker );
+          }
     };
 
-    class
-    doCaughtBall
-    {
+    class doTackleTaken {
+    private:
+        const Player & M_tackler;
+    public:
+        doTackleTaken( const Player & tackler )
+            : M_tackler( tackler )
+          { }
+
+        void operator()( Referee * ref )
+          {
+              ref->tackleTaken( M_tackler );
+          }
+    };
+
+    class doCaughtBall {
     private:
         const Player & M_catcher;
     public:
@@ -104,44 +129,38 @@ public:
             : M_catcher( catcher )
           { }
 
-        void
-        operator()( Referee* ref )
-          { ref->ballCaught( M_catcher ); }
+        void operator()( Referee * ref )
+          {
+              ref->ballCaught( M_catcher );
+          }
     };
 
-    static
-    void
-    doAnalyse( Referee* ref )
-      { ref->analyse(); }
-
-    class
-    doPlayModeChange
-    {
+    class doPlayModeChange {
     private:
         PlayMode M_pm;
     public:
         doPlayModeChange( PlayMode pm )
             : M_pm( pm )
-          {}
+          { }
 
-        void
-        operator()( Referee* ref )
-          { ref->playModeChange( M_pm ); }
+        void operator()( Referee * ref )
+          {
+              ref->playModeChange( M_pm );
+          }
     };
 
-    class
-    doBallTouched
-    {
+    class doBallTouched {
     private:
-        const Player& M_player;
+        const Player & M_player;
     public:
-        doBallTouched( const Player& player )
+        doBallTouched( const Player & player )
             : M_player( player )
-          {}
+          { }
 
-        void
-        operator()( Referee* ref )
-          { ref->ballTouched( M_player ); }
+        void operator()( Referee * ref )
+          {
+              ref->ballTouched( M_player );
+          }
     };
 
 
@@ -175,6 +194,10 @@ public:
     static
     PVector moveOutOfPenalty( const Side side,
                               PVector ball_pos );
+
+    static
+    PVector moveOutOfGoalArea( const Side side,
+                               PVector ball_pos );
 
     static
     PVector moveIntoPenalty( const Side side,
@@ -274,8 +297,7 @@ private:
 /*--------------------------------------------------------*/
 
 class FreeKickRef
-    : public Referee
-{
+    : public Referee {
 private:
     static const int AFTER_FREE_KICK_FAULT_WAIT;
 
@@ -300,23 +322,19 @@ public:
 
     virtual
     ~FreeKickRef()
-      {}
+      { }
 
     virtual
-    void
-    kickTaken( const Player & kicker );
+    void kickTaken( const Player & kicker );
 
     virtual
-    void
-    ballTouched( const Player & player );
+    void ballTouched( const Player & player );
 
     virtual
-    void
-    analyse();
+    void analyse();
 
     virtual
-    void
-    playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm );
 
 private:
 
@@ -339,8 +357,7 @@ private:
 /*--------------------------------------------------------*/
 // touch line referee
 class TouchRef
-    : public Referee
-{
+    : public Referee {
 private:
     // TODO? move to TimeRef
     static const int AFTER_GOAL_WAIT;
@@ -393,9 +410,101 @@ private:
 
 /*--------------------------------------------------------*/
 
+class CatchRef
+    : public Referee {
+private:
+    static const int AFTER_BACKPASS_WAIT;
+    static const int AFTER_CATCH_FAULT_WAIT;
+
+    int M_last_back_passer_time;
+    const Player * M_last_back_passer;
+
+    bool M_team_l_touched;
+    bool M_team_r_touched;
+    int M_after_back_pass_time;
+
+    int M_after_catch_fault_time;
+
+public:
+    explicit
+    CatchRef( Stadium & stadium )
+        : Referee( stadium ),
+          M_last_back_passer_time( 0 ),
+          M_last_back_passer( NULL ),
+          M_team_l_touched( false ),
+          M_team_r_touched( false ),
+          M_after_back_pass_time( 0 ),
+          M_after_catch_fault_time( 0 )
+      { }
+
+    virtual
+    ~CatchRef()
+      { }
+
+    virtual
+    void kickTaken( const Player & kicker );
+
+    virtual
+    void ballTouched( const Player & player );
+
+    virtual
+    void ballCaught( const Player & catcher );
+
+    virtual
+    void analyse();
+
+    virtual
+    void playModeChange( PlayMode pmode );
+
+private:
+
+    void callBackPass( const Side side );
+
+    void callCatchFault( Side side,
+                         PVector pos );
+
+};
+
+/*--------------------------------------------------------*/
+
+class FoulRef
+    : public Referee {
+private:
+
+    static const int AFTER_FOUL_WAIT;
+
+    int M_after_foul_time;
+
+public:
+    explicit
+    FoulRef( Stadium & stadium)
+        : Referee( stadium ),
+          M_after_foul_time( 0 )
+      { }
+
+    virtual
+    ~FoulRef()
+      { }
+
+    virtual
+    void tackleTaken( const Player & tackler );
+
+    virtual
+    void analyse();
+
+    virtual
+    void playModeChange( PlayMode pm );
+
+private:
+
+    void callFoulCharge( const Player & tackler );
+
+};
+
+/*--------------------------------------------------------*/
+
 class KeepawayRef
-    : public Referee
-{
+    : public Referee {
 private:
     static const char * trainingMsg;
     static const int TURNOVER_TIME;
@@ -417,95 +526,22 @@ public:
 
     virtual
     ~KeepawayRef()
-      {}
-
-    virtual
-    void
-    analyse();
-
-    virtual
-    void
-    kickTaken( const Player & kicker );
-
-    virtual
-    void
-    ballTouched( const Player & player );
-
-    virtual
-    void
-    playModeChange( PlayMode pm );
-
-private:
-    bool
-    ballInKeepawayArea();
-
-    void
-    logHeader();
-
-    void
-    logEpisode( const char *endCond );
-
-    void
-    resetField();
-};
-
-/*--------------------------------------------------------*/
-
-class CatchRef
-    : public Referee {
-private:
-    static const int AFTER_BACKPASS_WAIT;
-    static const int AFTER_CATCH_FAULT_WAIT;
-
-    int M_last_back_passer_time;
-    const Player * M_last_back_passer;
-
-    bool M_team_l_touched;
-    bool M_team_r_touched;
-    int M_after_back_pass_time;
-
-    int M_after_catch_fault_time;
-
-public:
-    explicit
-    CatchRef( Stadium & stadium )
-        : Referee( stadium )
-        , M_last_back_passer_time( 0 )
-        , M_last_back_passer( NULL )
-        , M_team_l_touched( false )
-        , M_team_r_touched( false )
-        , M_after_back_pass_time( 0 )
-        , M_after_catch_fault_time( 0 )
-      {}
-
-    virtual
-    ~CatchRef()
-      {}
-
-    virtual
-    void kickTaken( const Player & kicker );
-
-    virtual
-    void ballTouched( const Player & player );
-
-    virtual
-    void ballCaught( const Player & catcher );
+      { }
 
     virtual
     void analyse();
 
     virtual
-    void playModeChange( PlayMode pmode );
+    void playModeChange( PlayMode pm );
 
 private:
+    bool ballInKeepawayArea();
 
-    PVector moveOutOfGoalArea( const Side side,
-                               PVector ball_pos );
+    void logHeader();
 
-    void callBackPass( const Side side );
+    void logEpisode( const char *endCond );
 
-    void callCatchFault( Side side, PVector pos );
-
+    void resetField();
 };
 
 /*--------------------------------------------------------*/
@@ -540,23 +576,19 @@ public:
 
     virtual
     ~PenaltyRef()
-      {}
+      { }
 
     virtual
-    void
-    analyse();
+    void analyse();
 
     virtual
-    void
-    kickTaken( const Player & kicker );
+    void kickTaken( const Player & kicker );
 
     virtual
-    void
-    playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm );
 
     virtual
-    void
-    ballCaught( const Player & );
+    void ballCaught( const Player & );
 
 
 private:

@@ -64,13 +64,13 @@ public:
       }
 
     explicit
-    Vector2D ()
+    Vector2D()
       {
           null();
       }
 
     explicit
-    Vector2D ( const value vec[ DIM ] )
+    Vector2D( const value vec[ DIM ] )
       {
           for ( size_type i = X; i < DIM; ++i )
           {

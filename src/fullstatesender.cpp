@@ -165,7 +165,7 @@ FullStateSenderPlayerV5::sendFullState()
     }
 
     serializer().serializeFSViewMode( transport(),
-                                      ( self().highquality()
+                                      ( self().highQuality()
                                         ? "high"
                                         : "low" ),
                                       ( self().viewWidth() == rcss::pcom::NARROW

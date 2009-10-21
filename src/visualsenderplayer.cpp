@@ -97,7 +97,7 @@ VisualSenderPlayerV1::sendVisual()
 {
     incSendCount();
 
-    if ( sendCount() >= self().visSend() )
+    if ( sendCount() >= self().visualSendInterval() )
     {
         resetSendCount();
     }
@@ -107,7 +107,7 @@ VisualSenderPlayerV1::sendVisual()
     }
 
     serializer().serializeVisualBegin( transport(), stadium().time() );
-    if ( self().highquality() )
+    if ( self().highQuality() )
     {
         M_send_flag = &VisualSenderPlayerV1::sendHighFlag;
         M_send_ball = &VisualSenderPlayerV1::sendHighBall;

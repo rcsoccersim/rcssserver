@@ -169,13 +169,14 @@ Stadium::Stadium()
 #endif
 
     // !!! registration order is very important !!!
-    // TODO: fix the dependencies between referees.
+    // TODO: fix dependencies among referees.
     M_referees.push_back( new TimeRef( *this ) );
     M_referees.push_back( new BallStuckRef( *this ) );
     M_referees.push_back( new OffsideRef( *this ) );
     M_referees.push_back( new FreeKickRef( *this ) );
     M_referees.push_back( new TouchRef( *this ) );
     M_referees.push_back( new CatchRef( *this ) );
+    M_referees.push_back( new FoulRef( *this ) );
     M_referees.push_back( new KeepawayRef( *this ) );
     M_referees.push_back( new PenaltyRef( *this ) );
 
@@ -1123,6 +1124,10 @@ Stadium::step()
               || playmode() == PM_AfterGoal_Left
               || playmode() == PM_OffSide_Right
               || playmode() == PM_OffSide_Left
+              || playmode() == PM_Foul_Charge_Right
+              || playmode() == PM_Foul_Charge_Left
+              || playmode() == PM_Foul_Push_Right
+              || playmode() == PM_Foul_Push_Left
               || playmode() == PM_Back_Pass_Right
               || playmode() == PM_Back_Pass_Left
               || playmode() == PM_Free_Kick_Fault_Right
@@ -1789,7 +1794,7 @@ Stadium::collisions()
 
         --max_loop;
     }
-    while( col && max_loop > 0 );
+    while ( col && max_loop > 0 );
 
     //if ( max_loop < 8
     //    std::cerr << M_time << ": collision loop " << max_loop
@@ -1835,10 +1840,12 @@ Stadium::calcCollPos( MPObject * a,
                       MPObject * b )
 {
     if ( a == NULL || b == NULL )
+    {
         return;
+    }
 
-    PVector apos;
-    PVector bpos;
+    PVector apos = a->pos();
+    PVector bpos = b->pos();
     {
         PVector mid = a->pos() + b->pos();
         mid /= 2.0;
@@ -1979,6 +1986,13 @@ Stadium::kickTaken( const Player & kicker,
 }
 
 void
+Stadium::tackleTaken( const Player & tackler )
+{
+    for_each( M_referees.begin(), M_referees.end(),
+              Referee::doTackleTaken( tackler ) );
+}
+
+void
 Stadium::ballCaught( const Player & catcher )
 {
     if ( ! Referee::isPenaltyShootOut( playmode() ) )
@@ -2005,20 +2019,6 @@ Stadium::ballCaught( const Player & catcher )
 }
 
 void
-Stadium::ballCatchFailed()
-{
-    M_ball_catcher = NULL;
-
-    PVector new_ball_vel = ball().vel();
-    new_ball_vel *= drand( 0.1, 0.9 );
-    new_ball_vel.rotate( drand( -M_PI*0.5, M_PI*0.5 ) );
-
-    PVector accel = new_ball_vel - ball().vel();
-
-    M_ball->push( accel );
-}
-
-void
 Stadium::addTeamGraphic( const Side side,
                          const unsigned int x,
                          const unsigned int y,
@@ -2041,53 +2041,6 @@ Stadium::sendTeamGraphic( const Side side,
                           const unsigned int y )
 {
     M_logger.writeTeamGraphic( side, x, y );
-
-//     const XPMHolder * holder = static_cast< const XPMHolder * >( 0 );
-
-//     if ( side == LEFT )
-//     {
-//         holder = M_team_l->teamGraphic( x, y );
-//     }
-
-//     if ( side == RIGHT )
-//     {
-//         holder = M_team_r->teamGraphic( x, y );
-//     }
-
-//     if ( ! holder )
-//     {
-//         return;
-//     }
-
-
-// #ifdef HAVE_SSTREAM
-//     std::ostringstream data;
-// #else
-//     std::ostrstream data;
-// #endif
-//     data << "(team_graphic_"
-//          << ( side == LEFT ? "l" : "r" )
-//          << " (" << x << " " << y << " "
-//          << *holder << ")";
-
-// #ifndef HAVE_SSTREAM
-//     data << std::ends;
-// #endif
-
-//     std::string msg = data.str();
-
-// #ifndef HAVE_SSTREAM
-//     data.freeze( false );
-// #endif
-
-//     for ( MonitorCont::iterator i = M_monitors.begin();
-//           i != M_monitors.end();
-//           ++i )
-//     {
-//         (*i)->sendMsg( MSG_BOARD, msg.c_str() );
-//     }
-
-//     M_logger.writeMsgToGameLog( MSG_BOARD, msg.c_str(), true );
 }
 
 

@@ -371,7 +371,7 @@ DispSenderMonitorV2::sendShow()
         dinfo.body.show.pos[i].body_angle = htonl( (Int32)rint( players[i]->angleBodyCommitted() * SHOWINFO_SCALE2 ) );
         dinfo.body.show.pos[i].head_angle = htonl( (Int32)rint( players[i]->angleNeckCommitted() * SHOWINFO_SCALE2 ) );
         dinfo.body.show.pos[i].view_width = htonl( (Int32)rint( players[i]->visibleAngle() * SHOWINFO_SCALE2 ) );
-        dinfo.body.show.pos[i].view_quality = htons( (Int16)rint( players[i]->highquality() ) );
+        dinfo.body.show.pos[i].view_quality = htons( (Int16)rint( players[i]->highQuality() ) );
 
         dinfo.body.show.pos[i].stamina = htonl( (Int32)rint( players[i]->stamina() * SHOWINFO_SCALE2 ) );
         dinfo.body.show.pos[i].effort = htonl( (Int32)rint( players[i]->effort() * SHOWINFO_SCALE2 ) );
@@ -861,7 +861,7 @@ DispSenderLoggerV3::sendShow()
         show.pos[i].body_angle = htonl( (Int32)rint( players[i]->angleBodyCommitted() * SHOWINFO_SCALE2 ) );
         show.pos[i].head_angle = htonl( (Int32)rint( players[i]->angleNeckCommitted() * SHOWINFO_SCALE2 ) );
         show.pos[i].view_width = htonl( (Int32)rint( players[i]->visibleAngle() * SHOWINFO_SCALE2 ) );
-        show.pos[i].view_quality = htons( (Int16)rint( players[i]->highquality() ) );
+        show.pos[i].view_quality = htons( (Int16)rint( players[i]->highQuality() ) );
 
         show.pos[i].stamina = htonl( (Int32)rint( players[i]->stamina() * SHOWINFO_SCALE2 ) );
         show.pos[i].effort = htonl( (Int32)rint( players[i]->effort() * SHOWINFO_SCALE2 ) );

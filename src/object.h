@@ -68,13 +68,15 @@ public:
     double y;
 
     explicit
-    PVector( const double & xx = 0.0, const double & yy = 0.0 )
+    PVector( const double & xx = 0.0,
+             const double & yy = 0.0 )
         : x( xx )
         , y( yy )
       { }
 
     const
-    PVector & assign( const double & xx, const double & yy )
+    PVector & assign( const double & xx,
+                      const double & yy )
       {
           x = xx;
           y = yy;
@@ -92,28 +94,28 @@ public:
           return *this;
       }
 
-    const PVector& operator+=( const PVector & v )
+    const PVector & operator+=( const PVector & v )
       {
           x += v.x;
           y += v.y;
           return *this;
       }
 
-    const PVector& operator-=( const PVector & v )
+    const PVector & operator-=( const PVector & v )
       {
           x -= v.x;
           y -= v.y;
           return *this;
       }
 
-    const PVector& operator*=( const double & a )
+    const PVector & operator*=( const double & a )
       {
           x *= a;
           y *= a;
           return *this;
       }
 
-    const PVector& operator/=( const double & a )
+    const PVector & operator/=( const double & a )
       {
           x /= a;
           y /= a;
@@ -254,40 +256,44 @@ operator<<( std::ostream & o,
  *===================================================================
  */
 class RArea {
-public:
-    double left;
-    double right;
-    double top;
-    double bottom;
+private:
+    double M_left;
+    double M_right;
+    double M_top;
+    double M_bottom;
 
+    // not used
+    RArea();
+public:
     RArea( const double & l,
            const double & r,
            const double & t,
            const double & b )
-        : left( l ),
-          right( r ),
-          top( t ),
-          bottom( b )
-      {
-
-      }
+        : M_left( l ),
+          M_right( r ),
+          M_top( t ),
+          M_bottom( b )
+      { }
 
     RArea( const PVector & center,
            const PVector & size )
-        : left( center.x - size.x*0.5 ),
-          right( center.x + size.x*0.5 ),
-          top( center.y - size.y*0.5 ),
-          bottom( center.y + size.y*0.5 )
-      {
+        : M_left( center.x - size.x*0.5 ),
+          M_right( center.x + size.x*0.5 ),
+          M_top( center.y - size.y*0.5 ),
+          M_bottom( center.y + size.y*0.5 )
+      { }
 
-      }
+    const double & left() const { return M_left; }
+    const double & right() const { return M_right; }
+    const double & top() const { return M_top; }
+    const double & bottom() const { return M_bottom; }
 
     bool inArea( const PVector & p ) const
       {
-          return ( p.x >= left )
-              && ( p.x <= right )
-              && ( p.y >= top )
-              && ( p.y <= bottom );
+          return ( p.x >= left() )
+              && ( p.x <= right() )
+              && ( p.y >= top() )
+              && ( p.y <= bottom() );
       }
 
     /*! find nearest horizontal line */
@@ -315,6 +321,8 @@ private:
     PVector M_center;
     double M_radius;
 
+    // not used
+    CArea();
 public:
     CArea( const PVector & center,
            const double & radius )

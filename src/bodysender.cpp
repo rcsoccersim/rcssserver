@@ -118,7 +118,7 @@ void
 BodySenderPlayerV1::sendBodyData()
 {
     serializer().serializeBodyViewMode( transport(),
-                                        ( self().highquality()
+                                        ( self().highQuality()
                                           ? "high"
                                           : "low" ),
                                         ( self().viewWidth() == rcss::pcom::NARROW

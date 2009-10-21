@@ -30,13 +30,15 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "serverparam.h"
 
 #include "playerparam.h"
 #include "csvsaver.h"
+
+#include "utility.h"
 
 #include <rcssbase/conf/builder.hpp>
 #include <rcssbase/conf/parser.hpp>
@@ -889,7 +891,10 @@ ServerParam::addParams()
 
     // v14
     addParam( "tackle_rand_factor", M_tackle_rand_factor, "", 14 );
-    addParam( "tackle_foul_probability", M_tackle_foul_probability, "", 14 );
+    addParam( "tackle_foul_probability",
+              rcss::conf::makeSetter( this, &ServerParam::setTackleFoulProbability ),
+              rcss::conf::makeGetter( M_tackle_foul_probability ),
+              "", 14 );
     addParam( "foul_exponent", M_foul_exponent, "", 14 );
     addParam( "foul_cycles", M_foul_cycles, "", 14 );
     //addParam( "random_seed", M_random_seed, "", 14 );
@@ -900,6 +905,122 @@ ServerParam::addParams()
     //addParam( "min_catch_probability", M_min_catch_probability, "", 999 );
 }
 
+void
+ServerParam::setCTLRadius( double value )
+{
+    M_control_radius_width -= M_control_radius;
+    M_control_radius = value;
+    M_control_radius_width += M_control_radius;
+}
+
+void
+ServerParam::setKickMargin( double value )
+{
+    M_kickable_area -= M_kickable_margin;
+    M_kickable_margin = value;
+    M_kickable_area += M_kickable_margin;
+}
+
+void
+ServerParam::setBallSize( double value )
+{
+    M_kickable_area -= M_ball_size;
+    M_ball_size = value;
+    M_kickable_area += M_ball_size;
+}
+
+void
+ServerParam::setPlayerSize( double value )
+{
+    M_control_radius_width += M_player_size;
+    M_kickable_area -= M_player_size;
+    M_player_size = value;
+    M_kickable_area += M_player_size;
+    M_control_radius_width -= M_player_size;
+}
+
+double
+ServerParam::getHalfTimeScaler() const
+{
+    double value = 1000.0 / ( M_simulator_step / M_slow_down_factor );
+    return ( value != 0.0
+             ? value
+             : EPS );
+}
+
+//Have to be careful with integer math, see bug # 800540
+void
+ServerParam::setHalfTime( int value )
+{
+    M_raw_half_time = value;
+    M_half_time = static_cast< int >( value * getHalfTimeScaler() + 0.5 );
+}
+
+int
+ServerParam::getRawHalfTime() const
+{
+    //Have to be careful with integer math, see bug # 800540
+    //return static_cast< int >( M_half_time / getHalfTimeScaler() + 0.5 );
+    return M_raw_half_time;
+}
+
+//Have to be careful with integer math, see bug # 800540
+void
+ServerParam::setExtraHalfTime( int value )
+{
+    M_raw_extra_half_time = value < 0 ? 0 : value;
+    M_extra_half_time = static_cast< int >( value * getHalfTimeScaler() + 0.5 );
+}
+
+int
+ServerParam::getRawExtraHalfTime() const
+{
+    //Have to be careful with integer math, see bug # 800540
+    //return static_cast< int >( M_half_time / getHalfTimeScaler() + 0.5 );
+    return M_raw_extra_half_time;
+}
+
+void
+ServerParam::setNrNormalHalfs( int value )
+{
+    M_nr_normal_halfs = value < 0 ? 0 : value;
+}
+
+void
+ServerParam::setNrExtraHalfs( int value )
+{
+    M_nr_extra_halfs = value < 0 ? 0 : value;
+}
+
+int
+ServerParam::getRawSimStep() const
+{
+    return M_simulator_step / M_slow_down_factor;
+}
+
+int
+ServerParam::getRawSenseBodyStep() const
+{
+    return M_sense_body_step / M_slow_down_factor;
+}
+
+int
+ServerParam::getRawCoachVisualStep() const
+{
+    return M_send_vi_step / M_slow_down_factor;
+}
+
+int
+ServerParam::getRawSendStep() const
+{
+    return M_send_step / M_slow_down_factor;
+}
+
+int
+ServerParam::getRawSynchOffset() const
+{
+    return M_synch_offset / M_slow_down_factor;
+}
 
 void
 ServerParam::setSynchMode( bool value )
@@ -917,7 +1038,6 @@ ServerParam::setSynchMode( bool value )
     }
 }
 
-
 void
 ServerParam::setTeamLeftStart( std::string start )
 {
@@ -932,6 +1052,35 @@ ServerParam::setTeamRightStart( std::string start )
     M_team_r_start = tildeExpand( start );
 }
 
+void
+ServerParam::setTextLogDir( std::string str )
+{
+    M_text_log_dir = tildeExpand( str );
+}
+
+void
+ServerParam::setGameLogDir( std::string str )
+{
+    M_game_log_dir = tildeExpand( str );
+}
+
+void
+ServerParam::setKAwayLogDir( std::string str )
+{
+    M_keepaway_log_dir = tildeExpand( str );
+}
+
+void
+ServerParam::setCoachMsgFile( std::string str )
+{
+    M_coach_msg_file = tildeExpand( str );
+}
+
+void
+ServerParam::setTackleFoulProbability( double value )
+{
+    M_tackle_foul_probability = std::max( 0.0, std::min( value, 1.0 ) );
+}
 
 void
 ServerParam::clear()

@@ -262,7 +262,7 @@ SerializerMonitorStdv3::serializePlayerViewMode( std::ostream & os,
                                                  const Player & player ) const
 {
     os << " (v "
-       << ( player.highquality() ? "h " : "l " )
+       << ( player.highQuality() ? "h " : "l " )
        << Quantize( Rad2Deg( player.visibleAngle() ), DPREC ) << ')';
 }
 

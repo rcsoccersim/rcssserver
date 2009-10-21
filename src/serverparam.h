@@ -33,7 +33,6 @@
 #ifndef SERVER_PARAM_H
 #define SERVER_PARAM_H
 
-#include "utility.h"
 #include "types.h"
 
 #include <rcssbase/net/udpsocket.hpp>
@@ -604,130 +603,37 @@ private:
 
     // setters & getters
 
-    void setCTLRadius( double value )
-      {
-          M_control_radius_width -= M_control_radius;
-          M_control_radius = value;
-          M_control_radius_width += M_control_radius;
-      }
+    void setCTLRadius( double value );
+    void setKickMargin( double value );
+    void setBallSize( double value );
+    void setPlayerSize( double value );
 
-    void setKickMargin( double value )
-      {
-          M_kickable_area -= M_kickable_margin;
-          M_kickable_margin = value;
-          M_kickable_area += M_kickable_margin;
-      }
+    double getHalfTimeScaler() const;
+    void setHalfTime( int value );
+    int getRawHalfTime() const;
+    void setExtraHalfTime( int value );
+    int getRawExtraHalfTime() const;
+    void setNrNormalHalfs( int value );
+    void setNrExtraHalfs( int value );
 
-    void setBallSize( double value )
-      {
-          M_kickable_area -= M_ball_size;
-          M_ball_size = value;
-          M_kickable_area += M_ball_size;
-      }
-
-    void setPlayerSize( double value )
-      {
-          M_control_radius_width += M_player_size;
-          M_kickable_area -= M_player_size;
-          M_player_size = value;
-          M_kickable_area += M_player_size;
-          M_control_radius_width -= M_player_size;
-      }
-
-    double getHalfTimeScaler() const
-      {
-          double value = 1000.0 / ( M_simulator_step / M_slow_down_factor );
-          return ( value != 0.0
-                   ? value
-                   : EPS );
-      }
-
-    //Have to be careful with integer math, see bug # 800540
-    void setHalfTime( int value )
-      {
-          M_raw_half_time = value;
-          M_half_time = static_cast< int >( value * getHalfTimeScaler() + 0.5 );
-      }
-
-    int getRawHalfTime() const
-      {
-          //Have to be careful with integer math, see bug # 800540
-          //return static_cast< int >( M_half_time / getHalfTimeScaler() + 0.5 );
-          return M_raw_half_time;
-      }
-
-    //Have to be careful with integer math, see bug # 800540
-    void setExtraHalfTime( int value )
-      {
-          M_raw_extra_half_time = value < 0 ? 0 : value;
-          M_extra_half_time = static_cast< int >( value * getHalfTimeScaler() + 0.5 );
-      }
-
-    int getRawExtraHalfTime() const
-      {
-          //Have to be careful with integer math, see bug # 800540
-          //return static_cast< int >( M_half_time / getHalfTimeScaler() + 0.5 );
-          return M_raw_extra_half_time;
-      }
-
-    void setNrNormalHalfs( int value )
-      {
-          M_nr_normal_halfs = value < 0 ? 0 : value;
-      }
-
-    void setNrExtraHalfs( int value )
-      {
-          M_nr_extra_halfs = value < 0 ? 0 : value;
-      }
-
-    int getRawSimStep() const
-      {
-          return M_simulator_step / M_slow_down_factor;
-      }
-
-    int getRawSenseBodyStep() const
-      {
-          return M_sense_body_step / M_slow_down_factor;
-      }
-
-    int getRawCoachVisualStep() const
-      {
-          return M_send_vi_step / M_slow_down_factor;
-      }
-
-    int getRawSendStep() const
-      {
-          return M_send_step / M_slow_down_factor;
-      }
-
-    int getRawSynchOffset() const
-      {
-          return M_synch_offset / M_slow_down_factor;
-      }
+    int getRawSimStep() const;
+    int getRawSenseBodyStep() const;
+    int getRawCoachVisualStep() const;
+    int getRawSendStep() const;
+    int getRawSynchOffset() const;
 
     void setSynchMode( bool value );
 
     void setTeamLeftStart( std::string start );
     void setTeamRightStart( std::string start );
 
-    void setTextLogDir( std::string str )
-      {
-          M_text_log_dir = tildeExpand( str );
-      }
-    void setGameLogDir( std::string str )
-      {
-          M_game_log_dir = tildeExpand( str );
-      }
-    void setKAwayLogDir( std::string str )
-      {
-          M_keepaway_log_dir = tildeExpand( str );
-      }
+    void setTextLogDir( std::string str );
+    void setGameLogDir( std::string str );
+    void setKAwayLogDir( std::string str );
 
-    void setCoachMsgFile( std::string str )
-      {
-          M_coach_msg_file = tildeExpand( str );
-      }
+    void setCoachMsgFile( std::string str );
 
+    void setTackleFoulProbability( double value );
 
     void setSlowDownFactor();
 
@@ -801,7 +707,7 @@ public:
     const double & minNeckMoment() const { return M_min_neck_moment; }
     const double & maxNeckAngle() const { return M_max_neck_angle; }
     const double & minNeckAngle() const { return M_min_neck_angle; }
-    double visibleAngle() const { return Deg2Rad( M_visible_angle ); }
+    //double visibleAngle() const { return Deg2Rad( M_visible_angle ); }
     const double & visibleAngleDegree() const { return M_visible_angle; }
     const double & visibleDistance() const{ return M_visible_distance; }
 

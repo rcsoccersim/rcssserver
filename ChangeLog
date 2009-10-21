@@ -1,3 +1,24 @@
+2009-10-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/bodysender.cpp:
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/field.h:
+	* src/fullstatesender.cpp:
+	* src/object.cpp:
+	* src/object.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/referee.cpp:
+	* src/referee.h:
+	* src/serializermonitor.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/vector.h:
+	* src/visualsenderplayer.cpp:
+	- implemented new tackle foul model. An intentional foul and
+	yellow/red cards are NOT implemented yet.
+
 2009-10-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/heteroplayer.cpp:

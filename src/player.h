@@ -73,10 +73,10 @@ private:
 
     double M_consumed_stamina;
 
-    double M_vis_angle;
+    double M_visible_angle;
     rcss::pcom::VIEW_WIDTH M_view_width;
 public:
-    const double defangle;
+    const double M_default_visible_angle;
     const double vis_distance;
     const double vis_distance2;
 private:
@@ -102,10 +102,11 @@ private:
 
     // pfr 8/14/00: for RC2000 evaluation
     double M_kick_rand;
+    double M_tackle_rand;
 
     bool M_synch_see;
-    int M_vis_send;
-    bool M_highquality;
+    int M_visual_send_interval;
+    bool M_high_quality;
 
     Int32 M_state;
 
@@ -125,6 +126,8 @@ private:
     int M_goalie_moves_since_catch;
 
     int M_kick_cycles;
+    int M_dash_cycles;
+
     int M_kick_count;
     int M_dash_count;
     int M_turn_count;
@@ -292,7 +295,7 @@ public:
     const
     double & visibleAngle() const
       {
-          return M_vis_angle;
+          return M_visible_angle;
       }
 
     rcss::pcom::VIEW_WIDTH viewWidth() const
@@ -357,6 +360,8 @@ public:
 #endif
       }
 
+    double kickableArea() const;
+
     const
     double & angleBodyCommitted() const
       {
@@ -369,13 +374,13 @@ public:
           return M_angle_neck_committed;
       }
 
-    int visSend() const
+    int visualSendInterval() const
       {
-          return M_vis_send;
+          return M_visual_send_interval;
       }
-    bool highquality() const
+    bool highQuality() const
       {
-          return M_highquality;
+          return M_high_quality;
       }
 
     bool doneReceived() const
@@ -387,6 +392,8 @@ public:
     bool canHearFullFrom( const Player & sender ) const;
 
     bool kicked() const { return M_kick_cycles >= 0; }
+    bool dashed() const { return M_dash_cycles >= 0; }
+    int isDashing() const { return M_dash_cycles == 1; }
 
     int kickCount() const { return M_kick_count; }
     int dashCount() const { return M_dash_count; }
@@ -420,6 +427,7 @@ public:
     void updateStamina();
     void updateCapacity();
 
+    bool ballKickable() const;
     bool ballCollide() const
       {
           return M_ball_collide;
