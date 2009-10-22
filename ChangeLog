@@ -1,3 +1,30 @@
+2009-10-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/field.h:
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* src/initsender.cpp:
+	* src/object.cpp:
+	* src/object.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/referee.cpp:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/types.h:
+	* src/visualsenderplayer.cpp:
+	- implemented new heterogeneous kick power rate model.
+	- removed server::tackle_foul_model.
+	- added server::foul_detect_probability.
+	- added player::kick_power_rate_delta_min.
+	- added player::kick_power_rate_delta_max.
+	- added player::foul_detect_probability_delta_factor.
+	- added HeteroPlaeyr::kickPowerRate().
+	- added HeteroPlaeyr::foulDetectProbability().
+
 2009-10-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/bodysender.cpp:

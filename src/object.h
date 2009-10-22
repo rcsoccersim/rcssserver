@@ -155,25 +155,8 @@ public:
           return ( PVector( *this ) -= orig ).r();
       }
 
-    double angle() const
-      {
-          return th();
-      }
-
-    double angle( const PVector & dir ) const
-      {
-          double ang = dir.th() - this->th();
-          return normalize_angle( ang );
-      }
-
     const
     PVector & rotate( const double & ang );
-
-//     double vangle( const PVector & target,
-//                    const PVector & origin ) const;
-
-//     double vangle( const PVector & target,
-//                    const double & origin ) const;
 
     bool between( const PVector & begin,
                   const PVector & end ) const;
@@ -500,9 +483,6 @@ class Stadium;
 
 class MPObject
     : public PObject {
-
-    friend class MPObjectTable;
-
 protected:
     Stadium	& M_stadium;
 
@@ -521,9 +501,9 @@ private:
     //const Weather * M_weather;
 
     /* new collision stuff */
-    PVector post_col_pos;
-    int col_count;
-    bool col;
+    PVector M_post_collision_pos; //!< accumulated collision pos
+    int M_collision_count;
+    bool M_collided;
 
 private:
 
@@ -593,27 +573,27 @@ public:
           M_accel += f;
       }
 
-    void clearCollide()
+    void clearCollision()
       {
-          post_col_pos.assign( 0.0, 0.0 );
-          col_count = 0;
-          // col is reset in updateCollVel()
+          M_post_collision_pos.assign( 0.0, 0.0 );
+          M_collision_count = 0;
+          // M_collided is reset in updateCollVel()
       }
     void collide( const PVector & col_pos )
       {
-          post_col_pos += col_pos;
-          ++col_count;
-          col = true;
+          M_post_collision_pos += col_pos;
+          ++M_collision_count;
+          M_collided = true;
       }
-    void updateCollVel()
+    void updateCollisionVel()
       {
-          if ( this->col )
+          if ( M_collided )
           {
-              this->M_vel *= -0.1;
-              this->col = false;
+              M_vel *= -0.1;
+              M_collided = false;
           }
       }
-    void moveToCollPos();
+    void moveToCollisionPos();
 
     std::ostream & print( std::ostream & o ) const;
 

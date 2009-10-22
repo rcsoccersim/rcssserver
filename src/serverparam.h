@@ -330,7 +330,7 @@ private:
     static const double MIN_DASH_POWER;
     // 14.0.0
     static const double TACKLE_RAND_FACTOR;
-    static const double TACKLE_FOUL_PROBABILITY;
+    static const double FOUL_DETECT_PROBABILITY;
     static const int FOUL_EXPONENT;
     static const int FOUL_CYCLES;
 
@@ -588,7 +588,7 @@ private:
 
     // 14.0.0
     double M_tackle_rand_factor;
-    double M_tackle_foul_probability;
+    double M_foul_detect_probability;
     int M_foul_exponent;
     int M_foul_cycles;
 
@@ -633,7 +633,7 @@ private:
 
     void setCoachMsgFile( std::string str );
 
-    void setTackleFoulProbability( double value );
+    void setFoulDetectProbability( double value );
 
     void setSlowDownFactor();
 
@@ -923,7 +923,7 @@ public:
 
     // v14
     const double & tackleRandFactor() const { return M_tackle_rand_factor; }
-    const double & tackleFoulProbability() const { return M_tackle_foul_probability; }
+    const double & foulDetectProbability() const { return M_foul_detect_probability; }
     int foulExponent() const { return M_foul_exponent; }
     int foulCycles() const { return M_foul_cycles; }
 

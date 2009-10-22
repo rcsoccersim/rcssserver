@@ -231,7 +231,7 @@ VisualSenderPlayerV1::sendLowFlag( const PObject & flag )
                                             calcName( flag ),
                                             calcDegDir( ang ) );
     }
-    else if ( calcUnQuantDist( flag ) <= self().vis_distance )
+    else if ( calcUnQuantDist( flag ) <= self().VISIBLE_DISTANCE )
     {
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( flag ),
@@ -278,7 +278,7 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
                                                 dir_chg );
         }
     }
-    else if ( un_quant_dist <= self().vis_distance2 )
+    else if ( un_quant_dist <= self().VISIBLE_DISTANCE2 )
     {
         //un_quant_dist = std::sqrt( un_quant_dist );
         serializer().serializeVisualObject( transport(),
@@ -300,7 +300,7 @@ VisualSenderPlayerV1::sendLowBall( const MPObject & ball )
                                             calcName( ball ),
                                             calcDegDir( ang ) );
     }
-    else if( calcUnQuantDist( ball ) <= self().vis_distance )
+    else if( calcUnQuantDist( ball ) <= self().VISIBLE_DISTANCE )
     {
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( ball ),
@@ -348,7 +348,7 @@ VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
                                                 dir_chg );
         }
     }
-    else if ( un_quant_dist <= self().vis_distance2 )
+    else if ( un_quant_dist <= self().VISIBLE_DISTANCE2 )
     {
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( ball ),
@@ -400,7 +400,7 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
             }
         }
     }
-    else if ( un_quant_dist2 <= self().vis_distance2 )
+    else if ( un_quant_dist2 <= self().VISIBLE_DISTANCE2 )
     {
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( player ),
@@ -462,7 +462,7 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
             }
         }
     }
-    else if ( un_quant_dist <= player.vis_distance2 )
+    else if ( un_quant_dist <= player.VISIBLE_DISTANCE2 )
     {
         //un_quant_dist = std::sqrt( un_quant_dist );
         serializer().serializeVisualObject( transport(),

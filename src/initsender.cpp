@@ -618,8 +618,11 @@ InitSenderCommonV14::serializePlayerType( const int id,
     InitSenderCommonV8::serializePlayerType( id, type );
 
     serializer().serializeParam( transport(),
-                                 "tackle_rand",
-                                 type.tackleRand() );
+                                 "kick_power_rate",
+                                 type.kickPowerRate() );
+    serializer().serializeParam( transport(),
+                                 "foul_detect_probability",
+                                 type.foulDetectProbability() );
 }
 
 

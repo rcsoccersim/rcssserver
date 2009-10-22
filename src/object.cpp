@@ -667,20 +667,20 @@ MPObject::_inc()
 
 
 void
-MPObject::moveToCollPos()
+MPObject::moveToCollisionPos()
 {
-    if ( this->col_count > 0 )
+    if ( M_collision_count > 0 )
     {
         /*        cout << "oldpos = " << obj->pos << std::endl; */
         /*        cout << "colpos = " << obj->post_col_pos << std::endl; */
         /*        cout << "colcount = " << obj->col_count << std::endl; */
-        this->post_col_pos /= this->col_count;
-        this->M_pos = this->post_col_pos;
+        M_post_collision_pos /= M_collision_count;
+        M_pos = M_post_collision_pos;
         /*        cout << "newpos = " << obj->pos << std::endl; */
     }
 
-    this->post_col_pos = PVector( 0, 0 );
-    this->col_count = 0;
+    M_post_collision_pos.assign( 0.0, 0.0 );
+    M_collision_count = 0;
 }
 
 

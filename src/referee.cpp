@@ -2260,21 +2260,18 @@ FoulRef::tackleTaken( const Player & tackler )
         return;
     }
 
-    const ServerParam & SP = ServerParam::instance();
-
     bool detected = false;
 
-    //boost::bernoulli_distribution<> rng( SP.tackleFoulProbability() );
-    boost::bernoulli_distribution<> rng( 0.9999 );
+    boost::bernoulli_distribution<> rng( tackler.foulDetectProbability() );
     boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
         dst( rcss::random::DefaultRNG::instance(), rng );
 
     const double ball_dist2 = tackler.pos().distance2( M_stadium.ball().pos() );
     const double ball_angle = ( M_stadium.ball().pos() - tackler.pos() ).th();
 
-    std::cerr << M_stadium.time() << " (tackleTaken) "
-              << " (tackler " << SideStr( tackler.side() ) << ' ' << tackler.unum() << ")"
-              << std::endl;
+    //std::cerr << M_stadium.time() << " (tackleTaken) "
+    //          << " (tackler " << SideStr( tackler.side() ) << ' ' << tackler.unum() << ")"
+    //          << std::endl;
 
     const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
     for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
@@ -2284,55 +2281,41 @@ FoulRef::tackleTaken( const Player & tackler )
         if ( (*p)->state() == DISABLE ) continue;
         if ( (*p)->side() == tackler.side() ) continue;
 
-        //if ( ! (*p)->isDashing() ) continue; // not performing dash
-        //if ( (*p)->vel().r2() < std::pow( 0.1, 2 ) ) continue;
+        if ( ! (*p)->dashed() ) continue; // no dashin
+        if ( ! (*p)->ballKickable() ) continue; // no kickable
 
         PVector player_rel = (*p)->pos() - tackler.pos();
 
         if ( player_rel.r2() > ball_dist2 ) continue; // further than ball
 
-        std::cerr << "--> (player " << SideStr( (*p)->side() ) << ' ' << (*p)->unum() << ")\n";
-
-        if ( ! (*p)->dashed() )
-        {
-            // not performing dash
-            std::cerr << "----> no dash" << std::endl;
-            continue;
-        }
-
-        if ( ! (*p)->ballKickable() )
-        {
-            // not kickable
-            std::cerr << "----> not kickable" << std::endl;
-            continue;
-        }
+        //std::cerr << "--> (player " << SideStr( (*p)->side() ) << ' ' << (*p)->unum() << ")\n";
 
         player_rel.rotate( -ball_angle );
 
         if ( player_rel.x < 0.0
              || std::fabs( player_rel.y ) > (*p)->size() + tackler.size() )
         {
-            std::cerr << "----> behind or big y_diff. rel=" << player_rel
-                      << std::endl;
+            //std::cerr << "----> behind or big y_diff. rel=" << player_rel
+            //          << std::endl;
             continue;
         }
 
-        double body_diff = normalize_angle( (*p)->angleBodyCommitted() - ball_angle );
-        if ( body_diff >  M_PI*0.5 )
+        double body_diff = std::fabs( normalize_angle( (*p)->angleBodyCommitted() - ball_angle ) );
+        if ( body_diff > M_PI*0.5 )
         {
-            std::cerr << "----> over the body angle. angle=" << body_diff / M_PI * 180.0
-                      << std::endl;
+            //std::cerr << "----> over body angle. angle=" << body_diff / M_PI * 180.0
+            //          << std::endl;
             continue;
         }
 
         if ( dst() )
         {
-            std::cerr << "----> detected foul. prob=" << rng.p() << std::endl;
+            //std::cerr << "----> detected foul. prob=" << rng.p() << std::endl;
             detected = true;
             break;
         }
 
-        std::cerr << "----> not detected foul. prob=" << rng.p()<< std::endl;
+        //std::cerr << "----> not detected foul. prob=" << rng.p()<< std::endl;
     }
 
     if ( detected )

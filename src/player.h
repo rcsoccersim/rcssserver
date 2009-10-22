@@ -49,6 +49,10 @@ class Player
       public rcss::Listener,
       public rcss::pcom::Builder
 {
+public:
+    const double VISIBLE_DISTANCE;
+    const double VISIBLE_DISTANCE2;
+
 private:
 
     rcss::InitObserverPlayer * M_init_observer;
@@ -56,33 +60,23 @@ private:
     rcss::BodyObserverPlayer * M_body_observer;
     rcss::FullStateObserver * M_fullstate_observer;
 
+    rcss::pcom::Parser M_parser;
+
+    //
+    // client settings
+    //
+    double M_version; //!< client protocol version
+
     Team * M_team;
     const Side M_side;
     const int M_unum;  /* uniform number */
+    bool M_goalie;
 
     std::string M_name_far;
     std::string M_name_toofar;
     /* th 19.05.00 */
     std::string M_short_name_far;
     std::string M_short_name_toofar;
-
-    double M_stamina;
-    double M_recovery;
-    double M_effort;
-    double M_stamina_capacity;
-
-    double M_consumed_stamina;
-
-    double M_visible_angle;
-    rcss::pcom::VIEW_WIDTH M_view_width;
-public:
-    const double M_default_visible_angle;
-    const double vis_distance;
-    const double vis_distance2;
-private:
-    double M_inertia_moment;
-
-    double M_version; //!< client protocol version
 
     double M_unum_far_length;
     double M_unum_too_far_length;
@@ -95,33 +89,71 @@ private:
     double dir_qstep_player; /* each Player quantize step of direction */
 #endif
 
+    int M_clang_min_ver;
+    int M_clang_max_ver;
+
+    //
+    // heterogeneous player parameters
+    //
+    const HeteroPlayer * M_player_type;
+    int M_player_type_id;
+
+    double M_kick_rand; // pfr 8/14/00: for RC2000 evaluation
+
+    //
+    // state
+    //
+    Int32 M_state;
+    int M_card_count;
+
+    //
+    // visual sensor
+    //
+    bool M_synch_see;
+    int M_visual_send_interval;
+    bool M_high_quality;
+
+    double M_visible_angle;
+    rcss::pcom::VIEW_WIDTH M_view_width;
+
+    //
+    // audio sensor
+    //
+    int M_hear_capacity_from_teammate;
+    int M_hear_capacity_from_opponent;
+
+    //
+    // stamina
+    //
+    double M_stamina;
+    double M_recovery;
+    double M_effort;
+    double M_stamina_capacity;
+
+    double M_consumed_stamina;
+
+    //
+    // body/neck angle
+    //
     double M_angle_body; //!< temporal body angle
     double M_angle_body_committed;
     double M_angle_neck; //!< temporal neck angle
     double M_angle_neck_committed;
 
-    // pfr 8/14/00: for RC2000 evaluation
-    double M_kick_rand;
-    double M_tackle_rand;
-
-    bool M_synch_see;
-    int M_visual_send_interval;
-    bool M_high_quality;
-
-    Int32 M_state;
-
+    //
+    // collision state
+    //
     bool M_ball_collide;
     bool M_player_collide;
     bool M_post_collide;
 
+    //
+    // command state
+    //
     bool M_command_done;
     bool M_turn_neck_done;
     bool M_done_received; //pfr:SYNCH
 
-    int M_hear_capacity_from_teammate;
-    int M_hear_capacity_from_opponent;
-
-    bool M_goalie;
     int M_goalie_catch_ban;
     int M_goalie_moves_since_catch;
 
@@ -144,16 +176,11 @@ private:
     int M_tackle_cycles;
     int M_tackle_count;
 
-    int M_clang_min_ver;
-    int M_clang_max_ver;
-
+    //
+    // offside state
+    //
     bool M_offside_mark;
     PVector M_offside_pos;
-
-    const HeteroPlayer * M_player_type;
-    int M_player_type_id;
-
-    rcss::pcom::Parser M_parser;
 
 private:
     // not used
@@ -168,29 +195,24 @@ public:
 
     bool init( const double & ver,
                const bool goalie );
+    bool setSenders();
 
     void setEnable();
     void disable();
     void discard();
 
-    Int32 state() const
-      {
-          return M_state;
-      }
-    void addState( const Int32 state )
-      {
-          M_state |= state;
-      }
-    void resetState();
-
-    void sendInit();
-    void sendReconnect();
-
+    //
+    // receive message
+    //
     void parseMsg( char * msg,
                    const size_t & len );
 
+    //
+    // send messages
+    //
+    void sendInit();
+    void sendReconnect();
     void send( const char * msg );
-
     void sendBody()
       {
           sense_body();
@@ -199,139 +221,25 @@ public:
     void sendSynchVisual();
     void sendFullstate(); /* contributed by Artur Merke */
 
-    void incArmAge()
-      {
-          M_arm.incAge();
-      }
-    const
-    Arm & arm() const
-      {
-          return M_arm;
-      }
+    //
+    // client settings
+    //
+    const double & version() const { return M_version; }
 
-    int attentiontoCount() const { return M_attentionto_count; }
+    const Team * team() const { return M_team; }
+    Side side() const { return M_side; }
+    int unum() const { return M_unum; }
+    bool isGoalie() const { return M_goalie; }
 
-    int tackleCycles() const { return M_tackle_cycles; }
-    bool isTackling() const { return M_tackle_cycles > 0; }
-    int tackleCount() const { return M_tackle_count; }
+    const std::string & nameFar() const { return M_name_far; }
+    const std::string & nameTooFar() const { return M_name_toofar; }
+    const std::string & shortNameFar() const { return M_short_name_far; }
+    const std::string & shortNameTooFar() const { return M_short_name_toofar; }
 
-    int clangMinVer() const { return M_clang_min_ver; }
-    int clangMaxVer() const { return M_clang_max_ver; }
-
-    //void setBackPasser() { M_alive |= BACK_PASS; }
-    //void setFreeKickFaulter() { M_alive |= FREE_KICK_FAULT; }
-
-    void place( const PVector & location );
-    void place( const PVector & pos,
-                const double & angle,
-                const PVector & vel,
-                const PVector & accel );
-
-    const
-    Team * team() const
-      {
-          return M_team;
-      }
-
-    Side side() const
-      {
-          return M_side;
-      }
-    int unum() const
-      {
-          return M_unum;
-      }
-
-    bool isGoalie() const
-      {
-          return M_goalie;
-      }
-
-    const
-    std::string & nameFar() const
-      {
-          return M_name_far;
-      }
-
-    const
-    std::string & nameTooFar() const
-      {
-          return M_name_toofar;
-      }
-
-    const
-    std::string & shortNameFar() const
-      {
-          return M_short_name_far;
-      }
-
-    const
-    std::string & shortNameTooFar() const
-      {
-          return M_short_name_toofar;
-      }
-
-    const
-    double & stamina() const
-      {
-          return M_stamina;
-      }
-    const
-    double & recovery() const
-      {
-          return M_recovery;
-      }
-    const
-    double & effort() const
-      {
-          return M_effort;
-      }
-    const
-    double & staminaCapacity() const
-      {
-          return M_stamina_capacity;
-      }
-
-    const
-    double & visibleAngle() const
-      {
-          return M_visible_angle;
-      }
-
-    rcss::pcom::VIEW_WIDTH viewWidth() const
-      {
-          return M_view_width;
-      }
-
-    const
-    double & version() const
-      {
-          return M_version;
-      }
-
-    const
-    double & unumFarLength() const
-      {
-          return M_unum_far_length;
-      }
-
-    const
-    double & unumTooFarLength() const
-      {
-          return M_unum_too_far_length;
-      }
-
-    const
-    double & teamFarLength() const
-      {
-          return M_team_far_length;
-      }
-
-    const
-    double & teamTooFarLength() const
-      {
-          return M_team_too_far_length;
-      }
+    const double & unumFarLength() const { return M_unum_far_length; }
+    const double & unumTooFarLength() const { return M_unum_too_far_length; }
+    const double & teamFarLength() const { return M_team_far_length; }
+    const double & teamTooFarLength() const { return M_team_too_far_length; }
 
     double distQStep() const
       {
@@ -360,40 +268,73 @@ public:
 #endif
       }
 
+    int clangMinVer() const { return M_clang_min_ver; }
+    int clangMaxVer() const { return M_clang_max_ver; }
+
+    //
+    // heterogeneous player settings
+    //
+    void setPlayerType( const int );
+    void substitute( const int );
+    int playerTypeId() const { return M_player_type_id; }
+
     double kickableArea() const;
+    bool ballKickable() const;
 
-    const
-    double & angleBodyCommitted() const
-      {
-          return M_angle_body_committed;
-      }
+    double foulDetectProbability() const;
 
-    const
-    double & angleNeckCommitted() const
-      {
-          return M_angle_neck_committed;
-      }
+    //
+    // state
+    //
+    Int32 state() const { return M_state; }
+    void addState( const Int32 state ) { M_state |= state; }
+    void resetState();
 
-    int visualSendInterval() const
-      {
-          return M_visual_send_interval;
-      }
-    bool highQuality() const
-      {
-          return M_high_quality;
-      }
+    int cardCount() const { return M_card_count; }
 
-    bool doneReceived() const
-      {
-          return M_done_received;
-      }
+    //
+    // visual sensor
+    //
+    int visualSendInterval() const { return M_visual_send_interval; }
+    bool highQuality() const { return M_high_quality; }
+    const double & visibleAngle() const { return M_visible_angle; }
+    rcss::pcom::VIEW_WIDTH viewWidth() const { return M_view_width; }
 
+    //
+    // audio sensor
+    //
     void decrementHearCapacity( const Player & sender );
     bool canHearFullFrom( const Player & sender ) const;
 
+    const double & angleBodyCommitted() const { return M_angle_body_committed; }
+    const double & angleNeckCommitted() const { return M_angle_neck_committed; }
+
+    void recoverAll();
+    void recoverStaminaCapacity();
+    void updateStamina();
+    void updateCapacity();
+
+    //
+    // stamina
+    //
+    const double & stamina() const { return M_stamina; }
+    const double & recovery() const { return M_recovery; }
+    const double & effort() const { return M_effort; }
+    const double & staminaCapacity() const { return M_stamina_capacity; }
+
+    //
+    // arm
+    //
+    const Arm & arm() const { return M_arm; }
+    void incArmAge() { M_arm.incAge(); }
+
+    //
+    // command state
+    //
+    bool doneReceived() const { return M_done_received; }
+
     bool kicked() const { return M_kick_cycles >= 0; }
     bool dashed() const { return M_dash_cycles >= 0; }
-    int isDashing() const { return M_dash_cycles == 1; }
 
     int kickCount() const { return M_kick_count; }
     int dashCount() const { return M_dash_count; }
@@ -404,42 +345,19 @@ public:
     int changeViewCount() const { return M_change_view_count; }
     int sayCount() const { return M_say_count; }
 
-    double angleFromBody( const PObject & obj ) const
-      {
-          //return M_pos.vangle( obj.pos(), M_angle_body_committed );
-          return normalize_angle( ( obj.pos() - this->pos() ).angle()
-                                  - M_angle_body_committed );
-      }
+    int attentiontoCount() const { return M_attentionto_count; }
 
-    void setPlayerType( const int );
-    void substitute( const int );
+    int tackleCycles() const { return M_tackle_cycles; }
+    bool isTackling() const { return M_tackle_cycles > 0; }
+    int tackleCount() const { return M_tackle_count; }
 
-    int playerTypeId() const
-      {
-          return M_player_type_id;
-      }
+    //
+    // collision state
+    //
+    bool ballCollide() const { return M_ball_collide; }
+    bool playerCollide() const { return M_player_collide; }
+    bool postCollide() const { return M_post_collide; }
 
-
-    bool setSenders();
-
-    void recoverAll();
-    void recoverStaminaCapacity();
-    void updateStamina();
-    void updateCapacity();
-
-    bool ballKickable() const;
-    bool ballCollide() const
-      {
-          return M_ball_collide;
-      }
-    bool playerCollide() const
-      {
-          return M_player_collide;
-      }
-    bool postCollide() const
-      {
-          return M_post_collide;
-      }
     void collidedWithBall()
       {
           addState( BALL_TO_PLAYER | BALL_COLLIDE );
@@ -451,21 +369,30 @@ public:
           M_player_collide = true;
       }
     void resetCollisionFlags();
-
     void resetCommandFlags();
 
-    void clearOffsideMark();
+    //
+    // offside state
+    //
     void setOffsideMark( const double & offside_line );
+    void clearOffsideMark();
+    bool hasOffsideMark() const { return M_offside_mark; }
+    const PVector & offsidePos() const { return M_offside_pos; }
 
-    bool hasOffsideMark() const
+    //
+    // utility
+    //
+    double angleFromBody( const PObject & obj ) const
       {
-          return M_offside_mark;
+          return normalize_angle( ( obj.pos() - this->pos() ).th()
+                                  - M_angle_body_committed );
       }
-    const
-    PVector & offsidePos() const
-      {
-          return M_offside_pos;
-      }
+
+    void place( const PVector & location );
+    void place( const PVector & pos,
+                const double & angle,
+                const PVector & vel,
+                const PVector & accel );
 
 protected:
 

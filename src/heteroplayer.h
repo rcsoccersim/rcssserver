@@ -42,43 +42,46 @@ public:
     HeteroPlayer( int );
     ~HeteroPlayer();
 
-    const double & playerSpeedMax() const { return player_speed_max; }
-    const double & staminaIncMax() const { return stamina_inc_max; }
-    const double & playerDecay() const { return player_decay; }
-    const double & inertiaMoment() const { return inertia_moment; }
-    const double & dashPowerRate() const { return dash_power_rate; }
-    const double & playerSize() const { return player_size; }
-    const double & kickableMargin() const { return kickable_margin; }
-    const double & kickRand() const { return kick_rand; }
-    const double & extraStamina() const { return extra_stamina; }
-    const double & effortMax() const { return effort_max; }
-    const double & effortMin() const { return effort_min; }
+    const double & playerSpeedMax() const { return M_player_speed_max; }
+    const double & staminaIncMax() const { return M_stamina_inc_max; }
+    const double & playerDecay() const { return M_player_decay; }
+    const double & inertiaMoment() const { return M_inertia_moment; }
+    const double & dashPowerRate() const { return M_dash_power_rate; }
+    const double & playerSize() const { return M_player_size; }
+    const double & kickableMargin() const { return M_kickable_margin; }
+    const double & kickRand() const { return M_kick_rand; }
+    const double & extraStamina() const { return M_extra_stamina; }
+    const double & effortMax() const { return M_effort_max; }
+    const double & effortMin() const { return M_effort_min; }
 
-    const double & tackleRand() const { return M_tackle_rand; }
+    const double & kickPowerRate() const { return M_kick_power_rate; }
+    const double & foulDetectProbability() const { return M_foul_detect_probability; }
 
     std::ostream & print( std::ostream & o ) const;
 
-    player_type_t convertToStruct ( int id ) const;
+    player_type_t convertToStruct( int id ) const;
 
 private:
 
     double delta( const double & min,
                   const double & max );
+    void setDefault();
 
-    double player_speed_max;
-    double stamina_inc_max;
-    double player_decay;
-    double inertia_moment;
-    double dash_power_rate;
-    double player_size;
-    double kickable_margin;
-    double kick_rand;
-    double extra_stamina;
-    double effort_max;
-    double effort_min;
+    double M_player_speed_max;
+    double M_stamina_inc_max;
+    double M_player_decay;
+    double M_inertia_moment;
+    double M_dash_power_rate;
+    double M_player_size;
+    double M_kickable_margin;
+    double M_kick_rand;
+    double M_extra_stamina;
+    double M_effort_max;
+    double M_effort_min;
 
     // v14
-    double M_tackle_rand;
+    double M_kick_power_rate;
+    double M_foul_detect_probability;
 };
 
 inline

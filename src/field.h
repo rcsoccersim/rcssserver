@@ -486,9 +486,9 @@ public:
 
 private:
 
-    void calcBallCollPos( Player * p );
-    void calcCollPos( MPObject * a,
-                      MPObject * b );
+    void calcBallCollisionPos( Player * p );
+    void calcCollisionPos( MPObject * a,
+                           MPObject * b );
 
     void checkAutoMode();
     void startTeams();

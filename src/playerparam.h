@@ -32,7 +32,6 @@
 #ifndef RCSSSERVR_PLAYER_PARAM_H
 #define RCSSSERVR_PLAYER_PARAM_H
 
-#include "utility.h"
 #include "types.h"
 
 #include <rcssbase/conf/builder.hpp>
@@ -76,19 +75,19 @@ protected:
     void addParams();
 
 private:
-    boost::shared_ptr< rcss::conf::Builder > m_builder;
-    VerMap m_ver_map;
+    boost::shared_ptr< rcss::conf::Builder > M_builder;
+    VerMap M_ver_map;
 
 public:
 
     const VerMap & verMap() const
       {
-          return m_ver_map;
+          return M_ver_map;
       }
 
     void setRandomSeed( const int seed )
       {
-          random_seed = seed;
+          M_random_seed = seed;
       }
 
 protected:
@@ -115,39 +114,43 @@ public:
     player_params_t convertToStruct() const;
 
 
-    int playerTypes() const { return player_types; }
-    int subsMax() const { return subs_max; }
-    int ptMax() const { return pt_max; }
+    int playerTypes() const { return M_player_types; }
+    int subsMax() const { return M_subs_max; }
+    int ptMax() const { return M_pt_max; }
 
     bool allowMultDefaultType() const { return M_allow_mult_default_type; }
 
-    const double & playerSpeedMaxDeltaMin() const { return player_speed_max_delta_min; }
+    const double & playerSpeedMaxDeltaMin() const { return M_player_speed_max_delta_min; }
 
-    const double & playerSpeedMaxDeltaMax() const { return player_speed_max_delta_max; }
-    const double & staminaIncMaxDeltaFactor() const { return stamina_inc_max_delta_factor; }
+    const double & playerSpeedMaxDeltaMax() const { return M_player_speed_max_delta_max; }
+    const double & staminaIncMaxDeltaFactor() const { return M_stamina_inc_max_delta_factor; }
 
-    const double & playerDecayDeltaMin() const { return player_decay_delta_min; }
-    const double & playerDecayDeltaMax() const { return player_decay_delta_max; }
-    const double & inertiaMomentDeltaFactor() const { return inertia_moment_delta_factor; }
+    const double & playerDecayDeltaMin() const { return M_player_decay_delta_min; }
+    const double & playerDecayDeltaMax() const { return M_player_decay_delta_max; }
+    const double & inertiaMomentDeltaFactor() const { return M_inertia_moment_delta_factor; }
 
-    const double & dashPowerRateDeltaMin() const { return dash_power_rate_delta_min; }
-    const double & dashPowerRateDeltaMax() const { return dash_power_rate_delta_max; }
-    const double & playerSizeDeltaFactor() const { return player_size_delta_factor; }
+    const double & dashPowerRateDeltaMin() const { return M_dash_power_rate_delta_min; }
+    const double & dashPowerRateDeltaMax() const { return M_dash_power_rate_delta_max; }
+    const double & playerSizeDeltaFactor() const { return M_player_size_delta_factor; }
 
-    const double & kickableMarginDeltaMin() const { return kickable_margin_delta_min; }
-    const double & kickableMarginDeltaMax() const { return kickable_margin_delta_max; }
-    const double & kickRandDeltaFactor() const { return kick_rand_delta_factor; }
+    const double & kickableMarginDeltaMin() const { return M_kickable_margin_delta_min; }
+    const double & kickableMarginDeltaMax() const { return M_kickable_margin_delta_max; }
+    const double & kickRandDeltaFactor() const { return M_kick_rand_delta_factor; }
 
-    const double & extraStaminaDeltaMin() const { return extra_stamina_delta_min; }
-    const double & extraStaminaDeltaMax() const { return extra_stamina_delta_max; }
-    const double & effortMaxDeltaFactor() const { return effort_max_delta_factor; }
-    const double & effortMinDeltaFactor() const { return effort_min_delta_factor; }
+    const double & extraStaminaDeltaMin() const { return M_extra_stamina_delta_min; }
+    const double & extraStaminaDeltaMax() const { return M_extra_stamina_delta_max; }
+    const double & effortMaxDeltaFactor() const { return M_effort_max_delta_factor; }
+    const double & effortMinDeltaFactor() const { return M_effort_min_delta_factor; }
 
-    int randomSeed() const { return random_seed; }
+    int randomSeed() const { return M_random_seed; }
 
-    const double & newDashPowerRateDeltaMin() const { return new_dash_power_rate_delta_min; }
-    const double & newDashPowerRateDeltaMax() const { return new_dash_power_rate_delta_max; }
-    const double & newStaminaIncMaxDeltaFactor() const { return new_stamina_inc_max_delta_factor; }
+    const double & newDashPowerRateDeltaMin() const { return M_new_dash_power_rate_delta_min; }
+    const double & newDashPowerRateDeltaMax() const { return M_new_dash_power_rate_delta_max; }
+    const double & newStaminaIncMaxDeltaFactor() const { return M_new_stamina_inc_max_delta_factor; }
+
+    const double & kickPowerRateDeltaMin() const { return M_kick_power_rate_delta_min; }
+    const double & kickPowerRateDeltaMax() const { return M_kick_power_rate_delta_max; }
+    const double & foulDetectProbabilityDeltaFactor() const { return M_foul_detect_probability_delta_factor; }
 
     bool getInt( const std::string & param,
                  int & value ) const;
@@ -198,38 +201,47 @@ private:
     static const double DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX;
     static const double DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR;
 
-    int player_types;
-    int subs_max;
-    int pt_max;
+    static const double DEFAULT_KICK_POWER_RATE_DELTA_MIN;
+    static const double DEFAULT_KICK_POWER_RATE_DELTA_MAX;
+    static const double DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR;
+
+    int M_player_types;
+    int M_subs_max;
+    int M_pt_max;
 
     bool M_allow_mult_default_type;
 
-    double player_speed_max_delta_min;
-    double player_speed_max_delta_max;
-    double stamina_inc_max_delta_factor;
+    double M_player_speed_max_delta_min;
+    double M_player_speed_max_delta_max;
+    double M_stamina_inc_max_delta_factor;
 
-    double player_decay_delta_min;
-    double player_decay_delta_max;
-    double inertia_moment_delta_factor;
+    double M_player_decay_delta_min;
+    double M_player_decay_delta_max;
+    double M_inertia_moment_delta_factor;
 
-    double dash_power_rate_delta_min;
-    double dash_power_rate_delta_max;
-    double player_size_delta_factor;
+    double M_dash_power_rate_delta_min;
+    double M_dash_power_rate_delta_max;
+    double M_player_size_delta_factor;
 
-    double kickable_margin_delta_min;
-    double kickable_margin_delta_max;
-    double kick_rand_delta_factor;
+    double M_kickable_margin_delta_min;
+    double M_kickable_margin_delta_max;
+    double M_kick_rand_delta_factor;
 
-    double extra_stamina_delta_min;
-    double extra_stamina_delta_max;
-    double effort_max_delta_factor;
-    double effort_min_delta_factor;
+    double M_extra_stamina_delta_min;
+    double M_extra_stamina_delta_max;
+    double M_effort_max_delta_factor;
+    double M_effort_min_delta_factor;
 
-    double new_dash_power_rate_delta_min;
-    double new_dash_power_rate_delta_max;
-    double new_stamina_inc_max_delta_factor;
+    double M_new_dash_power_rate_delta_min;
+    double M_new_dash_power_rate_delta_max;
+    double M_new_stamina_inc_max_delta_factor;
 
-    int random_seed;
+    int M_random_seed;
+
+    // v14
+    double M_kick_power_rate_delta_min;
+    double M_kick_power_rate_delta_max;
+    double M_foul_detect_probability_delta_factor;
 };
 
 #endif

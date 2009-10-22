@@ -1617,10 +1617,12 @@ Stadium::movePlayer( const Side side,
     double new_angle = player->angleBodyCommitted();
     PVector new_vel = player->vel();
     PVector new_accel = player->accel();
+
     if ( vel )
     {
         new_vel = *vel;
     }
+
     if ( ang )
     {
         new_angle = *ang;
@@ -1740,12 +1742,12 @@ Stadium::collisions()
     do
     {
         col = false;
-        M_ball->clearCollide();
+        M_ball->clearCollision();
         for ( PlayerCont::iterator it = M_players.begin();
               it != end;
               ++it )
         {
-            (*it)->clearCollide();
+            (*it)->clearCollision();
         }
 
         // check ball to player
@@ -1762,7 +1764,7 @@ Stadium::collisions()
                 (*it)->collidedWithBall();
                 for_each( M_referees.begin(), M_referees.end(),
                           Referee::doBallTouched( **it ) );
-                calcBallCollPos( *it );
+                calcBallCollisionPos( *it );
             }
         }
 
@@ -1779,17 +1781,17 @@ Stadium::collisions()
                     col = true;
                     M_players[i]->collidedWithPlayer();
                     M_players[j]->collidedWithPlayer();
-                    calcCollPos( M_players[i], M_players[j] );
+                    calcCollisionPos( M_players[i], M_players[j] );
                 }
             }
         }
 
-        M_ball->moveToCollPos();
+        M_ball->moveToCollisionPos();
         for ( PlayerCont::iterator it = M_players.begin();
               it != end;
               ++it )
         {
-            (*it)->moveToCollPos();
+            (*it)->moveToCollisionPos();
         }
 
         --max_loop;
@@ -1800,22 +1802,22 @@ Stadium::collisions()
     //    std::cerr << M_time << ": collision loop " << max_loop
     //              << std::endl;
 
-    M_ball->updateCollVel();
+    M_ball->updateCollisionVel();
     for ( PlayerCont::iterator it = M_players.begin();
           it != end;
           ++it )
     {
-        (*it)->updateCollVel();
+        (*it)->updateCollisionVel();
     }
 
 }
 
 void
-Stadium::calcBallCollPos( Player * p )
+Stadium::calcBallCollisionPos( Player * p )
 {
     if ( playmode() == PM_PlayOn )
     {
-        calcCollPos( M_ball, p );
+        calcCollisionPos( M_ball, p );
         return;
     }
 
@@ -1836,8 +1838,8 @@ Stadium::calcBallCollPos( Player * p )
 }
 
 void
-Stadium::calcCollPos( MPObject * a,
-                      MPObject * b )
+Stadium::calcCollisionPos( MPObject * a,
+                           MPObject * b )
 {
     if ( a == NULL || b == NULL )
     {
@@ -2002,7 +2004,6 @@ Stadium::ballCaught( const Player & catcher )
         sendRefereeAudio( msg.c_str() );
     }
 
-    //M_motable.collisions( playmode() );
     collisions();
 
     for_each( M_referees.begin(), M_referees.end(),

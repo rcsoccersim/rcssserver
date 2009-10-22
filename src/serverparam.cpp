@@ -347,7 +347,7 @@ const double ServerParam::MIN_DASH_POWER = -100.0;
 
 // 14.0.0
 const double ServerParam::TACKLE_RAND_FACTOR = 2.0;
-const double ServerParam::TACKLE_FOUL_PROBABILITY = 0.5;
+const double ServerParam::FOUL_DETECT_PROBABILITY = 0.5;
 const int ServerParam::FOUL_EXPONENT = 10;
 const int ServerParam::FOUL_CYCLES = 5;
 
@@ -891,9 +891,9 @@ ServerParam::addParams()
 
     // v14
     addParam( "tackle_rand_factor", M_tackle_rand_factor, "", 14 );
-    addParam( "tackle_foul_probability",
-              rcss::conf::makeSetter( this, &ServerParam::setTackleFoulProbability ),
-              rcss::conf::makeGetter( M_tackle_foul_probability ),
+    addParam( "foul_detect_probability",
+              rcss::conf::makeSetter( this, &ServerParam::setFoulDetectProbability ),
+              rcss::conf::makeGetter( M_foul_detect_probability ),
               "", 14 );
     addParam( "foul_exponent", M_foul_exponent, "", 14 );
     addParam( "foul_cycles", M_foul_cycles, "", 14 );
@@ -1077,9 +1077,9 @@ ServerParam::setCoachMsgFile( std::string str )
 }
 
 void
-ServerParam::setTackleFoulProbability( double value )
+ServerParam::setFoulDetectProbability( double value )
 {
-    M_tackle_foul_probability = std::max( 0.0, std::min( value, 1.0 ) );
+    M_foul_detect_probability = std::max( 0.0, std::min( value, 1.0 ) );
 }
 
 void
@@ -1344,7 +1344,7 @@ ServerParam::setDefaults()
 
     // 14.0.0
     M_tackle_rand_factor = TACKLE_RAND_FACTOR;
-    M_tackle_foul_probability = TACKLE_FOUL_PROBABILITY;
+    M_foul_detect_probability = FOUL_DETECT_PROBABILITY;
     M_foul_exponent = FOUL_EXPONENT;
     M_foul_cycles = FOUL_CYCLES;
     M_random_seed = -1;

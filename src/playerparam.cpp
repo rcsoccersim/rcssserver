@@ -35,6 +35,8 @@
 
 #include "playerparam.h"
 
+#include "utility.h"
+
 #include <rcssbase/conf/parser.hpp>
 #include <rcssbase/conf/builder.hpp>
 
@@ -130,7 +132,10 @@ const double PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX = 0.0008;
 // [12.0.0] -10000.0 -> -6000.0
 const double PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR = -6000.0;
 
-
+// v14
+const double PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MIN = 0.0;
+const double PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MAX = 0.0;
+const double PlayerParam::DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR = 0.0;
 
 
 PlayerParam &
@@ -161,7 +166,7 @@ PlayerParam::init( rcss::conf::Builder * parent )
     assert( parent );
     instance( parent );
 
-    if ( ! instance().m_builder->parser() )
+    if ( ! instance().M_builder->parser() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": internal error: player param could not find configuration parser\n";
@@ -199,7 +204,7 @@ PlayerParam::init( rcss::conf::Builder * parent )
 
     instance().convertOldConf( conf_path.BOOST_FS_FILE_STRING() );
 
-    if ( ! instance().m_builder->parser()->parseCreateConf( conf_path, "player" ) )
+    if ( ! instance().M_builder->parser()->parseCreateConf( conf_path, "player" ) )
     {
         std::cerr << "could not parse configuration file '"
                   << conf_path.BOOST_FS_FILE_STRING()
@@ -207,11 +212,11 @@ PlayerParam::init( rcss::conf::Builder * parent )
         return false;
     }
 
-    if ( instance().m_builder->version() != instance().m_builder->parsedVersion() )
+    if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
     {
         std::cerr << "Version mismatched in the configuration file. "
                   << "Need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
-                  << " or set '" << instance().m_builder->version() << "' to the 'version' option."
+                  << " or set '" << instance().M_builder->version() << "' to the 'version' option."
                   << std::endl;
 //         std::cerr << "registered version = ["
 //                   << instance().m_builder->version() << "]\n"
@@ -252,7 +257,7 @@ PlayerParam::convertOldConf( const std::string & new_conf )
             if( system( command.c_str() ) == 0 )
             {
                 std::cout << "Conversion successful\n";
-                instance().m_builder->parser()->parse( filename );
+                instance().M_builder->parser()->parse( filename );
             }
             else
             {
@@ -269,7 +274,7 @@ PlayerParam::convertOldConf( const std::string & new_conf )
 
 
 PlayerParam::PlayerParam( rcss::conf::Builder * parent )
-    : m_builder( new rcss::conf::Builder( parent, VERSION, "player" ) )
+    : M_builder( new rcss::conf::Builder( parent, VERSION, "player" ) )
 {
     setDefaults();
     addParams();
@@ -280,131 +285,137 @@ PlayerParam::~PlayerParam()
 
 }
 
-void
-PlayerParam::addParams()
-{
-    addParam( "player_types", player_types, "", 7 );
-    addParam( "subs_max", subs_max, "", 7 );
-    addParam( "pt_max", pt_max, "", 7 );
-    addParam( "player_speed_max_delta_min", player_speed_max_delta_min, "", 7 );
-    addParam( "player_speed_max_delta_max", player_speed_max_delta_max, "", 7 );
-    addParam( "stamina_inc_max_delta_factor", stamina_inc_max_delta_factor, "", 7 );
-    addParam( "player_decay_delta_min", player_decay_delta_min, "", 7 );
-    addParam( "player_decay_delta_max", player_decay_delta_max, "", 7 );
-    addParam( "inertia_moment_delta_factor", inertia_moment_delta_factor, "", 7 );
-    addParam( "dash_power_rate_delta_min", dash_power_rate_delta_min, "", 7 );
-    addParam( "dash_power_rate_delta_max", dash_power_rate_delta_max, "", 7 );
-    addParam( "player_size_delta_factor", player_size_delta_factor, "", 7 );
-    addParam( "kickable_margin_delta_min", kickable_margin_delta_min, "", 7 );
-    addParam( "kickable_margin_delta_max", kickable_margin_delta_max, "", 7 );
-    addParam( "kick_rand_delta_factor", kick_rand_delta_factor, "", 7 );
-    addParam( "extra_stamina_delta_min", extra_stamina_delta_min, "", 7 );
-    addParam( "extra_stamina_delta_max", extra_stamina_delta_max, "", 7 );
-    addParam( "effort_max_delta_factor", effort_max_delta_factor, "", 7 );
-    addParam( "effort_min_delta_factor", effort_min_delta_factor, "", 7 );
-    addParam( "random_seed", random_seed, "", 8 );
-    addParam( "new_dash_power_rate_delta_min", new_dash_power_rate_delta_min, "", 8 );
-    addParam( "new_dash_power_rate_delta_max", new_dash_power_rate_delta_max, "", 8 );
-    addParam( "new_stamina_inc_max_delta_factor", new_stamina_inc_max_delta_factor, "", 8 );
-    addParam( "allow_mult_default_type", M_allow_mult_default_type, "", 12 );
-}
-
 template< typename P >
 void
-PlayerParam::addParam(  const std::string & name,
-                        P & param,
-                        const std::string & desc,
-                        int version )
+PlayerParam::addParam( const std::string & name,
+                       P & param,
+                       const std::string & desc,
+                       int version )
 {
-    m_builder->addParam( name, param, desc );
-    m_ver_map[ name ] = version;
+    M_builder->addParam( name, param, desc );
+    M_ver_map[ name ] = version;
 }
 
 template< typename S, typename G >
 void
-PlayerParam::addParam(  const std::string& name,
-                        const S& setter,
-                        const G& getter,
-                        const std::string& desc,
-                        int version )
+PlayerParam::addParam( const std::string& name,
+                       const S& setter,
+                       const G& getter,
+                       const std::string& desc,
+                       int version )
 {
-    m_builder->addParam( name, setter, getter, desc );
-    m_ver_map[ name ] = version;
+    M_builder->addParam( name, setter, getter, desc );
+    M_ver_map[ name ] = version;
 }
 
+void
+PlayerParam::addParams()
+{
+    addParam( "player_types", M_player_types, "", 7 );
+    addParam( "subs_max", M_subs_max, "", 7 );
+    addParam( "pt_max", M_pt_max, "", 7 );
+    addParam( "player_speed_max_delta_min", M_player_speed_max_delta_min, "", 7 );
+    addParam( "player_speed_max_delta_max", M_player_speed_max_delta_max, "", 7 );
+    addParam( "stamina_inc_max_delta_factor", M_stamina_inc_max_delta_factor, "", 7 );
+    addParam( "player_decay_delta_min", M_player_decay_delta_min, "", 7 );
+    addParam( "player_decay_delta_max", M_player_decay_delta_max, "", 7 );
+    addParam( "inertia_moment_delta_factor", M_inertia_moment_delta_factor, "", 7 );
+    addParam( "dash_power_rate_delta_min", M_dash_power_rate_delta_min, "", 7 );
+    addParam( "dash_power_rate_delta_max", M_dash_power_rate_delta_max, "", 7 );
+    addParam( "player_size_delta_factor", M_player_size_delta_factor, "", 7 );
+    addParam( "kickable_margin_delta_min", M_kickable_margin_delta_min, "", 7 );
+    addParam( "kickable_margin_delta_max", M_kickable_margin_delta_max, "", 7 );
+    addParam( "kick_rand_delta_factor", M_kick_rand_delta_factor, "", 7 );
+    addParam( "extra_stamina_delta_min", M_extra_stamina_delta_min, "", 7 );
+    addParam( "extra_stamina_delta_max", M_extra_stamina_delta_max, "", 7 );
+    addParam( "effort_max_delta_factor", M_effort_max_delta_factor, "", 7 );
+    addParam( "effort_min_delta_factor", M_effort_min_delta_factor, "", 7 );
+    addParam( "random_seed", M_random_seed, "", 8 );
+    addParam( "new_dash_power_rate_delta_min", M_new_dash_power_rate_delta_min, "", 8 );
+    addParam( "new_dash_power_rate_delta_max", M_new_dash_power_rate_delta_max, "", 8 );
+    addParam( "new_stamina_inc_max_delta_factor", M_new_stamina_inc_max_delta_factor, "", 8 );
+    addParam( "allow_mult_default_type", M_allow_mult_default_type, "", 12 );
+    addParam( "kick_power_rate_delta_min", M_kick_power_rate_delta_min, "", 14 );
+    addParam( "kick_power_rate_delta_max", M_kick_power_rate_delta_max, "", 14 );
+    addParam( "foul_detect_probability_delta_factor", M_foul_detect_probability_delta_factor, "", 14 );
+}
 
 void
 PlayerParam::setDefaults()
 {
-    player_types = PlayerParam::DEFAULT_PLAYER_TYPES;
-    subs_max = PlayerParam::DEFAULT_SUBS_MAX;
-    pt_max = PlayerParam::DEFAULT_PT_MAX;
+    M_player_types = PlayerParam::DEFAULT_PLAYER_TYPES;
+    M_subs_max = PlayerParam::DEFAULT_SUBS_MAX;
+    M_pt_max = PlayerParam::DEFAULT_PT_MAX;
 
     M_allow_mult_default_type = false;
 
-    player_speed_max_delta_min = PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MIN;
-    player_speed_max_delta_max = PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MAX;
-    stamina_inc_max_delta_factor = PlayerParam::DEFAULT_STAMINA_INC_MAX_DELTA_FACTOR;
+    M_player_speed_max_delta_min = PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MIN;
+    M_player_speed_max_delta_max = PlayerParam::DEFAULT_PLAYER_SPEED_MAX_DELTA_MAX;
+    M_stamina_inc_max_delta_factor = PlayerParam::DEFAULT_STAMINA_INC_MAX_DELTA_FACTOR;
 
-    player_decay_delta_min = PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MIN;
-    player_decay_delta_max = PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX;
-    inertia_moment_delta_factor = PlayerParam::DEFAULT_INERTIA_MOMENT_DELTA_FACTOR;
+    M_player_decay_delta_min = PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MIN;
+    M_player_decay_delta_max = PlayerParam::DEFAULT_PLAYER_DECAY_DELTA_MAX;
+    M_inertia_moment_delta_factor = PlayerParam::DEFAULT_INERTIA_MOMENT_DELTA_FACTOR;
 
-    dash_power_rate_delta_min = PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MIN;
-    dash_power_rate_delta_max = PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MAX;
-    player_size_delta_factor = PlayerParam::DEFAULT_PLAYER_SIZE_DELTA_FACTOR;
+    M_dash_power_rate_delta_min = PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MIN;
+    M_dash_power_rate_delta_max = PlayerParam::DEFAULT_DASH_POWER_RATE_DELTA_MAX;
+    M_player_size_delta_factor = PlayerParam::DEFAULT_PLAYER_SIZE_DELTA_FACTOR;
 
-    kickable_margin_delta_min = PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MIN;
-    kickable_margin_delta_max = PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MAX;
-    kick_rand_delta_factor = PlayerParam::DEFAULT_KICK_RAND_DELTA_FACTOR;
+    M_kickable_margin_delta_min = PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MIN;
+    M_kickable_margin_delta_max = PlayerParam::DEFAULT_KICKABLE_MARGIN_DELTA_MAX;
+    M_kick_rand_delta_factor = PlayerParam::DEFAULT_KICK_RAND_DELTA_FACTOR;
 
-    extra_stamina_delta_min = PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MIN;
-    extra_stamina_delta_max = PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MAX;
-    effort_max_delta_factor = PlayerParam::DEFAULT_EFFORT_MAX_DELTA_FACTOR;
-    effort_min_delta_factor = PlayerParam::DEFAULT_EFFORT_MIN_DELTA_FACTOR;
+    M_extra_stamina_delta_min = PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MIN;
+    M_extra_stamina_delta_max = PlayerParam::DEFAULT_EXTRA_STAMINA_DELTA_MAX;
+    M_effort_max_delta_factor = PlayerParam::DEFAULT_EFFORT_MAX_DELTA_FACTOR;
+    M_effort_min_delta_factor = PlayerParam::DEFAULT_EFFORT_MIN_DELTA_FACTOR;
 
-    random_seed = PlayerParam::DEFAULT_RANDOM_SEED;
+    M_random_seed = PlayerParam::DEFAULT_RANDOM_SEED;
 
-    new_dash_power_rate_delta_min = PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MIN;
-    new_dash_power_rate_delta_max = PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX;
-    new_stamina_inc_max_delta_factor = PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR;
+    M_new_dash_power_rate_delta_min = PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MIN;
+    M_new_dash_power_rate_delta_max = PlayerParam::DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX;
+    M_new_stamina_inc_max_delta_factor = PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR;
+
+    M_kick_power_rate_delta_min = PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MIN;
+    M_kick_power_rate_delta_max = PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MAX;
+    M_foul_detect_probability_delta_factor = PlayerParam::DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR;
 }
 
 player_params_t PlayerParam::convertToStruct() const
 {
     player_params_t tmp;
 
-    tmp.player_types = htons( static_cast< Int16 >( player_types ) );
-    tmp.subs_max = htons( static_cast< Int16 >( subs_max ) );
-    tmp.pt_max = htons( static_cast< Int16 >( pt_max ) );
+    tmp.player_types = htons( static_cast< Int16 >( playerTypes() ) );
+    tmp.subs_max = htons( static_cast< Int16 >( subsMax() ) );
+    tmp.pt_max = htons( static_cast< Int16 >( ptMax() ) );
 
-    tmp.player_speed_max_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * player_speed_max_delta_min ) ) ) );
-    tmp.player_speed_max_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * player_speed_max_delta_max ) ) ) );
-    tmp.stamina_inc_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * stamina_inc_max_delta_factor ) ) ) );
+    tmp.player_speed_max_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * playerSpeedMaxDeltaMin() ) ) ) );
+    tmp.player_speed_max_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * playerSpeedMaxDeltaMax() ) ) ) );
+    tmp.stamina_inc_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * staminaIncMaxDeltaFactor() ) ) ) );
 
-    tmp.player_decay_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * player_decay_delta_min) ) ) );
-    tmp.player_decay_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * player_decay_delta_max) ) ) );
-    tmp.inertia_moment_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * inertia_moment_delta_factor ) ) ) );
+    tmp.player_decay_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * playerDecayDeltaMin() ) ) ) );
+    tmp.player_decay_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * playerDecayDeltaMax() ) ) ) );
+    tmp.inertia_moment_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * inertiaMomentDeltaFactor() ) ) ) );
 
-    tmp.dash_power_rate_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * dash_power_rate_delta_min ) ) ) );
-    tmp.dash_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * dash_power_rate_delta_max ) ) ) );
-    tmp.player_size_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * player_size_delta_factor ) ) ) );
+    tmp.dash_power_rate_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * dashPowerRateDeltaMin() ) ) ) );
+    tmp.dash_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * dashPowerRateDeltaMax() ) ) ) );
+    tmp.player_size_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * playerSizeDeltaFactor() ) ) ) );
 
-    tmp.kickable_margin_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickable_margin_delta_min ) ) ) );
-    tmp.kickable_margin_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickable_margin_delta_max ) ) ) );
-    tmp.kick_rand_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kick_rand_delta_factor ) ) ) );
+    tmp.kickable_margin_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickableMarginDeltaMin() ) ) ) );
+    tmp.kickable_margin_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickableMarginDeltaMax() ) ) ) );
+    tmp.kick_rand_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickRandDeltaFactor() ) ) ) );
 
-    tmp.extra_stamina_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * extra_stamina_delta_min ) ) ) );
-    tmp.extra_stamina_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * extra_stamina_delta_max ) ) ) );
-    tmp.effort_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * effort_max_delta_factor ) ) ) );
-    tmp.effort_min_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * effort_min_delta_factor ) ) ) );
-    tmp.random_seed = htonl( static_cast< Int32 >( random_seed ) );
+    tmp.extra_stamina_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * extraStaminaDeltaMin() ) ) ) );
+    tmp.extra_stamina_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * extraStaminaDeltaMax() ) ) ) );
+    tmp.effort_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * effortMaxDeltaFactor() ) ) ) );
+    tmp.effort_min_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * effortMinDeltaFactor() ) ) ) );
+    tmp.random_seed = htonl( static_cast< Int32 >( randomSeed() ) );
 
-    tmp.new_dash_power_rate_delta_min = htonl( static_cast< Int32 >( roundint(( SHOWINFO_SCALE2 * new_dash_power_rate_delta_min ) ) ) );
-    tmp.new_dash_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * new_dash_power_rate_delta_max ) ) ) );
-    tmp.new_stamina_inc_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * new_stamina_inc_max_delta_factor ) ) ) );
+    tmp.new_dash_power_rate_delta_min = htonl( static_cast< Int32 >( roundint(( SHOWINFO_SCALE2 * newDashPowerRateDeltaMin() ) ) ) );
+    tmp.new_dash_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * newDashPowerRateDeltaMax() ) ) ) );
+    tmp.new_stamina_inc_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * newStaminaIncMaxDeltaFactor() ) ) ) );
 
-    tmp.allow_mult_default_type = htons( static_cast< Int16 >( M_allow_mult_default_type ) );
+    tmp.allow_mult_default_type = htons( static_cast< Int16 >( allowMultDefaultType() ) );
 
     return tmp;
 }
@@ -413,26 +424,26 @@ bool
 PlayerParam::getInt( const std::string & param,
                      int & value ) const
 {
-    return m_builder->get( param, value );
+    return M_builder->get( param, value );
 }
 
 bool
 PlayerParam::getBool( const std::string & param,
                       bool & value ) const
 {
-    return m_builder->get( param, value );
+    return M_builder->get( param, value );
 }
 
 bool
 PlayerParam::getDoub( const std::string & param,
                       double & value ) const
 {
-    return m_builder->get( param, value );
+    return M_builder->get( param, value );
 }
 
 bool
 PlayerParam::getStr( const std::string & param,
                      std::string & value ) const
 {
-    return m_builder->get( param, value );
+    return M_builder->get( param, value );
 }

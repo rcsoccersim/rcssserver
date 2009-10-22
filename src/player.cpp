@@ -127,47 +127,69 @@ Player::Player( Stadium & stadium,
     : MPObject( stadium,
                 "", "",
                 O_TYPE_PLAYER_NAME, O_TYPE_PLAYER_NAME_SHORT ),
+      VISIBLE_DISTANCE( ServerParam::instance().visibleDistance() ),
+      VISIBLE_DISTANCE2( VISIBLE_DISTANCE * VISIBLE_DISTANCE ),
+      //
       M_init_observer( new rcss::InitObserverPlayer ),
       M_observer( new rcss::ObserverPlayer ),
       M_body_observer( new rcss::BodyObserverPlayer ),
       M_fullstate_observer( new rcss::FullStateObserver ),
+      M_parser( *this ),
+      //
+      M_version( 3.0 ),
       M_team( team ),
       M_side( team->side() ),
       M_unum( number ),
-      M_stamina( ServerParam::instance().staminaMax() ),
-      M_recovery( ServerParam::instance().recoverInit() ),
-      M_stamina_capacity( ServerParam::instance().staminaCapacity() ),
-      M_consumed_stamina( 0.0 ),
-      M_view_width( rcss::pcom::NORMAL ),
-      M_default_visible_angle( Deg2Rad( ServerParam::instance().visibleAngleDegree() ) ),
-      vis_distance( ServerParam::instance().visibleDistance() ),
-      vis_distance2( vis_distance * vis_distance ),
-      M_version( 3.0 ),
+      M_goalie( false ),
+      //
       M_unum_far_length( 20.0 ),
       M_unum_too_far_length( 40.0 ),
       M_team_far_length( 40.0 ),
       M_team_too_far_length( 60.0 ),
+      //
+      M_clang_min_ver( 0 ),
+      M_clang_max_ver( 0 ),
+      //
+      M_player_type( NULL ),
+      M_player_type_id( 0 ),
+      M_kick_rand( ServerParam::instance().kickRand() ), // pfr 8/14/00: for RC2000 evaluation
+      //
+      M_state( DISABLE ),
+      M_card_count( 0 ),
+      //
+      M_synch_see( false ),
+      M_visual_send_interval( 4 ),
+      M_high_quality( true ),
+      M_visible_angle( Deg2Rad( ServerParam::instance().visibleAngleDegree() ) ),
+      M_view_width( rcss::pcom::NORMAL ),
+      //
+      M_hear_capacity_from_teammate( ServerParam::instance().hearMax() ),
+      M_hear_capacity_from_opponent( ServerParam::instance().hearMax() ),
+      //
+      M_stamina( ServerParam::instance().staminaMax() ),
+      M_recovery( ServerParam::instance().recoverInit() ),
+      M_effort( ServerParam::instance().effortInit() ),
+      M_stamina_capacity( ServerParam::instance().staminaCapacity() ),
+      M_consumed_stamina( 0.0 ),
+      //
       M_angle_body( 0.0 ),
       M_angle_body_committed( 0.0 ),
       M_angle_neck( 0.0 ),
       M_angle_neck_committed( 0.0 ),
-      M_synch_see( false ),
-      M_visual_send_interval( 4 ),
-      M_high_quality( true ),
-      M_state( DISABLE ),
+      //
       M_ball_collide( false ),
       M_player_collide( false ),
       M_post_collide( false ),
+      //
       M_command_done( false ),
       M_turn_neck_done( false ),
       M_done_received( false ),
-      M_hear_capacity_from_teammate( ServerParam::instance().hearMax() ),
-      M_hear_capacity_from_opponent( ServerParam::instance().hearMax() ),
-      M_goalie( false ),
+      //
       M_goalie_catch_ban( 0 ),
       M_goalie_moves_since_catch( 0 ),
       M_kick_cycles( 0 ),
       M_dash_cycles( 0 ),
+      //
       M_kick_count( 0 ),
       M_dash_count( 0 ),
       M_turn_count( 0 ),
@@ -181,16 +203,12 @@ Player::Player( Stadium & stadium,
       M_attentionto_count( 0 ),
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
-      M_clang_min_ver( 0 ),
-      M_clang_max_ver( 0 ),
-      M_offside_mark( false ),
-      M_parser( *this )
+      //
+      M_offside_mark( false )
 {
     assert( team );
 
     M_enable = false;
-
-    M_visible_angle = M_default_visible_angle;
 
     M_weight = ServerParam::instance().playerWeight();
     M_max_speed = ServerParam::instance().playerSpeedMax();
@@ -199,13 +217,8 @@ Player::Player( Stadium & stadium,
     M_pos.x = -( unum() * 3 * team->side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
 
-    // pfr 8/14/00: for RC2000 evaluation
-    M_kick_rand = ServerParam::instance().kickRand();
-    M_tackle_rand = ServerParam::instance().kickRand() * ServerParam::instance().tackleRandFactor();
-
     setPlayerType( 0 );
-
-    M_effort = M_player_type->effortMax();
+    recoverAll();
 }
 
 Player::~Player()
@@ -226,6 +239,7 @@ Player::~Player()
             std::cerr << std::endl;
     }
 #endif
+
     if ( M_init_observer )
     {
         delete M_init_observer;
@@ -285,15 +299,12 @@ Player::init( const double & ver,
     M_angle_body_committed = SideDirection( side() );
 
     // pfr 8/14/00: for RC2000 evaluation
-    double my_prand = ServerParam::instance().playerRand();
+    M_randp = ServerParam::instance().playerRand();
     if ( ServerParam::instance().teamActuatorNoise() )
     {
-        my_prand *= team()->prandFactorTeam();
+        M_randp *= team()->prandFactorTeam();
         M_kick_rand *= team()->kickRandFactorTeam();
-        M_tackle_rand *= team()->kickRandFactorTeam();
     }
-
-    M_randp = my_prand;
 
 #ifdef NEW_QSTEP
     dist_qstep_player = team->distQstepTeam();
@@ -324,16 +335,13 @@ Player::setPlayerType( const int id )
     M_player_type_id = id;
     M_player_type = type;
     M_max_speed = M_player_type->playerSpeedMax();
-    M_inertia_moment = M_player_type->inertiaMoment();
     M_decay = M_player_type->playerDecay();
     M_size = M_player_type->playerSize();
     M_kick_rand = M_player_type->kickRand();
-    M_tackle_rand = M_player_type->tackleRand();
 
     if ( ServerParam::instance().teamActuatorNoise() )
     {
         M_kick_rand *= team()->kickRandFactorTeam();
-        M_tackle_rand *= team()->kickRandFactorTeam();
     }
 }
 
@@ -341,16 +349,9 @@ void
 Player::substitute( const int type )
 {
     setPlayerType( type );
+    recoverAll();
 
-    // reset stamina etc.
-    M_stamina = ServerParam::instance().staminaMax();
-    M_recovery = 1.0;
-    M_effort = M_player_type->effortMax();
-    M_stamina_capacity = ServerParam::instance().staminaCapacity();
-    M_consumed_stamina = 0.0;
-
-    M_hear_capacity_from_teammate = ServerParam::instance().hearMax();
-    M_hear_capacity_from_opponent = ServerParam::instance().hearMax();
+    M_card_count = 0;
 }
 
 void
@@ -370,11 +371,13 @@ Player::resetState()
 {
     if ( tackleCycles() > 0 )
     {
-        M_state &= ( STAND | GOALIE | DISCARD | TACKLE | TACKLE_FAULT );
+        M_state &= ( STAND | GOALIE | DISCARD | TACKLE | TACKLE_FAULT
+                     | YELLOW_CARD | RED_CARD );
     }
     else
     {
-        M_state &= ( STAND | GOALIE | DISCARD );
+        M_state &= ( STAND | GOALIE | DISCARD
+                     | YELLOW_CARD | RED_CARD );
     }
 }
 
@@ -1014,7 +1017,7 @@ Player::turn( double moment )
         M_angle_body = normalize_angle( angleBodyCommitted()
                                         + ( 1.0 + drand( -M_randp, M_randp ) )
                                         * NormalizeMoment( moment )
-                                        / ( 1.0 + M_inertia_moment * vel().r() ) );
+                                        / ( 1.0 + M_player_type->inertiaMoment() * vel().r() ) );
         ++M_turn_count;
         M_command_done = true;
     }
@@ -1078,7 +1081,7 @@ Player::kick( double power,
         double dist_ball = ( tmp.r() - M_player_type->playerSize()
                              - ServerParam::instance().ballSize() );
 
-        double eff_power = power * ServerParam::instance().kickPowerRate()
+        double eff_power = power * M_player_type->kickPowerRate() //ServerParam::instance().kickPowerRate()
             * (1.0 - 0.25*dir_diff/M_PI - 0.25*dist_ball/M_player_type->kickableMargin());
 
         PVector accel = PVector::fromPolar( eff_power,
@@ -1378,16 +1381,18 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
         return;
     }
 
+    const double DEFAULT_VISIBLE_ANGLE = Deg2Rad( ServerParam::instance().visibleAngleDegree() );
+
     if ( viewWidth == rcss::pcom::NARROW )
     {
         if ( ! M_synch_see )
         {
-            M_visible_angle = M_default_visible_angle / 2.0;
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE / 2.0;
             M_visual_send_interval = 2;
         }
         else
         {
-            M_visible_angle = M_default_visible_angle * ( 2.0 / 3.0 ); // == sim_step / send_step
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 2.0 / 3.0 ); // == sim_step / send_step
             M_visual_send_interval = 1;
         }
     }
@@ -1395,12 +1400,12 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
     {
         if ( ! M_synch_see )
         {
-            M_visible_angle = M_default_visible_angle;
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE;
             M_visual_send_interval = 4;
         }
         else
         {
-            M_visible_angle = M_default_visible_angle * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
             M_visual_send_interval = 2;
         }
     }
@@ -1408,12 +1413,12 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
     {
         if ( ! M_synch_see )
         {
-            M_visible_angle = M_default_visible_angle * 2.0;
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * 2.0;
             M_visual_send_interval = 8;
         }
         else
         {
-            M_visible_angle = M_default_visible_angle * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
             M_visual_send_interval = 3;
         }
     }
@@ -1452,16 +1457,18 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
 void
 Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
 {
+    const double DEFAULT_VISIBLE_ANGLE = Deg2Rad( ServerParam::instance().visibleAngleDegree() );
+
     if ( viewWidth == rcss::pcom::NARROW )
     {
         if ( ! M_synch_see )
         {
-            M_visible_angle = M_default_visible_angle / 2.0;
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE / 2.0;
             M_visual_send_interval = 2;
         }
         else
         {
-            M_visible_angle = M_default_visible_angle * ( 2.0 / 3.0 ); // == sim_step / send_step
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 2.0 / 3.0 ); // == sim_step / send_step
             M_visual_send_interval = 1;
         }
     }
@@ -1469,12 +1476,12 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
     {
         if ( ! M_synch_see )
         {
-            M_visible_angle = M_default_visible_angle;
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE;
             M_visual_send_interval = 4;
         }
         else
         {
-            M_visible_angle = M_default_visible_angle * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
             M_visual_send_interval = 2;
         }
     }
@@ -1482,12 +1489,12 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
     {
         if ( ! M_synch_see )
         {
-            M_visible_angle = M_default_visible_angle * 2.0;
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * 2.0;
             M_visual_send_interval = 8;
         }
         else
         {
-            M_visible_angle = M_default_visible_angle * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
+            M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
             M_visual_send_interval = 3;
         }
     }
@@ -1787,7 +1794,8 @@ Player::tackle( double power_or_angle )
                               / ( ServerParam::instance().ballSpeedMax()
                                   * ServerParam::instance().ballDecay() ) );
                 // [0, 2*tackle_rand]
-                double max_rand = M_tackle_rand //M_kick_rand
+                // tackle_rand = kick_rand * server::tackle_rand_factor
+                double max_rand = M_kick_rand * ServerParam::instance().tackleRandFactor()
                     * power_rate
                     * ( pos_rate + speed_rate );
                 PVector tackle_noise = PVector::fromPolar( drand( 0.0, max_rand ),
@@ -1900,19 +1908,19 @@ Player::ear( bool on,
 void
 Player::synch_see()
 {
-    //std::cerr << unum() << "  recv synch_see" << std::endl;
+    const double DEFAULT_VISIBLE_ANGLE = Deg2Rad( ServerParam::instance().visibleAngleDegree() );
 
     switch ( M_view_width ) {
     case rcss::pcom::NARROW:
-        M_visible_angle = M_default_visible_angle * ( 2.0 / 3.0 ); // == sim_step / send_step
+        M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 2.0 / 3.0 ); // == sim_step / send_step
         M_visual_send_interval = 1;
         break;
     case rcss::pcom::NORMAL:
-        M_visible_angle = M_default_visible_angle * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
+        M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
         M_visual_send_interval = 2;
         break;
     case rcss::pcom::WIDE:
-        M_visible_angle = M_default_visible_angle * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
+        M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
         M_visual_send_interval = 3;
         break;
     default:
@@ -2258,6 +2266,12 @@ bool
 Player::ballKickable() const
 {
     return pos().distance2( M_stadium.ball().pos() ) <= std::pow( kickableArea(), 2 );
+}
+
+double
+Player::foulDetectProbability() const
+{
+    return M_player_type->foulDetectProbability();
 }
 
 void
