@@ -108,6 +108,8 @@ namespace
 %token < m_view_q > RCSS_PCOM_VIEW_QUALITY_HIGH "high"
 %token < m_bool > RCSS_PCOM_ON "on"
 %token < m_bool > RCSS_PCOM_OFF "off"
+%token < m_bool > RCSS_PCOM_TRUE "true"
+%token < m_bool > RCSS_PCOM_FALSE "false"
 %token < m_team > RCSS_PCOM_OUR "our"
 %token < m_team > RCSS_PCOM_OPP "opp"
 %token < m_team > RCSS_PCOM_LEFT 'l'
@@ -122,6 +124,7 @@ namespace
 %type < m_view_w > view_width
 %type < m_view_q > view_quality
 %type < m_bool > on_off
+%type < m_bool > boolean_value
 %type < m_team > team_side
 %type < m_ear > partial_complete
 %type < m_double > floating_point_number
@@ -299,6 +302,11 @@ tackle_com : RCSS_PCOM_LP RCSS_PCOM_TACKLE floating_point_number RCSS_PCOM_RP
              {
                BUILDER.tackle( $< m_double >3 );
              }
+             |
+             RCSS_PCOM_LP RCSS_PCOM_TACKLE floating_point_number boolean_value RCSS_PCOM_RP
+             {
+               BUILDER.tackle( $< m_double >3, $< m_bool >4 );
+             }
 ;
 
 clang_com : RCSS_PCOM_LP RCSS_PCOM_CLANG RCSS_PCOM_LP RCSS_PCOM_CLANG_VERSION RCSS_PCOM_INT RCSS_PCOM_INT RCSS_PCOM_RP RCSS_PCOM_RP
@@ -347,6 +355,24 @@ on_off : RCSS_PCOM_ON
          {
            $< m_bool >$ = false;
          }
+;
+
+boolean_value : RCSS_PCOM_ON
+                {
+                  $< m_bool >$ = true;
+                }
+                | RCSS_PCOM_OFF
+                {
+                  $< m_bool >$ = false;
+                }
+                | RCSS_PCOM_TRUE
+                {
+                  $< m_bool >$ = true;
+                }
+                | RCSS_PCOM_FALSE
+                {
+                  $< m_bool >$ = false;
+                }
 ;
 
 team_side : RCSS_PCOM_OUR

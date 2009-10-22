@@ -176,6 +176,8 @@ private:
     int M_tackle_cycles;
     int M_tackle_count;
 
+    int M_foul_cycles;
+
     //
     // offside state
     //
@@ -290,8 +292,6 @@ public:
     void addState( const Int32 state ) { M_state |= state; }
     void resetState();
 
-    int cardCount() const { return M_card_count; }
-
     //
     // visual sensor
     //
@@ -351,6 +351,8 @@ public:
     bool isTackling() const { return M_tackle_cycles > 0; }
     int tackleCount() const { return M_tackle_count; }
 
+    int foulCycles() const { return M_foul_cycles; }
+
     //
     // collision state
     //
@@ -378,6 +380,15 @@ public:
     void clearOffsideMark();
     bool hasOffsideMark() const { return M_offside_mark; }
     const PVector & offsidePos() const { return M_offside_pos; }
+
+    //
+    // foul
+    //
+    void setFoulCycles();
+    void yellowCard();
+
+    bool isYellowCarded() const { return M_card_count == 1; }
+    bool isRedCarded() const { return M_card_count >= 2; }
 
     //
     // utility
@@ -432,6 +443,7 @@ private:
     void pointto( bool on, double dist, double head );
     void attentionto( bool on, rcss::pcom::TEAM team_side, std::string team_name, int at_unum );
     void tackle( double power_or_angle );
+    void tackle( double power_or_angle, bool foul );
     void clang( int min, int max);
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode );
     void synch_see();

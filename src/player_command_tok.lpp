@@ -88,6 +88,8 @@ complete { return RCSS_PCOM_EAR_COMPLETE; }
 p { return RCSS_PCOM_EAR_PARTIAL; }
 c { return RCSS_PCOM_EAR_COMPLETE; }
 ver { return RCSS_PCOM_CLANG_VERSION; }
+true  { return RCSS_PCOM_TRUE; }
+false { return RCSS_PCOM_FALSE; }
 
 [ \t\n]+ ;
 

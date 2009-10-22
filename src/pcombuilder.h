@@ -93,7 +93,8 @@ public:
     virtual void done() = 0;
     virtual void pointto( bool on, double dist, double head ) = 0;
     virtual void attentionto( bool on, TEAM team_side, std::string team_name, int at_unum ) = 0;
-    virtual void tackle( double power ) = 0;
+    virtual void tackle( double power_or_dir ) = 0;
+    virtual void tackle( double power_or_dir, bool foul ) = 0;
     virtual void clang( int min, int max) = 0;
     virtual void ear( bool on, TEAM team_side, std::string team_name, EAR_MODE mode ) = 0;
     virtual void synch_see() = 0;

@@ -816,11 +816,11 @@ Stadium::reconnectPlayer( const char * reconnect_message,
 
 {
     char teamname[128];
-    int rnum;
+    int unum;
 
     if ( std::sscanf( reconnect_message,
                       " ( reconnect %127s %d ) ",
-                      teamname, &rnum ) < 2 )
+                      teamname, &unum ) < 2 )
     {
         if ( ServerParam::instance().verboseMode() )
             std::cerr << "Warning:Illegal reconnect message.\n"
@@ -835,7 +835,7 @@ Stadium::reconnectPlayer( const char * reconnect_message,
         if ( M_players[r]->team()->enabled() )
         {
             if ( M_players[r]->team()->name() == teamname
-                 && M_players[r]->unum() == rnum )
+                 && M_players[r]->unum() == unum )
             {
                 break;
             }
@@ -845,6 +845,12 @@ Stadium::reconnectPlayer( const char * reconnect_message,
     /* It's same. */
     if ( r < MAX_PLAYER * 2 )
     {
+        if ( M_players[r]->isRedCarded() )
+        {
+            sendToPlayer( "(error red_carded_player)", addr );
+            return NULL;
+        }
+
         if ( M_players[r]->open() != 0 )
         {
             sendToPlayer( "(error socket_open_failed)", addr );
@@ -1493,7 +1499,8 @@ Stadium::change_play_mode( const PlayMode pm )
 }
 
 void
-Stadium::referee_get_foul( const double & x, const double & y,
+Stadium::referee_get_foul( const double & x,
+                           const double & y,
                            const Side side )
 {
     if ( Referee::isPenaltyShootOut( playmode() ) )
@@ -1551,6 +1558,45 @@ Stadium::discard_player( const Side side,
             break;
         }
     }
+}
+
+
+void
+Stadium::yellowCard( const Side side,
+                     const int unum )
+{
+    Player * p = static_cast< Player * >( 0 );
+    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
+    {
+        if ( M_players[i]->side() == side
+             && M_players[i]->unum() == unum )
+        {
+            p = M_players[i];
+            break;
+        }
+    }
+
+    if ( ! p )
+    {
+        return;
+    }
+
+    char msg[32];
+    if ( p->isYellowCarded() )
+    {
+        snprintf( msg, 32, "red_card_%s_%d",
+                  SideStr( p->side() ),
+                  p->unum() );
+    }
+    else
+    {
+        snprintf( msg, 32, "yellow_card_%s_%d",
+                  SideStr( p->side() ),
+                  p->unum() );
+    }
+    sendRefereeAudio( msg );
+
+    p->yellowCard();
 }
 
 /*
@@ -1988,10 +2034,11 @@ Stadium::kickTaken( const Player & kicker,
 }
 
 void
-Stadium::tackleTaken( const Player & tackler )
+Stadium::tackleTaken( const Player & tackler,
+                      const bool foul )
 {
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doTackleTaken( tackler ) );
+              Referee::doTackleTaken( tackler, foul ) );
 }
 
 void

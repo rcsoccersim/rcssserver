@@ -59,7 +59,8 @@ public:
       { }
 
     virtual
-    void tackleTaken( const Player & )
+    void tackleTaken( const Player &,
+                      const bool )
       { }
 
     virtual
@@ -110,14 +111,17 @@ public:
     class doTackleTaken {
     private:
         const Player & M_tackler;
+        const bool M_foul;
     public:
-        doTackleTaken( const Player & tackler )
-            : M_tackler( tackler )
+        doTackleTaken( const Player & tackler,
+                       const bool foul )
+            : M_tackler( tackler ),
+              M_foul( foul )
           { }
 
         void operator()( Referee * ref )
           {
-              ref->tackleTaken( M_tackler );
+              ref->tackleTaken( M_tackler, M_foul );
           }
     };
 
@@ -487,7 +491,8 @@ public:
       { }
 
     virtual
-    void tackleTaken( const Player & tackler );
+    void tackleTaken( const Player & tackler,
+                      const bool foul );
 
     virtual
     void analyse();
@@ -497,7 +502,9 @@ public:
 
 private:
 
-    void callFoulCharge( const Player & tackler );
+    void callFoul( const Player & tackler,
+                   const bool intentional );
+    void callYellowCard( const Player & tackler );
 
 };
 

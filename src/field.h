@@ -395,12 +395,17 @@ private:
     void move_caught_ball(); // [2000.07.21: I.Noda]
 
 public:
-    void referee_get_foul( const double & x, const double & y,
+    void referee_get_foul( const double & x,
+                           const double & y,
                            const Side side );
-    void referee_drop_ball( const double & x, const double & y,
+    void referee_drop_ball( const double & x,
+                            const double & y,
                             const Side side );
     void discard_player( const Side side,
                          const int unum );
+
+    void yellowCard( const Side side,
+                     const int unum );
 
     void score( const Side side );
     void penaltyScore( const Side side,
@@ -479,7 +484,8 @@ public:
 
     void kickTaken( const Player & kicker,
                     const PVector & accel );
-    void tackleTaken( const Player & tackler );
+    void tackleTaken( const Player & tackler,
+                      const bool foul );
     void ballCaught( const Player & catcher );
 
     void collisions();

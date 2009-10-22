@@ -2253,14 +2253,17 @@ CatchRef::callCatchFault( Side side, PVector pos )
 const int FoulRef::AFTER_FOUL_WAIT = 30;
 
 void
-FoulRef::tackleTaken( const Player & tackler )
+FoulRef::tackleTaken( const Player & tackler,
+                      const bool foul )
 {
     if ( isPenaltyShootOut( M_stadium.playmode() ) )
     {
         return;
     }
 
-    bool detected = false;
+    bool foul_succeed = false;
+    bool detect_charge = false;
+    bool detect_yellow = false;
 
     boost::bernoulli_distribution<> rng( tackler.foulDetectProbability() );
     boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
@@ -2273,16 +2276,31 @@ FoulRef::tackleTaken( const Player & tackler )
     //          << " (tackler " << SideStr( tackler.side() ) << ' ' << tackler.unum() << ")"
     //          << std::endl;
 
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
+    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
           p != end;
           ++p )
     {
         if ( (*p)->state() == DISABLE ) continue;
         if ( (*p)->side() == tackler.side() ) continue;
 
-        if ( ! (*p)->dashed() ) continue; // no dashin
         if ( ! (*p)->ballKickable() ) continue; // no kickable
+
+        (*p)->setFoulCycles();
+        foul_succeed = true;
+
+        bool pre_check = false;
+        if ( foul )
+        {
+            if ( dst() )
+            {
+                //std::cerr << "----> detected intentional foul. prob=" << rng.p() << std::endl;
+                pre_check = true;
+                detect_charge = true;
+            }
+        }
+
+        if ( ! (*p)->dashed() ) continue; // no dashing
 
         PVector player_rel = (*p)->pos() - tackler.pos();
 
@@ -2308,19 +2326,27 @@ FoulRef::tackleTaken( const Player & tackler )
             continue;
         }
 
-        if ( dst() )
+        if ( pre_check )
+        {
+            //std::cerr << "----> detected yellow_card." << std::endl;
+            detect_yellow = true;
+        }
+        else if ( dst() )
         {
             //std::cerr << "----> detected foul. prob=" << rng.p() << std::endl;
-            detected = true;
-            break;
+            detect_charge = true;
         }
 
         //std::cerr << "----> not detected foul. prob=" << rng.p()<< std::endl;
     }
 
-    if ( detected )
+    if ( detect_yellow )
     {
-        callFoulCharge( tackler );
+        callYellowCard( tackler );
+    }
+    else if ( detect_charge )
+    {
+        callFoul( tackler, false );
     }
 }
 
@@ -2372,7 +2398,8 @@ FoulRef::analyse()
 }
 
 void
-FoulRef::callFoulCharge( const Player & tackler )
+FoulRef::callFoul( const Player & tackler,
+                   const bool intentional )
 {
     PVector pos = truncateToPitch( tackler.pos() );
     pos = moveOutOfGoalArea( NEUTRAL, pos );
@@ -2382,15 +2409,26 @@ FoulRef::callFoulCharge( const Player & tackler )
     if ( tackler.side() == LEFT )
     {
         pos = moveOutOfPenalty( RIGHT, pos );
-        M_stadium.placeBall( PM_Foul_Charge_Left, RIGHT, pos );
+        M_stadium.placeBall( intentional ? PM_Foul_Push_Left : PM_Foul_Charge_Left,
+                             RIGHT, pos );
     }
     else if ( tackler.side() == RIGHT )
     {
         pos = moveOutOfPenalty( LEFT, pos );
-        M_stadium.placeBall( PM_Foul_Charge_Right, LEFT, pos );
+        M_stadium.placeBall( intentional ? PM_Foul_Push_Left : PM_Foul_Charge_Left,
+                             LEFT, pos );
     }
 
     M_after_foul_time = 0;
+}
+
+void
+FoulRef::callYellowCard( const Player & tackler )
+{
+    callFoul( tackler, true );
+
+    M_stadium.yellowCard( tackler.side(),
+                          tackler.unum() );
 }
 
 void

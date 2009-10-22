@@ -348,7 +348,7 @@ const double ServerParam::MIN_DASH_POWER = -100.0;
 // 14.0.0
 const double ServerParam::TACKLE_RAND_FACTOR = 2.0;
 const double ServerParam::FOUL_DETECT_PROBABILITY = 0.5;
-const int ServerParam::FOUL_EXPONENT = 10;
+const double ServerParam::FOUL_EXPONENT = 10.0;
 const int ServerParam::FOUL_CYCLES = 5;
 
 

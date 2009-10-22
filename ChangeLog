@@ -2,6 +2,21 @@
 
 	* src/field.cpp:
 	* src/field.h:
+	* src/pcombuilder.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/player_command_parser.ypp:
+	* src/player_command_tok.lpp:
+	* src/referee.cpp:
+	* src/referee.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/types.h:
+	- implemented new intentional foul model.
+	- implemented yellow/red card and discard of red carded player.
+
+	* src/field.cpp:
+	* src/field.h:
 	* src/heteroplayer.cpp:
 	* src/heteroplayer.h:
 	* src/initsender.cpp:
