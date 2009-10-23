@@ -897,33 +897,26 @@ OffsideRef::analyse()
 
     if ( M_stadium.playmode() != PM_PlayOn )
     {
-        const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-        for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
-        {
-            (*p)->clearOffsideMark();
-        }
+        M_offside_candidates.clear();
         return;
     }
 
     bool found = false;
     {
         double dist2 = std::pow( ServerParam::instance().offsideActiveArea(), 2 );
-        const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+
+        for ( std::vector< Candidate >::const_iterator it = M_offside_candidates.begin();
+              it != M_offside_candidates.end();
+              ++it )
         {
-            if ( (*p)->hasOffsideMark() )
+            if ( ! it->player_->isEnabled() ) continue;
+
+            double tmp = it->player_->pos().distance2( M_stadium.ball().pos() );
+            if ( tmp < dist2 )
             {
-                double tmp = (*p)->pos().distance2( M_stadium.ball().pos() );
-                if ( tmp < dist2 )
-                {
-                    found = true;
-                    dist2 = tmp;
-                    M_offside_pos = (*p)->offsidePos();
-                }
+                found = true;
+                dist2 = tmp;
+                M_offside_pos = it->pos_;
             }
         }
     }
@@ -939,37 +932,27 @@ OffsideRef::playModeChange( PlayMode pm )
 {
     if ( pm != PM_PlayOn )
     {
-        const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
-        {
-            (*p)->clearOffsideMark();
-        }
+        M_offside_candidates.clear();
     }
 }
 
 void
 OffsideRef::setOffsideMark( const Player & kicker )
 {
-    if ( kicker.hasOffsideMark() )
+    for ( std::vector< Candidate >::iterator it = M_offside_candidates.begin();
+          it != M_offside_candidates.end();
+          ++it )
     {
-        M_offside_pos = kicker.offsidePos();
-        callOffside();
-        return;
+        if ( it->player_ == &kicker )
+        {
+            M_offside_pos = it->pos_;
+            callOffside();
+            return;
+        }
     }
 
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+    M_offside_candidates.clear();
 
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
-    {
-
-        (*p)->clearOffsideMark();
-    }
-
-    //if (m_no_offsides )
     if ( M_stadium.playmode() == PM_GoalKick_Left
          || M_stadium.playmode() == PM_GoalKick_Right
          || M_stadium.playmode() == PM_KickIn_Left
@@ -980,9 +963,11 @@ OffsideRef::setOffsideMark( const Player & kicker )
         return;
     }
 
-    double fast = 0;
-    double second = 0;
-    double offside_line;
+    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+
+    double first = 0.0;
+    double second = 0.0;
+    double offside_line = 0.0;
 
     switch ( kicker.side() ) {
     case LEFT:
@@ -997,9 +982,9 @@ OffsideRef::setOffsideMark( const Player & kicker )
                 if ( (*p)->pos().x > second )
                 {
                     second = (*p)->pos().x;
-                    if ( second > fast )
+                    if ( second > first )
                     {
-                        std::swap( fast, second );
+                        std::swap( first, second );
                     }
                 }
             }
@@ -1024,7 +1009,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
                  && (*p)->pos().x > offside_line
                  && (*p)->unum() != kicker.unum() )
             {
-                (*p)->setOffsideMark( offside_line );
+                M_offside_candidates.push_back( Candidate( *p, offside_line, (*p)->pos().y ) );
             }
         }
         break;
@@ -1041,9 +1026,9 @@ OffsideRef::setOffsideMark( const Player & kicker )
                 if ( (*p)->pos().x < second )
                 {
                     second = (*p)->pos().x;
-                    if ( second < fast )
+                    if ( second < first )
                     {
-                        std::swap( fast, second );
+                        std::swap( first, second );
                     }
                 }
             }
@@ -1068,7 +1053,7 @@ OffsideRef::setOffsideMark( const Player & kicker )
                  && (*p)->pos().x < offside_line
                  && (*p)->unum() != kicker.unum() )
             {
-                (*p)->setOffsideMark( offside_line );
+                M_offside_candidates.push_back( Candidate( *p, offside_line, (*p)->pos().y ) );
             }
         }
         break;
@@ -1137,14 +1122,7 @@ OffsideRef::callOffside()
     }
 
     M_stadium.clearBallCatcher();
-
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
-    {
-        (*p)->clearOffsideMark();
-    }
+    M_offside_candidates.clear();
 
     M_stadium.placePlayersInField();
     clearPlayersFromBall( M_last_kicker->side() );

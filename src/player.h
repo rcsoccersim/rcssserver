@@ -179,12 +179,6 @@ private:
     int M_foul_cycles;
     int M_foul_count;
 
-    //
-    // offside state
-    //
-    bool M_offside_mark;
-    PVector M_offside_pos;
-
 private:
     // not used
     Player();
@@ -373,14 +367,6 @@ public:
       }
     void resetCollisionFlags();
     void resetCommandFlags();
-
-    //
-    // offside state
-    //
-    void setOffsideMark( const double & offside_line );
-    void clearOffsideMark();
-    bool hasOffsideMark() const { return M_offside_mark; }
-    const PVector & offsidePos() const { return M_offside_pos; }
 
     //
     // foul

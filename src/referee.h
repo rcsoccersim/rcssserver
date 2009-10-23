@@ -30,6 +30,7 @@
 #include "object.h"
 
 #include <set>
+#include <vector>
 
 class Stadium;
 class Player;
@@ -259,9 +260,27 @@ public:
 class OffsideRef
     : public Referee {
 private:
+
+    struct Candidate {
+    private:
+        Candidate();
+    public:
+        const Player * player_;
+        PVector pos_;
+
+        Candidate( const Player * player,
+                   const double & x,
+                   const double & y )
+            : player_( player ),
+              pos_( x, y )
+          { }
+    };
+
     static const int AFTER_OFFSIDE_WAIT;
 
     const Player * M_last_kicker;
+    std::vector< Candidate > M_offside_candidates;
+
     PVector M_offside_pos;
     int M_after_offside_time;
 
@@ -561,8 +580,8 @@ private:
     Side M_pen_side;
     bool M_bDebug;
     Side M_cur_pen_taker;
-    std::set<int> M_sLeftPenTaken;
-    std::set<int> M_sRightPenTaken;
+    std::set< int > M_sLeftPenTaken;
+    std::set< int > M_sRightPenTaken;
 
     const Player * M_last_taker;
 

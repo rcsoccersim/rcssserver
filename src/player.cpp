@@ -204,9 +204,7 @@ Player::Player( Stadium & stadium,
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_foul_cycles( 0 ),
-      M_foul_count( 0 ),
-      //
-      M_offside_mark( false )
+      M_foul_count( 0 )
 {
     assert( team );
 
@@ -2383,20 +2381,6 @@ Player::yellowCard()
     }
 
     ++M_card_count;
-}
-
-void
-Player::clearOffsideMark()
-{
-    M_offside_mark = false;
-}
-
-void
-Player::setOffsideMark( const double & offside_line )
-{
-    M_offside_mark = true;
-    M_offside_pos.x = offside_line;
-    M_offside_pos.y = pos().y;
 }
 
 void

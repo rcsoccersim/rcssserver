@@ -1,5 +1,11 @@
 2009-10-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/player.cpp:
+	* src/player.h:
+	* src/referee.cpp:
+	* src/referee.h:
+	- cleaned up the offside rule implementation.
+
 	* src/audio.cpp:
 	* src/coach.cpp:
 	* src/field.cpp:
