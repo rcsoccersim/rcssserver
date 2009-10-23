@@ -84,9 +84,10 @@
  *===================================================================
  */
 
+namespace {
 template < class T >
 void
-Stadium::recv( std::vector< T > & clients )
+recv_from_clients( std::vector< T > & clients )
 {
     std::random_shuffle( clients.begin(), clients.end(),
                          irand ); //rcss::random::UniformRNG::instance() );
@@ -100,13 +101,14 @@ Stadium::recv( std::vector< T > & clients )
         }
     }
 }
+}
 
 
 void
 Stadium::udp_recv_message()
 {
-    recv( M_remote_players );
-    recv( M_monitors );
+    recv_from_clients( M_remote_players );
+    recv_from_clients( M_monitors );
 
     while ( 1 )
     {
@@ -188,36 +190,111 @@ void
 Stadium::parsePlayerInit( const char * message,
                           const rcss::net::Addr & cli_addr )
 {
-    if ( ! std::strncmp( message, "(reconnect ", std::strlen( "(reconnect " ) ) )
+    //
+    // init : a new player connects to the server
+    //
+    if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
     {
-        //              std::cerr << "Got reconnect" << std::endl;
-        // a player reconnects to the server
-        if ( playmode() == PM_PlayOn )
+        // (init <TeamName> [(version <Ver>)][ (goalie)])
+
+        const char * msg = message;
+
+        char teamname[16];
+        double version = 3.0;
+        bool goalie = false;
+
+        int n_read = 0;
+        if ( std::sscanf( msg, " ( init %15[-_a-zA-Z0-9] %n ",
+                          teamname, &n_read ) != 1
+             || n_read == 0 )
         {
-            sendToPlayer( "(error cannot_reconnect_while_playon)", cli_addr );
+            sendToPlayer( "(error illegal_teamname)", cli_addr );
+            return;
         }
-        else
+        msg += n_read;
+
+        if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
         {
-            Player * p = reconnectPlayer( message, cli_addr );
-            if ( p )
+            sendToPlayer( "(error illegal_teamname_or_too_long_teamname)", cli_addr );
+            return;
+        }
+
+        while ( *msg != '\0' && *msg != '(' ) ++msg;
+
+        while ( *msg != '\0' && *msg != ')' )
+        {
+            if ( ! std::strncmp( msg, "(version ", std::strlen( "(version " ) ) )
             {
-                M_logger.writePlayerLog( *p, message, RECV );
+                n_read = 0;
+                if ( std::sscanf( msg, " ( version %lf ) %n ",
+                                  &version, &n_read ) != 1
+                     || n_read == 0 )
+                {
+                    sendToPlayer( "(error illegal_command_form)", cli_addr );
+                    return;
+                }
+                msg += n_read;
             }
+            else if ( ! std::strncmp( msg, "(goalie)", std::strlen( "(goalie)" )  ) )
+            {
+                goalie = true;
+                msg += std::strlen( "(goalie)" );
+            }
+            else
+            {
+                sendToPlayer( "(error illegal_command_form)", cli_addr );
+                return;
+            }
+
+            if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
+            {
+                sendToPlayer( "(error illegal_command_form)", cli_addr );
+                return;
+            }
+
+            while ( *msg != '\0' && std::isspace( *msg ) ) ++msg;
         }
-    }
-    else if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
-    {
-        // a new player connects to the server
-        Player * p = initPlayer( message, cli_addr );
+
+        Player * p = initPlayer( teamname, version, goalie, cli_addr );
         if ( p )
         {
             M_logger.writePlayerLog( *p, message, RECV );
         }
+
+        return;
     }
-    else
+
+    //
+    // reconnect : a player reconnects to the server
+    //
+    if ( ! std::strncmp( message, "(reconnect ", std::strlen( "(reconnect " ) ) )
     {
-        sendToPlayer( "(error unknown_command)", cli_addr );
+        if ( playmode() == PM_PlayOn )
+        {
+            sendToPlayer( "(error cannot_reconnect_while_playon)", cli_addr );
+            return;
+        }
+
+        char teamname[128];
+        int unum;
+
+        if ( std::sscanf( message,
+                          " ( reconnect %127s %d ) ",
+                          teamname, &unum ) < 2 )
+        {
+            sendToPlayer( "(error illegal_command_form)", cli_addr );
+        }
+
+        Player * p = reconnectPlayer( teamname, unum, cli_addr );
+        if ( p )
+        {
+            M_logger.writePlayerLog( *p, message, RECV );
+        }
+
+        return;
     }
+
+    sendToPlayer( "(error unknown_command)", cli_addr );
 }
 
 
@@ -273,7 +350,7 @@ Stadium::udp_recv_from_coach()
 
     if ( allow_coach )
     {
-        recv( M_remote_offline_coaches );
+        recv_from_clients( M_remote_offline_coaches );
     }
 
     while ( 1 )
@@ -356,7 +433,16 @@ Stadium::parseCoachInit( const char * message,
 
     if ( ! std::strcmp( command, "init" ) )
     {
-        Coach * coach = initCoach( message, cli_addr );
+        double version = 3.0;
+        int n = std::sscanf( message, " ( init ( version %lf ) ) ", &version );
+        if ( ( n != 0 && n != 1 )
+             || version < 1.0 )
+        {
+            sendToCoach( "(error illegal_command_form)", cli_addr );
+            return false;
+        }
+
+        Coach * coach = initCoach( version, cli_addr );
         if ( coach )
         {
             std::cout << "a new (v" << coach->version()
@@ -366,7 +452,7 @@ Stadium::parseCoachInit( const char * message,
     }
     else
     {
-        _Start( *this ); // need to remove this line if we
+        kickOff(); // need to remove this line if we
         // dont want the server to start when the coach connects
         M_coach->parse_command( message );
         M_logger.writeCoachLog( message, RECV );
@@ -378,7 +464,7 @@ Stadium::parseCoachInit( const char * message,
 void
 Stadium::udp_recv_from_online_coach()
 {
-    recv( M_remote_online_coaches );
+    recv_from_clients( M_remote_online_coaches );
 
     while ( 1 )
     {
@@ -435,18 +521,93 @@ void
 Stadium::parseOnlineCoachInit( const char * message,
                                const rcss::net::Addr & addr )
 {
-    if ( ! std::strncmp( message, "(init ", std::strlen( "(init " ) ) )
-    {
-        OnlineCoach * olc = initOnlineCoach( message, addr );
-        if ( olc )
-        {
-            M_logger.writeOnlineCoachLog( *olc, message, RECV );
-        }
-    }
-    else
+    if ( std::strncmp( message, "(init", std::strlen( "(init" ) ) != 0 )
     {
         sendToOnlineCoach( "(error illegal_command_form)",
                            addr );
+        return;
+    }
+
+    // (init <TeamName>[ <CoachName>][ (version <Ver>)])
+
+    const char * msg = message;
+
+    const double default_olcoach_version = 5.0;
+
+    char teamname[16];
+    char coachname[128];
+    double version = default_olcoach_version;
+
+    std::memset( teamname, 0, 16 );
+    std::memset( coachname, 0, 128 );
+
+    int n_read = 0;
+
+    // read team name
+    if ( std::sscanf( msg, " ( init %15[-_a-zA-Z0-9] %n ",
+                      teamname, &n_read ) != 1
+         || n_read == 0 )
+    {
+        sendToOnlineCoach( "(error illegal_command_form)", addr );
+        return;
+    }
+    msg += n_read;
+
+    while ( *msg != '\0' && std::isspace( *msg ) ) ++msg;
+
+    // read coach name
+    if ( *msg != '(' )
+    {
+        if ( std::sscanf( msg, " %127[-_a-zA-Z0-9] %n ",
+                          coachname, &n_read ) != 1 )
+        {
+            sendToOnlineCoach( "(error illegal_command_form)", addr );
+            return;
+        }
+        msg += n_read;
+
+        if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
+        {
+            sendToOnlineCoach( "(error illegal_coachname_or_too_long_coachname)", addr );
+            return;
+        }
+    }
+
+    while ( *msg != '\0' && *msg != '(' ) ++msg;
+
+    // read protocol version
+    if ( ! std::strncmp( "(version", msg, std::strlen( "(version" ) ) )
+    {
+        if ( std::sscanf( msg, " ( version %lf ) %n ",
+                          &version, &n_read ) != 1
+             || n_read == 0 )
+        {
+            sendToOnlineCoach( "(error illegal_command_form)", addr );
+            return;
+        }
+        msg += n_read;
+
+        if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
+        {
+            sendToOnlineCoach( "(error illegal_client_version)", addr );
+            return;
+        }
+
+        if ( version < default_olcoach_version )
+        {
+            sendToOnlineCoach( "(error illegal_client_version)", addr );
+            return;
+        }
+    }
+
+    //
+    // assign new online coach
+    //
+
+    OnlineCoach * olc = initOnlineCoach( teamname, coachname, version, addr );
+    if ( olc )
+    {
+        M_logger.writeOnlineCoachLog( *olc, message, RECV );
     }
 }
 
@@ -500,11 +661,8 @@ Stadium::broadcastSubstitution( const int side,
     // tell players
     for ( int i = 0 ; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->state() == DISABLE
-             || M_players[i]->version() < 7.0 )
-        {
-            continue;
-        }
+        if ( ! M_players[i]->isEnabled() ) continue;
+        if ( M_players[i]->version() < 7.0 ) continue;
 
         if ( ( side == LEFT && M_players[i]->team() == M_team_l )
              || ( side == RIGHT && M_players[i]->team() == M_team_r ) )

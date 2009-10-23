@@ -100,7 +100,9 @@ Team::newPlayer( const double & version,
     if ( size() >= MAX_PLAYER )
     {
         if ( ServerParam::instance().verboseMode() )
+        {
             std::cerr << "Warning:Too many players." << std::endl;
+        }
         return NULL;
     }
 
@@ -111,7 +113,9 @@ Team::newPlayer( const double & version,
             if ( M_players[i]->isGoalie() )
             {
                 if ( ServerParam::instance().verboseMode() )
+                {
                     std::cerr << "Warning:Too many goalies." << std::endl;
+                }
                 return NULL;
             }
         }

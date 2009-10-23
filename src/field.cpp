@@ -290,7 +290,7 @@ Stadium::init()
     if ( ServerParam::instance().randomSeed() >= 0 )
     {
         int seed = ServerParam::instance().randomSeed();
-        std::cerr << "Using given Simulator Random Seed: " << seed << std::endl;
+        std::cout << "Using given Simulator Random Seed: " << seed << std::endl;
         srand( seed );
         srandom( seed );
         rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( seed ) );
@@ -298,14 +298,14 @@ Stadium::init()
     else
     {
         int seed = static_cast< int >( tmp_time );
-        std::cerr << "Generate Simulator Random Seed: " << seed << std::endl;
+        std::cout << "Simulator Random Seed: " << seed << std::endl;
         ServerParam::instance().setRandomSeed( seed );
         srand( seed );
         srandom( seed );
         rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( seed ) );
     }
 
-    std::cout << "Simulator Random Seed: " << ServerParam::instance().randomSeed() << std::endl;
+    //std::cout << "Simulator Random Seed: " << ServerParam::instance().randomSeed() << std::endl;
 
     M_game_over_wait = ServerParam::instance().gameOverWait();
 
@@ -344,8 +344,7 @@ Stadium::init()
     }
 
     {
-        LandmarkReader * reader
-            = new LandmarkReader( M_field, ServerParam::instance().landmarkFile() );
+        LandmarkReader * reader = new LandmarkReader( M_field, ServerParam::instance().landmarkFile() );
         if ( ! reader )
         {
             perror( "Can not create landmark reader" );
@@ -399,9 +398,9 @@ Stadium::init()
 
     M_weather.init();
 
-    initObjects();
+    createObjects();
 
-    change_play_mode( PM_BeforeKickOff );
+    changePlayMode( PM_BeforeKickOff );
 
     M_kick_off_wait = std::max( 0, ServerParam::instance().kickOffWait() );
     M_connect_wait = std::max( 0, ServerParam::instance().connectWait() );
@@ -461,7 +460,7 @@ Stadium::checkAutoMode()
 
         if ( M_kick_off_wait <= 0 || M_connect_wait <= 0 )
         {
-            _Start( *this );
+            kickOff();
         }
     }
     else
@@ -614,7 +613,7 @@ Stadium::playerType( int id ) const
 }
 
 void
-Stadium::initObjects()
+Stadium::createObjects()
 {
     M_ball = new Ball( *this );
 
@@ -658,252 +657,129 @@ Stadium::initObjects()
     M_team_r->assignCoach( M_olcoaches[1] );
 }
 
+
 Player *
-Stadium::initPlayer( const char * init_message,
+Stadium::initPlayer( const char * teamname,
+                     const double & version,
+                     const bool goalie,
                      const rcss::net::Addr & addr )
-
 {
-    // (init <TeamName> [(version <Ver>)][ (goalie)])
-    const char * msg = init_message;
-
-    char teamname[16];
-    double version = 3.0;
-    bool goalie = false;
-
-    if ( std::strncmp( msg, "(init ", std::strlen( "(init " ) ) != 0 )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning:Illegal initialize message." << std::endl
-                      << "   message = " << init_message << std::endl;
-        sendToPlayer( "(error unknown_command)", addr );
-        return NULL;
-    }
-
-    int n_read = 0;
-    if ( std::sscanf( msg, " ( init %15[-_a-zA-Z0-9] %n ",
-                      teamname, &n_read ) != 1
-         || n_read == 0 )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning: Illegal team name string.\n"
-                      << "   message = " << init_message << std::endl;
-        sendToPlayer( "(error illegal_teamname)", addr );
-        return NULL;
-    }
-    msg += n_read;
-
-    if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning: Illegal team name string or too long team name.\n"
-                      << "   message = " << init_message << std::endl;
-        sendToPlayer( "(error illegal_teamname_or_too_long_teamname)", addr );
-        return NULL;
-    }
-
-    while ( *msg != '\0' && *msg != '(' ) ++msg;
-
-    while ( *msg != '\0' && *msg != ')' )
-    {
-        if ( ! std::strncmp( msg, "(version ", std::strlen( "(version " ) ) )
-        {
-            n_read = 0;
-            if ( std::sscanf( msg, " ( version %lf ) %n ",
-                              &version, &n_read ) != 1
-                 || n_read == 0 )
-            {
-                if ( ServerParam::instance().verboseMode() )
-                    std::cerr << "Warning: Illegal initialize message.\n"
-                              << "   message = " << init_message << std::endl;
-                sendToPlayer( "(error illegal_command_form)", addr );
-                return NULL;
-            }
-            msg += n_read;
-        }
-        else if ( ! std::strncmp( msg, "(goalie)", std::strlen( "(goalie)" )  ) )
-        {
-            goalie = true;
-            msg += std::strlen( "(goalie)" );
-        }
-        else
-        {
-            if ( ServerParam::instance().verboseMode() )
-                std::cerr << "Warning: Illegal initialize message.\n"
-                          << "   message = " << init_message << std::endl;
-            sendToPlayer( "(error illegal_command_form)", addr );
-            return NULL;
-        }
-
-        if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
-        {
-            if ( ServerParam::instance().verboseMode() )
-                std::cerr << "Warning: Illegal initialize message.\n"
-                          << "   message = " << init_message << std::endl;
-            sendToPlayer( "(error illegal_command_form)", addr );
-            return NULL;
-        }
-
-        while ( *msg != '\0' && std::isspace( *msg ) ) ++msg;
-    }
-
-    return newPlayer( teamname, version, goalie, addr );
-}
-
-
-Player *
-Stadium::newPlayer( const char * teamname,
-                    const double & version,
-                    const bool goalie_flag,
-                    const rcss::net::Addr & addr )
-{
-    Team * tm;
+    Team * team = static_cast< Team * >( 0 );
 
     if ( M_team_l->name().empty() )
     {
-        tm = M_team_l;
-        tm->setName( teamname );
+        team = M_team_l;
+        team->setName( teamname );
     }
     else if ( M_team_l->name() == teamname )
     {
-        tm = M_team_l;
+        team = M_team_l;
     }
     else if ( M_team_r->name().empty() )
     {
-        tm = M_team_r;
-        tm->setName( teamname );
+        team = M_team_r;
+        team->setName( teamname );
     }
     else if ( M_team_r->name() == teamname )
     {
-        tm = M_team_r;
+        team = M_team_r;
     }
     else
     {
         if ( ServerParam::instance().verboseMode() )
+        {
             std::cerr << "Warning:Too many teams. [teamname = '"
                       << teamname << "']" << std::endl;
+        }
         sendToPlayer( "(error no_more_team)", addr );
-        return NULL;
+        return static_cast< Player * >( 0 );
     }
 
-    Player * p = tm->newPlayer( version, goalie_flag );
+    if ( ! team )
+    {
+        return static_cast< Player * >( 0 );
+    }
 
-    if ( p == NULL )
+    Player * player = team->newPlayer( version, goalie );
+
+    if ( ! player )
     {
         sendToPlayer( "(error no_more_player_or_goalie_or_illegal_client_version)", addr );
-        return NULL;
+        return static_cast< Player * >( 0 );
     }
 
-    if ( ! p->connect( addr ) )
+    if ( ! player->connect( addr ) )
     {
         sendToPlayer( "(error connection_failed)", addr );
-        p->disable();
-        return NULL;
+        player->disable();
+        return static_cast< Player * >( 0 );
     }
 
-    addListener( p );
-    M_remote_players.push_back( p );
-    M_movable_objects.push_back( p );
+    addListener( player );
+    M_remote_players.push_back( player );
+    M_movable_objects.push_back( player );
 
-    p->setEnforceDedicatedPort( version >= 8.0 );
-    p->sendInit();
+    player->setEnforceDedicatedPort( version >= 8.0 );
+    player->sendInit();
 
-    return p;
+    return player;
 }
 
-Player*
-Stadium::reconnectPlayer( const char * reconnect_message,
+
+Player *
+Stadium::reconnectPlayer( const char * teamname,
+                          const int unum,
                           const rcss::net::Addr & addr )
 
 {
-    char teamname[128];
-    int unum;
-
-    if ( std::sscanf( reconnect_message,
-                      " ( reconnect %127s %d ) ",
-                      teamname, &unum ) < 2 )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning:Illegal reconnect message.\n"
-                      << "   message = " << reconnect_message << std::endl;
-        sendToPlayer( "(error illegal_command_form)", addr );
-        return NULL;
-    }
-
     int r = 0;
     for ( r = 0; r < MAX_PLAYER * 2; ++r )
     {
-        if ( M_players[r]->team()->enabled() )
+        if ( M_players[r]->team()->enabled()
+             && M_players[r]->team()->name() == teamname
+             && M_players[r]->unum() == unum )
         {
-            if ( M_players[r]->team()->name() == teamname
-                 && M_players[r]->unum() == unum )
+            /* It's same. */
+            if ( M_players[r]->isRedCarded() )
             {
-                break;
+                sendToPlayer( "(error red_carded_player)", addr );
+                return static_cast< Player * >( 0 );
             }
+
+            if ( M_players[r]->open() != 0 )
+            {
+                sendToPlayer( "(error socket_open_failed)", addr );
+                return static_cast< Player * >( 0 );
+            }
+            if ( ! M_players[r]->connect( addr ) )
+            {
+                sendToPlayer( "(error connection_failed)", addr );
+                return static_cast< Player * >( 0 );
+            }
+            if ( ! M_players[r]->setSenders() )
+            {
+                sendToPlayer( "(error illegal_client_version)", addr );
+                return static_cast< Player * >( 0 );
+            }
+
+            addListener( M_players[r] );
+            M_remote_players.push_back( M_players[r] );
+
+            M_players[r]->setEnforceDedicatedPort( M_players[r]->version() >= 8.0 );
+            M_players[r]->setEnable();
+            M_players[r]->sendReconnect();
+            return M_players[r];
         }
     }
 
-    /* It's same. */
-    if ( r < MAX_PLAYER * 2 )
-    {
-        if ( M_players[r]->isRedCarded() )
-        {
-            sendToPlayer( "(error red_carded_player)", addr );
-            return NULL;
-        }
-
-        if ( M_players[r]->open() != 0 )
-        {
-            sendToPlayer( "(error socket_open_failed)", addr );
-            return NULL;
-        }
-        if ( ! M_players[r]->connect( addr ) )
-        {
-            sendToPlayer( "(error connection_failed)", addr );
-            return NULL;
-        }
-        if ( ! M_players[r]->setSenders() )
-        {
-            sendToPlayer( "(error illegal_client_version)", addr );
-            return NULL;
-        }
-
-        addListener( M_players[r] );
-        M_remote_players.push_back( M_players[r] );
-
-        M_players[r]->setEnforceDedicatedPort( M_players[r]->version() >= 8.0 );
-        M_players[r]->setEnable();
-        M_players[r]->sendReconnect();
-        return M_players[r];
-    }
-    else
-    {
-        sendToPlayer( "(error no_such_team_or_player)", addr );
-        return NULL;
-    }
+    sendToPlayer( "(error no_such_team_or_player)", addr );
+    return static_cast< Player * >( 0 );
 }
 
 Coach *
-Stadium::initCoach( const char * init_message,
+Stadium::initCoach( const double & version,
                     const rcss::net::Addr & addr )
 {
-    if ( std::strncmp( init_message, "(init ", std::strlen( "(init " ) ) != 0 )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning:Illegal initialize message." << std::endl
-                      << "   message = " << init_message << std::endl;
-        sendToCoach( "(error unknown_command)", addr );
-        return NULL;
-    }
-
-    double ver = 3.0;
-    int n = std::sscanf( init_message, " ( init ( version %lf ) ) ", &ver );
-    if ( ( n != 0 && n != 1 )
-         || ver < 1.0 )
-    {
-        sendToCoach( "(error illegal_command_form)", addr );
-        return NULL;
-    }
-
     if ( M_coach->open() != 0 )
     {
         sendToCoach( "(error socket_open_failed)", addr );
@@ -916,124 +792,31 @@ Stadium::initCoach( const char * init_message,
         return NULL;
     }
 
-    if ( ! M_coach->setSenders( ver ) )
+    if ( ! M_coach->setSenders( version ) )
     {
         std::cerr << "Error: Could not find serializer or sender for version"
-                  << ver << std::endl;
+                  << version << std::endl;
         sendToCoach( "(error illegal_client_version)", addr );
         return NULL;
     }
 
     addOfflineCoach( M_coach );
     addListener( M_coach );
-    M_coach->setEnforceDedicatedPort( ver >= 8.0 );
+    M_coach->setEnforceDedicatedPort( version >= 8.0 );
     M_coach->sendInit();
 
     return M_coach;
 }
 
+
 OnlineCoach *
-Stadium::initOnlineCoach( const char * init_message,
-                          const rcss::net::Addr & addr )
-
+Stadium:: initOnlineCoach( const char * teamname,
+                           const char * coachname,
+                           const double & version,
+                           const rcss::net::Addr & addr )
 {
-    // (init <TeamName>[ <CoachName>][ (version <Ver>)])
 
-    const char * msg = init_message;
-
-    const double default_olcoach_version = 5.0;
-
-    char teamname[16];
-    char coachname[128];
-    double version = default_olcoach_version;
-
-    std::memset( teamname, 0, 16 );
-    std::memset( coachname, 0, 128 );
-
-    if ( std::strncmp( msg, "(init", std::strlen( "(init" ) ) != 0 )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning:Illegal initialize message." << std::endl
-                      << "   message = " << init_message << std::endl;
-        sendToOnlineCoach( "(error unknown_command)", addr );
-        return NULL;
-    }
-
-    int n_read = 0;
-
-    // read team name
-    if ( std::sscanf( msg, " ( init %15[-_a-zA-Z0-9] %n ",
-                      teamname, &n_read ) != 1
-         || n_read == 0 )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "Warning:Illegal team name.\n"
-                      << "   message = " << init_message << std::endl;
-        sendToOnlineCoach( "(error illegal_command_form)", addr );
-        return NULL;
-    }
-    msg += n_read;
-
-    // read coach name
-    if ( *msg != '(' )
-    {
-        if ( std::sscanf( msg, " %127[-_a-zA-Z0-9] %n ",
-                          coachname, &n_read ) != 1 )
-        {
-            if ( ServerParam::instance().verboseMode() )
-                std::cerr << "Warning:Illegal coach name.\n"
-                          << "   message = " << init_message << std::endl;
-            sendToOnlineCoach( "(error illegal_command_form)", addr );
-            return NULL;
-        }
-        msg += n_read;
-
-        if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
-        {
-            if ( ServerParam::instance().verboseMode() )
-                std::cerr << "Warning: Illegal coach name string or Too long coach name.\n"
-                          << "   message = " << init_message << std::endl;
-            sendToOnlineCoach( "(error illegal_coachname_or_too_long_coachname)", addr );
-            return NULL;
-        }
-    }
-
-    while ( *msg != '\0' && *msg != '(' ) ++msg;
-
-    // read protocol version
-    if ( ! std::strncmp( "(version", msg, std::strlen( "(version" ) ) )
-    {
-        if ( std::sscanf( msg, " ( version %lf ) %n ",
-                          &version, &n_read ) != 1
-             || n_read == 0 )
-        {
-            if ( ServerParam::instance().verboseMode() )
-                std::cerr << "Warning: Illegal coach version.\n"
-                          << "   message = " << init_message << std::endl;
-            sendToOnlineCoach( "(error illegal_command_form)", addr );
-            return NULL;
-        }
-        msg += n_read;
-
-        if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
-        {
-            if ( ServerParam::instance().verboseMode() )
-                std::cerr << "Warning: Illegal client version.\n"
-                          << "   message = " << init_message << std::endl;
-            sendToOnlineCoach( "(error illegal_client_version)", addr );
-            return NULL;
-        }
-
-        if ( version < default_olcoach_version )
-        {
-            if ( ServerParam::instance().verboseMode() )
-                std::cerr << "Warning: No online coach for versions less than than 5.00" << std::endl;
-            sendToOnlineCoach( "(error illegal_client_version)", addr );
-            return NULL;
-        }
-    }
-
-    OnlineCoach * olc = NULL;
+    OnlineCoach * olc = static_cast< OnlineCoach * >( 0 );
 
     if ( ! M_team_l->name().empty()
          && M_team_l->name() == teamname )
@@ -1050,19 +833,19 @@ Stadium::initOnlineCoach( const char * init_message,
     else
     {
         sendToOnlineCoach( "(error no_such_team)", addr );
-        return NULL;
+        return static_cast< OnlineCoach * >( 0 );
     }
 
     if ( olc->assigned() )
     {
         sendToOnlineCoach( "(error already_have_coach)", addr );
-        return NULL;
+        return static_cast< OnlineCoach * >( 0 );
     }
 
     if ( ! olc->connect( addr ) )
     {
         sendToOnlineCoach( "(error connection_failed)", addr );
-        return NULL;
+        return static_cast< OnlineCoach * >( 0 );
     }
 
     if ( ! olc->setSenders( version ) )
@@ -1070,7 +853,7 @@ Stadium::initOnlineCoach( const char * init_message,
         std::cerr << "Error: Could not find serializer or sender for version "
                   << (int)olc->version() << std::endl;
         sendToOnlineCoach( "(error illegal_client_version)", addr );
-        return NULL;
+        return static_cast< OnlineCoach * >( 0 );
     }
 
     olc->setEnforceDedicatedPort( version >= 8.0 );
@@ -1096,9 +879,13 @@ Stadium::initOnlineCoach( const char * init_message,
     return olc;
 }
 
+
 void
 Stadium::step()
 {
+    //
+    // reset command flags
+    //
     const PlayerCont::iterator end = M_players.end();
     for ( PlayerCont::iterator p = M_players.begin();
           p != end;
@@ -1118,7 +905,7 @@ Stadium::step()
     M_coach->resetCommandFlags();
 
     //
-    // update objects
+    // update objects & referees analyze state
     //
     if ( playmode() == PM_BeforeKickOff )
     {
@@ -1141,7 +928,7 @@ Stadium::step()
               || playmode() == PM_CatchFault_Right
               || playmode() == PM_CatchFault_Left )
     {
-        M_ball_catcher = NULL;
+        clearBallCatcher();
         incMovableObjects();
         ++M_stoppage_time;
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
@@ -1149,23 +936,10 @@ Stadium::step()
     else if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
     {
         incMovableObjects();
-
         ++M_time;
         M_stoppage_time = 0;
-
-        move_caught_ball();
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
         //for_each( M_referees.begin(), M_referees.end(), std::mem_fun( &Referee::analyse ) );
-
-        if ( time() > 0
-             && ServerParam::instance().nrNormalHalfs() > 0
-             && time() % ( ServerParam::instance().nrNormalHalfs()
-                           * ServerParam::instance().halfTime() ) == 0 )
-        {
-            //every game time cycles, give the online coach more messages
-            M_olcoaches[0]->awardFreeformMessageCount();
-            M_olcoaches[1]->awardFreeformMessageCount();
-        }
     }
     else if ( playmode() == PM_TimeOver )
     {
@@ -1173,20 +947,31 @@ Stadium::step()
     }
 
     //
-    // update stamina
+    // update stamina etc
     //
     for ( PlayerCont::iterator p = M_players.begin();
           p != end;
           ++p )
     {
-        if ( (*p)->state() == DISABLE ) continue;
+        if ( ! (*p)->isEnabled() ) continue;
 
         (*p)->updateStamina();
         (*p)->updateCapacity();
     }
 
+    if ( stoppageTime() == 0
+         && time() > 0
+         && ServerParam::instance().nrNormalHalfs() > 0
+         && time() % ( ServerParam::instance().nrNormalHalfs()
+                       * ServerParam::instance().halfTime() ) == 0 )
+    {
+        //every game time cycles, give the online coach more messages
+        M_olcoaches[0]->awardFreeformMessageCount();
+        M_olcoaches[1]->awardFreeformMessageCount();
+    }
+
     //
-    // send to monitor and write game log
+    // send to monitors and write game log
     //
     sendDisp();
 
@@ -1206,7 +991,7 @@ Stadium::turnMovableObjects()
 {
     std::random_shuffle( M_movable_objects.begin(),
                          M_movable_objects.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+                         irand );
     const MPObjectCont::iterator end = M_movable_objects.end();
     for ( MPObjectCont::iterator it = M_movable_objects.begin();
           it != end;
@@ -1221,20 +1006,31 @@ Stadium::incMovableObjects()
 {
     std::random_shuffle( M_movable_objects.begin(),
                          M_movable_objects.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+                         irand );
     const MPObjectCont::iterator end = M_movable_objects.end();
     for ( MPObjectCont::iterator it = M_movable_objects.begin();
           it != end;
           ++it )
     {
-        if ( (*it)->isEnable() )
+        if ( (*it)->isEnabled() )
         {
             (*it)->_inc();
         }
     }
 
     collisions();
+
+    // move_caughat_ball() [2000.07.21: I.Noda]
+    if ( M_ball_catcher )
+    {
+        // keeps the caught ball infront of the player
+        PVector rpos = PVector::fromPolar( M_ball_catcher->size()
+                                           + ServerParam::instance().ballSize(),
+                                           M_ball_catcher->angleBodyCommitted() );
+        M_ball->moveTo( M_ball_catcher->pos() + rpos );
+    }
 }
+
 
 void
 Stadium::sendDisp()
@@ -1268,123 +1064,6 @@ Stadium::sendDisp()
 
 }
 
-void
-Stadium::score( const Side side )
-{
-    if ( side == LEFT
-         && M_team_l->enabled() )
-    {
-        M_team_l->incPoint();
-    }
-
-    if ( side == RIGHT
-         && M_team_r->enabled() )
-    {
-        M_team_r->incPoint();
-    }
-}
-
-void
-Stadium::penaltyScore( const Side side,
-                       const bool scored )
-{
-    if ( side == LEFT
-         && M_team_l->enabled() )
-    {
-        if ( scored )
-        {
-            M_team_l->setPenaltyScore();
-        }
-        else
-        {
-            M_team_l->setPenaltyMiss();
-        }
-    }
-
-    if ( side == RIGHT
-         && M_team_r->enabled() )
-    {
-        if ( scored )
-        {
-            M_team_r->setPenaltyScore();
-        }
-        else
-        {
-            M_team_r->setPenaltyMiss();
-        }
-    }
-
-}
-
-void
-Stadium::penaltyWinner( const Side side )
-{
-    if ( side == LEFT )
-    {
-        M_team_l->setPenaltyWinner();
-    }
-
-    if ( side == RIGHT )
-    {
-        M_team_r->setPenaltyWinner();
-    }
-}
-
-
-void
-Stadium::set_ball( const Side kick_off_side,
-                   const PVector & pos,
-                   const PVector & vel )
-{
-    M_ball->moveTo( pos,
-                    vel,
-                    PVector( 0.0, 0.0 ) );
-    M_kick_off_side = kick_off_side;
-}
-
-void
-Stadium::setHalfTime( const Side kick_off_side,
-                      const int half_time_count )
-{
-    //std::cerr << time() << ": setHalfTime  count=" << half_time_count
-    //          << std::endl;
-
-    M_ball_catcher = NULL;
-    set_ball( kick_off_side, PVector( 0.0, 0.0 ) );
-    change_play_mode( PM_BeforeKickOff );
-
-    if ( half_time_count < ServerParam::instance().nrNormalHalfs() )
-    {
-        M_time = ServerParam::instance().halfTime() * half_time_count;
-    }
-    else
-    {
-        int extra_count = half_time_count - ServerParam::instance().nrNormalHalfs();
-        M_time
-            = ServerParam::instance().halfTime() * ServerParam::instance().nrNormalHalfs()
-            + ServerParam::instance().extraHalfTime() * extra_count;
-    }
-
-    // recover only stamina capacity at the start of extra halves
-    if ( half_time_count == ServerParam::instance().nrNormalHalfs() )
-    {
-        const PlayerCont::iterator end = M_players.end();
-        for ( PlayerCont::iterator p = M_players.begin();
-              p != end;
-              ++p )
-        {
-            if ( (*p)->state() == DISABLE )
-            {
-                continue;
-            }
-
-            (*p)->recoverStaminaCapacity();
-        }
-    }
-
-    M_weather.wind_vector.x *= -1;
-    M_weather.wind_vector.y *= -1;
-}
 
 void
 Stadium::recoveryPlayers()
@@ -1394,14 +1073,12 @@ Stadium::recoveryPlayers()
           p != end;
           ++p )
     {
-        if ( (*p)->state() == DISABLE )
-        {
-            continue;
-        }
+        if ( ! (*p)->isEnabled() ) continue;
 
         (*p)->recoverAll();
     }
 }
+
 
 BallPosInfo
 Stadium::ballPosInfo()
@@ -1444,7 +1121,7 @@ Stadium::placePlayersInField()
 
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
-        if ( M_players[i]->state() == DISABLE ) continue;
+        if ( ! M_players[i]->isEnabled() ) continue;
 
         if ( ! fld.inArea( M_players[i]->pos() ) )
         {
@@ -1453,8 +1130,396 @@ Stadium::placePlayersInField()
     }
 }
 
+
+Player *
+Stadium::getPlayer( const Side side,
+                    const int unum )
+{
+//     for ( int i = 0; i < MAX_PLAYER*2; ++i )
+//     {
+//         if ( M_players[i]->side() == side
+//              && M_players[i]->unum() == unum )
+//         {
+//             return M_players[i];
+//         }
+//     }
+
+    if ( side == LEFT )
+    {
+        return M_players[unum - 1];
+    }
+    else if ( side == RIGHT )
+    {
+        return M_players[MAX_PLAYER + unum - 1];
+    }
+
+    return static_cast< Player * >( 0 );
+}
+
+
 void
-Stadium::change_play_mode( const PlayMode pm )
+Stadium::kickOff()
+{
+    const ServerParam & SP = ServerParam::instance();
+
+    if ( SP.keepAwayMode() )
+    {
+        changePlayMode( PM_PlayOn );
+        return;
+    }
+
+    int normal_time = SP.halfTime() * SP.nrNormalHalfs();
+
+    if ( SP.halfTime() <= 0
+         || ( time() <= normal_time
+              && time() % SP.halfTime() == 0 )
+         || ( time() > normal_time
+              && SP.extraHalfTime() > 0
+              && ( time() - normal_time ) % SP.extraHalfTime() == 0 )
+         )
+    {
+        int current_time = time();
+        int half_time = SP.halfTime();
+        if ( current_time > normal_time )
+        {
+            current_time -= normal_time;
+            half_time = SP.extraHalfTime();
+        }
+
+        if ( half_time <= 0
+             || ( current_time / half_time ) % 2 == 0 )
+        {
+            if ( SP.nrNormalHalfs() >= 0
+                 && time() < SP.halfTime() * SP.nrNormalHalfs() )
+            {
+                recoveryPlayers();
+            }
+
+            placeBall( LEFT, PVector( 0.0, 0.0 ) );
+
+            if ( time() == 0 )
+            {
+                assignPlayerTypes();
+            }
+
+            changePlayMode( PM_KickOff_Left );
+            std::cout << "Kick_off_left" << std::endl;
+        }
+        else // if ( ( time / half_time ) % 2 == 1 )
+        {
+            if ( SP.nrNormalHalfs() >= 0
+                 && time() < SP.halfTime() * SP.nrNormalHalfs() )
+            {
+                recoveryPlayers();
+            }
+
+            placeBall( RIGHT, PVector( 0.0, 0.0 ) );
+            changePlayMode( PM_KickOff_Right );
+            std::cout << "Kick_off_right" << std::endl;
+        }
+    }
+}
+
+
+void
+Stadium::callHalfTime( const Side kick_off_side,
+                       const int half_time_count )
+{
+    //std::cerr << time() << ": callHalfTime  count=" << half_time_count
+    //          << std::endl;
+
+    M_ball_catcher = NULL;
+    placeBall( kick_off_side, PVector( 0.0, 0.0 ) );
+    changePlayMode( PM_BeforeKickOff );
+
+    if ( half_time_count < ServerParam::instance().nrNormalHalfs() )
+    {
+        M_time = ServerParam::instance().halfTime() * half_time_count;
+    }
+    else
+    {
+        int extra_count = half_time_count - ServerParam::instance().nrNormalHalfs();
+        M_time
+            = ServerParam::instance().halfTime() * ServerParam::instance().nrNormalHalfs()
+            + ServerParam::instance().extraHalfTime() * extra_count;
+    }
+
+    // recover only stamina capacity at the start of extra halves
+    if ( half_time_count == ServerParam::instance().nrNormalHalfs() )
+    {
+        const PlayerCont::iterator end = M_players.end();
+        for ( PlayerCont::iterator p = M_players.begin();
+              p != end;
+              ++p )
+        {
+            if ( ! (*p)->isEnabled() ) continue;
+
+            (*p)->recoverStaminaCapacity();
+        }
+    }
+
+    M_weather.wind_vector.x *= -1;
+    M_weather.wind_vector.y *= -1;
+}
+
+
+void
+Stadium::callFoul( const Side side,
+                   PVector pos )
+{
+    if ( Referee::isPenaltyShootOut( playmode() ) )
+    {
+        return;
+    }
+
+    char msg[8];
+
+    snprintf( msg, 8, "foul_%s", SideStr( -side ) );
+    sendRefereeAudio( msg );
+    M_ball_catcher = NULL;
+
+    pos = Referee::truncateToPitch( pos );
+
+    if( side == LEFT )
+    {
+        placeBall( PM_FreeKick_Left, LEFT, pos );
+    }
+    else
+    {
+        placeBall( PM_FreeKick_Right, RIGHT, pos );
+    }
+    placePlayersInField();
+    M_ball_catcher = NULL;
+}
+
+
+void
+Stadium::dropBall( PVector pos )
+{
+    M_ball_catcher = NULL;
+
+    pos = Referee::truncateToPitch( pos );
+
+    placeBall( PM_Drop_Ball, NEUTRAL, pos );
+    placePlayersInField();
+
+    if ( ! Referee::isPenaltyShootOut( playmode() ) )
+    {
+        changePlayMode( PM_PlayOn );
+    }
+}
+
+void
+Stadium::discardPlayer( const Side side,
+                        const int unum )
+{
+    Player * p = getPlayer( side, unum );
+    if ( ! p
+         || ! p->isEnabled() )
+    {
+        return;
+    }
+
+    p->discard();
+}
+
+
+void
+Stadium::punishFoulPlay( const Side side,
+                         const int unum )
+{
+    Player * p = getPlayer( side, unum );
+    if ( ! p
+         || ! p->isEnabled() )
+    {
+        return;
+    }
+
+    p->incFoulCount();
+}
+
+
+void
+Stadium::yellowCard( const Side side,
+                     const int unum )
+{
+    Player * p = getPlayer( side, unum );;
+
+    if ( ! p
+         || ! p->isEnabled() )
+    {
+        return;
+    }
+
+    char msg[32];
+    snprintf( msg, 32, "yellow_card_%s_%d",
+              SideStr( p->side() ),
+              p->unum() );
+    sendRefereeAudio( msg );
+
+    if ( p->isYellowCarded() )
+    {
+        snprintf( msg, 32, "red_card_%s_%d",
+                  SideStr( p->side() ),
+                  p->unum() );
+        sendRefereeAudio( msg );
+    }
+
+    p->yellowCard();
+}
+
+
+void
+Stadium::score( const Side side )
+{
+    if ( side == LEFT
+         && M_team_l->enabled() )
+    {
+        M_team_l->incPoint();
+    }
+
+    if ( side == RIGHT
+         && M_team_r->enabled() )
+    {
+        M_team_r->incPoint();
+    }
+}
+
+
+void
+Stadium::penaltyScore( const Side side,
+                       const bool scored )
+{
+    if ( side == LEFT
+         && M_team_l->enabled() )
+    {
+        if ( scored )
+        {
+            M_team_l->setPenaltyScore();
+        }
+        else
+        {
+            M_team_l->setPenaltyMiss();
+        }
+    }
+
+    if ( side == RIGHT
+         && M_team_r->enabled() )
+    {
+        if ( scored )
+        {
+            M_team_r->setPenaltyScore();
+        }
+        else
+        {
+            M_team_r->setPenaltyMiss();
+        }
+    }
+
+}
+
+
+void
+Stadium::penaltyWinner( const Side side )
+{
+    if ( side == LEFT )
+    {
+        M_team_l->setPenaltyWinner();
+    }
+
+    if ( side == RIGHT )
+    {
+        M_team_r->setPenaltyWinner();
+    }
+}
+
+
+void
+Stadium::placeBall( const Side kick_off_side,
+                    const PVector & pos )
+{
+    M_ball->moveTo( pos,
+                    PVector( 0.0, 0.0 ),
+                    PVector( 0.0, 0.0 ) );
+    M_kick_off_side = kick_off_side;
+}
+
+
+void
+Stadium::placeBall( const PlayMode pm,
+                    const Side kick_off_side,
+                    const PVector & pos )
+{
+    placeBall( kick_off_side, pos );
+
+    if ( Referee::isPenaltyShootOut( playmode() )
+         && ( pm == PM_PlayOn || pm ==  PM_Drop_Ball ) )
+    {
+        ; // never change pm to play_on in penalty mode
+    }
+    else
+    {
+        changePlayMode( pm );
+    }
+}
+
+
+void
+Stadium::moveBall( const PVector & pos,
+                   const PVector & vel )
+{
+    M_ball->moveTo( pos,
+                    vel,
+                    PVector( 0.0, 0.0 ) );
+}
+
+
+bool
+Stadium::movePlayer( const Side side,
+                     const int unum,
+                     const PVector & pos,
+                     const double * ang,
+                     const PVector * vel )
+{
+    if ( unum < 1 || MAX_PLAYER < unum )
+    {
+        if ( ServerParam::instance().verboseMode() )
+            std::cerr << "No such player. " << SideStr( side )
+                      << " " << unum << std::endl;
+        return false;
+    }
+
+    Player * player = getPlayer( side, unum );
+    if ( ! player )
+    {
+        return false;
+    }
+
+    double new_angle = player->angleBodyCommitted();
+    PVector new_vel = player->vel();
+    PVector new_accel = player->accel();
+
+    if ( vel )
+    {
+        new_vel = *vel;
+    }
+
+    if ( ang )
+    {
+        new_angle = *ang;
+    }
+
+    player->place( pos,
+                   new_angle,
+                   new_vel,
+                   new_accel );
+    collisions();
+    return true;
+}
+
+
+void
+Stadium::changePlayMode( const PlayMode pm )
 {
     static const char * playmode_strings[] = PLAYMODE_STRINGS;
 
@@ -1486,7 +1551,7 @@ Stadium::change_play_mode( const PlayMode pm )
         M_kick_off_side = NEUTRAL;
     }
 
-    if ( pm == PM_PlayOn )
+    if ( pm != PM_PlayOn )
     {
         M_last_playon_start = time();
     }
@@ -1498,113 +1563,13 @@ Stadium::change_play_mode( const PlayMode pm )
     }
 }
 
-void
-Stadium::referee_get_foul( const double & x,
-                           const double & y,
-                           const Side side )
-{
-    if ( Referee::isPenaltyShootOut( playmode() ) )
-    {
-        return;
-    }
-
-    char msg[8];
-
-    snprintf( msg, 8, "foul_%s", SideStr( -side ) );
-    sendRefereeAudio( msg );
-    M_ball_catcher = NULL;
-
-    PVector pos = Referee::truncateToPitch( PVector( x, y ) );
-
-    if( side == LEFT )
-    {
-        placeBall( PM_FreeKick_Left, LEFT, pos );
-    }
-    else
-    {
-        placeBall( PM_FreeKick_Right, RIGHT, pos );
-    }
-    placePlayersInField();
-    M_ball_catcher = NULL;
-}
-
-void
-Stadium::referee_drop_ball( const double & x, const double & y,
-                            const Side side )
-{
-    M_ball_catcher = NULL;
-
-    PVector pos = Referee::truncateToPitch( PVector( x, y ) );
-
-    placeBall( PM_Drop_Ball, side, pos );
-    placePlayersInField();
-
-    if ( ! Referee::isPenaltyShootOut( playmode() ) )
-    {
-        change_play_mode( PM_PlayOn );
-    }
-}
-
-void
-Stadium::discard_player( const Side side,
-                         const int unum )
-{
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        if ( M_players[i]->side() == side
-             && M_players[i]->unum() == unum )
-        {
-            M_players[i]->discard();
-            break;
-        }
-    }
-}
-
-
-void
-Stadium::yellowCard( const Side side,
-                     const int unum )
-{
-    Player * p = static_cast< Player * >( 0 );
-    for ( int i = 0; i < MAX_PLAYER * 2; ++i )
-    {
-        if ( M_players[i]->side() == side
-             && M_players[i]->unum() == unum )
-        {
-            p = M_players[i];
-            break;
-        }
-    }
-
-    if ( ! p )
-    {
-        return;
-    }
-
-    char msg[32];
-    if ( p->isYellowCarded() )
-    {
-        snprintf( msg, 32, "red_card_%s_%d",
-                  SideStr( p->side() ),
-                  p->unum() );
-    }
-    else
-    {
-        snprintf( msg, 32, "yellow_card_%s_%d",
-                  SideStr( p->side() ),
-                  p->unum() );
-    }
-    sendRefereeAudio( msg );
-
-    p->yellowCard();
-}
-
 /*
  *===================================================================
  *Part: Weather
  *===================================================================
  */
-void Weather::init()
+void
+Weather::init()
 {
     if ( ServerParam::instance().windNone() )
     {
@@ -1629,122 +1594,6 @@ void Weather::init()
 #endif
 
 }
-
-
-bool
-Stadium::movePlayer( const Side side,
-                     const int unum,
-                     const PVector & pos,
-                     const double * ang,
-                     const PVector * vel )
-{
-    if ( unum < 1 || MAX_PLAYER < unum )
-    {
-        if ( ServerParam::instance().verboseMode() )
-            std::cerr << "No such player. " << SideStr( side )
-                      << " " << unum << std::endl;
-        return false;
-    }
-
-    Player * player = NULL;
-    if ( side == LEFT )
-    {
-        player = M_players[unum - 1];
-    }
-    else if ( side == RIGHT )
-    {
-        player = M_players[MAX_PLAYER + unum - 1];
-    }
-    else
-    {
-        return false;
-    }
-
-    double new_angle = player->angleBodyCommitted();
-    PVector new_vel = player->vel();
-    PVector new_accel = player->accel();
-
-    if ( vel )
-    {
-        new_vel = *vel;
-    }
-
-    if ( ang )
-    {
-        new_angle = *ang;
-    }
-
-    player->place( pos,
-                   new_angle,
-                   new_vel,
-                   new_accel );
-    collisions();
-    return true;
-}
-
-void
-Stadium::_Start( Stadium & stad )
-{
-    const ServerParam & param = ServerParam::instance();
-
-    if ( param.keepAwayMode() )
-    {
-        stad.change_play_mode( PM_PlayOn );
-        return;
-    }
-
-    int normal_time = param.halfTime() * param.nrNormalHalfs();
-
-    if ( param.halfTime() <= 0
-         || ( stad.time() <= normal_time
-              && stad.time() % param.halfTime() == 0 )
-         || ( stad.time() > normal_time
-              && param.extraHalfTime() > 0
-              && ( stad.time() - normal_time ) % param.extraHalfTime() == 0 )
-         )
-    {
-        int time = stad.time();
-        int half_time = param.halfTime();
-        if ( time > normal_time )
-        {
-            time -= normal_time;
-            half_time = param.extraHalfTime();
-        }
-
-        if ( half_time <= 0
-             || ( time / half_time ) % 2 == 0 )
-        {
-            if ( param.nrNormalHalfs() >= 0
-                 && stad.time() < param.halfTime() * param.nrNormalHalfs() )
-            {
-                stad.recoveryPlayers();
-            }
-
-            stad.set_ball( LEFT, PVector( 0.0, 0.0 ) );
-
-            if ( stad.time() == 0 )
-            {
-                stad.assignPlayerTypes();
-            }
-
-            stad.change_play_mode( PM_KickOff_Left );
-            std::cout << "Kick_off_left" << std::endl;
-        }
-        else // if ( ( time / half_time ) % 2 == 1 )
-        {
-            if ( param.nrNormalHalfs() >= 0
-                 && stad.time() < param.halfTime() * param.nrNormalHalfs() )
-            {
-                stad.recoveryPlayers();
-            }
-
-            stad.set_ball( RIGHT, PVector( 0.0, 0.0 ) );
-            stad.change_play_mode( PM_KickOff_Right );
-            std::cout << "Kick_off_right" << std::endl;
-        }
-    }
-}
-
 
 void
 Stadium::assignPlayerTypes()
@@ -1801,10 +1650,10 @@ Stadium::collisions()
               it != end;
               ++it )
         {
-            if ( (*it)->isEnable()
+            if ( (*it)->isEnabled()
                  && (*it) != M_ball_catcher
-                 && M_ball->pos().distance( (*it)->pos() )
-                 < M_ball->size() + (*it)->size() )
+                 && M_ball->pos().distance2( (*it)->pos() )
+                 < std::pow( M_ball->size() + (*it)->size(), 2 ) )
             {
                 col = true;
                 (*it)->collidedWithBall();
@@ -1819,10 +1668,10 @@ Stadium::collisions()
         {
             for ( std::size_t j = i + 1; j < SIZE; ++j )
             {
-                if ( M_players[i]->isEnable()
-                     && M_players[j]->isEnable()
-                     && M_players[i]->pos().distance( M_players[j]->pos() )
-                     < M_players[i]->size() + M_players[j]->size() )
+                if ( M_players[i]->isEnabled()
+                     && M_players[j]->isEnabled()
+                     && M_players[i]->pos().distance2( M_players[j]->pos() )
+                     < std::pow( M_players[i]->size() + M_players[j]->size(), 2 ) )
                 {
                     col = true;
                     M_players[i]->collidedWithPlayer();
@@ -1935,7 +1784,8 @@ Stadium::calcCollisionPos( MPObject * a,
         // a->size + b->size apart, they are ever so slightly
         // less.
         int count = 0;
-        while ( apos.distance( bpos ) < a->size() + b->size()
+        const double collision_dist2 = std::pow( a->size() + b->size(), 2 );
+        while ( apos.distance2( bpos ) < collision_dist2
                 && count < 10 )
         {
             mid2a.normalize( mid2a.r() * 1.0001 );
@@ -1960,23 +1810,6 @@ Stadium::calcCollisionPos( MPObject * a,
     b->collide( bpos );
 }
 
-void
-Stadium::placeBall( const PlayMode pm,
-                    const Side side,
-                    PVector location )
-{
-    set_ball( side, location );
-
-    if ( Referee::isPenaltyShootOut( playmode() )
-         && ( pm == PM_PlayOn || pm ==  PM_Drop_Ball ) )
-    {
-        ; // never change pm to play_on in penalty mode
-    }
-    else
-    {
-        change_play_mode( pm );
-    }
-}
 
 void
 Stadium::setPlayerState( const Side side,
@@ -1994,16 +1827,7 @@ Stadium::setPlayerState( const Side side,
         return;
     }
 
-    Player * player = NULL;
-    if ( side == LEFT )
-    {
-        player = M_players[unum - 1];
-    }
-    else if ( side == RIGHT )
-    {
-        player = M_players[MAX_PLAYER + unum - 1];
-    }
-
+    Player * player = getPlayer( side, unum );
     if ( ! player )
     {
         if ( ServerParam::instance().verboseMode() )
@@ -2015,7 +1839,7 @@ Stadium::setPlayerState( const Side side,
         return;
     }
 
-    if ( player->state() != DISABLE )
+    if ( player->isEnabled() )
     {
         player->addState( state );
     }
@@ -2091,19 +1915,6 @@ Stadium::sendTeamGraphic( const Side side,
     M_logger.writeTeamGraphic( side, x, y );
 }
 
-
-void
-Stadium::move_caught_ball()
-{
-    if ( M_ball_catcher )
-    {
-        // keeps the caught ball infront of the player
-        PVector temp = PVector::fromPolar( M_ball_catcher->size()
-                                           + ServerParam::instance().ballSize(),
-                                           M_ball_catcher->angleBodyCommitted() );
-        M_ball->moveTo( M_ball_catcher->pos() + temp );
-    }
-}
 
 void
 Stadium::removeDisconnectedClients()
@@ -2417,7 +2228,7 @@ Stadium::doSendSenseBody()
           it != end;
           ++it )
     {
-        if ( (*it)->state() != DISABLE
+        if ( (*it)->isEnabled()
              && (*it)->connected() )
         {
             (*it)->sendBody();
@@ -2471,7 +2282,7 @@ Stadium::doSendVisuals()
           it != end;
           ++it )
     {
-        if ( (*it)->state() != DISABLE
+        if ( (*it)->isEnabled()
              && (*it)->connected() )
         {
             (*it)->sendVisual();
@@ -2505,7 +2316,7 @@ Stadium::doSendSynchVisuals()
           it != end;
           ++it )
     {
-        if ( (*it)->state() != DISABLE
+        if ( (*it)->isEnabled()
              && (*it)->connected() )
         {
             (*it)->sendSynchVisual();
@@ -2610,7 +2421,7 @@ Stadium::doSendThink()
     bool wait_players[MAX_PLAYER*2];
     for ( int i = 0; i < MAX_PLAYER*2; ++i )
     {
-        wait_players[i] = ! ( M_players[i]->state() == DISABLE );
+        wait_players[i] = M_players[i]->isEnabled();
     }
 
     bool wait_coach[2];
@@ -2670,7 +2481,7 @@ Stadium::doSendThink()
             if ( wait_players[i]
                  && M_players[i]->connected()
                  && ! M_players[i]->doneReceived()
-                 && M_players[i]->state() != DISABLE )
+                 && M_players[i]->isEnabled() )
             {
                 done = DS_FALSE;
                 break;

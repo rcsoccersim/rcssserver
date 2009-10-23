@@ -145,7 +145,7 @@ AudioSenderPlayer::sendPlayerAudio( const Player & player,
 bool
 AudioSenderPlayer::generalPredicate() const
 {
-    return listener().state() != DISABLE;
+    return listener().isEnabled();
 }
 
 bool
@@ -164,8 +164,8 @@ AudioSenderPlayer::nonSelfPlayerPredicate( const Player & player ) const
     if( generalPredicate() )
     {
         if ( listener().canHearFullFrom( player )
-             && player.pos().distance( listener().pos() )
-             <= ServerParam::instance().audioCutDist() )
+             && player.pos().distance2( listener().pos() )
+             <= std::pow( ServerParam::instance().audioCutDist(), 2 ) )
         {
             return true;
         }
@@ -411,8 +411,8 @@ bool
 AudioSenderPlayerv8::nonSelfPlayerPredicate( const Player & player ) const
 {
     return ( generalPredicate()
-             && ( player.pos().distance( listener().pos() )
-                  <= ServerParam::instance().audioCutDist() ) );
+             && ( player.pos().distance2( listener().pos() )
+                  <= std::pow( ServerParam::instance().audioCutDist(), 2 ) ) );
 }
 
 bool

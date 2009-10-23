@@ -433,12 +433,10 @@ MPObject::print( std::ostream & o ) const
 
 void
 MPObject::moveTo( const PVector & pos,
-                  //const Angle & angle,
                   const PVector & vel,
                   const PVector & accel )
 {
     M_pos = pos;
-    //M_angle = angle;
     M_vel = vel;
     M_accel = accel;
 }

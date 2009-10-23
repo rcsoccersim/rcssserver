@@ -162,10 +162,10 @@ VisualSenderPlayerV1::sendPlayers()
           ++p )
     {
         if ( *p != &self()
-             && (*p)->state() != DISABLE
+             && (*p)->isEnabled()
              && (*p)->objectVersion() <= self().version() )
         {
-            sendPlayer( *(*p) );
+            sendPlayer( **p );
         }
     }
 }

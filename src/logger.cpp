@@ -1134,7 +1134,7 @@ Logger::writeGameLogV4()
            << (*p)->stamina() << ' '
            << (*p)->effort() << ' '
            << (*p)->recovery() << ')';
-        if ( (*p)->state() != DISABLE
+        if ( (*p)->isEnabled()
              && (*p)->getFocusTarget() != NULL )
         {
             os << " (f " << SideStr( (*p)->getFocusTarget()->side() )

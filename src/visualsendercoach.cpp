@@ -97,7 +97,7 @@ VisualSenderCoachV1::sendVisual()
           p != end;
           ++p )
     {
-        if ( (*p)->state() == DISABLE ) continue;
+        if ( ! (*p)->isEnabled() ) continue;
 
         serializePlayer( **p );
     }
@@ -119,7 +119,7 @@ VisualSenderCoachV1::sendLook()
           p != end;
           ++p )
     {
-        if ( (*p)->state() == DISABLE ) continue;
+        if ( ! (*p)->isEnabled() ) continue;
 
         serializePlayerLook( **p );
     }

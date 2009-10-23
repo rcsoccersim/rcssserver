@@ -177,6 +177,7 @@ private:
     int M_tackle_count;
 
     int M_foul_cycles;
+    int M_foul_count;
 
     //
     // offside state
@@ -384,7 +385,8 @@ public:
     //
     // foul
     //
-    void setFoulCycles();
+    void setFoulPushed();
+    void incFoulCount();
     void yellowCard();
 
     bool isYellowCarded() const { return M_card_count == 1; }

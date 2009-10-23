@@ -337,7 +337,7 @@ public:
 
     void clearBallCatcher()
       {
-          M_ball_catcher = NULL;
+          M_ball_catcher = static_cast< Player * >( 0 );
       }
 
     Side kickOffSide() const
@@ -351,10 +351,7 @@ public:
       }
 
 private:
-    void initObjects();
-
-    template < class T >
-    void recv( std::vector< T >& clients );
+    void createObjects();
 
     void udp_recv_message();
     void udp_recv_from_coach();
@@ -368,42 +365,50 @@ private:
                          const rcss::net::Addr & cli_addr );
     void parseOnlineCoachInit( const char * message,
                                const rcss::net::Addr & cli_addr );
-
-    Player * initPlayer( const char * init_message,
-                         const rcss::net::Addr & );
-    Player * newPlayer( const char * teamname,
-                        const double & version,
-                        const bool goalie_flag,
-                        const rcss::net::Addr & );
-    Player * reconnectPlayer( const char * init_message,
-                              const rcss::net::Addr & );
-    Coach * initCoach( const char * init_message,
+    Player * initPlayer( const char * teamname,
+                         const double & version,
+                         const bool goalie,
+                         const rcss::net::Addr & addr );
+    Player * reconnectPlayer( const char * teamname,
+                              const int unum,
+                              const rcss::net::Addr & addr );
+    Coach * initCoach( const double & version,
                        const rcss::net::Addr & );
-    OnlineCoach * initOnlineCoach( const char * init_message,
-                                   const rcss::net::Addr & );
+    OnlineCoach * initOnlineCoach( const char * teamname,
+                                   const char * coachname,
+                                   const double & version,
+                                   const rcss::net::Addr & addr );
 
     void removeDisconnectedClients();
 
     void step();
-
 
     void turnMovableObjects();
     void incMovableObjects();
 
     void sendDisp();
 
-    void move_caught_ball(); // [2000.07.21: I.Noda]
+    Player * getPlayer( const Side side,
+                        const int unum );
 
 public:
-    void referee_get_foul( const double & x,
-                           const double & y,
-                           const Side side );
-    void referee_drop_ball( const double & x,
-                            const double & y,
-                            const Side side );
-    void discard_player( const Side side,
-                         const int unum );
 
+    //
+    // referee interfaces
+    //
+
+    void kickOff();
+    void callHalfTime( const Side kick_off_side,
+                       const int half_time_count );
+
+    void callFoul( const Side side,
+                   PVector pos );
+    void dropBall( PVector pos );
+    void discardPlayer( const Side side,
+                        const int unum );
+
+    void punishFoulPlay( const Side side,
+                         const int unum );
     void yellowCard( const Side side,
                      const int unum );
 
@@ -412,31 +417,29 @@ public:
                        const bool scored );
     void penaltyWinner( const Side side );
 
-    void setHalfTime( const Side kick_off_side,
-                      const int half_time_count );
-
-    void set_ball( const Side kick_off_side,
-                   const PVector & pos,
-                   const PVector & vel = PVector(0.0,0.0) );
+    void placeBall( const Side kick_off_side,
+                    const PVector & pos );
     /*!
       The side parameter is redundant, but it save us from having to look it up.
       Later I would like to make playmodes objects that have side as a member.
     */
     void placeBall( const PlayMode pm,
-                    const Side side,
-                    PVector location );
+                    const Side kick_off_side,
+                    const PVector & pos );
 
+    void moveBall( const PVector & pos,
+                   const PVector & vel );
     bool movePlayer( const Side side,
                      const int unum,
                      const PVector & pos,
                      const double * ang = NULL,
                      const PVector * vel = NULL );
 
+    void changePlayMode( const PlayMode pm );
+
     void placePlayersInField();
 
     void recoveryPlayers();
-
-    void change_play_mode( const PlayMode pm );
 
 private:
     //! diretcly send message to player client that has cli_addr
@@ -507,10 +510,6 @@ private:
     void saveResults();
 
     void disable();
-
-public:
-    static
-    void _Start( Stadium & stad );
 
 };
 

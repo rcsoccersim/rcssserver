@@ -348,8 +348,7 @@ Monitor::parseCommand( const char * message )
     }
     else if ( ! std::strcmp( message, "(dispstart)" ) )
     {
-        // kick off
-        Stadium::_Start( M_stadium );
+        M_stadium.kickOff();
         return true;
     }
     else if ( ! std::strncmp( message, "(dispplayer", 11 ) )
@@ -373,7 +372,7 @@ Monitor::parseCommand( const char * message )
     {
         if ( ! std::strncmp( message, "(start)", 7 ) )
         {
-            Stadium::_Start( M_stadium );
+            M_stadium.kickOff();
             sendMsg( MSG_BOARD, "(ok start)" );
             return true;
         }
@@ -429,13 +428,13 @@ Monitor::dispfoul( const char * command )
     double real_y = y / SHOWINFO_SCALE;
     if ( static_cast< Side >( side ) == NEUTRAL )
     {
-        M_stadium.referee_drop_ball( real_x, real_y,
-                                     static_cast< Side >( side ) );
+        M_stadium.dropBall( PVector( real_x, real_y ) );
     }
     else
     {
-        M_stadium.referee_get_foul( real_x, real_y,
-                                    static_cast< Side >( side ) );
+        M_stadium.callFoul( static_cast< Side >( side ),
+                            PVector( real_x, real_y ) );
+
     }
 
     return true;
@@ -480,7 +479,7 @@ Monitor::dispdiscard( const char * command )
         return false;
     }
 
-    M_stadium.discard_player( static_cast< Side >( side ), unum );
+    M_stadium.discardPlayer( static_cast< Side >( side ), unum );
     return true;
 }
 
@@ -539,7 +538,7 @@ Monitor::coach_change_mode( const char * command )
         return false;
     }
 
-    M_stadium.change_play_mode( mode_id );
+    M_stadium.changePlayMode( mode_id );
     sendMsg( MSG_BOARD, "(ok change_mode)" );
     return true;
 }
@@ -575,11 +574,11 @@ Monitor::coach_move( const char * command )
 
         if ( n == 3 || n == 4 )
         {
-            M_stadium.set_ball( NEUTRAL, PVector( x, y ) );
+            M_stadium.moveBall( PVector( x, y ), PVector( 0.0, 0.0 ) );
         }
         else if ( n == 6 )
         {
-            M_stadium.set_ball( NEUTRAL, PVector( x, y ), PVector( velx, vely ) );
+            M_stadium.moveBall( PVector( x, y ), PVector( velx, vely ) );
         }
         else
         {

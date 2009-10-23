@@ -185,7 +185,7 @@ FullStateSenderPlayerV5::sendFullState()
           p != end;
           ++p )
     {
-        if ( (*p)->state() == DISABLE ) continue;
+        if ( ! (*p)->isEnabled() ) continue;
 
         sendPlayer( *(*p) );
     }

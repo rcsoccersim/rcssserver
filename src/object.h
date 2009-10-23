@@ -452,7 +452,7 @@ public:
           return M_pos;
       }
 
-    bool isEnable() const
+    bool isEnabled() const
       {
           return M_enable;
       }
@@ -557,7 +557,6 @@ public:
       }
 
     void moveTo( const PVector & pos,
-                 //const Angle & angle,
                  const PVector & vel,
                  const PVector & accel );
 

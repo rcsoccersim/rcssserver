@@ -204,6 +204,7 @@ Player::Player( Stadium & stadium,
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_foul_cycles( 0 ),
+      M_foul_count( 0 ),
       //
       M_offside_mark( false )
 {
@@ -1679,10 +1680,28 @@ Player::tackle( double power_or_angle,
             return;
         }
 
-        // 2009-10-22 akiyama: new foul option
-        double exponent = ( foul
-                            ? ServerParam::instance().foulExponent()
-                            : ServerParam::instance().tackleExponent() );
+        double exponent = ServerParam::instance().tackleExponent();
+
+        // 2009-10-22 akiyama: foul option
+        if ( foul )
+        {
+            foul = false;
+
+            const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+            for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+                  p != end;
+                  ++p )
+            {
+                if ( (*p)->isEnabled()
+                     && (*p)->side() != this->side()
+                     && (*p)->ballKickable() )
+                {
+                    foul = true;
+                    exponent = ServerParam::instance().foulExponent();
+                    break;
+                }
+            }
+        }
 
         // tackle failure probability
         double prob = ( std::pow( std::fabs( player_2_ball.x ) / tackle_dist,
@@ -1719,22 +1738,9 @@ Player::tackle( double power_or_angle,
                     return;
                 }
 
-                // 2009-10-22 akiyama: intentional foul
                 if ( foul )
                 {
-                    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-                    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-                          p != end;
-                          ++p )
-                    {
-                        if ( (*p)->isEnable()
-                             && (*p)->side() != this->side()
-                             && (*p)->ballKickable() )
-                        {
-                            M_tackle_cycles = 0;
-                            break;
-                        }
-                    }
+                    M_tackle_cycles = 0;
                 }
 
                 double power_rate = 1.0;
@@ -2350,7 +2356,7 @@ Player::resetCommandFlags()
 }
 
 void
-Player::setFoulCycles()
+Player::setFoulPushed()
 {
     M_foul_cycles = ServerParam::instance().foulCycles();
     M_command_done = true;
@@ -2358,16 +2364,25 @@ Player::setFoulCycles()
 }
 
 void
+Player::incFoulCount()
+{
+    ++M_foul_count;
+}
+
+void
 Player::yellowCard()
 {
-    ++M_card_count;
-    M_state |= YELLOW_CARD;
-
-    if ( M_card_count >= 2 )
+    if ( isYellowCarded() )
     {
-        M_state |= RED_CARD;
         discard();
+        M_state |= RED_CARD;
     }
+    else
+    {
+        M_state |= YELLOW_CARD;
+    }
+
+    ++M_card_count;
 }
 
 void

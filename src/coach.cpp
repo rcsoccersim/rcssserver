@@ -256,7 +256,7 @@ Coach::parse_command( const char * command )
 
     if ( ! std::strcmp( com, "start" ) )
     {
-        Stadium::_Start( M_stadium );
+        M_stadium.kickOff();
         send( "(ok start)" );
     }
     else if ( ! std::strcmp( com, "change_mode" ) )
@@ -370,7 +370,7 @@ Coach::parse_command( const char * command )
         if ( ! std::strncmp( buf, "(start)", 7 ) )
         {
             buf += 7;
-            Stadium::_Start( M_stadium );
+            Stadium::kick_off( M_stadium );
             send( "(ok start)" );
         }
         else if ( ! std::strncmp( buf, "(change_mode ", 13 ) )
@@ -614,7 +614,7 @@ Coach::change_mode( std::string mode )
         return;
     }
 
-    M_stadium.change_play_mode( mode_id );
+    M_stadium.changePlayMode( mode_id );
     send( "(ok change_mode)" );
 }
 
@@ -651,11 +651,11 @@ Coach::parse_move( const char * command )
 
         if ( n == 3 || n == 4 )
         {
-            M_stadium.set_ball( LEFT, PVector( x, y ) );
+            M_stadium.moveBall( PVector( x, y ), PVector( 0.0, 0.0 ) );
         }
         else if ( n == 6 )
         {
-            M_stadium.set_ball( NEUTRAL, PVector( x, y ), PVector( velx, vely ) );
+            M_stadium.moveBall( PVector( x, y ), PVector( velx, vely ) );
         }
         else
         {
@@ -999,7 +999,7 @@ OnlineCoach::change_player_types( const char * command )
         {
             const Player * p = team->player( i );
             if ( p
-                 && p->state() != DISABLE
+                 && p->isEnabled()
                  && p->unum() == unum )
             {
                 player = p;
