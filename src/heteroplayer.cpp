@@ -265,18 +265,21 @@ HeteroPlayer::convertToStruct( int id ) const
 {
     player_type_t tmp;
 
-    tmp.id = htons ( id );
-    tmp.player_speed_max = htonl ( static_cast< Int32 >( rint( ( playerSpeedMax() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.stamina_inc_max = htonl ( static_cast< Int32 >( rint( ( staminaIncMax() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.player_decay = htonl ( static_cast< Int32 >( rint( ( playerDecay() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.inertia_moment = htonl ( static_cast< Int32 >( rint( ( inertiaMoment() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.dash_power_rate = htonl ( static_cast< Int32 >( rint( ( dashPowerRate() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.player_size = htonl ( static_cast< Int32 >( rint( ( playerSize() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.kickable_margin = htonl ( static_cast< Int32 >( rint( ( kickableMargin() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.kick_rand = htonl ( static_cast< Int32 >( rint( ( kickRand() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.extra_stamina = htonl ( static_cast< Int32 >( rint( ( extraStamina() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.effort_max = htonl ( static_cast< Int32 >( rint( ( effortMax() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.effort_min = htonl ( static_cast< Int32 >( rint( ( effortMin() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.id = htons( id );
+    tmp.player_speed_max = htonl( static_cast< Int32 >( rint( ( playerSpeedMax() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.stamina_inc_max = htonl( static_cast< Int32 >( rint( ( staminaIncMax() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.player_decay = htonl( static_cast< Int32 >( rint( ( playerDecay() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.inertia_moment = htonl( static_cast< Int32 >( rint( ( inertiaMoment() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.dash_power_rate = htonl( static_cast< Int32 >( rint( ( dashPowerRate() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.player_size = htonl( static_cast< Int32 >( rint( ( playerSize() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.kickable_margin = htonl( static_cast< Int32 >( rint( ( kickableMargin() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.kick_rand = htonl( static_cast< Int32 >( rint( ( kickRand() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.extra_stamina = htonl( static_cast< Int32 >( rint( ( extraStamina() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.effort_max = htonl( static_cast< Int32 >( rint( ( effortMax() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.effort_min = htonl( static_cast< Int32 >( rint( ( effortMin() * SHOWINFO_SCALE2 ) ) ) );
+
+    tmp.kick_power_rate = htonl( static_cast< Int32 >( rint( ( kickPowerRate() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.foul_detect_probability = htonl( static_cast< Int32 >( rint( ( foulDetectProbability() * SHOWINFO_SCALE2 ) ) ) );
 
     return tmp;
 }

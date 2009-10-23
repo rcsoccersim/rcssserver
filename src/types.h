@@ -350,9 +350,12 @@ struct player_type_t {
     Int32 effort_max;
     Int32 effort_min;
 
+    Int32 kick_power_rate;
+    Int32 foul_detect_probability;
+
     // spare variables which are to be used for paramenter added in the future
-    Int32 sparelong1;
-    Int32 sparelong2;
+    //Int32 sparelong1; // replaced by kick_power_rate
+    //Int32 sparelong2; // replaced by foul_detect_probability
     Int32 sparelong3;
     Int32 sparelong4;
     Int32 sparelong5;
@@ -544,19 +547,24 @@ struct player_params_t {
     Int32 new_dash_power_rate_delta_max;
     Int32 new_stamina_inc_max_delta_factor;
 
+    Int32 kick_power_rate_delta_min;
+    Int32 kick_power_rate_delta_max;
+    Int32 foul_detect_probability_delta_factor;
+
     //Int32 sparelong1;  replaced by seed
     //Int32 sparelong2;  replaced by new_dash_power_rate_delta_min
     //Int32 sparelong3;  replaced by new_dash_power_rate_delta_max
     //Int32 sparelong4;  replaced by new_stamina_inc_max_delta_factor
-    Int32 sparelong5;
-    Int32 sparelong6;
-    Int32 sparelong7;
+    //Int32 sparelong5;  replaced by kick_power_rate_delta_min
+    //Int32 sparelong6;  replaced by kick_power_rate_delta_max
+    //Int32 sparelong7;  replaced by foul_detect_probability_delta_factor
     Int32 sparelong8;
     Int32 sparelong9;
     Int32 sparelong10;
 
     Int16 allow_mult_default_type;
 
+    //Int16 spareshort1; // replaced by allow_mult_default_type
     Int16 spareshort2;
     Int16 spareshort3;
     Int16 spareshort4;

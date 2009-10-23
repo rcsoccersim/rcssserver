@@ -1,5 +1,10 @@
 2009-10-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/heteroplayer.cpp:
+	* src/playerparam.cpp:
+	* src/types.h:
+	- added new parameters to the binary log format.
+
 	* src/player.cpp:
 	* src/player.h:
 	* src/referee.cpp:

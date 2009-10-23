@@ -381,7 +381,8 @@ PlayerParam::setDefaults()
     M_foul_detect_probability_delta_factor = PlayerParam::DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR;
 }
 
-player_params_t PlayerParam::convertToStruct() const
+player_params_t
+PlayerParam::convertToStruct() const
 {
     player_params_t tmp;
 
@@ -414,6 +415,10 @@ player_params_t PlayerParam::convertToStruct() const
     tmp.new_dash_power_rate_delta_min = htonl( static_cast< Int32 >( roundint(( SHOWINFO_SCALE2 * newDashPowerRateDeltaMin() ) ) ) );
     tmp.new_dash_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * newDashPowerRateDeltaMax() ) ) ) );
     tmp.new_stamina_inc_max_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * newStaminaIncMaxDeltaFactor() ) ) ) );
+
+    tmp.kick_power_rate_delta_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickPowerRateDeltaMin() ) ) ) );
+    tmp.kick_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickPowerRateDeltaMax() ) ) ) );
+    tmp.foul_detect_probability_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * foulDetectProbabilityDeltaFactor() ) ) ) );
 
     tmp.allow_mult_default_type = htons( static_cast< Int16 >( allowMultDefaultType() ) );
 
