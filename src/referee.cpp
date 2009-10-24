@@ -831,7 +831,18 @@ OffsideRef::kickTaken( const Player & kicker )
         return;
     }
 
-    M_last_kicker = &kicker;
+    if ( M_last_kick_time == M_stadium.time()
+         && M_last_kick_stoppage_time == M_stadium.stoppageTime() )
+    {
+
+        M_last_kicker_side = NEUTRAL;
+        M_offside_candidates.clear();
+        return;
+    }
+
+    M_last_kick_time = M_stadium.time();
+    M_last_kick_stoppage_time = M_stadium.stoppageTime();
+    M_last_kicker_side = kicker.side();
 
     setOffsideMark( kicker );
 }
@@ -844,7 +855,18 @@ OffsideRef::ballTouched( const Player & player )
         return;
     }
 
-    M_last_kicker = &player;
+    if ( M_last_kick_time == M_stadium.time()
+         && M_last_kick_stoppage_time == M_stadium.stoppageTime() )
+    {
+
+        M_last_kicker_side = NEUTRAL;
+        M_offside_candidates.clear();
+        return;
+    }
+
+    M_last_kick_time = M_stadium.time();
+    M_last_kick_stoppage_time = M_stadium.stoppageTime();
+    M_last_kicker_side = player.side();
 
     setOffsideMark( player );
 }
@@ -1071,7 +1093,10 @@ OffsideRef::callOffside()
         return;
     }
 
-    PVector pos;
+    if ( M_last_kicker_side == NEUTRAL )
+    {
+        return;
+    }
 
     static const RArea pt( PVector( 0.0, 0.0 ),
                            PVector( ServerParam::PITCH_LENGTH
@@ -1089,7 +1114,7 @@ OffsideRef::callOffside()
                             PVector( ServerParam::GOAL_AREA_LENGTH,
                                      ServerParam::GOAL_AREA_WIDTH ) );
 
-    M_after_offside_time = 0;
+    PVector pos;
 
     if ( M_offside_pos.x > ServerParam::PITCH_LENGTH/2.0
          || g_r.inArea( M_offside_pos ) )
@@ -1112,7 +1137,7 @@ OffsideRef::callOffside()
         pos = M_offside_pos;
     }
 
-    if ( M_last_kicker->side() == LEFT )
+    if ( M_last_kicker_side == LEFT )
     {
         M_stadium.placeBall( PM_OffSide_Left, RIGHT, pos );
     }
@@ -1125,7 +1150,9 @@ OffsideRef::callOffside()
     M_offside_candidates.clear();
 
     M_stadium.placePlayersInField();
-    clearPlayersFromBall( M_last_kicker->side() );
+    clearPlayersFromBall( M_last_kicker_side );
+
+    M_after_offside_time = 0;
 }
 
 

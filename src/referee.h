@@ -278,7 +278,9 @@ private:
 
     static const int AFTER_OFFSIDE_WAIT;
 
-    const Player * M_last_kicker;
+    int M_last_kick_time;
+    int M_last_kick_stoppage_time;
+    Side M_last_kicker_side;
     std::vector< Candidate > M_offside_candidates;
 
     PVector M_offside_pos;
@@ -287,10 +289,12 @@ private:
 public:
     explicit
     OffsideRef( Stadium & stadium )
-        : Referee( stadium )
-        , M_last_kicker( NULL )
-        , M_offside_pos()
-        , M_after_offside_time( 0 )
+        : Referee( stadium ),
+          M_last_kick_time( -1 ),
+          M_last_kick_stoppage_time( -1 ),
+          M_last_kicker_side( NEUTRAL ),
+          M_offside_pos(),
+          M_after_offside_time( 0 )
       { }
 
 
