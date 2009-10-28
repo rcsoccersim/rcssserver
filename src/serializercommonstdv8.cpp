@@ -99,6 +99,7 @@ RegHolder v10 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::cre
 RegHolder v11 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 11 );
 RegHolder v12 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 12 );
 RegHolder v13 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 13 );
+RegHolder v14 = SerializerCommon::factory().autoReg( &SerializerCommonStdv8::create, 14 );
 }
 
 }

@@ -1075,6 +1075,7 @@ RegHolder vp10 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPla
 RegHolder vp11 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 11 );
 RegHolder vp12 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV8 >, 12 );
 RegHolder vp13 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV13 >, 13 );
+RegHolder vp14 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV13 >, 14 );
 }
 
 }

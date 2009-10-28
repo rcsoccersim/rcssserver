@@ -1,3 +1,38 @@
+2009-10-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	* src/serializercoachstdv14.cpp:
+	* src/serializercoachstdv14.h:
+	* src/serializeronlinecoachstdv14.cpp:
+	* src/serializeronlinecoachstdv14.h:
+	* src/serializerplayerstdv14.cpp:
+	* src/serializerplayerstdv14.h:
+	* src/audio.cpp:
+	* src/bodysender.cpp:
+	* src/bodysender.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/fullstatesender.cpp:
+	* src/initsendercoach.cpp:
+	* src/initsenderonlinecoach.cpp:
+	* src/initsenderplayer.cpp:
+	* src/monitor.cpp:
+	* src/monitor.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/serializer.h:
+	* src/serializercoachstdv13.cpp:
+	* src/serializercommonstdv8.cpp:
+	* src/serializermonitor.cpp:
+	* src/serializeronlinecoachstdv13.cpp:
+	* src/visualsendercoach.cpp:
+	* src/visualsendercoach.h:
+	* src/visualsenderplayer.cpp:
+	- added v14 serializers.
+	- implemented yellow/red card messages.
+	- added 'dispcard' command to the monitor protocol.
+	- added interfaces to call yellow/red card from monitor clients.
+
 2009-10-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:

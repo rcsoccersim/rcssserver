@@ -370,6 +370,38 @@ BodySenderPlayerV13::~BodySenderPlayerV13()
 
 }
 
+
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV14
+//
+//  DESC: version 14 of the sense body protocol. Added card info
+//
+//===================================================================
+*/
+
+BodySenderPlayerV14::BodySenderPlayerV14( const Params & params )
+    : BodySenderPlayerV13( params )
+{
+
+}
+
+BodySenderPlayerV14::~BodySenderPlayerV14()
+{
+
+}
+
+void
+BodySenderPlayerV14::sendBodyData()
+{
+    BodySenderPlayerV13::sendBodyData();
+
+    serializer().serializeCard( transport(), self() );
+}
+
+
+
 namespace bodysender {
 
 template< typename Sender >
@@ -392,6 +424,7 @@ RegHolder vp10 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV
 RegHolder vp11 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV8 >, 11 );
 RegHolder vp12 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV12 >, 12 );
 RegHolder vp13 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV13 >, 13 );
+RegHolder vp14 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 14 );
 }
 
 }

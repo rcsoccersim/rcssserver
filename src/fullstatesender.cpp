@@ -475,6 +475,7 @@ RegHolder vp10 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSen
 RegHolder vp11 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 11 );
 RegHolder vp12 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 12 );
 RegHolder vp13 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 13 );
+RegHolder vp14 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV8 >, 14 );
 }
 
 }

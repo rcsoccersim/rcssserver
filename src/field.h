@@ -411,6 +411,8 @@ public:
                          const int unum );
     void yellowCard( const Side side,
                      const int unum );
+    void redCard( const Side side,
+                  const int unum );
 
     void score( const Side side );
     void penaltyScore( const Side side,

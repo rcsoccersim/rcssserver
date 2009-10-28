@@ -96,6 +96,8 @@ private:
     bool dispfoul( const char * command );
     bool dispplayer( const char * command );
     bool dispdiscard( const char * command );
+    bool dispcard( const char * command );
+
     bool compression( const char * command );
 
     bool coach_change_mode( const char * command );

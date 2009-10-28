@@ -360,6 +360,32 @@ public:
 
 };
 
+
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV14
+//
+//  DESC: version 14 of the sense body protocol. Added card info
+//
+//===================================================================
+*/
+
+class BodySenderPlayerV14
+    : public BodySenderPlayerV13
+{
+public:
+    BodySenderPlayerV14( const Params & params );
+
+    virtual
+    ~BodySenderPlayerV14();
+
+protected:
+    virtual
+    void sendBodyData();
+
+};
+
 }
 
 #endif

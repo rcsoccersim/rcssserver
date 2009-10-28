@@ -598,6 +598,11 @@ public:
       { }
 
     virtual
+    void serializeCard( std::ostream &,
+                        const Player & ) const
+      { }
+
+    virtual
     void serializeFSBegin( std::ostream &,
                            const int ) const
       { }

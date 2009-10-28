@@ -1370,6 +1370,28 @@ Stadium::yellowCard( const Side side,
 
 
 void
+Stadium::redCard( const Side side,
+                  const int unum )
+{
+    Player * p = getPlayer( side, unum );;
+
+    if ( ! p
+         || ! p->isEnabled() )
+    {
+        return;
+    }
+
+    char msg[32];
+    snprintf( msg, 32, "red_card_%s_%d",
+              SideStr( p->side() ),
+              p->unum() );
+    sendRefereeAudio( msg );
+
+    p->redCard();
+}
+
+
+void
 Stadium::score( const Side side )
 {
     if ( side == LEFT

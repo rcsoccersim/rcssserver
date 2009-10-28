@@ -135,15 +135,15 @@ class ObserverCoach
 public:
 
     ObserverCoach()
-      {}
+      { }
 
     ObserverCoach( VisualSenderCoach & sender )
         : BaseObserver< VisualSenderCoach >( sender )
-      {}
+      { }
 
     ObserverCoach( std::auto_ptr< VisualSenderCoach > sender )
         : BaseObserver< VisualSenderCoach >( sender )
-      {}
+      { }
 
     ~ObserverCoach()
       {}

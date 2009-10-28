@@ -357,6 +357,7 @@ RegHolder vc10 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoac
 RegHolder vc11 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 11 );
 RegHolder vc12 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV8 >, 12 );
 RegHolder vc13 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 13 );
+RegHolder vc14 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 14 );
 }
 
 }

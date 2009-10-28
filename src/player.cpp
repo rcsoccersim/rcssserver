@@ -2372,15 +2372,23 @@ Player::yellowCard()
 {
     if ( isYellowCarded() )
     {
-        discard();
-        M_state |= RED_CARD;
+        redCard();
     }
     else
     {
         M_state |= YELLOW_CARD;
+        ++M_card_count;
     }
+}
 
-    ++M_card_count;
+void
+Player::redCard()
+{
+    discard();
+    M_state &= ~YELLOW_CARD;
+    M_state |= RED_CARD;
+
+    M_card_count = 2;
 }
 
 void

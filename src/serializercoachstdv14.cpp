@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializercoachstdv13.cpp
-               Class for serializing data to std v13 offline coaches
+                            serializercoachstdv14.cpp
+               Class for serializing data to std v14 offline coaches
                              -------------------
     begin                : 2008-10-28
     copyright            : (C) 2008 by The RoboCup Soccer Server
@@ -19,26 +19,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "serializercoachstdv13.h"
+#include "serializercoachstdv14.h"
 
 #include "player.h"
 
 namespace rcss {
 
-SerializerCoachStdv13::SerializerCoachStdv13( const SerializerCommon::Ptr common )
-    : SerializerCoachStdv8( common )
+SerializerCoachStdv14::SerializerCoachStdv14( const SerializerCommon::Ptr common )
+    : SerializerCoachStdv13( common )
 {
 
 }
 
 
-SerializerCoachStdv13::~SerializerCoachStdv13()
+SerializerCoachStdv14::~SerializerCoachStdv14()
 {
 
 }
 
 void
-SerializerCoachStdv13::serializeVisualPlayer( std::ostream & strm,
+SerializerCoachStdv14::serializeVisualPlayer( std::ostream & strm,
                                              const Player & player,
                                              const std::string & name,
                                              const PVector & pos,
@@ -59,11 +59,21 @@ SerializerCoachStdv13::serializeVisualPlayer( std::ostream & strm,
     {
         strm << " k";
     }
+
+    if ( player.isRedCarded() )
+    {
+        strm << " r";
+    }
+    else if ( player.isYellowCarded() )
+    {
+        strm << " y";
+    }
+
     strm << ')';
 }
 
 void
-SerializerCoachStdv13::serializeVisualPlayer( std::ostream & strm,
+SerializerCoachStdv14::serializeVisualPlayer( std::ostream & strm,
                                              const Player & player,
                                              const std::string & name,
                                              const PVector & pos,
@@ -86,27 +96,37 @@ SerializerCoachStdv13::serializeVisualPlayer( std::ostream & strm,
     {
         strm << " k";
     }
+
+    if ( player.isRedCarded() )
+    {
+        strm << " r";
+    }
+    else if ( player.isYellowCarded() )
+    {
+        strm << " y";
+    }
+
     strm << ')';
 }
 
 
 const
 SerializerCoach::Ptr
-SerializerCoachStdv13::create()
+SerializerCoachStdv14::create()
 {
     SerializerCommon::Creator cre;
-    if ( ! SerializerCommon::factory().getCreator( cre, 13 ) )
+    if ( ! SerializerCommon::factory().getCreator( cre, 14 ) )
     {
         return SerializerCoach::Ptr();
     }
 
-    SerializerCoach::Ptr ptr( new SerializerCoachStdv13( cre() ) );
+    SerializerCoach::Ptr ptr( new SerializerCoachStdv14( cre() ) );
     return ptr;
 }
 
 
 namespace {
-RegHolder v13 = SerializerCoach::factory().autoReg( &SerializerCoachStdv13::create, 13 );
+RegHolder v14 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::create, 14 );
 }
 
 }

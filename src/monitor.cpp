@@ -367,6 +367,10 @@ Monitor::parseCommand( const char * message )
     {
         return dispfoul( message );
     }
+    else if ( ! std::strncmp( message, "(dispcard", 9 ) )
+    {
+        return dispcard( message );
+    }
     else if ( ServerParam::instance().coachMode()
               || ServerParam::instance().coachWithRefereeMode() )
     {
@@ -480,6 +484,38 @@ Monitor::dispdiscard( const char * command )
     }
 
     M_stadium.discardPlayer( static_cast< Side >( side ), unum );
+    return true;
+}
+
+
+bool
+Monitor::dispcard( const char * command )
+{
+    // a player is punished (given the yellow/red card) by the monitor
+    int side = 0, unum = 0;
+    char card[8];
+    if ( std::sscanf( command,
+                      " ( dispcard %d %d %7[^)] ) ",
+                      &side, &unum, card ) != 3 )
+    {
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
+        return false;
+    }
+
+    if ( ! std::strcmp( "yellow", card ) )
+    {
+        M_stadium.yellowCard( static_cast< Side >( side ), unum );
+    }
+    else if ( ! std::strcmp( "red", card ) )
+    {
+        M_stadium.redCard( static_cast< Side >( side ), unum );
+    }
+    else
+    {
+        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
+        return false;
+    }
+
     return true;
 }
 

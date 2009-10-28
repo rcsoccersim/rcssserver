@@ -374,6 +374,7 @@ public:
     void setFoulPushed();
     void incFoulCount();
     void yellowCard();
+    void redCard();
 
     bool isYellowCarded() const { return M_card_count == 1; }
     bool isRedCarded() const { return M_card_count >= 2; }
