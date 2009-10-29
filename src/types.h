@@ -352,11 +352,12 @@ struct player_type_t {
 
     Int32 kick_power_rate;
     Int32 foul_detect_probability;
+    Int32 catchable_area_l_stretch;
 
     // spare variables which are to be used for paramenter added in the future
-    //Int32 sparelong1; // replaced by kick_power_rate
-    //Int32 sparelong2; // replaced by foul_detect_probability
-    Int32 sparelong3;
+    //Int32 sparelong1;  replaced by kick_power_rate
+    //Int32 sparelong2;  replaced by foul_detect_probability
+    //Int32 sparelong3;  replaced by catchable_area_l_stretch
     Int32 sparelong4;
     Int32 sparelong5;
     Int32 sparelong6;
@@ -551,6 +552,9 @@ struct player_params_t {
     Int32 kick_power_rate_delta_max;
     Int32 foul_detect_probability_delta_factor;
 
+    Int32 catchable_area_l_stretch_min;
+    Int32 catchable_area_l_stretch_max;
+
     //Int32 sparelong1;  replaced by seed
     //Int32 sparelong2;  replaced by new_dash_power_rate_delta_min
     //Int32 sparelong3;  replaced by new_dash_power_rate_delta_max
@@ -558,14 +562,15 @@ struct player_params_t {
     //Int32 sparelong5;  replaced by kick_power_rate_delta_min
     //Int32 sparelong6;  replaced by kick_power_rate_delta_max
     //Int32 sparelong7;  replaced by foul_detect_probability_delta_factor
-    Int32 sparelong8;
-    Int32 sparelong9;
+    //Int32 sparelong8;  replaced by catchable_area_l_stretch_min
+    //Int32 sparelong9;  replaced by catchable_area_l_stretch_max
     Int32 sparelong10;
 
     Int16 allow_mult_default_type;
+    //Int16 allow_default_goalie;
 
     //Int16 spareshort1; // replaced by allow_mult_default_type
-    Int16 spareshort2;
+    Int16 spareshort2; // replaced by allow_default_goalie
     Int16 spareshort3;
     Int16 spareshort4;
     Int16 spareshort5;

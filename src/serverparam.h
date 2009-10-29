@@ -595,10 +595,6 @@ private:
     int M_random_seed;
     bool M_golden_goal;
 
-    // test parameters for future specification
-    double M_reliable_catch_area_l; /* goalie reliable catchable area length */
-    double M_min_catch_probability;
-
 private:
 
     // setters & getters
@@ -930,9 +926,6 @@ public:
     int randomSeed() const { return M_random_seed; }
     bool goldenGoal() const { return M_golden_goal; }
 
-    // test
-    const double & reliableCatchAreaLength() const { return M_reliable_catch_area_l; }
-    const double & minCatchProbability() const { return M_min_catch_probability; }
 
 };
 

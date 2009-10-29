@@ -152,6 +152,7 @@ Player::Player( Stadium & stadium,
       //
       M_player_type( NULL ),
       M_player_type_id( 0 ),
+      M_substituted( false ),
       M_kick_rand( ServerParam::instance().kickRand() ), // pfr 8/14/00: for RC2000 evaluation
       //
       M_state( DISABLE ),
@@ -353,6 +354,7 @@ Player::substitute( const int type )
 
     M_state &= ( STAND | GOALIE | DISCARD );
     M_card_count = 0;
+    M_substituted = true;
 }
 
 void
@@ -1222,12 +1224,103 @@ Player::goalieCatch( double dir )
 
         M_stadium.ballCaught( *this );
 #else
+        // 2009-10-28 akiyama
+        // heterogeneous goalie model proposed by Thomas Gabel
+        const ServerParam & SP = ServerParam::instance();
+
+        const double this_catchable_area_l = SP.catchAreaLength() * M_player_type->catchAreaLengthStretch();
+        const RArea default_catchable( PVector( SP.catchAreaLength()*0.5, 0.0 ),
+                                       PVector( SP.catchAreaLength(),     SP.catchAreaWidth() ) );
+        const RArea this_catchable( PVector( this_catchable_area_l*0.5, 0.0 ),
+                                    PVector( SP.catchAreaLength(),      SP.catchAreaWidth() ) );
+
+        PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
+        rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
+
+        bool success = false;
+        if ( this_catchable_area_l < SP.catchAreaLength() )
+        {
+            if ( this_catchable.inArea( rotated_pos ) )
+            {
+                success = true;
+            }
+            else if ( default_catchable.inArea( rotated_pos ) )
+            {
+                double catch_prob
+                    = SP.catchProb()
+                    + ( 1.0 - SP.catchProb() ) * ( ( rotated_pos.x - this_catchable_area_l )
+                                                   / ( SP.catchAreaLength() - this_catchable_area_l ) );
+                catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
+                success = ( drand( 0.0, 1.0 ) <= catch_prob );
+                std::cerr << M_stadium.time()
+                          << ": goalieCatch(1) catch_prob="
+                          << catch_prob << std::endl;
+            }
+            else
+            {
+                success = false;
+            }
+        }
+        else
+        {
+            if ( default_catchable.inArea( rotated_pos ) )
+            {
+                success = ( drand( 0, 1 ) <= SP.catchProb() );
+            }
+            else if ( ! this_catchable.inArea( rotated_pos ) )
+            {
+                success = false;
+            }
+            else
+            {
+                double catch_prob
+                    = SP.catchProb()
+                    - SP.catchProb() * ( ( rotated_pos.x - SP.catchAreaLength() )
+                                         / ( this_catchable_area_l - SP.catchAreaLength() ) );
+                catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
+                success = ( drand( 0.0, 1.0 ) <= catch_prob );
+                std::cerr << M_stadium.time()
+                          << ": goalieCatch(2) catch_prob="
+                          << catch_prob << std::endl;
+            }
+        }
+
+        if ( ! success )
+        {
+            M_state |= CATCH_FAULT;
+            return;
+        }
+
+        {
+            PVector new_pos = M_stadium.ball().pos() - this->pos();
+            double mag = new_pos.r();
+            // I would much prefer to cache the message of the catch command
+            // to the end of the cycle and then do all the movements and
+            // playmode changes there, but I feel that would be too much of a
+            // depature from the current behaviour.
+            mag -= SP.ballSize() + M_player_type->playerSize();
+            new_pos.normalize( mag );
+            M_pos += new_pos;
+            M_angle_body = new_pos.th();
+            M_vel = PVector();
+        }
+
+        M_goalie_catch_ban = SP.catchBanCycle();
+        M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
+
+        M_stadium.ballCaught( *this );
+#endif
+
+#if 0
         // 2008-02-08 akiyama
         // TEST version catch model based on the Sebastian Marian's proposal
 
+        const double reliable_catch_area_l = ServerParam::instance().catchAreaLength();
+        const double min_catch_probability = 1.0;
+
+
         // 2008-02-18 akiyama: catch_area_l variables should be used for gcc-3.3.6
         const double catch_area_l = ServerParam::instance().catchAreaLength();
-        const double reliable_catch_area_l = ServerParam::instance().reliableCatchAreaLength();
         const RArea catch_area( PVector( catch_area_l * 0.5, 0.0 ),
                                 PVector( catch_area_l,
                                          ServerParam::instance().catchAreaWidth() ) );
@@ -1258,7 +1351,7 @@ Player::goalieCatch( double dir )
 
             const double alpha = 0.75;
 
-            double max_fail_prob = 1.0 - ServerParam::instance().minCatchProbability();
+            double max_fail_prob = 1.0 - min_catch_probability;
             double speed_rate = max_fail_prob * alpha
                 *( M_stadium.ball().vel().r()
                    / ( ServerParam::instance().ballSpeedMax()

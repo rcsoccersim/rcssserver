@@ -97,6 +97,7 @@ private:
     //
     const HeteroPlayer * M_player_type;
     int M_player_type_id;
+    bool M_substituted;
 
     double M_kick_rand; // pfr 8/14/00: for RC2000 evaluation
 
@@ -274,6 +275,7 @@ public:
     void setPlayerType( const int );
     void substitute( const int );
     int playerTypeId() const { return M_player_type_id; }
+    bool substituted() const { return M_substituted; }
 
     double kickableArea() const;
     bool ballKickable() const;

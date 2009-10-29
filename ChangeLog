@@ -1,3 +1,27 @@
+2009-10-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/coach.cpp:
+	* src/fullstatesender.cpp:
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* src/initsender.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/referee.cpp:
+	* src/serializerplayerstdv13.cpp:
+	* src/serializerplayerstdv14.cpp:
+	* src/serializerplayerstdv14.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/team.cpp:
+	* src/team.h:
+	* src/types.h:
+	- implemented new heterogeneous goalie model. not fully tested
+	yet.
+	- fixed defects of the fullstate message serializer.
+
 2009-10-28  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/Makefile.am:

@@ -623,6 +623,9 @@ InitSenderCommonV14::serializePlayerType( const int id,
     serializer().serializeParam( transport(),
                                  "foul_detect_probability",
                                  type.foulDetectProbability() );
+    serializer().serializeParam( transport(),
+                                 "catchable_area_l_stretch",
+                                 type.catchAreaLengthStretch() );
 }
 
 

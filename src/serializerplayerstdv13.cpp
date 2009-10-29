@@ -45,8 +45,14 @@ SerializerPlayerStdv13::serializeVisualPlayer( std::ostream & strm,
                                                const int dir ) const
 {
     strm << " (" << name << ' ' << dist << ' ' << dir;
-    if ( player.isTackling() ) strm << " t";
-    else if ( player.kicked() ) strm << " k";
+    if ( player.isTackling() )
+    {
+        strm << " t";
+    }
+    else if ( player.kicked() )
+    {
+        strm << " k";
+    }
     strm << ')';
 }
 
@@ -61,8 +67,14 @@ SerializerPlayerStdv13::serializeVisualPlayer( std::ostream & strm,
 {
     strm << " (" << name << ' ' << dist << ' ' << dir
          << ' ' << point_dir;
-    if ( player.isTackling() ) strm << " t";
-    else if ( player.kicked() ) strm << " k";
+    if ( player.isTackling() )
+    {
+        strm << " t";
+    }
+    else if ( player.kicked() )
+    {
+        strm << " k";
+    }
     strm << ')';
 }
 
@@ -81,8 +93,14 @@ SerializerPlayerStdv13::serializeVisualPlayer( std::ostream & strm,
     strm << " (" << name << ' ' << dist << ' ' << dir
          << ' ' << dist_chg << ' ' << dir_chg
          << ' ' << body_dir << ' ' << head_dir;
-    if ( player.isTackling() ) strm << " t";
-    else if ( player.kicked() ) strm << " k";
+    if ( player.isTackling() )
+    {
+        strm << " t";
+    }
+    else if ( player.kicked() )
+    {
+        strm << " k";
+    }
     strm << ')';
 }
 
@@ -103,8 +121,14 @@ SerializerPlayerStdv13::serializeVisualPlayer( std::ostream & strm,
          << ' ' << dist_chg << ' ' << dir_chg
          << ' ' << body_dir << ' ' << head_dir
          << ' ' << point_dir;
-    if ( player.isTackling() ) strm << " t";
-    else if ( player.kicked() ) strm << " k";
+    if ( player.isTackling() )
+    {
+        strm << " t";
+    }
+    else if ( player.kicked() )
+    {
+        strm << " k";
+    }
     strm << ')';
 }
 

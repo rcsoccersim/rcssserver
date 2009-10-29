@@ -42,17 +42,49 @@ SerializerPlayerStdv14::serializeCard( std::ostream & strm,
 {
     if ( self.isRedCarded() )
     {
-        strm << "(card red)";
+        strm << " (card red)";
     }
     else if ( self.isYellowCarded() )
     {
-        strm << "(card yellow)";
+        strm << " (card yellow)";
 
     }
     else
     {
-        strm << "(card none)";
+        strm << " (card none)";
     }
+}
+
+
+void
+SerializerPlayerStdv14::serializeFSPlayerBegin( std::ostream & strm,
+                                                const char side,
+                                                const int unum,
+                                                const bool goalie,
+                                                const int type,
+                                                const double & x,
+                                                const double & y,
+                                                const double & vel_x,
+                                                const double & vel_y,
+                                                const double & body_dir,
+                                                const double & neck_dir ) const
+
+{
+    strm << " ((p " << side
+         << ' ' << unum;
+
+    if ( goalie )
+    {
+        strm << " g";
+    }
+
+    strm << ' ' << type // hetro player type
+         << ") " << x
+         << ' ' << y
+         << ' ' << vel_x
+         << ' ' << vel_y
+         << ' ' << body_dir
+         << ' ' << neck_dir;
 }
 
 void

@@ -73,11 +73,15 @@
 #define BOOST_FS_DIRECTORY_STRING native_directory_string
 #endif
 
+namespace {
+
 inline
 Int32
 roundint( const double & value )
 {
     return static_cast< Int32 >( value + 0.5 );
+}
+
 }
 
 #if defined(RCSS_WIN) || defined(__CYGWIN__)
@@ -136,6 +140,9 @@ const double PlayerParam::DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR = -6000.0;
 const double PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MIN = 0.0;
 const double PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MAX = 0.0;
 const double PlayerParam::DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR = 0.0;
+
+const double PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MIN = 1.0;
+const double PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MAX = 1.3;
 
 
 PlayerParam &
@@ -338,6 +345,9 @@ PlayerParam::addParams()
     addParam( "kick_power_rate_delta_min", M_kick_power_rate_delta_min, "", 14 );
     addParam( "kick_power_rate_delta_max", M_kick_power_rate_delta_max, "", 14 );
     addParam( "foul_detect_probability_delta_factor", M_foul_detect_probability_delta_factor, "", 14 );
+    //addParam( "allow_default_goalie", M_allow_default_goalie, "", 14 );
+    addParam( "catchable_area_l_stretch_min", M_catchable_area_l_stretch_min, "", 14 );
+    addParam( "catchable_area_l_stretch_max", M_catchable_area_l_stretch_max, "", 14 );
 }
 
 void
@@ -379,6 +389,11 @@ PlayerParam::setDefaults()
     M_kick_power_rate_delta_min = PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MIN;
     M_kick_power_rate_delta_max = PlayerParam::DEFAULT_KICK_POWER_RATE_DELTA_MAX;
     M_foul_detect_probability_delta_factor = PlayerParam::DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR;
+
+
+    //M_allow_default_goalie = true;
+    M_catchable_area_l_stretch_min = PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MIN;
+    M_catchable_area_l_stretch_max = PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MAX;
 }
 
 player_params_t
@@ -420,7 +435,11 @@ PlayerParam::convertToStruct() const
     tmp.kick_power_rate_delta_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * kickPowerRateDeltaMax() ) ) ) );
     tmp.foul_detect_probability_delta_factor = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * foulDetectProbabilityDeltaFactor() ) ) ) );
 
+    tmp.catchable_area_l_stretch_min = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * catchAreaLengthStretchMin() ) ) ) );
+    tmp.catchable_area_l_stretch_max = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * catchAreaLengthStretchMax() ) ) ) );
+
     tmp.allow_mult_default_type = htons( static_cast< Int16 >( allowMultDefaultType() ) );
+    //tmp.allow_default_goalie = htons( static_cast< Int16 >( allowDefaultGoalie() ) );
 
     return tmp;
 }

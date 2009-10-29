@@ -45,8 +45,20 @@ public:
                         const Player & ) const;
 
     virtual
-    void serializeFSPlayerState( std::ostream & strm,
-                                 const Player & player ) const;
+    void serializeFSPlayerBegin( std::ostream &,
+                                 const char,
+                                 const int,
+                                 const bool,
+                                 const int,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double & ) const;
+    virtual
+    void serializeFSPlayerState( std::ostream &,
+                                 const Player & ) const;
 };
 
 }

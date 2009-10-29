@@ -208,6 +208,8 @@ public:
 
     int ptypeCount( const int player_type ) const;
 
+    int ptypeUsedCount( const int player_type ) const;
+
     void substitute( const Player * player,
                      const int player_type );
 

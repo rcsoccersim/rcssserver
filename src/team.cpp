@@ -43,7 +43,7 @@ Team::Team( Stadium * stad, const Side s )
       M_subs_count( 0 ),
       M_olcoach( static_cast< OnlineCoach * >( 0 ) )
 {
-    for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
+    for ( int i = -1; i < PlayerParam::instance().playerTypes(); ++i )
     {
         M_ptype_count[ i ] = 0;
         M_ptype_used_count[ i ] = 0;
@@ -130,8 +130,8 @@ Team::newPlayer( const double & version,
 
     ++M_size;
 
-    ++M_ptype_count[ 0 ];
-    ++M_ptype_used_count[ 0 ];
+    ++M_ptype_count[ -1 ];
+    ++M_ptype_used_count[ -1 ];
 
     return p;
 }
@@ -157,6 +157,27 @@ Team::assignCoach( OnlineCoach * coach )
 void
 Team::assignPlayerTypes()
 {
+    //
+    // reset player type counter
+    //
+    for ( int i = -1; i < PlayerParam::instance().playerTypes(); ++i )
+    {
+        M_ptype_count[ i ] = 0;
+        M_ptype_used_count[ i ] = 0;
+    }
+
+    for ( int i = 0; i < size(); ++i )
+    {
+        int type = ( M_players[i]->substituted()
+                     ? M_players[i]->playerTypeId()
+                     : -1 );
+        M_ptype_count[ type ] += 1;
+        M_ptype_used_count[ type ] += 1;
+    }
+
+    //
+    //
+    //
     if ( PlayerParam::instance().allowMultDefaultType()
          || ( ServerParam::instance().nrNormalHalfs() == 0
               && ServerParam::instance().nrExtraHalfs() == 0 ) )
@@ -171,18 +192,39 @@ Team::assignPlayerTypes()
 //     }
 //     std::cout << std::endl;
 
+    std::list< Player * > players;
     for ( int i = 0; i < size(); ++i )
     {
-        Player * p = M_players[i];
-
-        if ( p->isGoalie() )
+        if ( M_players[i]->isGoalie() )
         {
-            continue;
+            players.push_front( M_players[i] );
         }
+        else
+        {
+            players.push_back( M_players[i] );
+        }
+    }
 
-        int old_type = p->playerTypeId();
+    for ( std::list< Player * >::iterator it = players.begin();
+          it != players.end();
+          ++it )
+    {
+        //Player * p = M_players[i];
+        Player * p = *it;
 
-        if ( M_ptype_used_count[ old_type ] <= PlayerParam::instance().ptMax() )
+        // 2009-10-29 akiyama
+        // enabled heterogeneous goalie
+        // if ( p->isGoalie() )
+        // {
+        //     continue;
+        // }
+
+        const int old_type = ( p->substituted()
+                               ? p->playerTypeId()
+                               : -1 );
+
+        if ( old_type >= 0
+             && M_ptype_used_count[ old_type ] <= PlayerParam::instance().ptMax() )
         {
             continue;
         }
@@ -230,6 +272,16 @@ Team::ptypeCount( const int player_type ) const
     return it->second;
 }
 
+int
+Team::ptypeUsedCount( const int player_type ) const
+{
+    std::map< int, int >::const_iterator it = M_ptype_used_count.find( player_type );
+    if ( it == M_ptype_used_count.end() )
+    {
+        return 0;
+    }
+    return it->second;
+}
 
 void
 Team::substitute( const Player * player,
@@ -240,21 +292,25 @@ Team::substitute( const Player * player,
         return;
     }
 
-    std::map< int, int >::iterator old_it = M_ptype_count.find( player->playerTypeId() );
-    std::map< int, int >::iterator new_it = M_ptype_count.find( player_type );
+    const int old_type = ( player->substituted()
+                           ? player->playerTypeId()
+                           : -1 );
 
-    if ( old_it == M_ptype_count.end()
-         || new_it == M_ptype_count.end() )
+    std::map< int, int >::iterator old_count = M_ptype_count.find( old_type );
+    std::map< int, int >::iterator new_count = M_ptype_count.find( player_type );
+
+    if ( old_count == M_ptype_count.end()
+         || new_count == M_ptype_count.end() )
     {
         return;
     }
 
-    if ( old_it->second <= 0 )
+    if ( old_count->second <= 0 )
     {
         return;
     }
 
-    Player * candidate = NULL;
+    Player * candidate = static_cast< Player * >( 0 );
     for ( int i = 0; i < this->size(); ++i )
     {
         if ( player == M_players[i] )
@@ -273,24 +329,10 @@ Team::substitute( const Player * player,
 
     candidate->substitute( player_type );
 
-    old_it->second -= 1;
-    new_it->second += 1;
+    old_count->second -= 1;
+    new_count->second += 1;
 
-    if ( M_stadium->time() <= 0 ) // before kick off
-    {
-        for ( std::map< int, int >::iterator it = M_ptype_used_count.begin();
-              it != M_ptype_used_count.end();
-              ++it )
-        {
-            it->second = 0;
-        }
-
-        for ( int i = 0; i < this->size(); ++i )
-        {
-            M_ptype_used_count[ M_players[i]->playerTypeId() ] += 1;
-        }
-    }
-    else
+    if ( M_stadium->time() > 0 ) // after the first kick off
     {
         ++M_subs_count;
         M_ptype_used_count[player_type] += 1;

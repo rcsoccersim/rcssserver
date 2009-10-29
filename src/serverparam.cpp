@@ -900,9 +900,6 @@ ServerParam::addParams()
     //addParam( "random_seed", M_random_seed, "", 14 );
     addParam( "golden_goal", M_golden_goal, "", 14 );
 
-    // test
-    //addParam( "reliable_catch_area_l", M_reliable_catch_area_l, "", 999 );
-    //addParam( "min_catch_probability", M_min_catch_probability, "", 999 );
 }
 
 void
@@ -1349,10 +1346,6 @@ ServerParam::setDefaults()
     M_foul_cycles = FOUL_CYCLES;
     M_random_seed = -1;
     M_golden_goal = true;
-
-    // test
-    M_reliable_catch_area_l = GOALIE_CATCHABLE_AREA_LENGTH;
-    M_min_catch_probability = 1.0;
 
 
     setHalfTime( HALF_TIME );

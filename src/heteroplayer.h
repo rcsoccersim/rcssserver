@@ -56,6 +56,7 @@ public:
 
     const double & kickPowerRate() const { return M_kick_power_rate; }
     const double & foulDetectProbability() const { return M_foul_detect_probability; }
+    const double & catchAreaLengthStretch() const { return M_catchable_area_l_stretch; }
 
     std::ostream & print( std::ostream & o ) const;
 
@@ -82,6 +83,7 @@ private:
     // v14
     double M_kick_power_rate;
     double M_foul_detect_probability;
+    double M_catchable_area_l_stretch;
 };
 
 inline

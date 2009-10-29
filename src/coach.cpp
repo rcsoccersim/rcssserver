@@ -1126,7 +1126,7 @@ Coach::change_player_type( const std::string & team_name,
                            int player_type )
 {
 
-    const Team* team = NULL;
+    const Team * team = NULL;
     if ( M_stadium.teamLeft().name() == team_name )
     {
         team = &( M_stadium.teamLeft() );
@@ -1926,29 +1926,32 @@ OnlineCoach::change_player_type( int unum,
     }
 
     if ( player_type < 0
-         || player_type >= PlayerParam::instance().playerTypes() )
+         || PlayerParam::instance().playerTypes() <= player_type )
     {
         send( "(error out_of_range_player_type)" );
         return;
     }
 
     // check the substitution count for each player type
-    std::map< int, int >::const_iterator used_count = team->ptypeUsedCount().find( player_type );
-    if ( used_count != team->ptypeUsedCount().end() )
+    const int used_count = team->ptypeUsedCount( player_type );
+    if ( used_count > 0 )
     {
         if ( player_type == 0
              && PlayerParam::instance().allowMultDefaultType() )
         {
-
+            // no restriction
         }
-        else if ( used_count->second >= PlayerParam::instance().ptMax() )
+        else if ( used_count >= PlayerParam::instance().ptMax() )
         {
             send( "(warning no_left_of_that_type)" );
+            std::cerr << "(warning no_left_of_that_type) unum=" << unum
+                      << " type=" << player_type
+                      << std::endl;
             return;
         }
     }
 
-    const Player * player = NULL;
+    const Player * player = static_cast< const Player * >( 0 );
     for ( int i = 0; i < team->size(); ++i )
     {
         const Player * p = team->player( i );
@@ -1959,24 +1962,37 @@ OnlineCoach::change_player_type( int unum,
         }
     }
 
-    if ( player == NULL )
+    if ( ! player )
     {
         send( "(warning no_such_player)" );
         return;
     }
 
-    if ( player->isGoalie() && player_type != 0 )
-    {
-        send( "(warning cannot_change_goalie)" );
-        return;
-    }
+    // 2009-10-29 akiyama
+    // allow heterogeneous goalie
+//     if ( player->isGoalie() && player_type != 0 )
+//     {
+//         send( "(warning cannot_change_goalie)" );
+//         return;
+//     }
 
-    if ( player_type != 0
-         && team->ptypeCount( player_type ) >= PlayerParam::instance().ptMax()
-         && player_type != player->playerTypeId() )
+    if ( player_type == 0
+         && PlayerParam::instance().allowMultDefaultType() )
     {
-        send( "(warning max_of_that_type_on_field)" );
-        return;
+        // no restriction
+    }
+    else if ( team->ptypeCount( player_type ) >= PlayerParam::instance().ptMax() )
+    {
+        if ( player->substituted()
+             && player_type == player->playerTypeId() )
+        {
+            // ok
+        }
+        else
+        {
+            send( "(warning max_of_that_type_on_field)" );
+            return;
+        }
     }
 
     M_stadium.substitute( player, player_type );

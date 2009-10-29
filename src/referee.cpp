@@ -2396,7 +2396,7 @@ FoulRef::analyse()
 
 void
 FoulRef::callFoul( const Player & tackler,
-                   const bool intentional )
+                   const bool /*intentional*/ )
 {
     PVector pos = truncateToPitch( tackler.pos() );
     pos = moveOutOfGoalArea( NEUTRAL, pos );
@@ -2406,13 +2406,14 @@ FoulRef::callFoul( const Player & tackler,
     if ( tackler.side() == LEFT )
     {
         pos = moveOutOfPenalty( RIGHT, pos );
-        M_stadium.placeBall( intentional ? PM_Foul_Push_Left : PM_Foul_Charge_Left,
+        //M_stadium.placeBall( intentional ? PM_Foul_Push_Left : PM_Foul_Charge_Left,
+        M_stadium.placeBall( PM_Foul_Charge_Left,
                              RIGHT, pos );
     }
     else if ( tackler.side() == RIGHT )
     {
         pos = moveOutOfPenalty( LEFT, pos );
-        M_stadium.placeBall( intentional ? PM_Foul_Push_Right : PM_Foul_Charge_Right,
+        M_stadium.placeBall( PM_Foul_Charge_Right,
                              LEFT, pos );
     }
 

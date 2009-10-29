@@ -124,6 +124,11 @@ HeteroPlayer::HeteroPlayer()
         M_foul_detect_probability = SP.foulDetectProbability()
             + tmp_delta * PP.foulDetectProbabilityDeltaFactor();
 
+        // trade-off catchable_area_l with catch probability
+        tmp_delta = HeteroPlayer::delta( PP.catchAreaLengthStretchMin(),
+                                         PP.catchAreaLengthStretchMax() );
+        M_catchable_area_l_stretch = tmp_delta;
+
         double real_speed_max
             = ( SP.maxPower() * M_dash_power_rate * M_effort_max )
             / ( 1.0 - M_player_decay );
@@ -280,6 +285,7 @@ HeteroPlayer::convertToStruct( int id ) const
 
     tmp.kick_power_rate = htonl( static_cast< Int32 >( rint( ( kickPowerRate() * SHOWINFO_SCALE2 ) ) ) );
     tmp.foul_detect_probability = htonl( static_cast< Int32 >( rint( ( foulDetectProbability() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.catchable_area_l_stretch = htonl( static_cast< Int32 >( rint( ( catchAreaLengthStretch() * SHOWINFO_SCALE2 ) ) ) );
 
     return tmp;
 }

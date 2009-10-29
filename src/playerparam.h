@@ -152,6 +152,10 @@ public:
     const double & kickPowerRateDeltaMax() const { return M_kick_power_rate_delta_max; }
     const double & foulDetectProbabilityDeltaFactor() const { return M_foul_detect_probability_delta_factor; }
 
+    //bool allowDefaultGoalie() const { return M_allow_default_goalie; }
+    const double & catchAreaLengthStretchMin() const { return M_catchable_area_l_stretch_min; }
+    const double & catchAreaLengthStretchMax() const { return M_catchable_area_l_stretch_max; }
+
     bool getInt( const std::string & param,
                  int & value ) const;
 
@@ -201,9 +205,13 @@ private:
     static const double DEFAULT_NEW_DASH_POWER_RATE_DELTA_MAX;
     static const double DEFAULT_NEW_STAMINA_INC_MAX_DELTA_FACTOR;
 
+    // v14
     static const double DEFAULT_KICK_POWER_RATE_DELTA_MIN;
     static const double DEFAULT_KICK_POWER_RATE_DELTA_MAX;
     static const double DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR;
+
+    static const double DEFAULT_CATCHABLE_AREA_L_STRETCH_MIN;
+    static const double DEFAULT_CATCHABLE_AREA_L_STRETCH_MAX;
 
     int M_player_types;
     int M_subs_max;
@@ -242,6 +250,10 @@ private:
     double M_kick_power_rate_delta_min;
     double M_kick_power_rate_delta_max;
     double M_foul_detect_probability_delta_factor;
+
+    //bool M_allow_default_goalie;
+    double M_catchable_area_l_stretch_min;
+    double M_catchable_area_l_stretch_max;
 };
 
 #endif
