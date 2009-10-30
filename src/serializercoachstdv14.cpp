@@ -59,6 +59,10 @@ SerializerCoachStdv14::serializeVisualPlayer( std::ostream & strm,
     {
         strm << " k";
     }
+    else if ( player.foulCycles() > 0 )
+    {
+        strm << " f";
+    }
 
     if ( player.isRedCarded() )
     {

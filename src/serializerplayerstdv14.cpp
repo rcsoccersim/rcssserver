@@ -37,9 +37,12 @@ SerializerPlayerStdv14::~SerializerPlayerStdv14()
 }
 
 void
-SerializerPlayerStdv14::serializeCard( std::ostream & strm,
+SerializerPlayerStdv14::serializeFoul( std::ostream & strm,
                                        const Player & self ) const
 {
+    strm << " (foul "
+         << " (charged " << self.foulCycles() << ')';
+
     if ( self.isRedCarded() )
     {
         strm << " (card red)";
@@ -53,8 +56,9 @@ SerializerPlayerStdv14::serializeCard( std::ostream & strm,
     {
         strm << " (card none)";
     }
-}
 
+    strm << ')';
+}
 
 void
 SerializerPlayerStdv14::serializeFSPlayerBegin( std::ostream & strm,
@@ -98,6 +102,10 @@ SerializerPlayerStdv14::serializeFSPlayerState( std::ostream & strm,
     else if ( player.kicked() )
     {
         strm << " k";
+    }
+    else if ( player.foulCycles() > 0 )
+    {
+        strm << " f";
     }
 
     if ( player.isRedCarded() )

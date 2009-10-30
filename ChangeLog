@@ -1,3 +1,18 @@
+2009-10-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/bodysender.cpp:
+	* src/field.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/referee.cpp:
+	* src/serializer.h:
+	* src/serializercoachstdv14.cpp:
+	* src/serializerplayerstdv14.cpp:
+	* src/serializerplayerstdv14.h:
+	* src/types.h:
+	- added foul charged information to bodysensor message.
+	- added foul charged information to coach visual message.
+
 2009-10-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach.cpp:

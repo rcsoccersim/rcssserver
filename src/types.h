@@ -63,7 +63,7 @@ enum PlayerState {
     BACK_PASS =       0x00004000,
     FREE_KICK_FAULT = 0x00008000,
     POST_COLLIDE =    0x00010000, // player collided with goal posts
-    FOUL_PUSHED =     0x00020000, // player is frozen by intentional tackle foul
+    FOUL_CHARGED =     0x00020000, // player is frozen by intentional tackle foul
     YELLOW_CARD =     0x00040000,
     RED_CARD =        0x00080000,
 };

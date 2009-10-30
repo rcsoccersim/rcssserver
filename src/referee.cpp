@@ -2281,21 +2281,30 @@ FoulRef::tackleTaken( const Player & tackler,
         bool pre_check = false;
         if ( foul )
         {
-            (*p)->setFoulPushed();
+            (*p)->setFoulCharged();
 
+            //std::cerr << "---->" << (*p)->unum() << " intentional foul. prob=" << rng.p() << std::endl;
             if ( dst() )
             {
-                //std::cerr << "----> detected intentional foul. prob=" << rng.p() << std::endl;
+                //std::cerr << "----> " << (*p)->unum() << " detected intentional foul." << std::endl;
                 pre_check = true;
                 detect_charge = true;
             }
         }
 
-        if ( ! (*p)->dashed() ) continue; // no dashing
+        if ( ! (*p)->dashed() )
+        {
+            //std::cerr << "----> " << (*p)->unum() << " no dash." << std::endl;
+            continue; // no dashing
+        }
 
         PVector player_rel = (*p)->pos() - tackler.pos();
 
-        if ( player_rel.r2() > ball_dist2 ) continue; // further than ball
+        if ( player_rel.r2() > ball_dist2 )
+        {
+            //std::cerr << "----> " << (*p)->unum() << " ball near." << std::endl;
+            continue; // further than ball
+        }
 
         //std::cerr << "--> (player " << SideStr( (*p)->side() ) << ' ' << (*p)->unum() << ")\n";
 
@@ -2304,7 +2313,7 @@ FoulRef::tackleTaken( const Player & tackler,
         if ( player_rel.x < 0.0
              || std::fabs( player_rel.y ) > (*p)->size() + tackler.size() )
         {
-            //std::cerr << "----> behind or big y_diff. rel=" << player_rel
+            //std::cerr << "----> " << (*p)->unum() << " behind or big y_diff. rel=" << player_rel
             //          << std::endl;
             continue;
         }
@@ -2312,7 +2321,7 @@ FoulRef::tackleTaken( const Player & tackler,
         double body_diff = std::fabs( normalize_angle( (*p)->angleBodyCommitted() - ball_angle ) );
         if ( body_diff > M_PI*0.5 )
         {
-            //std::cerr << "----> over body angle. angle=" << body_diff / M_PI * 180.0
+            //std::cerr << "----> " << (*p)->unum() << " over body angle. angle=" << body_diff / M_PI * 180.0
             //          << std::endl;
             continue;
         }
@@ -2321,7 +2330,7 @@ FoulRef::tackleTaken( const Player & tackler,
         {
             if ( pre_check )
             {
-                //std::cerr << "----> detected yellow_card." << std::endl;
+                //std::cerr << "----> " << (*p)->unum() << " detected yellow_card." << std::endl;
                 detect_yellow = true;
             }
         }
@@ -2329,7 +2338,7 @@ FoulRef::tackleTaken( const Player & tackler,
         {
             if ( dst() )
             {
-                //std::cerr << "----> detected foul. prob=" << rng.p() << std::endl;
+                //std::cerr << "----> " << (*p)->unum() << " detected foul. prob=" << rng.p() << std::endl;
                 detect_charge = true;
             }
         }

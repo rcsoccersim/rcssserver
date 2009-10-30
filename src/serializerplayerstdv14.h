@@ -41,7 +41,7 @@ public:
 
 
     virtual
-    void serializeCard( std::ostream &,
+    void serializeFoul( std::ostream &,
                         const Player & ) const;
 
     virtual

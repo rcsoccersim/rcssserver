@@ -372,18 +372,20 @@ Player::setEnable()
 void
 Player::resetState()
 {
+    int state = ( STAND | GOALIE | DISCARD
+                  | YELLOW_CARD | RED_CARD );
+
     if ( tackleCycles() > 0 )
     {
-        M_state &= ( STAND | GOALIE | DISCARD
-                     | TACKLE | TACKLE_FAULT | FOUL_PUSHED
-                     | YELLOW_CARD | RED_CARD );
+        state |= ( TACKLE | TACKLE_FAULT );
     }
-    else
+
+    if ( foulCycles() > 0 )
     {
-        M_state &= ( STAND | GOALIE | DISCARD
-                     | FOUL_PUSHED
-                     | YELLOW_CARD | RED_CARD );
+        state |= FOUL_CHARGED;
     }
+
+    M_state &= state;
 }
 
 void
@@ -403,7 +405,12 @@ Player::disable()
     }
 
     M_enable = false;
+
+    int card = M_state;
+    card &= ( YELLOW_CARD | RED_CARD );
     M_state = DISABLE;
+    M_state |= card;
+
     M_pos.x = -( unum() * 3 * side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
     M_vel.x = 0.0;
@@ -612,15 +619,40 @@ Player::parseCommand( const char * command )
         else if ( ! std::strncmp( buf, "(tackle ", 8 ) )
         {
             double power_or_dir = 0.0;
-            if ( std::sscanf( buf, " ( tackle %lf ) %n ",
-                              &power_or_dir, &n_read ) != 1 )
+            char foul_str[16];
+            std::memset( foul_str, 0, 16 );
+            if ( std::sscanf( buf, " ( tackle %lf %[^)] ) %n ",
+                              &power_or_dir, foul_str, &n_read ) != 2
+                 && std::sscanf( buf, " ( tackle %lf ) %n ",
+                                 &power_or_dir, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
                 return false;
             }
-            buf += n_read;
 
-            tackle( power_or_dir );
+            if ( std::strlen( foul_str ) > 0 )
+            {
+                if ( ! std::strcmp( foul_str, "on" )
+                     || ! std::strcmp( foul_str, "true" ) )
+                {
+                    tackle( power_or_dir, true );
+                }
+                else if ( ! std::strcmp( foul_str, "off" )
+                          || ! std::strcmp( foul_str, "false" ) )
+                {
+                    tackle( power_or_dir, false );
+                }
+                else
+                {
+                    std::cerr << "Error parsing >" << buf << "<\n";
+                }
+            }
+            else
+            {
+                tackle( power_or_dir );
+            }
+
+            buf += n_read;
         }
         else if ( ! std::strncmp( buf, "(pointto ", 9 ) )
         {
@@ -1238,51 +1270,25 @@ Player::goalieCatch( double dir )
         rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
 
         bool success = false;
-        if ( this_catchable_area_l < SP.catchAreaLength() )
+        if ( default_catchable.inArea( rotated_pos ) )
         {
-            if ( this_catchable.inArea( rotated_pos ) )
-            {
-                success = true;
-            }
-            else if ( default_catchable.inArea( rotated_pos ) )
-            {
-                double catch_prob
-                    = SP.catchProb()
-                    + ( 1.0 - SP.catchProb() ) * ( ( rotated_pos.x - this_catchable_area_l )
-                                                   / ( SP.catchAreaLength() - this_catchable_area_l ) );
-                catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
-                success = ( drand( 0.0, 1.0 ) <= catch_prob );
-                std::cerr << M_stadium.time()
-                          << ": goalieCatch(1) catch_prob="
-                          << catch_prob << std::endl;
-            }
-            else
-            {
-                success = false;
-            }
+            success = ( drand( 0, 1 ) <= SP.catchProb() );
+        }
+        else if ( ! this_catchable.inArea( rotated_pos ) )
+        {
+            success = false;
         }
         else
         {
-            if ( default_catchable.inArea( rotated_pos ) )
-            {
-                success = ( drand( 0, 1 ) <= SP.catchProb() );
-            }
-            else if ( ! this_catchable.inArea( rotated_pos ) )
-            {
-                success = false;
-            }
-            else
-            {
-                double catch_prob
-                    = SP.catchProb()
-                    - SP.catchProb() * ( ( rotated_pos.x - SP.catchAreaLength() )
-                                         / ( this_catchable_area_l - SP.catchAreaLength() ) );
-                catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
-                success = ( drand( 0.0, 1.0 ) <= catch_prob );
-                std::cerr << M_stadium.time()
-                          << ": goalieCatch(2) catch_prob="
-                          << catch_prob << std::endl;
-            }
+            double catch_prob
+                = SP.catchProb()
+                - SP.catchProb() * ( ( rotated_pos.x - SP.catchAreaLength() )
+                                     / ( this_catchable_area_l - SP.catchAreaLength() ) );
+            catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
+            success = ( drand( 0.0, 1.0 ) <= catch_prob );
+            std::cerr << M_stadium.time()
+                      << ": goalieCatch catch_prob="
+                      << catch_prob << std::endl;
         }
 
         if ( ! success )
@@ -2447,11 +2453,11 @@ Player::resetCommandFlags()
 }
 
 void
-Player::setFoulPushed()
+Player::setFoulCharged()
 {
     M_foul_cycles = ServerParam::instance().foulCycles();
     M_command_done = true;
-    M_state |= FOUL_PUSHED;
+    M_state |= FOUL_CHARGED;
 }
 
 void

@@ -373,7 +373,7 @@ public:
     //
     // foul
     //
-    void setFoulPushed();
+    void setFoulCharged();
     void incFoulCount();
     void yellowCard();
     void redCard();

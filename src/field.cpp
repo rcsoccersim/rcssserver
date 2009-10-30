@@ -1573,7 +1573,7 @@ Stadium::changePlayMode( const PlayMode pm )
         M_kick_off_side = NEUTRAL;
     }
 
-    if ( pm != PM_PlayOn )
+    if ( pm == PM_PlayOn )
     {
         M_last_playon_start = time();
     }

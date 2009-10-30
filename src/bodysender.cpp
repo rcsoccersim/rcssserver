@@ -376,7 +376,7 @@ BodySenderPlayerV13::~BodySenderPlayerV13()
 //
 //  CLASS: BodySenderPlayerV14
 //
-//  DESC: version 14 of the sense body protocol. Added card info
+//  DESC: version 14 of the sense body protocol. Added foul charged & card info
 //
 //===================================================================
 */
@@ -397,7 +397,7 @@ BodySenderPlayerV14::sendBodyData()
 {
     BodySenderPlayerV13::sendBodyData();
 
-    serializer().serializeCard( transport(), self() );
+    serializer().serializeFoul( transport(), self() );
 }
 
 
