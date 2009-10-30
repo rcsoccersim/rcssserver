@@ -238,6 +238,7 @@ HeteroPlayer::setDefault()
 
     M_kick_power_rate = SP.kickPowerRate();
     M_foul_detect_probability = SP.foulDetectProbability();
+    M_catchable_area_l_stretch = 1.0;
 }
 
 std::ostream &
@@ -288,4 +289,42 @@ HeteroPlayer::convertToStruct( int id ) const
     tmp.catchable_area_l_stretch = htonl( static_cast< Int32 >( rint( ( catchAreaLengthStretch() * SHOWINFO_SCALE2 ) ) ) );
 
     return tmp;
+}
+
+template < typename T >
+void
+HeteroPlayer::serializeParam( std::ostream & o,
+                              const std::string & name,
+                              const T & value ) const
+{
+    o << '(' << name << ' ' << value << ')';
+}
+
+
+void
+HeteroPlayer::serializeParams( std::ostream & o,
+                               const unsigned int version,
+                               const int id ) const
+{
+    serializeParam( o, "id", id );
+    serializeParam( o, "player_speed_max", playerSpeedMax() );
+    serializeParam( o, "stamina_inc_max",  staminaIncMax() );
+    serializeParam( o, "player_decay",     playerDecay() );
+    serializeParam( o, "inertia_moment",   inertiaMoment() );
+    serializeParam( o, "dash_power_rate",  dashPowerRate() );
+    serializeParam( o, "player_size",      playerSize() );
+    serializeParam( o, "kickable_margin",  kickableMargin() );
+    serializeParam( o, "kick_rand",        kickRand() );
+    serializeParam( o, "extra_stamina",    extraStamina() );
+    serializeParam( o, "effort_max",       effortMax() );
+    serializeParam( o, "effort_min",       effortMin() );
+
+    if ( version < 14 )
+    {
+        return;
+    }
+
+    serializeParam( o, "kick_power_rate", kickPowerRate() );
+    serializeParam( o, "foul_detect_probability", foulDetectProbability() );
+    serializeParam( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
 }

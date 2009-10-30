@@ -1,5 +1,12 @@
 2009-10-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* src/initsender.cpp:
+	* src/initsender.h:
+	* src/serializer.h:
+	- fixed defects of initsender for 'player_type' message.
+
 	* src/bodysender.cpp:
 	* src/field.cpp:
 	* src/player.cpp:

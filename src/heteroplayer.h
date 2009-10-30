@@ -62,7 +62,15 @@ public:
 
     player_type_t convertToStruct( int id ) const;
 
+    void serializeParams( std::ostream & o,
+                          const unsigned int version,
+                          const int id ) const;
 private:
+
+    template < typename T >
+    void serializeParam( std::ostream & o,
+                         const std::string & name,
+                         const T & value ) const;
 
     double delta( const double & min,
                   const double & max );

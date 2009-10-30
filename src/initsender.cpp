@@ -571,62 +571,61 @@ void
 InitSenderCommonV8::serializePlayerType( const int id,
                                          const HeteroPlayer & type )
 {
-    serializer().serializeParam( transport(),
-                                 "id",
-                                 id );
-    serializer().serializeParam( transport(),
-                                 "player_speed_max",
-                                 type.playerSpeedMax() );
-    serializer().serializeParam( transport(),
-                                 "stamina_inc_max",
-                                 type.staminaIncMax() );
-    serializer().serializeParam( transport(),
-                                 "player_decay",
-                                 type.playerDecay() );
-    serializer().serializeParam( transport(),
-                                 "inertia_moment",
-                                 type.inertiaMoment() );
-    serializer().serializeParam( transport(),
-                                 "dash_power_rate",
-                                 type.dashPowerRate() );
-    serializer().serializeParam( transport(),
-                                 "player_size",
-                                 type.playerSize() );
-    serializer().serializeParam( transport(),
-                                 "kickable_margin",
-                                 type.kickableMargin() );
-    serializer().serializeParam( transport(),
-                                 "kick_rand",
-                                 type.kickRand() );
-    serializer().serializeParam( transport(),
-                                 "extra_stamina",
-                                 type.extraStamina() );
-    serializer().serializeParam( transport(),
-                                 "effort_max",
-                                 type.effortMax() );
-    serializer().serializeParam( transport(),
-                                 "effort_min",
-                                 type.effortMin() );
+    type.serializeParams( transport(),
+                          version(),
+                          id );
+
+//     serializer().serializeParam( transport(),
+//                                  "id",
+//                                  id );
+//     serializer().serializeParam( transport(),
+//                                  "player_speed_max",
+//                                  type.playerSpeedMax() );
+//     serializer().serializeParam( transport(),
+//                                  "stamina_inc_max",
+//                                  type.staminaIncMax() );
+//     serializer().serializeParam( transport(),
+//                                  "player_decay",
+//                                  type.playerDecay() );
+//     serializer().serializeParam( transport(),
+//                                  "inertia_moment",
+//                                  type.inertiaMoment() );
+//     serializer().serializeParam( transport(),
+//                                  "dash_power_rate",
+//                                  type.dashPowerRate() );
+//     serializer().serializeParam( transport(),
+//                                  "player_size",
+//                                  type.playerSize() );
+//     serializer().serializeParam( transport(),
+//                                  "kickable_margin",
+//                                  type.kickableMargin() );
+//     serializer().serializeParam( transport(),
+//                                  "kick_rand",
+//                                  type.kickRand() );
+//     serializer().serializeParam( transport(),
+//                                  "extra_stamina",
+//                                  type.extraStamina() );
+//     serializer().serializeParam( transport(),
+//                                  "effort_max",
+//                                  type.effortMax() );
+//     serializer().serializeParam( transport(),
+//                                  "effort_min",
+//                                  type.effortMin() );
+
+//     if ( version() < 14 )
+//     {
+//         return;
+//     }
+
+//     serializer().serializeParam( transport(),
+//                                  "kick_power_rate",
+//                                  type.kickPowerRate() );
+//     serializer().serializeParam( transport(),
+//                                  "foul_detect_probability",
+//                                  type.foulDetectProbability() );
+//     serializer().serializeParam( transport(),
+//                                  "catchable_area_l_stretch",
+//                                  type.catchAreaLengthStretch() );
 }
-
-//-------------------------------------
-
-void
-InitSenderCommonV14::serializePlayerType( const int id,
-                                          const HeteroPlayer & type )
-{
-    InitSenderCommonV8::serializePlayerType( id, type );
-
-    serializer().serializeParam( transport(),
-                                 "kick_power_rate",
-                                 type.kickPowerRate() );
-    serializer().serializeParam( transport(),
-                                 "foul_detect_probability",
-                                 type.foulDetectProbability() );
-    serializer().serializeParam( transport(),
-                                 "catchable_area_l_stretch",
-                                 type.catchAreaLengthStretch() );
-}
-
 
 }
