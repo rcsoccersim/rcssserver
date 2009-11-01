@@ -35,8 +35,10 @@ if test $# -eq 0; then
     else
         MON=`which rcssmonitor 2> /dev/null`
         if test $? -eq 1; then
-            MON=`which rcssmonitor_classic 2> /dev/null`
+            MON=`which rcssmonitor_frameview 2> /dev/null`
             if test $? -eq 1; then
+              MON=`which rcssmonitor_classic 2> /dev/null`
+              if test $? -eq 1; then
                 echo "Error: No monitors can be found in your PATH and the"
                 echo "       RCSSMONITOR environment variable is not set. Please"
                 echo "       add rcssmonitor or rcssmonitor_classic to you PATH,"
@@ -44,17 +46,28 @@ if test $# -eq 0; then
                 echo "       executable you wish to use."
                 echo ""
                 exit 1
+              fi
             fi
+          fi
         fi
     fi
 else
     while [ $# -gt 0 ]
     do
         case $1 in
-            -frameview)
+            -rcssmonitor)
             MON=`which rcssmonitor 2> /dev/null`
             if test $? -eq 1; then
                 echo "Error: rcssmonitor cannot be found in your PATH"
+                echo ""
+                exit 1
+            fi
+            ;;
+
+            -frameview)
+            MON=`which rcssmonitor_frameview 2> /dev/null`
+            if test $? -eq 1; then
+                echo "Error: rcssmonitor_frameview cannot be found in your PATH"
                 echo ""
                 exit 1
             fi

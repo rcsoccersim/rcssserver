@@ -1,3 +1,223 @@
+[14.0.0]
+  * New parameters:
+    - server::tackle_rand_factor (default value: 2.0)
+    - server::foul_detect_probability (default value: 0.5)
+    - server::foul_exponent (default value: 10.0)
+    - server::foul_cycles (default value: 5)
+    - server::golden_goal (default value: true)
+    - player::kick_power_rate_delta_min (default value: 0.0)
+    - player::kick_power_rate_delta_max (default value: 0.0)
+    - player::foul_detect_probability_delta_factor (default value: 0.0)
+    - player::catchable_area_l_stretch_min (default value: 1.0)
+    - player::catchable_area_l_stretch_max (default value: 1.3)
+
+  * Changed parameters:
+    - server::stamina_capacity (148600.0 -> 130600.0)
+    - server::dash_angle_step (90.0 -> 45.0)
+    - server::side_dash_rate (0.25 -> 0.4)
+    - server::back_dash_rate (0.5 -> 0.6)
+
+  * Improvement of the dash model. The new server::dash_angle_step
+    value enables players to dash into eight directions. The value of
+    server::side_dash_rate and server::back_dash_rate are increased to
+    enable more acceleration in sideward/backward dashes.
+
+  * Improvement of the stamina model. The stamina capacity value is
+    changed from 148600.0 to 130600.0.
+
+  * Increasing tackle noise. server::tackle_rand_factor parameter is
+    introduced and, consequently, each heterogeneous player type has
+    an independent tackle_rand parameter. With this parameter, the
+    noise of tackle effect is increased more than kicking noise. Each
+    heterogeneous tackle_rand value is caluculated as follows:
+
+      tackle_rand = kick_rand * server::tackle_rand_factor
+
+  * Introducing fouls for dangerous tackle situations. If players
+    perform a tackle command under specific conditions and the referee
+    detects it, then the playmode is changed to
+
+      foul_charge_[lr]
+
+    where l or r is the side of the tackling player. After wait
+    cycles, the play mode is changed to "free_kick_[lr]" or
+    "indirect_free_kick_[lr]", where l or r is the side of ball
+    handling player. When foul occurs in penalty areas,
+      - if the side of penalty area is same as the penalized player's
+        side, indirect free kick is awarded to the other team at the
+        position where foul occurs.
+      - else, the ball is moved to the outside of penalty
+        area and free kick is awarded to the other team.
+
+    Currently, the dangerous conditions are defined as follows:
+      - The ball handling player exists between the tackling player
+        and the ball.
+      - The ball handling player's body angle is directed to the
+        opposite side of the tackling player.
+      - The ball handling player is performing dash command.
+      - Finally, the foul is determined randomly using
+        foul_detect_probability of each heterogeneous player type.
+
+  * Introducing intentional foul option. Now, intentional foul playing
+    and yellow/red cards are introduced. The tackle command is
+    extended by an additional boolean parameter, i.e.
+
+       (tackle DIR {true|false})
+
+    which indicates that the player is willing to foul his
+    opponent. If the boolean parameter is omitted, the false value is
+    used by default.
+
+    Details:
+
+      a) if foul flag is false:
+         normal tackle behavior, i.e. tackling for the ball
+      b) if foul flag is true AND ball not in kick range of opponent:
+         normal tackle behavior
+      c) if foul flag is true AND ball IS in kick range of opponent:
+        c1) tackle the ball, but apply a higher tackle exponent
+            (server::foul_exponent = 10)
+        c2) if the foul succeeds (with probability determined in c1):
+            the foul-playing player does *not* have to remain idle
+            for server::tackle_cycles cycles. but instead the opponent
+            player (the player to which the foul has been applied) must
+            remain idle (lie on the ground) for server::foul_cycles
+            cycles.
+        c3) if the foul succeeded:
+            the referee detects the foul with probability
+            foul_detect_probability.
+            => free kick for other team
+        c4) if the referee detected the foul AND the dangerous
+            conditions specified in the previous section are met:
+            => yellow card to the player AND free kick for other team
+        c5) if the referee detected the foul AND the dangerous
+            conditions are met AND the ball is in the penalty area
+            where its side is same as the penalized player's side
+            => yellow card to the player AND indirect free kick for
+               other team
+        c6) if player has two yellow cards:
+            => red card to the player AND the player is disconnected
+               from the Soccer Server
+
+  * Red and Yellow cards. If an intentional and dangerous foul is
+    detected, the referee penalizes the player and sends the yellow/red
+    card message toclients. The message format is similar to playmode
+    messages. Side and uniform number information of penalized player
+    are appended to the card message:
+
+      (referee TIME yellow_card_[lr]_[1-11])
+
+     or
+
+      (referee TIME red_card_[lr]_[1-11])
+
+   * Foul information in sensory messages.
+     - Players can receive their idling cycles caused by intentional
+       foul and their card status every cycle by sense_body
+       message. These information are appended after the previous
+       format and are sent only to v14 or later clients.
+
+         (sense_body TIME ....
+           ...
+           (foul (charged CYCLE) (card {none|yellow|red})))
+
+       CYCLES is the number of cycles the current idling will last
+       for, with 0 indicating that the player isn't idling.
+
+       As well as sense_body message, players can receive all players'
+       foul information by fullstate message:
+
+         (fullstate TIME ...
+           ...
+           ((p {l|r} <unum> [g] <player_type_id>)
+            <pos.x> <pos.y> <vel.x> <vel.y> <body_angle> <neck_angle>
+            [ <point_dist> <point_dir>]
+            (<stamina> <effort> <recovery> <capacity>)
+           [t|k|f] [y|r])
+           ...
+
+       The character 'f'(indicates player is lying on the ground),
+       'y'(indicates yellow card) or'r '(indicates red card) are
+       appended to each player information.
+
+     - Coaches can receive all players' idling and card status by
+       see_global message. These information are sent only to v14 or
+       later clients. As well as player's fullstate message, 'f', 'y'
+       or 'r' are appended to each player information as follows:
+
+         ((p "TEAM" UNUM[ goalie]) X Y VX VY BODY NECK[ ARM][ {t|k|f}][ {y|r}])
+
+     - New player state flags, FOUL_CHARGED, YELLOW_CARD and RED_CARD,
+       are introduced to record/send players' status to game log or
+       monitor clients.
+
+  * Introducing heterogeneous goalie. Online coaches now can change
+    the player type of goalie. The 'catchable_area_l_stretch' variable
+    is added to each heterogeneous player type. The value is
+    caluculated as follows:
+
+      double delta = random( player::catchable_area_l_stretch_min,
+                             player::catchable_area_l_stretch_max );
+      catchable_area_l_stretch = delta;
+
+    As a trade-off, such a goalie would have a reduced catch success
+    reliability according to:
+
+      double default_catchable_area_l = server::catchable_area_l;
+      double this_catchable_area_l = default_catchable_area_l * catchable_area_l_stretch;
+
+      if ( ball_pos is inside the default catch area )
+      {
+        // goalie catches the ball with probability server::catch_probability
+      }
+      else if ( ball_pos is beyond the stretched area )
+      {
+        // goalie definitely misses the ball
+      }
+      else
+      {
+        double ball_relative_x = ( ball_pos - goalie_pos ).rotate( -(goalie_body + catch_dir) ).x;
+        double catch_prob
+          = server::catch_probability
+            - server::catch_probability * ( ball_relative_x - server::catchable_area_l )
+                                          / ( this_catchable_area_l - default_catchable_area_l );
+        // goalie catches the ball with probability catch_prob
+      }
+
+    And, now, the information of goalie's player type id is sent to
+    players with fullstate message. If players connect as v14 or later
+    client, they can receive the following player information in the
+    fullstate message:
+
+      (p {l|r} <unum> [g] <player_type_id>)
+
+  * Introducing heterogeneous kick power rate. The variable of
+    'kick_power_rate' and 'foul_detect_probability' are added to each
+    heterogeneous player type. These values are calculated as follows:
+
+      delta = random( player::kick_power_rate_delta_min,
+                      player::kick_power_rate_delta_max )
+      kick_power_rate = server::kick_power_rate + delta
+      foul_detect_probability = server::foul_detect_probability
+                                + player::foul_detect_probability_delta_fact * delta
+
+   In this trade-off, we assume that a player who is rather strong
+   (and, thus, can shoot very strongly), is not very smart (and, thus,
+   cannot very well deceive the referee when doing a foul).
+
+   Since the introduction of foul is a new feature to be added, we do
+   *not* change the kick power rate actually in v14 in order to
+   provide a migration period to teams. So, the above parameters are
+   set to 0. These parameters will be changed in v15 or later.
+
+  * Golden goal option. The new switch option, 'server::golden_goal',
+    determines when the game finishes in extra halves. If
+    server::golden_goal is true and the goal is scored in extra
+    halves, the game finishes immediately. If server::golden_goal is
+    false, the game is continued during all extra halves even if the
+    goal is scored. This option is introduced to enable more flexible
+    competition scheme.
+
 [13.2.2]
   * Fixed a bug of the player clearance from the ball.
 
@@ -181,7 +401,7 @@
 
         `((p "<TEAMNAME>") <DIST> <DIR> [<POINTDIR>] [{t|k}])'
 
-      Coach visuals now can indicate if a player is kickingvia a `k'
+      Coach visuals now can indicate if a player is kicking via a `k'
       flag as follows:
 
         `((p "<TEAMNAME>" <UNUM>) <X> <Y> <VEL_X> <VEL_Y> <ANGLE>

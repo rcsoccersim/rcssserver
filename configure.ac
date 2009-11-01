@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.63)
-AC_INIT([RCSSServer],[14.0.0a],[sserver-admin@users.sf.net],[rcssserver])
+AC_PREREQ(2.61)
+AC_INIT([RCSSServer],[14.0.0],[sserver-admin@users.sf.net],[rcssserver])
 
 #LT_PREREQ([2.2.4])
 

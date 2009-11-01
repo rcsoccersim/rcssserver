@@ -1,3 +1,13 @@
+2009-11-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a major version number. Official release 14.0.0.
+
+	* src/rcsoccersim.in:
+	- added the command line option '-rcssmonitor'
+	- supported 'rcssmonitr_frameview'.
+
 2009-10-30  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/heteroplayer.cpp:
