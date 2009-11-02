@@ -48,7 +48,6 @@ if test $# -eq 0; then
                 exit 1
               fi
             fi
-          fi
         fi
     fi
 else
