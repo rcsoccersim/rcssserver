@@ -80,8 +80,12 @@
 #include <cctype>
 #include <cerrno>
 
-#include <sys/time.h>
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h> // gettimeofday
+#endif
+#ifdef HAVE_UNI_STD_H
 #include <unistd.h>
+#endif
 
 /*
  *===================================================================

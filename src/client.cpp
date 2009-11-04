@@ -48,11 +48,17 @@
 #  include <winsock2.h>
 #endif
 
-#ifndef RCSS_WIN
-#  include <unistd.h> // select()
-#  include <sys/select.h> // select()
-#  include <sys/time.h> // select()
-#  include <sys/types.h> // select()
+#ifdef HAVE_UNISTD_H
+#include <unistd.h> // select()
+#endif
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h> // select()
+#endif
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h> // select()
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h> // select()
 #endif
 
 
