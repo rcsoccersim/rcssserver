@@ -1,7 +1,12 @@
-2009-11-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+2009-11-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
-	* src/client.cpp:
-	* src/field.cpp:
+	* NEWS:
+	* configure.ac:
+	- updated a point version number. Official release 14.0.1.
+
+	* src/player.cpp:
+	- fixed an incorrect catch model implementation.
+
 	* src/logger.cpp:
 	- fixed include file preprocessing using configure results.
 
