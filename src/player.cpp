@@ -1260,21 +1260,28 @@ Player::goalieCatch( double dir )
         // heterogeneous goalie model proposed by Thomas Gabel
         const ServerParam & SP = ServerParam::instance();
 
-        const double this_catchable_area_l = SP.catchAreaLength() * M_player_type->catchAreaLengthStretch();
-        const RArea default_catchable( PVector( SP.catchAreaLength()*0.5, 0.0 ),
-                                       PVector( SP.catchAreaLength(),     SP.catchAreaWidth() ) );
-        const RArea this_catchable( PVector( this_catchable_area_l*0.5, 0.0 ),
-                                    PVector( SP.catchAreaLength(),      SP.catchAreaWidth() ) );
+        const double this_catch_area_delta = SP.catchAreaLength() * ( M_player_type->catchAreaLengthStretch() - 1.0 );
+        const double this_catch_area_l_max = SP.catchAreaLength() + this_catch_area_delta;
+        const double this_catch_area_l_min = SP.catchAreaLength() - this_catch_area_delta;
+
+        //const RArea default_catchable( PVector( SP.catchAreaLength()*0.5, 0.0 ),
+        //                               PVector( SP.catchAreaLength(), SP.catchAreaWidth() ) );
+        const RArea max_catchable( PVector( this_catch_area_l_max*0.5, 0.0 ),
+                                   PVector( this_catch_area_l_max, SP.catchAreaWidth() ) );
+        const RArea min_catchable( PVector( this_catch_area_l_min*0.5, 0.0 ),
+                                   PVector( this_catch_area_l_min, SP.catchAreaWidth() ) );
 
         PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
         rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
 
         bool success = false;
-        if ( default_catchable.inArea( rotated_pos ) )
+        if ( min_catchable.inArea( rotated_pos ) )
         {
             success = ( drand( 0, 1 ) <= SP.catchProb() );
+            std::cerr << M_stadium.time()
+                      << ": goalieCatch min_catchable ok" << std::endl;
         }
-        else if ( ! this_catchable.inArea( rotated_pos ) )
+        else if ( ! max_catchable.inArea( rotated_pos ) )
         {
             success = false;
         }
@@ -1282,18 +1289,24 @@ Player::goalieCatch( double dir )
         {
             double catch_prob
                 = SP.catchProb()
-                - SP.catchProb() * ( ( rotated_pos.x - SP.catchAreaLength() )
-                                     / ( this_catchable_area_l - SP.catchAreaLength() ) );
+                - SP.catchProb() * ( ( rotated_pos.x - this_catch_area_l_min )
+                                     / ( this_catch_area_l_max - this_catch_area_l_min ) );
             catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
             success = ( drand( 0.0, 1.0 ) <= catch_prob );
-            std::cerr << M_stadium.time()
-                      << ": goalieCatch catch_prob="
-                      << catch_prob << std::endl;
+            //std::cerr << M_stadium.time()
+            //          << ": goalieCatch "
+            //          << " dir=" << Rad2Deg( normalize_angle( angleBodyCommitted() + NormalizeMoment( dir ) ) )
+            //          << " x=" << rotated_pos.x
+            //          << " min_l=" << this_catch_area_l_min
+            //          << " max_l=" << this_catch_area_l_max
+            //          << " catch_prob=" << catch_prob << std::endl;
         }
 
         if ( ! success )
         {
             M_state |= CATCH_FAULT;
+            //std::cerr << M_stadium.time()
+            //          << ": goalieCatch CATCH_FAULT" << std::endl;
             return;
         }
 

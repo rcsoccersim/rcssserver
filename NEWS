@@ -1,3 +1,45 @@
+[14.0.1]
+  * Fixed an incorrect catch model implementation. Thanks go to Bruno
+    Vinicius for reporting the problem. The following pseudo code
+    shows a corrected trade-off rule of the catch model:
+
+     // catchable_area_l_stretch is the heterogeneous parameter,
+     // currenlty within [1.0,1.3]
+     double this_catchable_are_delta
+       = server::catchable_area_l * ( catchable_area_l_stretch - 1.0 );
+     double this_catchable_area_l_max =   server::catchable_area_l
+                                        + this_catchable_are_delta;
+     double this_catchable_area_l_min =   server::catchable_area_l
+                                        - this_catchable_are_delta;
+
+     if ( ball_pos is inside the MINIMAL catch area )
+     {
+       // the MINIMAL catch area has a length of
+       // this_catchable_area_l_min and width server::catchable_area_w
+       //
+       // goalie catches the ball with probability
+       // server::catch_probability (which is 1.0 by default)
+     }
+     else if ( ball_pos is beyond the MAXIMAL (stretched) area )
+     {
+       // the MAXIMAL catch area has a length of
+       // this_catchable_area_l_max and width server::catchable_area_w
+       //
+       // goalie definitely misses the ball
+     }
+     else
+     {
+        double ball_relative_x = ( ball_pos - goalie_pos )
+                                 .rotate( -(goalie_body + catch_dir) ).x;
+        double catch_prob
+          = server::catch_probability
+            - server::catch_probability
+              *   ( ball_relative_x - this_catchable_area_l_min )
+                / ( this_catchable_area_l_max - this_catchable_area_l_min );
+        // goalie catches the ball with probability catch_prob
+        // it holds: catch_prob is in [0.0,1.0]
+     }
+
 [14.0.0]
   * New parameters:
     - server::tackle_rand_factor (default value: 2.0)
