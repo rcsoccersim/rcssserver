@@ -378,8 +378,8 @@ public:
     void yellowCard();
     void redCard();
 
-    bool isYellowCarded() const { return M_card_count == 1; }
-    bool isRedCarded() const { return M_card_count >= 2; }
+    bool hasYellowCard() const { return M_card_count == 1; }
+    bool hasRedCard() const { return M_card_count >= 2; }
 
     //
     // utility

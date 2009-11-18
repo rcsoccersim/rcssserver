@@ -64,11 +64,11 @@ SerializerCoachStdv14::serializeVisualPlayer( std::ostream & strm,
         strm << " f";
     }
 
-    if ( player.isRedCarded() )
+    if ( player.hasRedCard() )
     {
         strm << " r";
     }
-    else if ( player.isYellowCarded() )
+    else if ( player.hasYellowCard() )
     {
         strm << " y";
     }
@@ -101,11 +101,11 @@ SerializerCoachStdv14::serializeVisualPlayer( std::ostream & strm,
         strm << " k";
     }
 
-    if ( player.isRedCarded() )
+    if ( player.hasRedCard() )
     {
         strm << " r";
     }
-    else if ( player.isYellowCarded() )
+    else if ( player.hasYellowCard() )
     {
         strm << " y";
     }

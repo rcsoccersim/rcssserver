@@ -308,19 +308,19 @@ public:
           return  M_listeners;
       }
 
-    void removeListener( const rcss::Listener* listener )
+    void removeListener( const rcss::Listener * listener )
       {
-          M_listeners.erase( remove( M_listeners.begin(),
-                                     M_listeners.end(),
-                                     listener ),
+          M_listeners.erase( std::remove( M_listeners.begin(),
+                                          M_listeners.end(),
+                                          listener ),
                              M_listeners.end() );
       }
-    void addListener( rcss::Listener* listener )
+    void addListener( rcss::Listener * listener )
       {
           M_listeners.push_back( listener );
       }
 
-    void addOfflineCoach( Coach* coach )
+    void addOfflineCoach( Coach * coach )
       {
           M_remote_offline_coaches.push_back( coach );
       }

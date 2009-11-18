@@ -2482,7 +2482,7 @@ Player::incFoulCount()
 void
 Player::yellowCard()
 {
-    if ( isYellowCarded() )
+    if ( hasYellowCard() )
     {
         redCard();
     }

@@ -1,3 +1,15 @@
+2009-11-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/field.cpp:
+	* src/field.h:
+	* src/main.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/serializercoachstdv14.cpp:
+	* src/serializerplayerstdv14.cpp:
+	- fixed method name.
+	- cleaned up.
+
 2009-11-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

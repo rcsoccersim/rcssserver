@@ -43,11 +43,11 @@ SerializerPlayerStdv14::serializeFoul( std::ostream & strm,
     strm << " (foul "
          << " (charged " << self.foulCycles() << ')';
 
-    if ( self.isRedCarded() )
+    if ( self.hasRedCard() )
     {
         strm << " (card red)";
     }
-    else if ( self.isYellowCarded() )
+    else if ( self.hasYellowCard() )
     {
         strm << " (card yellow)";
 
@@ -108,11 +108,11 @@ SerializerPlayerStdv14::serializeFSPlayerState( std::ostream & strm,
         strm << " f";
     }
 
-    if ( player.isRedCarded() )
+    if ( player.hasRedCard() )
     {
         strm << " r";
     }
-    else if ( player.isYellowCarded() )
+    else if ( player.hasYellowCard() )
     {
         strm << " y";
     }

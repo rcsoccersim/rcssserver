@@ -744,7 +744,7 @@ Stadium::reconnectPlayer( const char * teamname,
              && M_players[r]->unum() == unum )
         {
             /* It's same. */
-            if ( M_players[r]->isRedCarded() )
+            if ( M_players[r]->hasRedCard() )
             {
                 sendToPlayer( "(error red_carded_player)", addr );
                 return static_cast< Player * >( 0 );
@@ -814,10 +814,10 @@ Stadium::initCoach( const double & version,
 
 
 OnlineCoach *
-Stadium:: initOnlineCoach( const char * teamname,
-                           const char * coachname,
-                           const double & version,
-                           const rcss::net::Addr & addr )
+Stadium::initOnlineCoach( const char * teamname,
+                          const char * coachname,
+                          const double & version,
+                          const rcss::net::Addr & addr )
 {
 
     OnlineCoach * olc = static_cast< OnlineCoach * >( 0 );
@@ -1361,7 +1361,7 @@ Stadium::yellowCard( const Side side,
               p->unum() );
     sendRefereeAudio( msg );
 
-    if ( p->isYellowCarded() )
+    if ( p->hasYellowCard() )
     {
         snprintf( msg, 32, "red_card_%s_%d",
                   SideStr( p->side() ),
@@ -2577,6 +2577,7 @@ Stadium::doSendThink()
     {
         M_alive = false;
     }
+
     return shutdown;
 }
 

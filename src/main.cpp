@@ -57,7 +57,7 @@ namespace {
 Stadium Std;
 
 void
-sigHandle ( int )
+sigHandle( int )
 {
     Std.finalize( "Server Killed. Exiting..." );
 }
