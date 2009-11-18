@@ -31,88 +31,92 @@
 #include <strstream>
 #endif
 
+#include <cstdio>
 #include <cstring>
 #include <cstdlib>
 
 XPMHolder::XPMHolder( const char * str )
-    : M_data( NULL ),
-      M_str( strdup( str ) ),
-      M_x( 0 ),
-      M_y( 0 ),
-      M_colors( 0 ),
-      M_size( 0 ),
-      M_valid( false )
+    : M_width( 0 ),
+      M_height( 0 ),
+      M_colors( 0 )
 {
-    if ( M_str == NULL )
+    const char * cur = str;
+
+    while ( cur && *cur != '"' )
     {
+        ++cur;
+    }
+
+    if ( ! cur )
+    {
+        // std::cerr << "XPMHolder: No data" << std::endl;
         return;
     }
 
-    char * curr = M_str;
-    int idx = 0;
-    do
+    int n_read = 0;
+    char buf[8192];
+
+    //
+    // header
+    //
+    int xpm_cpp = 0;
+    n_read = 0;
+    if ( std::sscanf( cur,
+                      " \" %d %d %d %d \" %n ",
+                      &M_width, &M_height, &M_colors, &xpm_cpp,
+                      &n_read ) != 4
+         || n_read == 0 )
     {
-        // advance curr to the begining of the next XPM line
-        while ( curr && curr[ 0 ] != '"' )
-        {
-            ++curr;
-        }
-
-        if ( ! curr )
-        {
-            break;
-        }
-
-        ++curr;
-
-        // at this point curr point to the begining of a XPM line
-
-        if ( idx == 0 )
-        {
-            // alocate M_data
-#ifdef HAVE_SSTREAM
-            std::istringstream strm( curr );
-#else
-            std::istrstream strm( curr );
-#endif
-            strm >> M_x;
-            strm >> M_y;
-            M_size += M_y;
-            strm >> M_colors;
-            M_size += M_colors;
-            ++M_size;
-            M_data = new char*[ M_size ];
-        }
-        M_data[ idx ] = curr;
-
-        // advance curr to the end of the current XPM line
-        while ( curr && curr[ 0 ] != '"' )
-        {
-            ++curr;
-        }
-
-        if ( ! curr )
-        {
-            break;
-        }
-
-        // terminate the end of the XPM line
-        curr[ 0 ] = 0;
-
-        ++curr;
-        ++idx;
-
-        if ( idx == M_size )
-        {
-            M_valid = true;
-            break;
-        }
-    }
-    while ( curr );
-
-    if ( ! M_valid )
-    {
+        // std::cerr << "XPMHolder: Illegal xpm header [" << std::string( cur, 0, 16 ) << "]"
+        //           << std::endl;
         clear();
+        return;
+    }
+    cur += n_read;
+
+    M_data.reserve( 1 + M_colors + M_height );
+
+    snprintf( buf, 127, "%d %d %d %d", M_width, M_height, M_colors, xpm_cpp );
+    M_data.push_back( buf );
+
+    for ( int i = 0; i < M_colors; ++i )
+    {
+        n_read = 0;
+        if ( std::sscanf( cur, " \"%8191[^\"]\" %n ",
+                          buf, &n_read ) != 1 )
+        {
+            // std::cerr << "XPMHolder: Illegal color data"
+            //           << std::endl;
+            clear();
+            return;
+        }
+        cur += n_read;
+
+        M_data.push_back( buf );
+    }
+
+    const size_t line_size = static_cast< size_t >( M_width * xpm_cpp );
+    for ( int i = 0; i < M_height; ++i )
+    {
+        n_read = 0;
+        if ( std::sscanf( cur, " \"%8191[^\"]\" %n ",
+                          buf, &n_read ) != 1 )
+        {
+            // std::cerr << "XPMHolder: Illegal pixel data line"
+            //           << std::endl;
+            clear();
+            return;
+        }
+        cur += n_read;
+
+        if ( std::strlen( buf ) != line_size )
+        {
+            // std::cerr << "XPMHolder: Illegal width" << std::endl;
+            clear();
+            return;
+        }
+
+        M_data.push_back( buf );
     }
 }
 
@@ -120,27 +124,25 @@ XPMHolder::XPMHolder( const char * str )
 void
 XPMHolder::clear()
 {
-    delete[] M_data;
-    free( M_str );
-    M_data = NULL;
-    M_str = NULL;
+    M_data.clear();
+    M_width = 0;
+    M_height = 0;
+    M_colors = 0;
 }
 
 
 std::ostream &
 XPMHolder::print( std::ostream & o ) const
 {
-    if ( valid() )
+    if ( ! M_data.empty() )
     {
-        o << '"' << M_data[ 0 ] << '"';
-        for( int i = 1; i < M_size; ++i )
+        std::vector< std::string >::const_iterator it = M_data.begin();
+        o << '"' << *it << '"';
+        ++it;
+        for ( ; it != M_data.end(); ++it )
         {
-            o << " \"" << M_data[ i ] << '"';
+            o << " \"" << *it << '"';
         }
-    }
-    else
-    {
-        o << "Invalid";
     }
     return o;
 }

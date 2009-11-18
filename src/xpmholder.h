@@ -23,17 +23,15 @@
 #define XPMHOLDER_H
 
 #include <string>
+#include <vector>
 #include <iostream>
 
 class XPMHolder {
 private:
-    char ** M_data;
-    char * M_str;
-    int M_x;
-    int M_y;
+    std::vector< std::string > M_data;
+    int M_width;
+    int M_height;
     int M_colors;
-    int M_size;
-    bool M_valid;
 
     XPMHolder(); // not used
     XPMHolder( const XPMHolder & ); // not used
@@ -50,34 +48,22 @@ public:
 
     void clear();
 
-    const char * const * getXPM() const
-      {
-          return ( valid()
-                   ? M_data
-                   : NULL );
-      }
-
     bool valid() const
       {
-          return M_valid;
+          return ! M_data.empty();
       }
 
-    int getSize() const
+    int width() const
       {
-          return M_size;
+          return M_width;
       }
 
-    int getWidth() const
+    int height() const
       {
-          return M_x;
+          return M_height;
       }
 
-    int getHeight() const
-      {
-          return M_y;
-      }
-
-    int getColors() const
+    int colors() const
       {
           return M_colors;
       }

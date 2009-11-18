@@ -246,7 +246,8 @@ DispSenderMonitorV1::sendTeamGraphic( const Side side,
                               : side == RIGHT
                               ? stadium().teamRight().teamGraphic( x, y )
                               : static_cast< const XPMHolder * >( 0 ) );
-    if ( ! xpm )
+    if ( ! xpm
+         || ! xpm->valid() )
     {
         return;
     }
@@ -685,7 +686,8 @@ DispSenderLoggerV1::sendTeamGraphic( const Side side,
                               : side == RIGHT
                               ? stadium().teamRight().teamGraphic( x, y )
                               : static_cast< const XPMHolder * >( 0 ) );
-    if ( ! xpm )
+    if ( ! xpm
+         || ! xpm->valid() )
     {
         return;
     }

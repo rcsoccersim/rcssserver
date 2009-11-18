@@ -1964,11 +1964,11 @@ OnlineCoach::team_graphic( const char * command )
     std::auto_ptr< XPMHolder > holder( new XPMHolder( command ) );
     if ( ! holder->valid() )
     {
-        send( "(error illegal_command_form)" );
+        send( "(error invalid_xpm_data)" );
         return;
     }
 
-    if ( holder->getWidth() != 8 || holder->getHeight() != 8 )
+    if ( holder->width() != 8 || holder->height() != 8 )
         // needs to be parameterised
     {
         send( "(warning invalid_tile_size)" );

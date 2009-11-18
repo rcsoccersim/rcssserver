@@ -1,5 +1,11 @@
 2009-11-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/coach.cpp:
+	* src/dispsender.cpp:
+	* src/xpmholder.cpp:
+	* src/xpmholder.h:
+	- reimplemented XPMHolder.
+
 	* src/stadium.cpp:
 	* src/stadium.h:
 	* src/weather.cpp:
