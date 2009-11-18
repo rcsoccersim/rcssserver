@@ -22,9 +22,10 @@
 #ifndef RCSSRESULTSAVER_HPP
 #define RCSSRESULTSAVER_HPP
 
+#include <rcssbase/factory.hpp>
+
 #include <string>
 #include <memory>
-#include <rcssbase/factory.hpp>
 
 struct tm;
 

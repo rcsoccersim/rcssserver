@@ -43,19 +43,19 @@
 #include "timeable.h"
 
 #include "object.h"
-#include "serverparam.h"
 #include "logger.h"
 
 #include <rcssbase/gzip/gzfstream.hpp>
+#include <rcssbase/net/udpsocket.hpp>
 
 #include <string>
 #include <vector>
 #include <list>
-#include <algorithm>
 #include <memory>
 #include <cstdio>
 
 class HeteroPlayer;
+class XPMHolder;
 
 class Monitor;
 class Player;
@@ -308,13 +308,7 @@ public:
           return  M_listeners;
       }
 
-    void removeListener( const rcss::Listener * listener )
-      {
-          M_listeners.erase( std::remove( M_listeners.begin(),
-                                          M_listeners.end(),
-                                          listener ),
-                             M_listeners.end() );
-      }
+    void removeListener( const rcss::Listener * listener );
     void addListener( rcss::Listener * listener )
       {
           M_listeners.push_back( listener );
@@ -462,10 +456,6 @@ public:
     void sendCoachStdAudio( const OnlineCoach &,
                             const rcss::clang::Msg & msg );
 
-    void addTeamGraphic( const Side side,
-                         const unsigned int x,
-                         const unsigned int y,
-                         std::auto_ptr< XPMHolder > holder );
     void sendTeamGraphic( const Side side,
                           const unsigned int x,
                           const unsigned int y );

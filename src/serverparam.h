@@ -35,7 +35,7 @@
 
 #include "types.h"
 
-#include <rcssbase/net/udpsocket.hpp>
+#include <rcssbase/net/addr.hpp>
 
 #include <boost/shared_ptr.hpp>
 #include <map>

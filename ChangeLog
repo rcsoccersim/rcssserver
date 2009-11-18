@@ -1,5 +1,15 @@
 2009-11-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* rcssbase/factory.hpp:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/field.cpp:
+	* src/field.h:
+	* src/resultsaver.hpp:
+	* src/serverparam.h:
+	- fixed latent problems in the factory library.
+	- cleaned up.
+
 	* src/field.cpp:
 	* src/field.h:
 	* src/main.cpp:

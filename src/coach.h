@@ -26,6 +26,8 @@
 #include "field.h"
 #include "remoteclient.h"
 
+class Team;
+
 namespace rcss {
 class InitObserverOfflineCoach;
 class InitObserverOnlineCoach;
@@ -55,8 +57,14 @@ protected:
     bool M_hear;
     double M_version;
 
-    Side M_side;
     bool M_done_received; //pfr:SYNCH
+
+private:
+
+    // not used
+    Coach();
+    Coach( const Coach & );
+    Coach & operator=( const Coach & );
 
 public:
 
@@ -84,6 +92,11 @@ public:
     virtual
     void parse_command( const char *command );
 
+    virtual
+    Side side() const
+      {
+          return NEUTRAL;
+      }
 
     bool assigned() const
       {
@@ -103,11 +116,6 @@ public:
     double & version() const
       {
           return M_version;
-      }
-
-    Side side() const
-      {
-          return M_side;
       }
 
     bool doneReceived() const
@@ -148,8 +156,6 @@ protected:
 
 };
 
-class XPMHolder;
-
 /*!
   \class OnlineCoach
   \brief online coach class
@@ -157,9 +163,11 @@ class XPMHolder;
 class OnlineCoach
     :	public Coach {
 private:
+
     rcss::InitObserverOnlineCoach * M_init_observer_olcoach;
 
-    char M_message_buf[MaxMesg];
+    Team & M_team;
+    Side M_side;
 
     int M_freeform_messages_said;
     int M_freeform_messages_allowed;
@@ -175,20 +183,20 @@ private:
 
     int M_msg_left_update_time;
 
-    const rcss::SerializerOnlineCoach* M_serializer;
-
     std::string M_coach_name;
+
+    // not used
+    OnlineCoach();
+    OnlineCoach( const OnlineCoach & );
+    OnlineCoach & operator=( const OnlineCoach & );
 
 public:
 
-    OnlineCoach( Stadium & stadium );
+    OnlineCoach( Stadium & stadium,
+                 Team & team );
     ~OnlineCoach();
 
     void disable();
-    void setSide( Side side )
-      {
-          M_side = side;
-      }
 
     virtual
     bool setSenders( const double & client_version );
@@ -206,13 +214,17 @@ public:
     virtual
     void parse_command( const char * command );
 
+    virtual
+    Side side() const
+      {
+          return M_side;
+      }
 
     void setName( const std::string & name )
       {
           M_coach_name = name;
       }
-    const
-    std::string & name() const
+    const std::string & name() const
       {
           return M_coach_name;
       }
@@ -242,20 +254,6 @@ public:
 
     void sendPlayerClangVer();
     void sendPlayerClangVer( const Player & player );
-
-private:
-
-    const
-    rcss::SerializerOnlineCoach & setSerializer( const rcss::SerializerOnlineCoach & ser )
-      {
-          return *(M_serializer = &ser);
-      }
-
-    const
-    rcss::SerializerOnlineCoach & getSerializer() const
-      {
-          return *M_serializer;
-      }
 
 };
 

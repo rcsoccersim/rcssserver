@@ -21,7 +21,7 @@
 
 #ifndef RCSSFACTORY_H
 #define RCSSFACTORY_H
-
+#include <typeinfo>
 #include <map>
 #include <list>
 #include <stack>
@@ -32,16 +32,17 @@
 namespace rcss {
 
 template< typename X >
-class less {
+class Less {
 public:
-    bool operator()( X a, X b ) const
+    bool operator()( const X & a,
+                     const X & b ) const
       {
           return a < b;
       }
 };
 
 template<>
-class less< const char * > {
+class Less< const char * > {
 public:
     bool operator()( const char * a,
                      const char * b ) const
@@ -51,7 +52,7 @@ public:
 };
 
 template<>
-class less< char * > {
+class Less< char * > {
 public:
     bool operator()( char * a,
                      char * b ) const
@@ -127,7 +128,7 @@ private:
 
 private:
     Factory & M_fact;
-    const Index & M_idx;
+    const Index M_idx;
 };
 
 
@@ -143,7 +144,7 @@ private:
 
 template< class Cre,
           class I = const char*,
-          class Com = less< I > >
+          class Com = Less< I > >
 class Factory {
 public:
     typedef Cre Creator;
@@ -170,7 +171,7 @@ public:
           typename Map::iterator i = M_creators.find( idx );
           if ( i != M_creators.end() )
           {
-              if ( !i->second.empty() )
+              if ( ! i->second.empty() )
               {
                   i->second.pop();
               }
@@ -195,10 +196,10 @@ public:
           return false;
       }
 
-    std::list< Index > list()
+    std::list< Index > list() const
       {
           std::list< Index > rval;
-          for ( typename Map::iterator i = M_creators.begin();
+          for ( typename Map::const_iterator i = M_creators.begin();
                 i != M_creators.end();
                 ++i )
           {
@@ -207,9 +208,9 @@ public:
           return rval;
       }
 
-    std::ostream & printList( std::ostream & o = std::cout )
+    std::ostream & printList( std::ostream & o = std::cout ) const
       {
-          for ( typename Map::iterator i = M_creators.begin();
+          for ( typename Map::const_iterator i = M_creators.begin();
                 i != M_creators.end();
                 ++i )
           {

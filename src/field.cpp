@@ -599,6 +599,15 @@ Stadium::killTeams()
     }
 }
 
+void
+Stadium::removeListener( const rcss::Listener * listener )
+{
+    M_listeners.erase( std::remove( M_listeners.begin(),
+                                    M_listeners.end(),
+                                    listener ),
+                       M_listeners.end() );
+}
+
 const
 HeteroPlayer *
 Stadium::playerType( int id ) const
@@ -654,10 +663,10 @@ Stadium::createObjects()
 
     M_coach = new Coach( *this );
 
-    M_olcoaches[0] = new OnlineCoach( *this );
+    M_olcoaches[0] = new OnlineCoach( *this, *M_team_l );
     M_team_l->assignCoach( M_olcoaches[0] );
 
-    M_olcoaches[1] = new OnlineCoach( *this );
+    M_olcoaches[1] = new OnlineCoach( *this, *M_team_r );
     M_team_r->assignCoach( M_olcoaches[1] );
 }
 
@@ -826,13 +835,11 @@ Stadium::initOnlineCoach( const char * teamname,
          && M_team_l->name() == teamname )
     {
         olc = M_team_l->olcoach();
-        olc->setSide( LEFT );
     }
     else if ( ! M_team_r->name().empty()
               && M_team_r->name() == teamname )
     {
         olc = M_team_r->olcoach();
-        olc->setSide( RIGHT );
     }
     else
     {
@@ -1913,23 +1920,6 @@ Stadium::ballCaught( const Player & catcher )
          || playmode() == PM_FreeKick_Right )
     {
         M_ball_catcher = &catcher;
-    }
-}
-
-void
-Stadium::addTeamGraphic( const Side side,
-                         const unsigned int x,
-                         const unsigned int y,
-                         std::auto_ptr< XPMHolder > holder )
-{
-    if ( side == LEFT )
-    {
-        M_team_l->addTeamGraphic( x, y, holder );
-    }
-
-    if ( side == RIGHT )
-    {
-        M_team_r->addTeamGraphic( x, y, holder );
     }
 }
 
