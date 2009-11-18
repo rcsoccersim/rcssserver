@@ -19,7 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "clangfreeformmsg.h"
+
 #include "types.h"
 
 namespace rcss {

@@ -1,5 +1,92 @@
 2009-11-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/stadium.cpp:
+	* src/stadium.h:
+	* src/weather.cpp:
+	* src/weather.h:
+	* src/timer.cpp:
+	* src/visual.cpp:
+	* src/Makefile.am:
+	* src/arithop.cpp:
+	* src/audio.cpp:
+	* src/bodysender.cpp:
+	* src/clangaction.cpp:
+	* src/clangadvicemsg.cpp:
+	* src/clangdefmsg.cpp:
+	* src/clangdelmsg.cpp:
+	* src/clangfreeformmsg.cpp:
+	* src/clanginfomsg.cpp:
+	* src/clangmetamsg.cpp:
+	* src/clangmsg.cpp:
+	* src/clangmsgbuilder.cpp:
+	* src/clangparser.cpp:
+	* src/clangrulemsg.cpp:
+	* src/clangunsuppmsg.cpp:
+	* src/clangutil.cpp:
+	* src/client.cpp:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/compop.cpp:
+	* src/cond.cpp:
+	* src/csvsaver.cpp:
+	* src/dispsender.cpp:
+	* src/field.cpp:
+	* src/field.h:
+	* src/fullstatesender.cpp:
+	* src/heteroplayer.cpp:
+	* src/initsender.cpp:
+	* src/initsendercoach.cpp:
+	* src/initsenderlogger.cpp:
+	* src/initsendermonitor.cpp:
+	* src/initsenderonlinecoach.cpp:
+	* src/initsenderplayer.cpp:
+	* src/landmarkreader.cpp:
+	* src/logger.cpp:
+	* src/main.cpp:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	* src/object.cpp:
+	* src/player.cpp:
+	* src/playerparam.cpp:
+	* src/referee.cpp:
+	* src/region.cpp:
+	* src/remoteclient.cpp:
+	* src/resultsaver.cpp:
+	* src/rule.cpp:
+	* src/serializer.cpp:
+	* src/serializercoachstdv1.cpp:
+	* src/serializercoachstdv13.cpp:
+	* src/serializercoachstdv14.cpp:
+	* src/serializercoachstdv7.cpp:
+	* src/serializercoachstdv8.cpp:
+	* src/serializercommonstdv1.cpp:
+	* src/serializercommonstdv7.cpp:
+	* src/serializercommonstdv8.cpp:
+	* src/serializeronlinecoachstdv1.cpp:
+	* src/serializeronlinecoachstdv13.cpp:
+	* src/serializeronlinecoachstdv14.cpp:
+	* src/serializeronlinecoachstdv6.cpp:
+	* src/serializeronlinecoachstdv7.cpp:
+	* src/serializeronlinecoachstdv8.cpp:
+	* src/serializerplayerstdv1.cpp:
+	* src/serializerplayerstdv13.cpp:
+	* src/serializerplayerstdv14.cpp:
+	* src/serializerplayerstdv7.cpp:
+	* src/serializerplayerstdv8.cpp:
+	* src/stdtimer.cpp:
+	* src/synctimer.cpp:
+	* src/team.cpp:
+	* src/timer.h:
+	* src/utility.cpp:
+	* src/visualsendercoach.cpp:
+	* src/visualsenderplayer.cpp:
+	* src/xmlreader.cpp:
+	* src/xmlreader.h:
+	* src/xpmholder.cpp:
+	- separated Weather class and Stadium class to another source
+	files.
+	- cleaned up.
+
 	* rcssbase/factory.hpp:
 	* src/coach.cpp:
 	* src/coach.h:

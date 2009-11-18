@@ -19,10 +19,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef RCSSSERVER_TIMER_H
+#define RCSSSERVER_TIMER_H
 
-#include "timeable.h"
+class Timeable;
 
 /** The timer class is an abstract class that has a reference to a timeable
     class. Specific timers can be derived from this class which has to implement

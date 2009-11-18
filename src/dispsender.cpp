@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "dispsender.h"
@@ -29,7 +29,7 @@
 #include "serializermonitor.h"
 #include "team.h"
 #include "player.h"
-#include "field.h"
+#include "stadium.h"
 #include "types.h"
 #include "xpmholder.h"
 

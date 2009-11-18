@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "initsenderonlinecoach.h"
@@ -28,7 +28,7 @@
 #include "serializer.h"
 #include "coach.h"
 #include "player.h"
-#include "field.h"
+#include "stadium.h"
 
 namespace rcss {
 

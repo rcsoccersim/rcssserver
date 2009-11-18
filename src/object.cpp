@@ -36,13 +36,12 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "object.h"
 
-//#include "audio.h"
-#include "field.h"
+#include "stadium.h"
 #include "param.h"
 #include "player.h"
 #include "random.h"
@@ -472,24 +471,17 @@ MPObject::wind()
 {
     const Weather & w = M_stadium.weather();
 
-    //if ( ! M_weather
-    //|| M_weather->wind_rand < EPS )
-    if ( w.wind_rand < EPS )
+    if ( w.windRand() < EPS )
     {
         return PVector( 0.0, 0.0 );
     }
 
-    //     return PVector( M_vel.r() * ( M_weather->wind_vector.x +
-    //                                   drand( - M_weather->wind_rand, M_weather->wind_rand) ) /
-    //                     (M_weight * WIND_WEIGHT), M_vel.r() * ( M_weather->wind_vector.y +
-    //                                                             drand( - M_weather->wind_rand, M_weather->wind_rand ) ) /
-    //                     (M_weight * WIND_WEIGHT));
     const double speed = M_vel.r();
-    return PVector( speed * ( w.wind_vector.x +
-                              drand( - w.wind_rand, + w.wind_rand) ) /
+    return PVector( speed * ( w.windVector().x +
+                              drand( - w.windRand(), + w.windRand() ) ) /
                     ( M_weight * ServerParam::instance().windWeight() ),
-                    speed * ( w.wind_vector.y +
-                              drand( - w.wind_rand, + w.wind_rand ) ) /
+                    speed * ( w.windVector().y +
+                              drand( - w.windRand(), + w.windRand() ) ) /
                     ( M_weight * ServerParam::instance().windWeight() ));
 }
 

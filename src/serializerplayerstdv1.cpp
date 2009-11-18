@@ -19,7 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "serializerplayerstdv1.h"
+
 #include "param.h"
 #include "clangmsg.h"
 

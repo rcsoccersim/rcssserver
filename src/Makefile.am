@@ -134,14 +134,15 @@ rcssserver_SOURCES = \
 	serializerplayerstdv13.cpp \
 	serializerplayerstdv14.cpp \
 	serverparam.cpp \
+	stadium.cpp \
 	stdoutsaver.cpp \
 	stdtimer.cpp \
 	synctimer.cpp \
 	team.cpp \
-	timer.cpp \
 	utility.cpp \
 	visualsendercoach.cpp \
 	visualsenderplayer.cpp \
+	weather.cpp \
 	xmlreader.cpp \
 	xpmholder.cpp
 
@@ -204,6 +205,7 @@ noinst_HEADERS = \
 	serializerplayerstdv14.h \
 	serializermonitor.h \
 	serverparam.h \
+	stadium.h \
 	stdoutsaver.h \
 	stdtimer.h \
 	synctimer.h \
@@ -216,6 +218,7 @@ noinst_HEADERS = \
 	visual.h \
 	visualsendercoach.h \
 	visualsenderplayer.h \
+	weather.h \
 	xmlreader.h \
 	xpmholder.h
 

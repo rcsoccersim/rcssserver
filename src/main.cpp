@@ -22,18 +22,15 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
-
-#include <iostream>
-#include <cmath>
 
 #include "param.h"
 #include "types.h"
 #include "utility.h"
 #include "object.h"
 #include "player.h"
-#include "field.h"
+#include "stadium.h"
 #include "serverparam.h"
 #include "version.h"
 
@@ -42,9 +39,9 @@
 #include "synctimer.h"
 
 #include <boost/shared_ptr.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 
+#include <iostream>
+#include <cmath>
 #include <csignal>
 #include <cerrno>
 

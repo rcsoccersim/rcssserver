@@ -1,7 +1,7 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                 arithop.cc
+                                 arithop.cpp
                   Flyweight classes representing comparison operators
                              -------------------
     begin                : 22-MAR-2002
@@ -19,8 +19,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "arithop.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
+#include "arithop.h"
 
 namespace rcss {
 namespace util {

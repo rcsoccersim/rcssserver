@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "landmarkreader.h"
@@ -35,127 +35,85 @@ const LandmarkReader::flag_t LandmarkReader::DEF_FLAG( 0.0, 0.0, "", 8.0 );
 const LandmarkReader::rect_t LandmarkReader::DEF_PITCH = { -52.5, -34.0, 52.5, 34.0 };
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_C( 0.0, 0.0, "c", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_C_T( 0.0, -100.0, "c t", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_C_B( 0.0, 100.0, "c b", 3.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_T( 100.0, -100.0, "r t", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_B( 100.0, 100.0, "r b", 3.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_T( -100.0, -100.0, "l t", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_B( -100.0, 100.0, "l b", 3.0 );
 
 const LandmarkReader::goal_mouth_t LandmarkReader::GOAL_MOUTH_R = { 'r', -7.01, 7.01 };
-
 const LandmarkReader::goal_mouth_t LandmarkReader::GOAL_MOUTH_L = { 'l', -7.01, 7.01 };
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_G_R_B( 0.0, 100.0, "g r b", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::GOAL_R( 0.0, 0.0, "r", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_G_R_T( 0.0, -100.0, "g r t", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_G_L_B( 0.0, 100.0, "g l b", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::GOAL_L( 0.0, 0.0, "l", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_G_L_T( 0.0, -100.0, "g l t", 3.0 );
 
 const LandmarkReader::rect_t LandmarkReader::PEN_R = { 36.0, -20.16, 100, 20.16 };
 // NOTE: the default endx for PEN_R is a % and the others are absoulute
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_P_R_B( -100.0, 100.0, "p r b", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_P_R_C( -100.0, 0.0, "p r c", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_P_R_T( -100.0, -100.0, "p r t", 3.0 );
 
 const LandmarkReader::rect_t LandmarkReader::PEN_L = { -36.0, -20.16, -100, 20.16 };
 // NOTE: the default endx for PEN_L is a % and the others are absoulute
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_P_L_B( -100.0, 100.0, "p l b", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_P_L_C( -100.0, 0.0, "p l c", 3.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_P_L_T( -100.0, -100.0, "p l t", 3.0 );
-
 const LandmarkReader::rect_t LandmarkReader::OUTER_PITCH = { -57.5, -39.0, 57.5, 39.0 };
 
 // NOTE:  The top and bottom outer pitch flags have a abs x and a % y
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_0( 0.0, -100.0, "t 0", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_R_10( 10.0, -100.0, "t r 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_R_20( 20.0, -100.0, "t r 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_R_30( 30.0, -100.0, "t r 30", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_R_40( 40.0, -100.0, "t r 40", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_R_50( 50.0, -100.0, "t r 50", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_L_10( -10.0, -100.0, "t l 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_L_20( -20.0, -100.0, "t l 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_L_30( -30.0, -100.0, "t l 30", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_L_40( -40.0, -100.0, "t l 40", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_T_L_50( -50.0, -100.0, "t l 50", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_0( 0.0, 100.0, "b 0", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_R_10( 10.0, 100.0, "b r 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_R_20( 20.0, 100.0, "b r 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_R_30( 30.0, 100.0, "b r 30", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_R_40( 40.0, 100.0, "b r 40", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_R_50( 50.0, 100.0, "b r 50", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_L_10( -10.0, 100.0, "b l 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_L_20( -20.0, 100.0, "b l 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_L_30( -30.0, 100.0, "b l 30", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_L_40( -40.0, 100.0, "b l 40", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_B_L_50( -50.0, 100.0, "b l 50", 4.0 );
 
 // NOTE:  The left and right outer pitch flags have a % x and a abs y
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_0( 100.0, 0.0, "r 0", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_T_10( 100.0, -10.0, "r t 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_T_20( 100.0, -20.0, "r t 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_T_30( 100.0, -30.0, "r t 30", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_B_10( 100.0, 10.0, "r b 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_B_20( 100.0, 20.0, "r b 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_R_B_30( 100.0, 30.0, "r b 30", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_0( -100.0, 0.0, "l 0", 4.0 );
 
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_T_10( -100.0, -10.0, "l t 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_T_20( -100.0, -20.0, "l t 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_T_30( -100.0, -30.0, "l t 30", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_B_10( -100.0, 10.0, "l b 10", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_B_20( -100.0, 20.0, "l b 20", 4.0 );
-
 const LandmarkReader::flag_t LandmarkReader::FLAG_L_B_30( -100.0, 30.0, "l b 30", 4.0 );
 
 LandmarkReader::LandmarkReader( Field & field,
@@ -755,8 +713,9 @@ LandmarkReader::loadDefaults()
 }
 
 
-void  LandmarkReader::addFlag( const LandmarkReader::flag_t & flag,
-                               const bool goal )
+void
+LandmarkReader::addFlag( const LandmarkReader::flag_t & flag,
+                         const bool goal )
 {
     // add goal to stadium
     std::string sname;

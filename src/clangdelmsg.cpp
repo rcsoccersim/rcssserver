@@ -19,7 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "clangdelmsg.h"
+
 #include "rule.h"
 #include "types.h"
 

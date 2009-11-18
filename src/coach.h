@@ -23,7 +23,7 @@
 #define RCSSSERVER_COACH_H
 
 #include "audio.h"
-#include "field.h"
+#include "stadium.h"
 #include "remoteclient.h"
 
 class Team;

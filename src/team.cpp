@@ -20,12 +20,12 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "team.h"
 
-#include "field.h"
+#include "stadium.h"
 #include "param.h"
 #include "player.h"
 #include "playerparam.h"

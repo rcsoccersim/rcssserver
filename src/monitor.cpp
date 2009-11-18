@@ -30,7 +30,7 @@
 #include "initsendermonitor.h"
 #include "serializermonitor.h"
 
-#include "field.h"
+#include "stadium.h"
 #include "player.h"
 #include "team.h"
 #include "types.h"

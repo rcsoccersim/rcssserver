@@ -25,6 +25,7 @@
 
 #include "stdtimer.h"
 
+#include "timeable.h"
 #include "param.h"          // needed for TIMEDELTA
 #include "serverparam.h"    // needed for ServerParam
 

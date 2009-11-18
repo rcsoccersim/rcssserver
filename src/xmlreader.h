@@ -34,104 +34,57 @@
 #define XMLREADER_H
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #ifdef HAVE_LIBEXPAT
 
-
-#include <cstdlib>
-#include <fstream>
 #include <string>
-#include <cmath>
-#include <expat.h>
-#include "utility.h"
 #include <iostream>
 
-class XmlReader
-{
+#include <expat.h>
+
+class XmlReader {
 public:
-  XmlReader();
-  virtual ~XmlReader();
+    XmlReader();
+    virtual ~XmlReader();
 
-  friend void
-  _XML_READER_start ( void *data, const char *el, const char **attr );
-  friend void
-  _XML_READER_end ( void *data, const char *el );
+    friend void
+    _XML_READER_start ( void * data, const char * el, const char ** attr );
+    friend void
+    _XML_READER_end ( void * data, const char * el );
 
-  friend ostream& operator<< ( ostream& o, const XmlReader& xml )
-  {
-    return xml.print ( o );
-  }
-
-  virtual ostream& print ( ostream& o ) const = 0;
+    virtual
+    std::ostream & print( std::ostream & o ) const = 0;
 
 protected:
-  string path;
+    std::string path;
 
-  XML_Parser parser;
-  long line;
+    XML_Parser parser;
+    long line;
 
-  bool readXml ( const string& path_name );
+    bool readXml( const std::string & path_name );
 
-  virtual void start ( const char *el, const char **attr ) = 0;
-  virtual void end ( const char *el ) = 0;
+    virtual
+    void start( const char * el,
+                const char ** attr ) = 0;
+    virtual
+    void end( const char * el ) = 0;
 
-  bool createFile ( const string& path );
+    bool createFile( const std::string & path );
 
-  bool
-  extract ( const string& attr,
-	    const string& val,
-	    double& dest,
-	    double start = 0.0, double end = 100.0 )
-  {
-    istrstream str ( val.c_str (), val.length () );
-    str >> dest;
-    if ( !str.fail () && str.get () == '%' )
-      {
-        dest *= 0.01;
-        dest = ( start * ( 1 - dest )
-                 + end * ( 1 + dest ) ) * 0.5;
-      }
-    if ( str.fail () || str.peek () > 0 )
-      {
-        // error
-        cerr << path << ": " << line
-             << ": Cannot convert " << attr
-             << " attribute from " << val << endl;
-        return false;
-      }
-    return true;
-  }
+    bool extract( const std::string & attr,
+                  const std::string & val,
+                  double & dest,
+                  double start = 0.0,
+                  double end = 100.0 );
+    bool extract( const std::string & attr,
+                  const std::string & val,
+                  std::string & dest );
+    bool extract ( const std::string & attr,
+                   const std::string & val,
+                   char & dest );
 
-  bool extract ( const string& attr, const string& val, string& dest )
-  {
-    if ( val.length () == 0 )
-      {
-        // error
-        cerr << path << ": " << line
-             << ": Cannot convert " << attr
-             << " attribute from \"\"" << endl;
-        return false;
-      }
-    dest = val;
-    return true;
-  }
-
-  bool extract ( const string& attr, const string& val, char& dest )
-  {
-    if ( val.length () == 0 )
-      {
-        // error
-        cerr << path << ": " << line
-             << ": Cannot convert " << attr
-             << " attribute from \"\"" << endl;
-        return false;
-      }
-
-    dest = val [ 0 ];
-    return true;
-  }
 };
 
 #endif // HAVE_LIBEXPAT

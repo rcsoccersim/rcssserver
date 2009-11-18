@@ -19,13 +19,19 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "synctimer.h"
+
+#include "timeable.h"
 #include "serverparam.h"    // needed for ServerParam
 
 void
 SyncTimer::run()
 {
-    bool             shutdown = false;
+    bool shutdown = false;
 
     // for explanation different counters, see StandardTimer::run
     // big difference is that the loop is not started when a new signal comes,

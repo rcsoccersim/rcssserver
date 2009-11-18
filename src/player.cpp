@@ -26,7 +26,7 @@
 #include "player.h"
 
 #include "coach.h"
-#include "field.h"
+#include "stadium.h"
 #include "team.h"
 #include "types.h"
 #include "random.h"

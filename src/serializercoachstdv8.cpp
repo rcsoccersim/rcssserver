@@ -19,7 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "serializercoachstdv8.h"
+
 #include "clangmsg.h"
 #include "object.h"
 #include "player.h"

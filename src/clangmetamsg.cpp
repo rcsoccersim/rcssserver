@@ -19,8 +19,14 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "clangmetamsg.h"
+
 #include "types.h"
+
 #include <iostream>
 #include <string>
 

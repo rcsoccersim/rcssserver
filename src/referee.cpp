@@ -25,7 +25,7 @@
 
 #include "referee.h"
 
-#include "field.h"
+#include "stadium.h"
 #include "player.h"
 #include "team.h"
 #include "random.h"

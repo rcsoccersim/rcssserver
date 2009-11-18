@@ -20,12 +20,12 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "bodysender.h"
 
-#include "field.h"
+#include "stadium.h"
 #include "player.h"
 #include "serializer.h"
 

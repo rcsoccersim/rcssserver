@@ -19,6 +19,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "serializeronlinecoachstdv14.h"
 
 namespace rcss {

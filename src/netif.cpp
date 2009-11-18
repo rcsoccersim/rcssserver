@@ -42,10 +42,10 @@
 //
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
-#include "field.h"
+#include "stadium.h"
 
 #include "param.h"
 #include "types.h"

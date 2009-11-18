@@ -19,7 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "serializercommonstdv7.h"
+
 #include "clangmsg.h"
 
 namespace rcss {

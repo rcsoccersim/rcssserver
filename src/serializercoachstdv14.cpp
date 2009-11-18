@@ -19,6 +19,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "serializercoachstdv14.h"
 
 #include "player.h"

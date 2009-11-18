@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "coach.h"
@@ -29,7 +29,7 @@
 #include "clangparser.h"
 #include "clangmsg.h"
 #include "clangmsgbuilder.h"
-#include "field.h"
+#include "stadium.h"
 #include "object.h"
 #include "player.h"
 #include "serializer.h"

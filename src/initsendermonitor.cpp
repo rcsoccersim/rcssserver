@@ -26,7 +26,7 @@
 #include "initsendermonitor.h"
 
 #include "monitor.h"
-#include "field.h"
+#include "stadium.h"
 #include "heteroplayer.h"
 #include "team.h"
 #include "serializermonitor.h"

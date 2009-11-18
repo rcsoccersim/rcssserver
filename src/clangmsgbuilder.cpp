@@ -19,7 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "clangmsgbuilder.h"
+
 #include "region.h"
 #include "clangmsg.h"
 #include "clangmetamsg.h"

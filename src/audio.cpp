@@ -20,7 +20,7 @@
  ***************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 
 #include "audio.h"
@@ -30,7 +30,7 @@
 #include "clangmsg.h"
 #include "clangunsuppmsg.h"
 #include "coach.h"
-#include "field.h"
+#include "stadium.h"
 #include "player.h"
 #include "random.h"
 #include "utility.h"

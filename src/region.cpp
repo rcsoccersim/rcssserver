@@ -28,6 +28,10 @@
 
 /* This files defines a class region to specify regions for the coach messages */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "region.h"
 
 #include <iostream>
