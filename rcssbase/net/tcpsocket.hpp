@@ -23,7 +23,7 @@
 #define RCSS_NET_TCPSOCKET_HPP
 
 
-#include "socket.hpp"
+#include <rcssbase/net/socket.hpp>
 
 namespace rcss {
 namespace net {
@@ -45,7 +45,8 @@ public:
 
     bool listen( int backlog );
 
-private:
+protected:
+    virtual
     bool doOpen( SocketDesc& fd );
 };
 

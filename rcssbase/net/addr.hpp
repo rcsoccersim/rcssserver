@@ -21,11 +21,12 @@
 #ifndef RCSS_NET_ADDR_HPP
 #define RCSS_NET_ADDR_HPP
 
-struct sockaddr_in;
-
-#include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>
+
+#include <string>
+
+struct sockaddr_in;
 
 namespace rcss {
 namespace net {

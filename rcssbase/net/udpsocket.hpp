@@ -22,8 +22,7 @@
 #ifndef RCSS_NET_UDPSOCKET_HPP
 #define RCSS_NET_UDPSOCKET_HPP
 
-
-#include "socket.hpp"
+#include <rcssbase/net/socket.hpp>
 
 namespace rcss {
 namespace net {
@@ -41,7 +40,8 @@ public:
     UDPSocket( const Addr & addr,
                const Addr & dest );
 
-private:
+protected:
+    virtual
     bool doOpen( SocketDesc & fd );
 };
 

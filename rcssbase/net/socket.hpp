@@ -21,14 +21,9 @@
 #ifndef RCSS_NET_SOCKET_HPP
 #define RCSS_NET_SOCKET_HPP
 
-
-#include "addr.hpp"
-
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-
 #include <boost/shared_ptr.hpp>
+
+#include <rcssbase/net/addr.hpp>
 
 namespace rcss {
 namespace net {
@@ -124,7 +119,7 @@ public:
               size_t len,
               int flags = 0 );
 
-private:
+protected:
     virtual
     bool doOpen( SocketDesc& fd ) = 0;
 

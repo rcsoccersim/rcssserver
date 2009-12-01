@@ -21,7 +21,7 @@
 #ifndef RCSS_NET_OSOCKETSTREAM_HPP
 #define RCSS_NET_OSOCKETSTREAM_HPP
 
-#include "socketstreambuf.hpp"
+#include <rcssbase/net/socketstreambuf.hpp>
 
 namespace rcss {
 namespace net {
@@ -36,13 +36,13 @@ public:
                    int buffer_size = 8192 )
         : SocketStreamBuf( socket, dest, NO_CONN, buffer_size ),
           std::ostream( this )
-      {}
+      { }
 
     OSocketStream( Socket & socket,
                    int buffer_size = 8192 )
         : SocketStreamBuf( socket, NO_CONN, buffer_size ),
           std::ostream( this )
-      {}
+      { }
 
 private:
     // not for use

@@ -1,5 +1,17 @@
 2009-12-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* rcssbase/net/socketstreambuf.cpp:
+	* rcssbase/net/Makefile.am:
+	* rcssbase/net/addr.hpp:
+	* rcssbase/net/iosocketstream.hpp:
+	* rcssbase/net/isocketstream.hpp:
+	* rcssbase/net/osocketstream.hpp:
+	* rcssbase/net/socket.hpp:
+	* rcssbase/net/socketstreambuf.hpp:
+	* rcssbase/net/tcpsocket.hpp:
+	* rcssbase/net/udpsocket.hpp:
+	- separated the implementation of SocketStreamBuf.
+
 	* rcssbase/net/socketstreambuf.hpp:
 	- fixed a compilation problem on gcc-4.4.1. Thanks go to Ke Shi
 	for reporting the problem.

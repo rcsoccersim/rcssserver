@@ -4,6 +4,7 @@ lib_LTLIBRARIES = librcssnet.la
 librcssnet_la_SOURCES = \
 	addr.cpp \
 	socket.cpp \
+	socketstreambuf.cpp \
 	udpsocket.cpp \
 	tcpsocket.cpp
 

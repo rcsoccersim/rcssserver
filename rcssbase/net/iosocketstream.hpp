@@ -21,9 +21,9 @@
 #ifndef RCSS_NET_IOSOCKETSTREAM_HPP
 #define RCSS_NET_IOSOCKETSTREAM_HPP
 
-#include "socketstreambuf.hpp"
-#include "isocketstream.hpp"
-#include "osocketstream.hpp"
+#include <rcssbase/net/socketstreambuf.hpp>
+#include <rcssbase/net/isocketstream.hpp>
+#include <rcssbase/net/osocketstream.hpp>
 
 namespace rcss {
 namespace net {
