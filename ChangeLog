@@ -1,3 +1,9 @@
+2009-12-01  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* rcssbase/net/socketstreambuf.hpp:
+	- fixed a compilation problem on gcc-4.4.1. Thanks go to Ke Shi
+	for reporting the problem.
+
 2009-11-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
