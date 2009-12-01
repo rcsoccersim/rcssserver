@@ -1278,8 +1278,8 @@ Player::goalieCatch( double dir )
         if ( min_catchable.inArea( rotated_pos ) )
         {
             success = ( drand( 0, 1 ) <= SP.catchProb() );
-            std::cerr << M_stadium.time()
-                      << ": goalieCatch min_catchable ok" << std::endl;
+            //std::cerr << M_stadium.time()
+            //          << ": goalieCatch min_catchable ok" << std::endl;
         }
         else if ( ! max_catchable.inArea( rotated_pos ) )
         {

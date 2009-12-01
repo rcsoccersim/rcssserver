@@ -27,6 +27,7 @@
 //g++ 2.95.6 doesn't have the streambuf header, so iostream is used instead
 //#include <streambuf>
 #include <iostream>
+#include <cstdio>
 
 namespace rcss {
 namespace net {
