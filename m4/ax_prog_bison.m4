@@ -1,14 +1,14 @@
 # ===========================================================================
-#          http://www.nongnu.org/autoconf-archive/ax_prog_flex.html
+#          http://www.nongnu.org/autoconf-archive/ax_prog_bison.html
 # ===========================================================================
 #
 # SYNOPSIS
 #
-#   AX_PROG_FLEX(ACTION-IF-TRUE,ACTION-IF-FALSE)
+#   AX_PROG_BISON(ACTION-IF-TRUE,ACTION-IF-FALSE)
 #
 # DESCRIPTION
 #
-#   Check whether flex is the scanner generator. Run ACTION-IF-TRUE if
+#   Check whether bison is the parser generator. Run ACTION-IF-TRUE if
 #   successful, ACTION-IF-FALSE otherwise
 #
 # LICENSE
@@ -41,18 +41,18 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-AC_DEFUN([AX_PROG_FLEX], [
-  AC_REQUIRE([AM_PROG_LEX])
+AC_DEFUN([AX_PROG_BISON], [
+  AC_REQUIRE([AC_PROG_YACC])
   AC_REQUIRE([AC_PROG_SED])
 
-  AC_CACHE_CHECK([if flex is the lexer generator],[ax_cv_prog_flex],[
-    AS_IF([test "`echo \"$LEX\" | $SED 's,^.*\(flex\).*$,\1,'`" = "flex"],[
-      ax_cv_prog_flex=yes
+  AC_CACHE_CHECK([if bison is the parser generator],[ax_cv_prog_bison],[
+    AS_IF([test "`echo \"$YACC\" | $SED 's,^.*\(bison\).*$,\1,'`" = "bison" ],[
+      ax_cv_prog_bison=yes
     ],[
-      ax_cv_prog_flex=no
+      ax_cv_prog_bison=no
     ])
   ])
-  AS_IF([test "$ax_cv_prog_flex" = yes],[
+  AS_IF([test "$ax_cv_prog_bison" = yes],[
     :
     $1
   ],[

@@ -145,7 +145,10 @@ fi
 # check bison
 ##################################################
 
-AC_PROG_YACC
+#AC_PROG_YACC
+AX_PROG_BISON([],
+              [AC_MSG_ERROR([
+     \`bison' is missing on your system.  Please install it first.]);])
 
 ##################################################
 # libtool settings

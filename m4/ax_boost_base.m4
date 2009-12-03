@@ -1,5 +1,5 @@
 # ===========================================================================
-#             http://autoconf-archive.cryp.to/ax_boost_base.html
+#          http://www.nongnu.org/autoconf-archive/ax_boost_base.html
 # ===========================================================================
 #
 # SYNOPSIS
@@ -23,11 +23,7 @@
 #
 #     HAVE_BOOST
 #
-# LAST MODIFICATION
-#
-#   2008-04-12
-#
-# COPYLEFT
+# LICENSE
 #
 #   Copyright (c) 2008 Thomas Porschberg <thomas@randspringer.de>
 #
