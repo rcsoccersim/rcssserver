@@ -236,8 +236,6 @@ Team::assignPlayerTypes()
                 continue;
             }
 
-            p->substitute( type );
-
             M_ptype_count[ type ] += 1;
             M_ptype_used_count[ type ] += 1;
 
@@ -250,6 +248,7 @@ Team::assignPlayerTypes()
                           << M_name << " " << p->unum()
                           << ") to type " << type << std::endl;
 
+                p->substitute( type );
                 M_stadium->broadcastSubstitution( M_side, p->unum(), type );
             }
             break;
