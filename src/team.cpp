@@ -244,11 +244,14 @@ Team::assignPlayerTypes()
             M_ptype_count[ old_type ] -= 1;
             M_ptype_used_count[ old_type ] -= 1;
 
-            std::cout << "rcssserver changes (player "
-                      << M_name << " " << p->unum()
-                      << ") to type " << type << std::endl;
+            if ( p->playerTypeId() != type )
+            {
+                std::cout << "rcssserver changes (player "
+                          << M_name << " " << p->unum()
+                          << ") to type " << type << std::endl;
 
-            M_stadium->broadcastSubstitution( M_side, p->unum(), type );
+                M_stadium->broadcastSubstitution( M_side, p->unum(), type );
+            }
             break;
         }
     }
