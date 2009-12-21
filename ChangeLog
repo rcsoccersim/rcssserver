@@ -1,3 +1,9 @@
+2009-12-21  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version number. Official release 14.0.2.
+
 2009-12-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/team.cpp:

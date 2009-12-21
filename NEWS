@@ -1,3 +1,10 @@
+[14.0.2]
+  * Fixed a problem of automatic heterogeneous player assignment. Now,
+    the player type ID of unchanged player is never broadcasted.
+
+  * Fixed a compilation problem on gcc-4.4.1. Thanks go to Ke Shi for
+    reporting the problem.
+
 [14.0.1]
   * Fixed an incorrect catch model implementation. Thanks go to Bruno
     Vinicius for reporting the problem. The following pseudo code
