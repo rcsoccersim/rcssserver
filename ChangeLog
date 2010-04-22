@@ -1,3 +1,10 @@
+2010-04-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/referee.cpp:
+	- fixed a bug of the golden goal option which causes an incorrect
+	overtime game. Thanks go to Thomas Gabel for reporting the
+	problem.
+
 2010-01-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/version.h:

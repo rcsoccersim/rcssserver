@@ -507,7 +507,6 @@ TimeRef::analyse()
         int maximum_time
             = normal_time
             + param.extraHalfTime() * param.nrExtraHalfs();
-        int extra_count = s_half_time_count - param.nrNormalHalfs();
 
         /* check for penalty shoot-outs, half_time and extra_time. */
         if ( M_stadium.time() >= maximum_time )
@@ -527,6 +526,8 @@ TimeRef::analyse()
         // overtime
         else if ( M_stadium.time() >= normal_time )
         {
+            int extra_count = ( s_half_time_count + 1 ) - param.nrNormalHalfs();
+
             if ( ! M_stadium.teamLeft().enabled()
                  || ! M_stadium.teamRight().enabled() )
             {
@@ -534,6 +535,9 @@ TimeRef::analyse()
                 M_stadium.changePlayMode( PM_TimeOver );
                 return;
             }
+            // when golden_goal is on,
+            //    referee always checks the score difference.
+            //    if score is different, the game is finished immediately.
             else if ( param.goldenGoal()
                       && M_stadium.teamLeft().point() != M_stadium.teamRight().point() )
             {
@@ -541,18 +545,30 @@ TimeRef::analyse()
                 M_stadium.changePlayMode( PM_TimeOver );
                 return;
             }
+            // check half time in overtime
             else if ( M_stadium.time() >= ( normal_time
-                                            + ( param.extraHalfTime()
-                                                * ( extra_count + 1 ) ) )
-                      )
+                                            + ( param.extraHalfTime() * extra_count ) ) )
             {
-                ++s_half_time_count;
-                M_stadium.sendRefereeAudio( "time_extended" );
-                Side kick_off_side = ( s_half_time_count % 2 == 0
-                                       ? LEFT
-                                       : RIGHT );
-                M_stadium.callHalfTime( kick_off_side, s_half_time_count );
-                placePlayersInTheirField();
+                // when normal halves have just finished (i.e. extra_count==0),
+                // referee always check the score difference.
+                if ( extra_count == 0
+                     && M_stadium.teamLeft().point() != M_stadium.teamRight().point() )
+                {
+                    M_stadium.sendRefereeAudio( "time_up" );
+                    M_stadium.changePlayMode( PM_TimeOver );
+                }
+                // otherwise, the game is go into the overtime.
+                else
+                {
+                    ++s_half_time_count;
+                    M_stadium.sendRefereeAudio( "time_extended" );
+                    Side kick_off_side = ( s_half_time_count % 2 == 0
+                                           ? LEFT
+                                           : RIGHT );
+                    M_stadium.callHalfTime( kick_off_side, s_half_time_count );
+                    placePlayersInTheirField();
+                }
+
                 return;
             }
         }
