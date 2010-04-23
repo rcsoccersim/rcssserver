@@ -1,3 +1,18 @@
+2010-04-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version number. Official release 14.0.3.
+
+	* configure.ac:
+	* m4/ax_boost_base.m4:
+	* m4/ax_boost_filesystem.m4:
+	* m4/ax_boost_system.m4:
+	* m4/ax_prog_flex.m4:
+	* m4/ax_prog_bison.m4:
+	- updated autoconf macros.
+	- added AX_PROG_BISON for checking bison.
+
 2010-04-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:

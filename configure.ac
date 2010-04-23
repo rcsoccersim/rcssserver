@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([RCSSServer],[14.0.2],[sserver-admin@users.sf.net],[rcssserver])
+AC_INIT([RCSSServer],[14.0.3],[sserver-admin@users.sf.net],[rcssserver])
 
 #LT_PREREQ([2.2.4])
 
@@ -145,7 +145,10 @@ fi
 # check bison
 ##################################################
 
-AC_PROG_YACC
+#AC_PROG_YACC
+AX_PROG_BISON([],
+              [AC_MSG_ERROR([
+     \`bison' is missing on your system.  Please install it first.]);])
 
 ##################################################
 # libtool settings
