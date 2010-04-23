@@ -1,5 +1,5 @@
 # ===========================================================================
-#          http://www.nongnu.org/autoconf-archive/ax_prog_flex.html
+#       http://www.gnu.org/software/autoconf-archive/ax_prog_flex.html
 # ===========================================================================
 #
 # SYNOPSIS
@@ -40,6 +40,8 @@
 #   Macro released by the Autoconf Archive. When you make and distribute a
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
+
+#serial 8
 
 AC_DEFUN([AX_PROG_FLEX], [
   AC_REQUIRE([AM_PROG_LEX])

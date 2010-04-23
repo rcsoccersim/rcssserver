@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([RCSSServer],[14.0.2],[sserver-admin@users.sf.net],[rcssserver])
+AC_INIT([RCSSServer],[14.0.3],[sserver-admin@users.sf.net],[rcssserver])
 
 #LT_PREREQ([2.2.4])
 

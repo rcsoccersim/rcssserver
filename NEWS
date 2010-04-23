@@ -1,3 +1,7 @@
+[14.0.3]
+  * Fixed a bug of the overtime handling when server::golden_goal is
+    false. Thanks go to Thomas Gabel for reporting the problem.
+
 [14.0.2]
   * Fixed a problem of automatic heterogeneous player assignment. Now,
     the player type ID of unchanged player is never broadcasted.
