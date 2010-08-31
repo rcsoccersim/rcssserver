@@ -38,12 +38,19 @@
 #include <cerrno>
 #include <climits>
 
+#include <boost/version.hpp>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/exception.hpp>
-// #define BOOST_SPIRIT_DEBUG
 
-#include <boost/spirit.hpp>
+// #define BOOST_SPIRIT_DEBUG
+#if BOOST_VERSION >= 103800
+#  include <boost/spirit/include/classic.hpp>
+#else
+#  include <boost/spirit.hpp>
+#endif
+
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
@@ -133,14 +140,15 @@ const char * Parser::ErrorStrs[] = { "None",
                                      "value expected",
                                      "string expected" };
 
+namespace sc = BOOST_SPIRIT_CLASSIC_NS;
 
 
 class ParseErrorHandler {
 public:
     static
-    boost::spirit::error_status<> parseError( const Parser * parser,
-                                              const boost::spirit::rule<>::scanner_t & scanner,
-                                              const boost::spirit::parser_error< Parser::Errors > & error )
+    sc::error_status<> parseError( const Parser * parser,
+                                   const sc::rule<>::scanner_t & scanner,
+                                   const sc::parser_error< Parser::Errors > & error )
       {
           std::string what;
           if ( error.where + 10 > scanner.last )
@@ -165,7 +173,7 @@ public:
                                         Parser::ErrorStrs[ error.descriptor ],
                                         parser->m_stack.front().m_name,
                                         parser->m_stack.front().m_lineno );
-          return boost::spirit::error_status<>( boost::spirit::error_status<>::fail );
+          return sc::error_status<>( sc::error_status<>::fail );
       }
 };
 
@@ -542,65 +550,65 @@ Parser::boostParse()
 {
     using namespace rcss::conf;
 
-    boost::spirit::assertion< Errors > expect_assign( ASSIGN_EXPECTED );
-    boost::spirit::assertion< Errors > expect_delim( DELIM_EXPECTED );
-    boost::spirit::assertion< Errors > expect_value( VALUE_EXPECTED );
-    boost::spirit::assertion< Errors > expect_string( STRING_EXPECTED );
-    boost::spirit::guard< Errors > conf_guard;
+    sc::assertion< Errors > expect_assign( ASSIGN_EXPECTED );
+    sc::assertion< Errors > expect_delim( DELIM_EXPECTED );
+    sc::assertion< Errors > expect_value( VALUE_EXPECTED );
+    sc::assertion< Errors > expect_string( STRING_EXPECTED );
+    sc::guard< Errors > conf_guard;
 
     std::istream & in = * m_stack.front().m_strm;
     typedef std::istreambuf_iterator< char > iter_t;
     std::string buffer;
     std::copy( iter_t( in ), iter_t(), std::back_inserter( buffer ) );
 
-    boost::spirit::rule<> ws_p = +boost::spirit::chset_p( " \t\0" );
-    boost::spirit::rule<> newline_p = boost::spirit::eol_p;
-    boost::spirit::rule<> comment_p = (
-                                       boost::spirit::comment_p( "/*", "*/" )
-                                       | boost::spirit::comment_p( "//" )
-                                       | boost::spirit::comment_p( "#" ) );
+    sc::rule<> ws_p = +sc::chset_p( " \t\0" );
+    sc::rule<> newline_p = sc::eol_p;
+    sc::rule<> comment_p = (
+                            sc::comment_p( "/*", "*/" )
+                            | sc::comment_p( "//" )
+                            | sc::comment_p( "#" ) );
 
-    boost::spirit::rule<> junk_p
+    sc::rule<> junk_p
         = ( ws_p
             | comment_p[ boost::bind( &Parser::countNewLines, this, _1, _2 ) ]
             | newline_p[ boost::bind( &Parser::countNewLines, this, _1, _2 ) ]
             );
 
-    boost::spirit::rule<> ignore_p = *junk_p;
+    sc::rule<> ignore_p = *junk_p;
 
-    boost::spirit::rule<> minus_p = boost::spirit::ch_p( '-' );
+    sc::rule<> minus_p = sc::ch_p( '-' );
 
-    boost::spirit::rule<> assign_p = boost::spirit::ch_p( '=' );
+    sc::rule<> assign_p = sc::ch_p( '=' );
 
-    boost::spirit::rule<> simple_str_p
-        = ( +(~boost::spirit::chset_p( ":\"'= \t\n-" ) )
-            >> *(~boost::spirit::chset_p( ":\"'= \t\n" ) )
+    sc::rule<> simple_str_p
+        = ( +(~sc::chset_p( ":\"'= \t\n-" ) )
+            >> *(~sc::chset_p( ":\"'= \t\n" ) )
             );
 
-    boost::spirit::rule<> pqsb_p = ~boost::spirit::ch_p( '"' );
-    boost::spirit::rule<> qsb_p = ( boost::spirit::str_p( "\\\"" )
-                                    | pqsb_p
-                                    );
+    sc::rule<> pqsb_p = ~sc::ch_p( '"' );
+    sc::rule<> qsb_p = ( sc::str_p( "\\\"" )
+                         | pqsb_p
+                         );
 
-    boost::spirit::rule<> qstr_p = '"' >> *qsb_p >> '"';
+    sc::rule<> qstr_p = '"' >> *qsb_p >> '"';
 
-    boost::spirit::rule<> pqsb2_p = ~boost::spirit::ch_p( '\'' );
-    boost::spirit::rule<> qsb2_p = ( boost::spirit::str_p( "\\'" )
-                                     | pqsb2_p
-                                     );
-    boost::spirit::rule<> qstr2_p = '\'' >> (*qsb2_p) >> '\'';
+    sc::rule<> pqsb2_p = ~sc::ch_p( '\'' );
+    sc::rule<> qsb2_p = ( sc::str_p( "\\'" )
+                          | pqsb2_p
+                          );
+    sc::rule<> qstr2_p = '\'' >> (*qsb2_p) >> '\'';
 
-    boost::spirit::rule<> string_p = ( simple_str_p
-                                       | qstr_p
-                                       | qstr2_p );
+    sc::rule<> string_p = ( simple_str_p
+                            | qstr_p
+                            | qstr2_p );
 
-    boost::spirit::rule<> flag_p = ( boost::spirit::as_lower_d[ "help" ]
-                                     | boost::spirit::as_lower_d[ "include" ]
-                                     );
+    sc::rule<> flag_p = ( sc::as_lower_d[ "help" ]
+                          | sc::as_lower_d[ "include" ]
+                          );
 
 
-    boost::spirit::rule<> includerule_p
-        = ( boost::spirit::as_lower_d[ "include" ]
+    sc::rule<> includerule_p
+        = ( sc::as_lower_d[ "include" ]
             >> ignore_p
             >> expect_assign( assign_p )
             >> ignore_p
@@ -609,47 +617,47 @@ Parser::boostParse()
                                                      _1, _2 ) ] )
             );
 
-    boost::spirit::rule<> delim_p = boost::spirit::str_p( "::" );
+    sc::rule<> delim_p = sc::str_p( "::" );
 
-    boost::spirit::rule<> param_name_p
+    sc::rule<> param_name_p
         = ( (simple_str_p - flag_p)[ boost::bind( &Parser::setParamName,
                                                   this,
                                                   _1, _2 ) ]
             >> ( expect_delim( delim_p )
-                 >> ( simple_str_p - boost::spirit::as_lower_d[ "help" ]
+                 >> ( simple_str_p - sc::as_lower_d[ "help" ]
                       )[ boost::bind( &Parser::appendParamName,
                                       this,
                                       _1, _2 ) ]
                  )
             >> *( delim_p
-                  >> ( simple_str_p - boost::spirit::as_lower_d[ "help" ]
+                  >> ( simple_str_p - sc::as_lower_d[ "help" ]
                        )[ boost::bind( &Parser::appendParamName,
                                        this,
                                        _1, _2 ) ]
                   )
             );
 
-    boost::spirit::rule<> module_name_p
+    sc::rule<> module_name_p
         = ( ( simple_str_p - flag_p )[ boost::bind( &Parser::setParamName,
                                                     this,
                                                     _1, _2 ) ]
             >> *( delim_p
-                  >> ( simple_str_p - boost::spirit::as_lower_d[ "help" ]
+                  >> ( simple_str_p - sc::as_lower_d[ "help" ]
                        )[ boost::bind( &Parser::appendParamName,
                                        this,
                                        _1, _2 ) ]
                   )
             );
 
-    boost::spirit::rule<> true_p = ( boost::spirit::as_lower_d[ "on" ]
-                                     | boost::spirit::as_lower_d[ "true" ]
-                                     );
+    sc::rule<> true_p = ( sc::as_lower_d[ "on" ]
+                          | sc::as_lower_d[ "true" ]
+                          );
 
-    boost::spirit::rule<> false_p = ( boost::spirit::as_lower_d[ "off" ]
-                                      | boost::spirit::as_lower_d[ "false" ]
-                                      );
+    sc::rule<> false_p = ( sc::as_lower_d[ "off" ]
+                           | sc::as_lower_d[ "false" ]
+                           );
 
-    boost::spirit::rule<> param_p
+    sc::rule<> param_p
         = ( param_name_p
             >> ignore_p
             >> expect_assign( assign_p )
@@ -660,36 +668,36 @@ Parser::boostParse()
                              | false_p[ boost::bind( &Parser::buildBool,
                                                      this,
                                                      false ) ]
-                             | boost::spirit::strict_real_p[ boost::bind( &Parser::buildReal,
-                                                                          this,
-                                                                          _1 ) ]
-                             | boost::spirit::int_p[ boost::bind( &Parser::buildInt,
-                                                                  this,
-                                                                  _1 ) ]
+                             | sc::strict_real_p[ boost::bind( &Parser::buildReal,
+                                                               this,
+                                                               _1 ) ]
+                             | sc::int_p[ boost::bind( &Parser::buildInt,
+                                                       this,
+                                                       _1 ) ]
                              | string_p[ boost::bind( &Parser::buildString,
                                                       this,
                                                       _1, _2 ) ]
                              )
             );
 
-    boost::spirit::rule<> data_p
-        = ( boost::spirit::as_lower_d[ "help" ][ boost::bind( &Parser::requestGenericHelp,
-                                                              this ) ]
+    sc::rule<> data_p
+        = ( sc::as_lower_d[ "help" ][ boost::bind( &Parser::requestGenericHelp,
+                                                   this ) ]
             | ( module_name_p
                 >> delim_p
-                >> boost::spirit::as_lower_d[ "help" ]
+                >> sc::as_lower_d[ "help" ]
                 )[ boost::bind( &Parser::requestDetailedHelp,
                                 this ) ]
             | param_p
             | includerule_p
             );
 
-    boost::spirit::rule<> item_p = ( junk_p
-                                     | ( !minus_p
-                                         >> !minus_p
-                                         >> data_p )
-                                     );
-    boost::spirit::rule<> input_p
+    sc::rule<> item_p = ( junk_p
+                          | ( !minus_p
+                              >> !minus_p
+                              >> data_p )
+                          );
+    sc::rule<> input_p
         = conf_guard( *item_p )[ boost::bind( &ParseErrorHandler::parseError,
                                               this,
                                               _1, _2 ) ];
@@ -712,7 +720,7 @@ Parser::boostParse()
     // 			BOOST_SPIRIT_DEBUG_RULE(true_p);
     // 			BOOST_SPIRIT_DEBUG_RULE(false_p);
     // 			BOOST_SPIRIT_DEBUG_RULE(flag_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(boost::spirit::as_lower_d[ "help" ]);
+    // 			BOOST_SPIRIT_DEBUG_RULE(sc::as_lower_d[ "help" ]);
     // 			BOOST_SPIRIT_DEBUG_RULE(delim_p);
     // 			BOOST_SPIRIT_DEBUG_RULE(minus_p);
     // 			BOOST_SPIRIT_DEBUG_RULE(assign_p);
@@ -720,11 +728,10 @@ Parser::boostParse()
     // 			BOOST_SPIRIT_DEBUG_RULE(qstr_p);
     // 			BOOST_SPIRIT_DEBUG_RULE(qstr2_p);
     // 			BOOST_SPIRIT_DEBUG_RULE(string_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(boost::spirit::int_p);
+    // 			BOOST_SPIRIT_DEBUG_RULE(sc::int_p);
     // 			BOOST_SPIRIT_DEBUG_RULE(includerule_p);
 
-    boost::spirit::parse_info<> info = boost::spirit::parse( buffer.c_str(),
-                                                             input_p );
+    sc::parse_info<> info = sc::parse( buffer.c_str(), input_p );
     if( ! info.full )
     {
         parseError( info.length, buffer );
