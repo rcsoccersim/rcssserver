@@ -1,3 +1,8 @@
+2010-09-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/Makefile.am:
+	- fixed a problem of zlib dependency.
+
 2010-08-31  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* rcssbase/conf/parser.cpp:

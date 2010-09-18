@@ -276,8 +276,7 @@ rcssclient_LDFLAGS = \
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
 	-lrcssnet \
 	-lrcssgz \
-	$(BOOST_FILESYSTEM_LIB) \
-	$(BOOST_SYSTEM_LIB)
+	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) @GZ_LIBS@
 
 
 AM_CPPFLAGS = -I$(top_srcdir)
