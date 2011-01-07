@@ -1,3 +1,8 @@
+2011-01-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/referee.cpp:
+	- disabled the rule of player clearance during stoppage time.
+
 2010-09-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/Makefile.am:

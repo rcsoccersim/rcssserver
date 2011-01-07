@@ -913,10 +913,11 @@ OffsideRef::analyse()
 
     if ( M_stadium.playmode() == PM_OffSide_Left )
     {
-        clearPlayersFromBall( LEFT );
+        //clearPlayersFromBall( LEFT );
         checkPlayerAfterOffside();
         if ( ++M_after_offside_time > AFTER_OFFSIDE_WAIT )
         {
+            clearPlayersFromBall( LEFT );
             M_stadium.changePlayMode( PM_FreeKick_Right );
         }
         return;
@@ -924,10 +925,11 @@ OffsideRef::analyse()
 
     if ( M_stadium.playmode() == PM_OffSide_Right )
     {
-        clearPlayersFromBall( RIGHT );
+        //clearPlayersFromBall( RIGHT );
         checkPlayerAfterOffside();
         if ( ++M_after_offside_time > AFTER_OFFSIDE_WAIT )
         {
+            clearPlayersFromBall( RIGHT );
             M_stadium.changePlayMode( PM_FreeKick_Left );
         }
         return;
@@ -1166,7 +1168,7 @@ OffsideRef::callOffside()
     M_offside_candidates.clear();
 
     M_stadium.placePlayersInField();
-    clearPlayersFromBall( M_last_kicker_side );
+    //clearPlayersFromBall( M_last_kicker_side );
 
     M_after_offside_time = 0;
 }
@@ -1378,9 +1380,10 @@ FreeKickRef::analyse()
 
     if ( pm == PM_Free_Kick_Fault_Left )
     {
-        clearPlayersFromBall( LEFT );
+        //clearPlayersFromBall( LEFT );
         if ( ++M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT )
         {
+            clearPlayersFromBall( LEFT );
             M_stadium.changePlayMode( PM_FreeKick_Right );
         }
         return;
@@ -1388,9 +1391,10 @@ FreeKickRef::analyse()
 
     if ( pm == PM_Free_Kick_Fault_Right )
     {
-        clearPlayersFromBall( RIGHT );
+        //clearPlayersFromBall( RIGHT );
         if ( ++M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT )
         {
+            clearPlayersFromBall( RIGHT );
             M_stadium.changePlayMode( PM_FreeKick_Left );
         }
         return;
@@ -1480,7 +1484,19 @@ FreeKickRef::analyse()
     if ( pm != PM_PlayOn
          && pm != PM_TimeOver
          && pm != PM_GoalKick_Left
-         && pm != PM_GoalKick_Right )
+         && pm != PM_GoalKick_Right
+         && pm != PM_OffSide_Left
+         && pm != PM_OffSide_Right
+         && pm != PM_Foul_Charge_Left
+         && pm != PM_Foul_Charge_Right
+         && pm != PM_Foul_Push_Right
+         && pm != PM_Foul_Push_Left
+         && pm != PM_Back_Pass_Left
+         && pm != PM_Back_Pass_Right
+         && pm != PM_Free_Kick_Fault_Left
+         && pm != PM_Free_Kick_Fault_Right
+         && pm != PM_CatchFault_Left
+         && pm != PM_CatchFault_Right )
     {
         clearPlayersFromBall( (Side)(-M_stadium.kickOffSide() ) );
     }
@@ -2133,9 +2149,10 @@ CatchRef::analyse()
 
     if ( pm == PM_Back_Pass_Left )
     {
-        clearPlayersFromBall( LEFT );
+        //clearPlayersFromBall( LEFT );
         if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT )
         {
+            clearPlayersFromBall( LEFT );
             //M_stadium.changePlayMode( PM_FreeKick_Right );
             M_stadium.changePlayMode( PM_IndFreeKick_Right );
         }
@@ -2144,9 +2161,10 @@ CatchRef::analyse()
 
     if ( pm == PM_Back_Pass_Right )
     {
-        clearPlayersFromBall( RIGHT );
+        //clearPlayersFromBall( RIGHT );
         if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT )
         {
+            clearPlayersFromBall( RIGHT );
             //M_stadium.changePlayMode( PM_FreeKick_Left );
             M_stadium.changePlayMode( PM_IndFreeKick_Left );
         }
@@ -2155,9 +2173,10 @@ CatchRef::analyse()
 
     if ( pm == PM_CatchFault_Left )
     {
-        clearPlayersFromBall( LEFT );
+        //clearPlayersFromBall( LEFT );
         if( ++M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
         {
+            clearPlayersFromBall( LEFT );
             //M_stadium.changePlayMode( PM_IndFreeKick_Right );
             M_stadium.changePlayMode( PM_FreeKick_Right );
         }
@@ -2166,9 +2185,10 @@ CatchRef::analyse()
 
     if ( pm == PM_CatchFault_Right )
     {
-        clearPlayersFromBall( RIGHT );
+        //clearPlayersFromBall( RIGHT );
         if( ++M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
         {
+            clearPlayersFromBall( RIGHT );
             //M_stadium.changePlayMode( PM_IndFreeKick_Left );
             M_stadium.changePlayMode( PM_FreeKick_Left );
         }
@@ -2385,9 +2405,10 @@ FoulRef::analyse()
     if ( pm == PM_Foul_Charge_Left
          || pm == PM_Foul_Push_Left )
     {
-        clearPlayersFromBall( LEFT );
+        //clearPlayersFromBall( LEFT );
         if ( ++M_after_foul_time > AFTER_FOUL_WAIT )
         {
+            clearPlayersFromBall( LEFT );
             if ( Referee::inPenaltyArea( LEFT, M_stadium.ball().pos() ) )
             {
                 M_stadium.changePlayMode( PM_IndFreeKick_Right );
@@ -2403,9 +2424,10 @@ FoulRef::analyse()
     if ( pm == PM_Foul_Charge_Right
          || pm == PM_Foul_Push_Right )
     {
-        clearPlayersFromBall( RIGHT );
+        //clearPlayersFromBall( RIGHT );
         if ( ++M_after_foul_time > AFTER_FOUL_WAIT )
         {
+            clearPlayersFromBall( RIGHT );
             if ( Referee::inPenaltyArea( RIGHT, M_stadium.ball().pos() ) )
             {
                 M_stadium.changePlayMode( PM_IndFreeKick_Left );
