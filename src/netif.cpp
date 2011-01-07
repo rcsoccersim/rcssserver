@@ -204,7 +204,7 @@ Stadium::parsePlayerInit( const char * message,
         bool goalie = false;
 
         int n_read = 0;
-        if ( std::sscanf( msg, " ( init %15[-_a-zA-Z0-9] %n ",
+        if ( std::sscanf( msg, " ( init %15[+-_a-zA-Z0-9] %n ",
                           teamname, &n_read ) != 1
              || n_read == 0 )
         {
@@ -544,7 +544,7 @@ Stadium::parseOnlineCoachInit( const char * message,
     int n_read = 0;
 
     // read team name
-    if ( std::sscanf( msg, " ( init %15[-_a-zA-Z0-9] %n ",
+    if ( std::sscanf( msg, " ( init %15[+-_a-zA-Z0-9] %n ",
                       teamname, &n_read ) != 1
          || n_read == 0 )
     {
@@ -558,7 +558,7 @@ Stadium::parseOnlineCoachInit( const char * message,
     // read coach name
     if ( *msg != '(' )
     {
-        if ( std::sscanf( msg, " %127[-_a-zA-Z0-9] %n ",
+        if ( std::sscanf( msg, " %127[+-_a-zA-Z0-9] %n ",
                           coachname, &n_read ) != 1 )
         {
             sendToOnlineCoach( "(error illegal_command_form)", addr );

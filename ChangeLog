@@ -1,5 +1,8 @@
 2011-01-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/netif.cpp:
+	- allowed '+' as a team name character.
+
 	* src/referee.cpp:
 	- disabled the rule of player clearance during stoppage time.
 
