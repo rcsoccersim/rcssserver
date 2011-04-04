@@ -43,14 +43,6 @@
 #define RCSS_WIN
 #endif
 
-#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FS_FILE_STRING file_string
-#define BOOST_FS_DIRECTORY_STRING directory_string
-#else
-#define BOOST_FS_FILE_STRING native_file_string
-#define BOOST_FS_DIRECTORY_STRING native_directory_string
-#endif
-
 const std::string CSVSaver::NAME = "CSVSaver";
 
 CSVSaverParam &
@@ -106,8 +98,10 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
     try
     {
         conf_path = boost::filesystem::path( tildeExpand( conf_dir )
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                              , &boost::filesystem::native
+#  endif
 #endif
                                              );
 
@@ -216,8 +210,10 @@ CSVSaver::openResultsFile()
     try
     {
         file_path = boost::filesystem::path( tildeExpand( CSVSaverParam::instance().filename() )
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                              , &boost::filesystem::native
+#  endif
 #endif
                                              );
         new_file = ! boost::filesystem::exists( file_path );

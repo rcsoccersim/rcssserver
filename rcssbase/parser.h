@@ -22,11 +22,35 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/fstream.hpp>
+
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/fstream.hpp>
+
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION > 2
+
+#define BOOST_FS_ABSOLUTE absolute
+#define BOOST_FS_FILE_STRING string
+#define BOOST_FS_DIRECTORY_STRING string
+#define BOOST_FS_PARENT_PATH parent_path
+
+#else
+
+#define BOOST_FS_ABSOLUTE complete
+
+#  ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+#    define BOOST_FS_FILE_STRING file_string
+#    define BOOST_FS_DIRECTORY_STRING directory_string
+#    define BOOST_FS_PARENT_PATH parent_path
+#  else
+#    define BOOST_FS_FILE_STRING native_file_string
+#    define BOOST_FS_DIRECTORY_STRING native_directory_string
+#    define BOOST_FS_PARENT_PATH branch_path
+#  endif
+
+#endif
 
 namespace rcss {
 
@@ -84,7 +108,7 @@ public:
               return false;
           }
 
-          bool rval = parse( strm, file.native_file_string(), errstrm );
+          bool rval = parse( strm, file.BOOST_FS_FILE_STRING(), errstrm );
 
           strm.close();
 

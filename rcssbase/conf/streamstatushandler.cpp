@@ -145,10 +145,14 @@ StreamStatusHandler::loadFailed( const std::string & libname,
              i != avail.end(); ++i )
         {
             M_errstrm << "\t"
-#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
-                      << i->file_string()
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION > 2
+                      << i->string()
 #else
+#  ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+                      << i->file_string()
+#  else
                       << i->native_file_string()
+#  endif
 #endif
                       << std::endl;
         }

@@ -59,12 +59,27 @@
 // #endif
 
 
-#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FS_FILE_STRING file_string
-#define BOOST_FS_DIRECTORY_STRING directory_string
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION > 2
+
+#define BOOST_FS_ABSOLUTE absolute
+#define BOOST_FS_FILE_STRING string
+#define BOOST_FS_DIRECTORY_STRING string
+#define BOOST_FS_PARENT_PATH parent_path
+
 #else
-#define BOOST_FS_FILE_STRING native_file_string
-#define BOOST_FS_DIRECTORY_STRING native_directory_string
+
+#define BOOST_FS_ABSOLUTE complete
+
+#  ifdef BOOST_FILESYSTEM_NO_DEPRECATED
+#    define BOOST_FS_FILE_STRING file_string
+#    define BOOST_FS_DIRECTORY_STRING directory_string
+#    define BOOST_FS_PARENT_PATH parent_path
+#  else
+#    define BOOST_FS_FILE_STRING native_file_string
+#    define BOOST_FS_DIRECTORY_STRING native_directory_string
+#    define BOOST_FS_PARENT_PATH branch_path
+#  endif
+
 #endif
 
 const std::string Logger::DEF_TEXT_NAME = "incomplete";
@@ -203,8 +218,10 @@ Logger::openGameLog()
     try
     {
         boost::filesystem::path game_log( ServerParam::instance().gameLogDir()
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                           , &boost::filesystem::native
+#  endif
 #endif
                                           );
         if ( ! boost::filesystem::exists( game_log )
@@ -296,8 +313,10 @@ Logger::openTextLog()
     try
     {
         boost::filesystem::path text_log( ServerParam::instance().textLogDir()
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                           , &boost::filesystem::native
+#  endif
 #endif
                                           );
         if ( ! boost::filesystem::exists( text_log )
@@ -373,8 +392,10 @@ Logger::openKawayLog()
     try
     {
         boost::filesystem::path kaway_log( ServerParam::instance().kawayLogDir()
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                            , &boost::filesystem::native
+#  endif
 #endif
                                            );
         if ( ! boost::filesystem::exists( kaway_log )

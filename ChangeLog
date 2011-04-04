@@ -1,3 +1,14 @@
+2011-04-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* rcssbase/conf/parser.cpp:
+	* rcssbase/conf/streamstatushandler.cpp:
+	* rcssbase/parser.h:
+	* src/csvsaver.cpp:
+	* src/logger.cpp:
+	* src/playerparam.cpp:
+	* src/serverparam.cpp:
+	- fixed build error with boost::filesystem3.
+
 2011-01-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/netif.cpp:

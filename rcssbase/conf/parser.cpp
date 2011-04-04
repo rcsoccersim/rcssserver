@@ -54,14 +54,6 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FS_FILE_STRING file_string
-#define BOOST_FS_PARENT_PATH parent_path
-#else
-#define BOOST_FS_FILE_STRING native_file_string
-#define BOOST_FS_PARENT_PATH branch_path
-#endif
-
 namespace {
 
 bool
@@ -329,8 +321,10 @@ Parser::include( const char * begin,
     try
     {
         path = boost::filesystem::path( incname
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                         , &boost::filesystem::native
+#  endif
 #endif
                                         );
     }
@@ -362,15 +356,17 @@ Parser::include( const char * begin,
              || curr_path == "cmd line args"
              || curr_path == "anonymous stream" )
         {
-            full_name = boost::filesystem::complete( path );
+            full_name = boost::filesystem::BOOST_FS_ABSOLUTE( path );
         }
         else
         {
             try
             {
                 boost::filesystem::path branch( curr_path
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                                 , &boost::filesystem::native
+#  endif
 #endif
                                                 );
                 branch = branch.BOOST_FS_PARENT_PATH();
@@ -702,34 +698,34 @@ Parser::boostParse()
                                               this,
                                               _1, _2 ) ];
 
-    // 			BOOST_SPIRIT_DEBUG_RULE(ws_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(newline_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(comment_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(string_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(input_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(item_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(param_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(data_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(junk_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(ignore_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(includerule_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(loadrule_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(pathrule_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(param_name_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(module_name_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(true_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(false_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(flag_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(sc::as_lower_d[ "help" ]);
-    // 			BOOST_SPIRIT_DEBUG_RULE(delim_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(minus_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(assign_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(simple_str_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(qstr_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(qstr2_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(string_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(sc::int_p);
-    // 			BOOST_SPIRIT_DEBUG_RULE(includerule_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(ws_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(newline_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(comment_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(string_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(input_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(item_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(param_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(data_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(junk_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(ignore_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(includerule_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(loadrule_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(pathrule_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(param_name_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(module_name_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(true_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(false_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(flag_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(sc::as_lower_d[ "help" ]);
+    //      BOOST_SPIRIT_DEBUG_RULE(delim_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(minus_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(assign_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(simple_str_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(qstr_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(qstr2_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(string_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(sc::int_p);
+    //      BOOST_SPIRIT_DEBUG_RULE(includerule_p);
 
     sc::parse_info<> info = sc::parse( buffer.c_str(), input_p );
     if( ! info.full )

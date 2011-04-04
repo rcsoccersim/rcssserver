@@ -65,14 +65,6 @@
 #endif
 #endif
 
-#ifdef BOOST_FILESYSTEM_NO_DEPRECATED
-#define BOOST_FS_FILE_STRING file_string
-#define BOOST_FS_DIRECTORY_STRING directory_string
-#else
-#define BOOST_FS_FILE_STRING native_file_string
-#define BOOST_FS_DIRECTORY_STRING native_directory_string
-#endif
-
 namespace {
 
 inline
@@ -193,8 +185,10 @@ PlayerParam::init( rcss::conf::Builder * parent )
     {
 
         conf_path = boost::filesystem::path( tildeExpand( conf_dir )
-#ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
+#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
                                              , &boost::filesystem::native
+#  endif
 #endif
                                              );
         conf_path /= PlayerParam::PLAYER_CONF;
