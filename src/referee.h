@@ -29,6 +29,8 @@
 #include "types.h"
 #include "object.h"
 
+#include <ctime>
+
 #include <set>
 #include <vector>
 
@@ -544,14 +546,14 @@ private:
     int M_take_time;
     time_t M_start_time;
 public:
-    KeepawayRef( Stadium& stadium )
+    KeepawayRef( Stadium & stadium )
         : Referee( stadium ),
           M_episode( 0 ),
           M_keepers( 0 ),
           M_takers( 0 ),
           M_time( 0 ),
           M_take_time( 0 ),
-          M_start_time( time( NULL ) )
+          M_start_time( std::time( NULL ) )
       {}
 
     virtual

@@ -24,6 +24,8 @@
 
 #include "resultsaver.hpp"
 
+#include <ctime>
+
 class STDOutSaver
     : public ResultSaver {
 public:

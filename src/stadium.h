@@ -33,11 +33,12 @@
 #include <rcssbase/gzip/gzfstream.hpp>
 #include <rcssbase/net/udpsocket.hpp>
 
+#include <cstdio>
+#include <ctime>
 #include <string>
 #include <vector>
 #include <list>
 #include <memory>
-#include <cstdio>
 
 class HeteroPlayer;
 class XPMHolder;
@@ -95,7 +96,7 @@ protected:
     rcss::net::UDPSocket M_online_coach_socket;
 
     Field M_field;
-    Weather	M_weather;
+    Weather M_weather;
 
     Logger M_logger;
 

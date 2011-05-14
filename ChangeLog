@@ -1,3 +1,11 @@
+2011-05-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/csvsaver.h:
+	* src/referee.h:
+	* src/stadium.h:
+	* src/stdoutsaver.h:
+	- fixed build error on cygwin.
+
 2011-04-04  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* rcssbase/conf/parser.cpp:

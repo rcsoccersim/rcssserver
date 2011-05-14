@@ -25,6 +25,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <ctime>
 #include <string>
 #include <fstream>
 
