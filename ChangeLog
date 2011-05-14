@@ -1,5 +1,8 @@
 2011-05-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/referee.cpp:
+	- fixed defect about a dependency between OffsideRef and FreeKickRef.
+
 	* src/player.cpp:
 	* src/referee.cpp:
 	* src/referee.h:

@@ -1340,6 +1340,11 @@ FreeKickRef::kickTaken( const Player & kicker )
         M_kick_taker_dashes = M_kick_taker->dashCount();
         //}
     }
+    else if ( M_stadium.playmode() == PM_OffSide_Left
+              || M_stadium.playmode() == PM_OffSide_Right )
+    {
+        // do nothing
+    }
     else if ( M_stadium.playmode() != PM_PlayOn )
     {
         M_kick_taken = true;
