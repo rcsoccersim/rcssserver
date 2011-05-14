@@ -176,7 +176,7 @@ InitSenderCommonV7::sendServerParams()
     serializer().serializeParam( transport(),
                                  ServerParam::instance().catchAreaWidth() );
     serializer().serializeParam( transport(),
-                                 ServerParam::instance().catchProb() );
+                                 ServerParam::instance().catchProbability() );
     serializer().serializeParam( transport(),
                                  ServerParam::instance().goalieMaxMoves() );
     serializer().serializeParam( transport(),
@@ -460,7 +460,7 @@ InitSenderCommonV8::doSendServerParam( ServerParam::VerMap::value_type param )
         }
 
         double dvalue;
-        if ( ServerParam::instance().getDoub( param.first, dvalue ) )
+        if ( ServerParam::instance().getDouble( param.first, dvalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -523,7 +523,7 @@ InitSenderCommonV8::doSendPlayerParam( PlayerParam::VerMap::value_type param )
         }
 
         double dvalue;
-        if ( PlayerParam::instance().getDoub( param.first, dvalue ) )
+        if ( PlayerParam::instance().getDouble( param.first, dvalue ) )
         {
             serializer().serializeParam( transport(),
                                          param.first,
@@ -574,58 +574,6 @@ InitSenderCommonV8::serializePlayerType( const int id,
     type.serializeParams( transport(),
                           version(),
                           id );
-
-//     serializer().serializeParam( transport(),
-//                                  "id",
-//                                  id );
-//     serializer().serializeParam( transport(),
-//                                  "player_speed_max",
-//                                  type.playerSpeedMax() );
-//     serializer().serializeParam( transport(),
-//                                  "stamina_inc_max",
-//                                  type.staminaIncMax() );
-//     serializer().serializeParam( transport(),
-//                                  "player_decay",
-//                                  type.playerDecay() );
-//     serializer().serializeParam( transport(),
-//                                  "inertia_moment",
-//                                  type.inertiaMoment() );
-//     serializer().serializeParam( transport(),
-//                                  "dash_power_rate",
-//                                  type.dashPowerRate() );
-//     serializer().serializeParam( transport(),
-//                                  "player_size",
-//                                  type.playerSize() );
-//     serializer().serializeParam( transport(),
-//                                  "kickable_margin",
-//                                  type.kickableMargin() );
-//     serializer().serializeParam( transport(),
-//                                  "kick_rand",
-//                                  type.kickRand() );
-//     serializer().serializeParam( transport(),
-//                                  "extra_stamina",
-//                                  type.extraStamina() );
-//     serializer().serializeParam( transport(),
-//                                  "effort_max",
-//                                  type.effortMax() );
-//     serializer().serializeParam( transport(),
-//                                  "effort_min",
-//                                  type.effortMin() );
-
-//     if ( version() < 14 )
-//     {
-//         return;
-//     }
-
-//     serializer().serializeParam( transport(),
-//                                  "kick_power_rate",
-//                                  type.kickPowerRate() );
-//     serializer().serializeParam( transport(),
-//                                  "foul_detect_probability",
-//                                  type.foulDetectProbability() );
-//     serializer().serializeParam( transport(),
-//                                  "catchable_area_l_stretch",
-//                                  type.catchAreaLengthStretch() );
 }
 
 }

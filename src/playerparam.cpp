@@ -453,8 +453,8 @@ PlayerParam::getBool( const std::string & param,
 }
 
 bool
-PlayerParam::getDoub( const std::string & param,
-                      double & value ) const
+PlayerParam::getDouble( const std::string & param,
+                        double & value ) const
 {
     return M_builder->get( param, value );
 }

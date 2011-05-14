@@ -180,6 +180,9 @@ private:
     int M_foul_cycles;
     int M_foul_count;
 
+    double M_long_kick_power;
+    double M_long_kick_dir;
+
 private:
     // not used
     Player();
@@ -396,6 +399,8 @@ public:
                 const PVector & vel,
                 const PVector & accel );
 
+    void doLongKick();
+
 protected:
 
     virtual
@@ -419,6 +424,7 @@ private:
     void turn( double moment );
     void turn_neck( double moment );
     void kick( double power, double dir );
+    void long_kick( double power, double dir );
     void goalieCatch( double dir );
     void say( std::string message );
     /*! This function is called in the begin of each cycle

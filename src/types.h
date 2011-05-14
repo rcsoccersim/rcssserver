@@ -323,11 +323,11 @@ struct player_t {
 };
 
 struct showinfo_t2 {
-    char		pmode;
-    team_t	team[2];
-    ball_t	ball;
-    player_t	pos[MAX_PLAYER * 2];
-    Int16		time;
+    char pmode;
+    team_t team[2];
+    ball_t ball;
+    player_t pos[MAX_PLAYER * 2];
+    Int16 time;
 };
 
 struct short_showinfo_t2 {

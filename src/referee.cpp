@@ -30,6 +30,7 @@
 #include "team.h"
 #include "random.h"
 
+#include <ctime>
 #include <limits>
 
 #ifdef HAVE_SSTREAM
@@ -861,6 +862,8 @@ OffsideRef::failedTackleTaken( const Player & tackler )
     checkIntentionalAction( tackler );
 }
 
+// 2011-05-14 akiyama
+// added offside checking based on intentional actione based
 void
 OffsideRef::checkIntentionalAction( const Player & kicker )
 {
@@ -959,6 +962,8 @@ OffsideRef::analyse()
     }
 
 #if 0
+    // 2011-05-14 akiyama
+    // disabled distance based offside checking
     bool found = false;
     {
         double dist2 = std::pow( ServerParam::instance().offsideActiveArea(), 2 );
@@ -2193,6 +2198,48 @@ CatchRef::ballCaught( const Player & catcher )
 
 
 void
+CatchRef::ballPunched( const Player & catcher )
+{
+    if ( isPenaltyShootOut( M_stadium.playmode() ) )
+    {
+        return;
+    }
+
+
+    // check handling violation
+    if ( M_stadium.playmode() != PM_AfterGoal_Left
+         && M_stadium.playmode() != PM_AfterGoal_Right
+         && M_stadium.playmode() != PM_TimeOver
+         && ! inPenaltyArea( catcher.side(), M_stadium.ball().pos() ) )
+    {
+        callCatchFault( catcher.side(), M_stadium.ball().pos() );
+        return;
+    }
+
+    // check backpass violation
+    if ( M_stadium.playmode() != PM_AfterGoal_Left
+         && M_stadium.playmode() != PM_AfterGoal_Right
+         && M_stadium.playmode() != PM_TimeOver
+         && M_stadium.time() != M_last_back_passer_time
+         && M_last_back_passer != NULL
+         //&& M_last_back_passer != &catcher
+         && M_last_back_passer->team() == catcher.team()
+         && ServerParam::instance().backPasses() )
+    {
+        //M_last_back_passer->alive |= BACK_PASS;
+        M_stadium.setPlayerState( M_last_back_passer->side(),
+                                  M_last_back_passer->unum(),
+                                  BACK_PASS );
+        callBackPass( catcher.side() );
+
+        return;
+    }
+
+    M_last_back_passer = NULL;
+}
+
+
+void
 CatchRef::analyse()
 {
     const PlayMode pm = M_stadium.playmode();
@@ -2374,10 +2421,17 @@ FoulRef::tackleTaken( const Player & tackler,
 
     bool detect_charge = false;
     bool detect_yellow = false;
+    bool detect_red = false;
 
     boost::bernoulli_distribution<> rng( tackler.foulDetectProbability() );
     boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
         dst( rcss::random::DefaultRNG::instance(), rng );
+
+    // 2011-05-14 akiyama
+    // added red card probability
+    boost::bernoulli_distribution<> red_rng( ServerParam::instance().redCardProbability() );
+    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
+        red_dst( rcss::random::DefaultRNG::instance(), red_rng );
 
     const double ball_dist2 = tackler.pos().distance2( M_stadium.ball().pos() );
     const double ball_angle = ( M_stadium.ball().pos() - tackler.pos() ).th();
@@ -2450,6 +2504,10 @@ FoulRef::tackleTaken( const Player & tackler,
             {
                 //std::cerr << "----> " << (*p)->unum() << " detected yellow_card." << std::endl;
                 detect_yellow = true;
+                if ( red_dst() )
+                {
+                    detect_red = true;
+                }
             }
         }
         else
@@ -2458,13 +2516,21 @@ FoulRef::tackleTaken( const Player & tackler,
             {
                 //std::cerr << "----> " << (*p)->unum() << " detected foul. prob=" << rng.p() << std::endl;
                 detect_charge = true;
+                if ( red_dst() )
+                {
+                    detect_yellow = true;
+                }
             }
         }
 
         //std::cerr << "----> not detected foul. prob=" << rng.p()<< std::endl;
     }
 
-    if ( detect_yellow )
+    if ( detect_red )
+    {
+        callRedCard( tackler );
+    }
+    else if ( detect_yellow )
     {
         callYellowCard( tackler );
     }
@@ -2571,6 +2637,15 @@ FoulRef::callYellowCard( const Player & tackler )
 }
 
 void
+FoulRef::callRedCard( const Player & tackler )
+{
+    callFoul( tackler );
+
+    M_stadium.redCard( tackler.side(),
+                       tackler.unum() );
+}
+
+void
 FoulRef::playModeChange( PlayMode pm )
 {
     if ( pm == PM_Foul_Charge_Left
@@ -2586,66 +2661,81 @@ FoulRef::playModeChange( PlayMode pm )
 // KeepawayRef
 //************
 
+KeepawayRef::KeepawayRef( Stadium & stadium )
+    : Referee( stadium ),
+      M_episode( 0 ),
+      M_keepers( 0 ),
+      M_takers( 0 ),
+      M_time( 0 ),
+      M_take_time( 0 )
+{
+
+}
+
 void
 KeepawayRef::analyse()
 {
-    if( ServerParam::instance().keepAwayMode() )
+    if ( ! ServerParam::instance().keepAwayMode() )
     {
-        if ( M_stadium.playmode() == PM_PlayOn )
+        return;
+    }
+
+    static time_t s_start_time = std::time( NULL );
+
+    if ( M_stadium.playmode() == PM_PlayOn )
+    {
+        if ( ! ballInKeepawayArea() )
         {
-            if ( ! ballInKeepawayArea() )
-            {
-                logEpisode( "o" );
-                M_stadium.sendRefereeAudio( trainingMsg );
-                resetField();
-            }
-            else if ( M_take_time >= TURNOVER_TIME )
-            {
-                logEpisode( "t" );
-                M_stadium.sendRefereeAudio( trainingMsg );
-                resetField();
-            }
-            else
-            {
-                bool keeper_poss = false;
+            logEpisode( "o" );
+            M_stadium.sendRefereeAudio( trainingMsg );
+            resetField();
+        }
+        else if ( M_take_time >= TURNOVER_TIME )
+        {
+            logEpisode( "t" );
+            M_stadium.sendRefereeAudio( trainingMsg );
+            resetField();
+        }
+        else
+        {
+            bool keeper_poss = false;
 
-                const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-                for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-                      p != end;
-                      ++p )
+            const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+            for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+                  p != end;
+                  ++p )
+            {
+                if ( ! (*p)->isEnabled() ) continue;
+
+                PVector ppos = (*p)->pos();
+
+                if ( ppos.distance2( M_stadium.ball().pos() )
+                     < std::pow( ServerParam::instance().kickableArea(), 2 ) )
                 {
-                    if ( ! (*p)->isEnabled() ) continue;
-
-                    PVector ppos = (*p)->pos();
-
-                    if ( ppos.distance2( M_stadium.ball().pos() )
-                         < std::pow( ServerParam::instance().kickableArea(), 2 ) )
+                    if ( (*p)->side() == LEFT )
                     {
-                        if ( (*p)->side() == LEFT )
-                        {
-                            keeper_poss = true;
-                        }
-                        else if ( (*p)->side() == RIGHT )
-                        {
-                            keeper_poss = false;
-                            ++M_take_time;
-                            break;
-                        }
+                        keeper_poss = true;
+                    }
+                    else if ( (*p)->side() == RIGHT )
+                    {
+                        keeper_poss = false;
+                        ++M_take_time;
+                        break;
                     }
                 }
+            }
 
-                if ( keeper_poss )
-                {
-                    M_take_time = 0;
-                }
+            if ( keeper_poss )
+            {
+                M_take_time = 0;
             }
         }
-        else if ( ServerParam::instance().kawayStart() >= 0 )
+    }
+    else if ( ServerParam::instance().kawayStart() >= 0 )
+    {
+        if ( difftime( std::time( NULL ), s_start_time ) > ServerParam::instance().kawayStart() )
         {
-            if ( difftime( time( NULL ), M_start_time ) > ServerParam::instance().kawayStart() )
-            {
-                M_stadium.changePlayMode( PM_PlayOn );
-            }
+            M_stadium.changePlayMode( PM_PlayOn );
         }
     }
 }
@@ -2787,6 +2877,19 @@ KeepawayRef::resetField()
 //************
 // PenaltyRef
 //************
+
+PenaltyRef::PenaltyRef( Stadium& stadium )
+    : Referee( stadium ),
+      M_timer( -1 ),
+      M_pen_nr_taken( 0 ),
+      M_bDebug( false ),
+      M_cur_pen_taker( NEUTRAL ),
+      M_last_taker( NULL ),
+      M_prev_ball_pos( 0.0, 0.0 ),
+      M_timeover( false )
+{
+
+}
 
 void
 PenaltyRef::analyse()
@@ -3143,6 +3246,14 @@ PenaltyRef::ballCaught( const Player & catcher )
     //M_stadium.ball().vel.x = M_stadium.ball().vel.y = 0;
 }
 
+
+void
+PenaltyRef::ballPunched( const Player & catcher )
+{
+    ballCaught( catcher );
+}
+
+
 void
 PenaltyRef::kickTaken( const Player & kicker )
 {
@@ -3167,7 +3278,7 @@ PenaltyRef::kickTaken( const Player & kicker )
         penalty_foul( kicker.side() );
     }
     // cannot kick second time after penalty was taken
-    else if ( ServerParam::instance().penAllowMultiKicks() == false
+    else if ( ! ServerParam::instance().penAllowMultiKicks()
               && ( M_stadium.playmode() == PM_PenaltyTaken_Left
                    || M_stadium.playmode() == PM_PenaltyTaken_Right )
               && kicker.side() == M_cur_pen_taker )

@@ -232,12 +232,12 @@ Player::~Player()
                   << M_player_type->staminaIncMax() << ','
                   << M_player_type->staminaIncMax() * 3000 << ','
                   << M_consumed_stamina;
-//               << " dash_count = " << M_dash_count;
-//     if ( M_dash_count > 0 )
-//     {
-//         std::cerr << " consumed_stamina/dash =  " << M_consumed_stamina / M_dash_count;
-//     }
-            std::cerr << std::endl;
+        //               << " dash_count = " << M_dash_count;
+        //     if ( M_dash_count > 0 )
+        //     {
+        //         std::cerr << " consumed_stamina/dash =  " << M_consumed_stamina / M_dash_count;
+        //     }
+        std::cerr << std::endl;
     }
 #endif
 
@@ -374,6 +374,11 @@ Player::resetState()
 {
     int state = ( STAND | GOALIE | DISCARD
                   | YELLOW_CARD | RED_CARD );
+
+    if ( M_kick_cycles > 0 )
+    {
+        state |= ( KICK | KICK_FAULT );
+    }
 
     if ( tackleCycles() > 0 )
     {
@@ -615,6 +620,20 @@ Player::parseCommand( const char * command )
             buf += n_read;
 
             kick( power, dir );
+        }
+        else if ( ! std::strncmp( buf, "(long_kick ", 11 ) )
+        {
+            double power = 0.0;
+            double dir = 0.0;
+            if ( std::sscanf( buf, " ( long_kick %lf %lf ) %n ",
+                              &power, &dir, &n_read ) != 2 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            long_kick( power, dir );
         }
         else if ( ! std::strncmp( buf, "(tackle ", 8 ) )
         {
@@ -936,47 +955,47 @@ Player::dash( double power )
 {
     dash( power, 0.0 );
 
-//     if ( ! M_command_done )
-//     {
-//         // calculate stamina
-//         double power_need = ( power < 0.0
-//                               ? NormalizeDashPower( power ) * -2.0
-//                               : NormalizeDashPower( power ) );
-//         if ( power_need > stamina() + M_player_type->extraStamina() )
-//         {
-//             power_need = stamina() + M_player_type->extraStamina();
-//         }
-//         M_stamina -= power_need;
-//         if ( stamina() < 0.0 )
-//         {
-//             M_stamina = 0.0;
-//         }
+    //     if ( ! M_command_done )
+    //     {
+    //         // calculate stamina
+    //         double power_need = ( power < 0.0
+    //                               ? NormalizeDashPower( power ) * -2.0
+    //                               : NormalizeDashPower( power ) );
+    //         if ( power_need > stamina() + M_player_type->extraStamina() )
+    //         {
+    //             power_need = stamina() + M_player_type->extraStamina();
+    //         }
+    //         M_stamina -= power_need;
+    //         if ( stamina() < 0.0 )
+    //         {
+    //             M_stamina = 0.0;
+    //         }
 
-//         if ( M_stadium.playmode() != PM_BeforeKickOff
-//              && M_stadium.playmode() != PM_TimeOver )
-//         {
-//             M_consumed_stamina += power_need;
-//         }
+    //         if ( M_stadium.playmode() != PM_BeforeKickOff
+    //              && M_stadium.playmode() != PM_TimeOver )
+    //         {
+    //             M_consumed_stamina += power_need;
+    //         }
 
-//         power = ( power < 0.0
-//                   ? power_need / -2.0
-//                   : power_need );
-//         double effective_dash_power
-//             = effort()
-//             * power
-//             * M_player_type->dashPowerRate();
-//         if ( pos().y < 0.0 )
-//         {
-//             effective_dash_power /= ( side() == LEFT
-//                                       ? ServerParam::instance().slownessOnTopForLeft()
-//                                       : ServerParam::instance().slownessOnTopForRight() );
-//         }
+    //         power = ( power < 0.0
+    //                   ? power_need / -2.0
+    //                   : power_need );
+    //         double effective_dash_power
+    //             = effort()
+    //             * power
+    //             * M_player_type->dashPowerRate();
+    //         if ( pos().y < 0.0 )
+    //         {
+    //             effective_dash_power /= ( side() == LEFT
+    //                                       ? ServerParam::instance().slownessOnTopForLeft()
+    //                                       : ServerParam::instance().slownessOnTopForRight() );
+    //         }
 
-//         push( PVector::fromPolar( effective_dash_power,
-//                                   angleBodyCommitted() ) );
-//         ++M_dash_count;
-//         M_command_done = true;
-//     }
+    //         push( PVector::fromPolar( effective_dash_power,
+    //                                   angleBodyCommitted() ) );
+    //         ++M_dash_count;
+    //         M_command_done = true;
+    //     }
 }
 
 void
@@ -1076,348 +1095,395 @@ void
 Player::kick( double power,
               double dir )
 {
-    if ( ! M_command_done )
+    if ( M_command_done )
     {
-        M_command_done = true;
-        M_kick_cycles = 1;
-
-        power = NormalizeKickPower( power );
-        dir = NormalizeMoment( dir );
-
-        M_state |= KICK;
-
-        if ( M_stadium.playmode() == PM_BeforeKickOff ||
-             M_stadium.playmode() == PM_AfterGoal_Left ||
-             M_stadium.playmode() == PM_AfterGoal_Right  ||
-             M_stadium.playmode() == PM_OffSide_Left ||
-             M_stadium.playmode() == PM_OffSide_Right ||
-             M_stadium.playmode() == PM_Foul_Charge_Left ||
-             M_stadium.playmode() == PM_Foul_Charge_Right ||
-             M_stadium.playmode() == PM_Foul_Push_Left ||
-             M_stadium.playmode() == PM_Foul_Push_Right ||
-             M_stadium.playmode() == PM_Back_Pass_Left ||
-             M_stadium.playmode() == PM_Back_Pass_Right ||
-             M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
-             M_stadium.playmode() == PM_Free_Kick_Fault_Right ||
-             M_stadium.playmode() == PM_CatchFault_Left ||
-             M_stadium.playmode() == PM_CatchFault_Right ||
-             M_stadium.playmode() == PM_TimeOver )
-        {
-            M_state |= KICK_FAULT;
-            return;
-        }
-
-        if ( ! ballKickable() )
-        {
-            M_state |= KICK_FAULT;
-            M_stadium.failedKickTaken( *this );
-            return;
-        }
-
-        double dir_diff = std::fabs( angleFromBody( M_stadium.ball() ) );
-        PVector tmp = M_stadium.ball().pos() - this->pos();
-        double dist_ball = ( tmp.r() - M_player_type->playerSize()
-                             - ServerParam::instance().ballSize() );
-
-        double eff_power = power * M_player_type->kickPowerRate() //ServerParam::instance().kickPowerRate()
-            * (1.0 - 0.25*dir_diff/M_PI - 0.25*dist_ball/M_player_type->kickableMargin());
-
-        PVector accel = PVector::fromPolar( eff_power,
-                                            dir + angleBodyCommitted() );
-
-//         // pfr 8/14/00: for RC2000 evaluation
-//         // add noise to kick
-//         {
-//             double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
-//             PVector kick_noise( drand( -maxrnd, maxrnd ),
-//                                 drand( -maxrnd, maxrnd ) );
-//             //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
-//             accel += kick_noise;
-//         }
-
-        // akiyama 2008-01-30
-        // new kick noise
-
-        // noise = kick_rand
-        //         * power/max_power
-        //         * (   ( 0.5 + 0.25*( dist_rate + dir_rate ) )
-        //             + ( 0.5 + 0.5*ball_speed/(ball_speed_max*ball_decay) ) )
-
-        // [0.5, 1.0]
-        double pos_rate
-            = 0.5
-            + 0.25 * ( dir_diff/M_PI + dist_ball/M_player_type->kickableMargin() );
-        // [0.5, 1.0]
-        double speed_rate
-            = 0.5
-            + 0.5 * ( M_stadium.ball().vel().r()
-                      / ( ServerParam::instance().ballSpeedMax()
-                          * ServerParam::instance().ballDecay() ) );
-        // [0, 2*kick_rand]
-        double max_rand
-            = M_kick_rand
-            * ( power / ServerParam::instance().maxPower() )
-            * ( pos_rate + speed_rate );
-        PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
-                                                 drand( -M_PI, M_PI ) );
-        accel += kick_noise;
-
-        //             std::cout << M_stadium.time()
-        //                       << " Kick "
-        //                       << M_kick_rand
-        //                       << " " << power
-        //                       << " " << pos_rate
-        //                       << " " << speed_rate
-        //                       << " " << kick_noise
-        //                       << " " << kick_noise.r()
-        //                       << " " << max_rand
-        //                       << std::endl;
-
-        M_stadium.kickTaken( *this, accel );
-
-        ++M_kick_count;
+        return;
     }
+
+    M_command_done = true;
+    M_kick_cycles = 1;
+
+    power = NormalizeKickPower( power );
+    dir = NormalizeMoment( dir );
+
+    M_state |= KICK;
+
+    if ( M_stadium.playmode() == PM_BeforeKickOff ||
+         M_stadium.playmode() == PM_AfterGoal_Left ||
+         M_stadium.playmode() == PM_AfterGoal_Right ||
+         M_stadium.playmode() == PM_OffSide_Left ||
+         M_stadium.playmode() == PM_OffSide_Right ||
+         M_stadium.playmode() == PM_Foul_Charge_Left ||
+         M_stadium.playmode() == PM_Foul_Charge_Right ||
+         M_stadium.playmode() == PM_Foul_Push_Left ||
+         M_stadium.playmode() == PM_Foul_Push_Right ||
+         M_stadium.playmode() == PM_Back_Pass_Left ||
+         M_stadium.playmode() == PM_Back_Pass_Right ||
+         M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
+         M_stadium.playmode() == PM_Free_Kick_Fault_Right ||
+         M_stadium.playmode() == PM_CatchFault_Left ||
+         M_stadium.playmode() == PM_CatchFault_Right ||
+         M_stadium.playmode() == PM_TimeOver )
+    {
+        M_state |= KICK_FAULT;
+        return;
+    }
+
+    if ( ! ballKickable() )
+    {
+        M_state |= KICK_FAULT;
+        M_stadium.failedKickTaken( *this );
+        return;
+    }
+
+    double dir_diff = std::fabs( angleFromBody( M_stadium.ball() ) );
+    PVector rpos = M_stadium.ball().pos() - this->pos();
+    double dist_ball
+        = rpos.r()
+        - M_player_type->playerSize()
+        - ServerParam::instance().ballSize();
+
+    double eff_power
+        = power
+        * M_player_type->kickPowerRate()
+        * (1.0 - 0.25*dir_diff/M_PI - 0.25*dist_ball/M_player_type->kickableMargin());
+
+    PVector accel = PVector::fromPolar( eff_power,
+                                        dir + angleBodyCommitted() );
+
+    //         // pfr 8/14/00: for RC2000 evaluation
+    //         // add noise to kick
+    //         {
+    //             double maxrnd = M_kick_rand * power / ServerParam::instance().maxPower();
+    //             PVector kick_noise( drand( -maxrnd, maxrnd ),
+    //                                 drand( -maxrnd, maxrnd ) );
+    //             //std::cout << "Kick noise (" << power << "): " << kick_noise << std::endl;
+    //             accel += kick_noise;
+    //         }
+
+    // akiyama 2008-01-30
+    // new kick noise
+
+    // noise = kick_rand
+    //         * power/max_power
+    //         * (   ( 0.5 + 0.25*( dist_rate + dir_rate ) )
+    //             + ( 0.5 + 0.5*ball_speed/(ball_speed_max*ball_decay) ) )
+
+    // [0.5, 1.0]
+    double pos_rate
+        = 0.5
+        + 0.25 * ( dir_diff/M_PI + dist_ball/M_player_type->kickableMargin() );
+    // [0.5, 1.0]
+    double speed_rate
+        = 0.5
+        + 0.5 * ( M_stadium.ball().vel().r()
+                  / ( ServerParam::instance().ballSpeedMax()
+                      * ServerParam::instance().ballDecay() ) );
+    // [0, 2*kick_rand]
+    double max_rand
+        = M_kick_rand
+        * ( power / ServerParam::instance().maxPower() )
+        * ( pos_rate + speed_rate );
+    PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
+                                             drand( -M_PI, M_PI ) );
+    accel += kick_noise;
+
+    //             std::cout << M_stadium.time()
+    //                       << " Kick "
+    //                       << M_kick_rand
+    //                       << " " << power
+    //                       << " " << pos_rate
+    //                       << " " << speed_rate
+    //                       << " " << kick_noise
+    //                       << " " << kick_noise.r()
+    //                       << " " << max_rand
+    //                       << std::endl;
+
+    M_stadium.kickTaken( *this, accel );
+
+    ++M_kick_count;
+}
+
+void
+Player::long_kick( double power,
+                   double dir )
+{
+    if ( M_command_done )
+    {
+        return;
+    }
+
+    M_command_done = true;
+    M_kick_cycles = ServerParam::instance().longKickDelay() + 1;
+
+    M_long_kick_power = NormalizeKickPower( power );
+    M_long_kick_dir = NormalizeMoment( dir );
+
+    M_state |= KICK;
+}
+
+void
+Player::doLongKick()
+{
+    if ( ! isEnabled() )
+    {
+        return;
+    }
+
+    if ( M_kick_cycles != 1 )
+    {
+        return;
+    }
+
+    if ( M_stadium.playmode() == PM_BeforeKickOff ||
+         M_stadium.playmode() == PM_AfterGoal_Left ||
+         M_stadium.playmode() == PM_AfterGoal_Right ||
+         M_stadium.playmode() == PM_OffSide_Left ||
+         M_stadium.playmode() == PM_OffSide_Right ||
+         M_stadium.playmode() == PM_Foul_Charge_Left ||
+         M_stadium.playmode() == PM_Foul_Charge_Right ||
+         M_stadium.playmode() == PM_Foul_Push_Left ||
+         M_stadium.playmode() == PM_Foul_Push_Right ||
+         M_stadium.playmode() == PM_Back_Pass_Left ||
+         M_stadium.playmode() == PM_Back_Pass_Right ||
+         M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
+         M_stadium.playmode() == PM_Free_Kick_Fault_Right ||
+         M_stadium.playmode() == PM_CatchFault_Left ||
+         M_stadium.playmode() == PM_CatchFault_Right ||
+         M_stadium.playmode() == PM_TimeOver )
+    {
+        M_state |= KICK_FAULT;
+        return;
+    }
+
+    if ( ! ballKickable() )
+    {
+        M_state |= KICK_FAULT;
+        M_stadium.failedKickTaken( *this );
+        return;
+    }
+
+    double dir_diff = std::fabs( angleFromBody( M_stadium.ball() ) );
+    PVector rpos = M_stadium.ball().pos() - this->pos();
+    double dist_ball
+        = rpos.r()
+        - M_player_type->playerSize()
+        - ServerParam::instance().ballSize();
+
+    double eff_power = M_long_kick_power
+        * ( M_player_type->kickPowerRate() * ServerParam::instance().longKickPowerFactor() )
+        * (1.0 - 0.25*dir_diff/M_PI - 0.25*dist_ball/M_player_type->kickableMargin());
+
+    PVector accel = PVector::fromPolar( eff_power,
+                                        M_long_kick_dir + angleBodyCommitted() );
+
+    // [0.5, 1.0]
+    double pos_rate
+        = 0.5
+        + 0.25 * ( dir_diff/M_PI + dist_ball/M_player_type->kickableMargin() );
+    // [0.5, 1.0]
+    double speed_rate
+        = 0.5
+        + 0.5 * ( M_stadium.ball().vel().r()
+                  / ( ServerParam::instance().ballSpeedMax()
+                      * ServerParam::instance().ballDecay() ) );
+    // [0, 2*kick_rand]
+    double max_rand
+        = M_kick_rand
+        * ( M_long_kick_power / ServerParam::instance().maxPower() )
+        * ( pos_rate + speed_rate );
+    PVector kick_noise = PVector::fromPolar( drand( 0.0, max_rand ),
+                                             drand( -M_PI, M_PI ) );
+    accel += kick_noise;
+
+    M_stadium.kickTaken( *this, accel );
+
+    ++M_kick_count;
 }
 
 void
 Player::goalieCatch( double dir )
 {
-    if ( ! M_command_done )
+    if ( M_command_done )
     {
-        M_command_done = true;
-        M_state |= CATCH;
-
-        //pfr: we should only be able to catch in PlayOn mode
-        //tom: actually the goalie can catch the ball in any playmode, but
-        //infringements should be awarded.  Maybe later.
-        if ( ! this->isGoalie()
-             || M_goalie_catch_ban > 0
-             || ( M_stadium.playmode() != PM_PlayOn
-                  && ! Referee::isPenaltyShootOut( M_stadium.playmode() ) )
-             )
-        {
-            M_state |= CATCH_FAULT;
-            return;
-        }
-
-        // Tom: Catches can now occur an any position, but the ref will award and infringement if the ball is outside of the penalty area
-        //      static RArea p_l( PVector( -PITCH_LENGTH/2+PENALTY_AREA_LENGTH/2.0, 0.0 ),
-        //                        PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH )) ;
-        //      static RArea p_r( PVector( +PITCH_LENGTH/2-PENALTY_AREA_LENGTH/2.0, 0.0 ),
-        //                        PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH ) ) ;
-        //      switch (this->team->side)
-        //      {
-        //        case LEFT:
-        //          if ( !(p_l.inArea(this->pos)) ){
-        //            alive |= CATCH_FAULT;
-        //            return;
-        //          }
-        //        break;
-        //        case RIGHT:
-        //          if ( !(p_r.inArea(this->pos)) ){
-        //            alive |= CATCH_FAULT;
-        //            return;
-        //          }
-        //        break ;
-        //      }
-
-#if 0
-        RArea catchable( PVector( ServerParam::instance().catchAreaLength()*0.5,
-                                  0.0 ),
-                         PVector( ServerParam::instance().catchAreaLength(),
-                                  ServerParam::instance().catchAreaWidth() ) );
-
-        PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
-        rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
-
-        if ( ! catchable.inArea( rotated_pos )
-             || drand( 0, 1 ) >= ServerParam::instance().catchProb() )
-        {
-            M_state |= CATCH_FAULT;
-            return;
-        }
-
-        M_goalie_catch_ban = ServerParam::instance().catchBanCycle();
-
-        {
-            PVector new_pos = M_stadium.ball().pos() - this->pos();
-            double mag = new_pos.r();
-            // I would much prefer to cache the message of the catch command
-            // to the end of the cycle and then do all the movements and
-            // playmode changes there, but I feel that would be too much of a
-            // depature from the current behaviour.
-            mag -= ServerParam::instance().ballSize() + M_player_type->playerSize();
-            new_pos.normalize( mag );
-            M_pos += new_pos;
-            M_angle_body = new_pos.th();
-            M_vel = PVector();
-        }
-
-        M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
-
-        M_stadium.ballCaught( *this );
-#else
-        // 2009-10-28 akiyama
-        // heterogeneous goalie model proposed by Thomas Gabel
-        const ServerParam & SP = ServerParam::instance();
-
-        const double this_catch_area_delta = SP.catchAreaLength() * ( M_player_type->catchAreaLengthStretch() - 1.0 );
-        const double this_catch_area_l_max = SP.catchAreaLength() + this_catch_area_delta;
-        const double this_catch_area_l_min = SP.catchAreaLength() - this_catch_area_delta;
-
-        //const RArea default_catchable( PVector( SP.catchAreaLength()*0.5, 0.0 ),
-        //                               PVector( SP.catchAreaLength(), SP.catchAreaWidth() ) );
-        const RArea max_catchable( PVector( this_catch_area_l_max*0.5, 0.0 ),
-                                   PVector( this_catch_area_l_max, SP.catchAreaWidth() ) );
-        const RArea min_catchable( PVector( this_catch_area_l_min*0.5, 0.0 ),
-                                   PVector( this_catch_area_l_min, SP.catchAreaWidth() ) );
-
-        PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
-        rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
-
-        bool success = false;
-        if ( min_catchable.inArea( rotated_pos ) )
-        {
-            success = ( drand( 0, 1 ) <= SP.catchProb() );
-            //std::cerr << M_stadium.time()
-            //          << ": goalieCatch min_catchable ok" << std::endl;
-        }
-        else if ( ! max_catchable.inArea( rotated_pos ) )
-        {
-            success = false;
-        }
-        else
-        {
-            double catch_prob
-                = SP.catchProb()
-                - SP.catchProb() * ( ( rotated_pos.x - this_catch_area_l_min )
-                                     / ( this_catch_area_l_max - this_catch_area_l_min ) );
-            catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
-            success = ( drand( 0.0, 1.0 ) <= catch_prob );
-            //std::cerr << M_stadium.time()
-            //          << ": goalieCatch "
-            //          << " dir=" << Rad2Deg( normalize_angle( angleBodyCommitted() + NormalizeMoment( dir ) ) )
-            //          << " x=" << rotated_pos.x
-            //          << " min_l=" << this_catch_area_l_min
-            //          << " max_l=" << this_catch_area_l_max
-            //          << " catch_prob=" << catch_prob << std::endl;
-        }
-
-        if ( ! success )
-        {
-            M_state |= CATCH_FAULT;
-            //std::cerr << M_stadium.time()
-            //          << ": goalieCatch CATCH_FAULT" << std::endl;
-            return;
-        }
-
-        {
-            PVector new_pos = M_stadium.ball().pos() - this->pos();
-            double mag = new_pos.r();
-            // I would much prefer to cache the message of the catch command
-            // to the end of the cycle and then do all the movements and
-            // playmode changes there, but I feel that would be too much of a
-            // depature from the current behaviour.
-            mag -= SP.ballSize() + M_player_type->playerSize();
-            new_pos.normalize( mag );
-            M_pos += new_pos;
-            M_angle_body = new_pos.th();
-            M_vel = PVector();
-        }
-
-        M_goalie_catch_ban = SP.catchBanCycle();
-        M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
-
-        M_stadium.ballCaught( *this );
-#endif
-
-#if 0
-        // 2008-02-08 akiyama
-        // TEST version catch model based on the Sebastian Marian's proposal
-
-        const double reliable_catch_area_l = ServerParam::instance().catchAreaLength();
-        const double min_catch_probability = 1.0;
-
-
-        // 2008-02-18 akiyama: catch_area_l variables should be used for gcc-3.3.6
-        const double catch_area_l = ServerParam::instance().catchAreaLength();
-        const RArea catch_area( PVector( catch_area_l * 0.5, 0.0 ),
-                                PVector( catch_area_l,
-                                         ServerParam::instance().catchAreaWidth() ) );
-        const RArea reliable_catch_area( PVector( reliable_catch_area_l * 0.5, 0.0 ),
-                                         PVector( reliable_catch_area_l,
-                                                  ServerParam::instance().catchAreaWidth() ) );
-        PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
-        rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
-
-        if ( ! catch_area.inArea( rotated_pos )
-             || drand( 0, 1 ) >= ServerParam::instance().catchProb() )
-        {
-            M_state |= CATCH_FAULT;
-            return;
-        }
-
-        M_goalie_catch_ban = ServerParam::instance().catchBanCycle();
-
-        bool success = true;
-
-        if ( ! reliable_catch_area.inArea( rotated_pos ) )
-        {
-            double diagonal = std::sqrt( std::pow( catch_area_l, 2.0 )
-                                         + std::pow( ServerParam::instance().catchAreaWidth()*0.5, 2.0 ) );
-            double reliable_diagonal = std::sqrt( std::pow( reliable_catch_area_l, 2.0 )
-                                                  + std::pow( ServerParam::instance().catchAreaWidth()*0.5, 2.0 ) );
-            double ball_dist = rotated_pos.r();
-
-            const double alpha = 0.75;
-
-            double max_fail_prob = 1.0 - min_catch_probability;
-            double speed_rate = max_fail_prob * alpha
-                *( M_stadium.ball().vel().r()
-                   / ( ServerParam::instance().ballSpeedMax()
-                       * ServerParam::instance().ballDecay() ) );
-            double dist_rate = max_fail_prob * ( 1.0 - alpha )
-                * ( ( ball_dist - reliable_diagonal ) / ( diagonal - reliable_diagonal ) );
-
-            double fail_prob = rcss::bound( 0.0,
-                                            speed_rate + dist_rate,
-                                            1.0 );
-
-//             std::cerr << M_stadium.time() << ": Unreliable catch"
-//                       << " speed_rate=" << speed_rate
-//                       << " dist_rate=" << dist_rate
-//                       << " fail_prob=" << fail_prob << std::endl;
-
-            boost::bernoulli_distribution<> rng( fail_prob );
-            boost::variate_generator< rcss::random::DefaultRNG &,
-                boost::bernoulli_distribution<> >
-                dst( rcss::random::DefaultRNG::instance(), rng );
-            if ( dst() )
-            {
-                success = false;
-            }
-        }
-
-        if ( success )
-        {
-            PVector new_pos = M_stadium.ball().pos() - this->pos();
-            double mag = new_pos.r();
-            // I would much prefer to cache the message of the catch command
-            // to the end of the cycle and then do all the movements and
-            // playmode changes there, but I feel that would be too much of a
-            // depature from the current behaviour.
-            mag -= ServerParam::instance().ballSize() + M_player_type->playerSize();
-            new_pos.normalize( mag );
-            M_pos += new_pos;
-            M_angle_body = new_pos.th();
-            M_vel = PVector();
-
-            M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
-            M_stadium.ballCaught( *this );
-        }
-#endif
-        ++M_catch_count;
+        return;
     }
+
+    M_command_done = true;
+    M_state |= CATCH;
+
+    //pfr: we should only be able to catch in PlayOn mode
+    //tom: actually the goalie can catch the ball in any playmode, but
+    //infringements should be awarded.  Maybe later.
+    if ( ! this->isGoalie()
+         || M_goalie_catch_ban > 0
+         || ( M_stadium.playmode() != PM_PlayOn
+              && ! Referee::isPenaltyShootOut( M_stadium.playmode() ) )
+         )
+    {
+        M_state |= CATCH_FAULT;
+        return;
+    }
+
+    // Tom: Catches can now occur an any position, but the ref will award and infringement if the ball is outside of the penalty area
+    //      static RArea p_l( PVector( -PITCH_LENGTH/2+PENALTY_AREA_LENGTH/2.0, 0.0 ),
+    //                        PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH )) ;
+    //      static RArea p_r( PVector( +PITCH_LENGTH/2-PENALTY_AREA_LENGTH/2.0, 0.0 ),
+    //                        PVector( PENALTY_AREA_LENGTH, PENALTY_AREA_WIDTH ) ) ;
+    //      switch (this->team->side)
+    //      {
+    //        case LEFT:
+    //          if ( !(p_l.inArea(this->pos)) ){
+    //            alive |= CATCH_FAULT;
+    //            return;
+    //          }
+    //        break;
+    //        case RIGHT:
+    //          if ( !(p_r.inArea(this->pos)) ){
+    //            alive |= CATCH_FAULT;
+    //            return;
+    //          }
+    //        break ;
+    //      }
+
+#if 0
+    RArea catchable( PVector( ServerParam::instance().catchAreaLength()*0.5,
+                              0.0 ),
+                     PVector( ServerParam::instance().catchAreaLength(),
+                              ServerParam::instance().catchAreaWidth() ) );
+
+    PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
+    rotated_pos.rotate( -( angleBodyCommitted() + NormalizeMoment( dir ) ) );
+
+    if ( ! catchable.inArea( rotated_pos )
+         || drand( 0, 1 ) >= ServerParam::instance().catchProb() )
+    {
+        M_state |= CATCH_FAULT;
+        return;
+    }
+
+    M_goalie_catch_ban = ServerParam::instance().catchBanCycle();
+
+    {
+        PVector new_pos = M_stadium.ball().pos() - this->pos();
+        double mag = new_pos.r();
+        // I would much prefer to cache the message of the catch command
+        // to the end of the cycle and then do all the movements and
+        // playmode changes there, but I feel that would be too much of a
+        // depature from the current behaviour.
+        mag -= ServerParam::instance().ballSize() + M_player_type->playerSize();
+        new_pos.normalize( mag );
+        M_pos += new_pos;
+        M_angle_body = new_pos.th();
+        M_vel = PVector();
+    }
+
+    M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
+
+    M_stadium.ballCaught( *this );
+#endif
+
+    // 2009-10-28 akiyama
+    // heterogeneous goalie model proposed by Thomas Gabel
+    const ServerParam & SP = ServerParam::instance();
+
+    M_goalie_catch_ban = SP.catchBanCycle();
+
+    const double this_catch_area_delta = SP.catchAreaLength() * ( M_player_type->catchAreaLengthStretch() - 1.0 );
+    const double this_catch_area_l_max = SP.catchAreaLength() + this_catch_area_delta;
+    const double this_catch_area_l_min = SP.catchAreaLength() - this_catch_area_delta;
+
+    //const RArea default_catchable( PVector( SP.catchAreaLength()*0.5, 0.0 ),
+    //                               PVector( SP.catchAreaLength(), SP.catchAreaWidth() ) );
+    const RArea max_catchable( PVector( this_catch_area_l_max*0.5, 0.0 ),
+                               PVector( this_catch_area_l_max, SP.catchAreaWidth() ) );
+    const RArea min_catchable( PVector( this_catch_area_l_min*0.5, 0.0 ),
+                               PVector( this_catch_area_l_min, SP.catchAreaWidth() ) );
+    const double catch_angle = angleBodyCommitted() + NormalizeMoment( dir );
+
+    PVector	rotated_pos = M_stadium.ball().pos() - this->pos();
+    rotated_pos.rotate( -catch_angle );
+
+    if ( ! max_catchable.inArea( rotated_pos ) )
+    {
+        M_state |= CATCH_FAULT;
+        return;
+    }
+
+    bool success = false;
+    if ( min_catchable.inArea( rotated_pos ) )
+    {
+        //success = ( drand( 0, 1 ) <= SP.catchProb() );
+        boost::bernoulli_distribution<> rng( SP.catchProbability() );
+        boost::variate_generator< rcss::random::DefaultRNG &,
+            boost::bernoulli_distribution<> >
+            dst( rcss::random::DefaultRNG::instance(), rng );
+        success = dst();
+        //std::cerr << M_stadium.time()
+        //          << ": goalieCatch min_catchable ok" << std::endl;
+    }
+    else
+    {
+        double catch_prob
+            = SP.catchProbability()
+            - SP.catchProbability() * ( ( rotated_pos.x - this_catch_area_l_min )
+                                        / ( this_catch_area_l_max - this_catch_area_l_min ) );
+        catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
+
+        //success = ( drand( 0, 1 ) <= catch_prob );
+        boost::bernoulli_distribution<> rng( catch_prob );
+        boost::variate_generator< rcss::random::DefaultRNG &,
+            boost::bernoulli_distribution<> >
+            dst( rcss::random::DefaultRNG::instance(), rng );
+        success = dst();
+        //std::cerr << M_stadium.time()
+        //          << ": goalieCatch "
+        //          << " dir=" << Rad2Deg( normalize_angle( angleBodyCommitted() + NormalizeMoment( dir ) ) )
+        //          << " x=" << rotated_pos.x
+        //          << " min_l=" << this_catch_area_l_min
+        //          << " max_l=" << this_catch_area_l_max
+        //          << " catch_prob=" << catch_prob << std::endl;
+    }
+
+    if ( success )
+    {
+        PVector new_pos = M_stadium.ball().pos() - this->pos();
+        double mag = new_pos.r();
+        // I would much prefer to cache the message of the catch command
+        // to the end of the cycle and then do all the movements and
+        // playmode changes there, but I feel that would be too much of a
+        // depature from the current behaviour.
+        mag -= SP.ballSize() + M_player_type->playerSize();
+        new_pos.normalize( mag );
+        M_pos += new_pos;
+        M_angle_body = new_pos.th();
+        M_vel = PVector();
+
+        M_stadium.ballCaught( *this );
+    }
+    else
+    {
+        M_state |= CATCH_FAULT;
+
+        PVector vel = M_stadium.ball().vel();
+        vel.rotate( -catch_angle );
+        vel.x = -vel.x;
+        vel.rotate( catch_angle );
+
+        PVector accel = vel - M_stadium.ball().vel();
+
+        std::cerr << M_stadium.time()
+                  << ": goalieCatch probabilistic failure."
+                  << " vel=" << M_stadium.ball().vel()
+                  << " new_vel=" << vel
+                  << " accel=" << accel
+                  << std::endl;
+
+        M_stadium.ballPunched( *this, accel );
+    }
+
+    ++M_catch_count;
+    M_goalie_moves_since_catch = 0; // reset the number of times the goalie moved
 }
 
 void
@@ -1448,43 +1514,45 @@ void
 Player::move( double x,
               double y )
 {
-    if ( ! M_command_done )
+    if ( M_command_done )
     {
-        if ( M_stadium.playmode() == PM_BeforeKickOff ||
-             M_stadium.playmode() == PM_AfterGoal_Right ||
-             M_stadium.playmode() == PM_AfterGoal_Left
-             //|| M_stadium.playmode() == PM_PenaltySetup_Left
-             //|| M_stadium.playmode() == PM_PenaltySetup_Right
-             )
+        return;
+    }
+
+    if ( M_stadium.playmode() == PM_BeforeKickOff ||
+         M_stadium.playmode() == PM_AfterGoal_Right ||
+         M_stadium.playmode() == PM_AfterGoal_Left
+         //|| M_stadium.playmode() == PM_PenaltySetup_Left
+         //|| M_stadium.playmode() == PM_PenaltySetup_Right
+         )
+    {
+        M_pos.x = x * side();
+        M_pos.y = y * side();
+        M_stadium.collisions();
+    }
+    else if ( ( M_stadium.playmode() == PM_FreeKick_Left
+                || M_stadium.playmode() == PM_FreeKick_Right )
+              && M_stadium.ballCatcher() == this )
+    {
+        if ( ServerParam::instance().goalieMaxMoves() < 0
+             || M_goalie_moves_since_catch < ServerParam::instance().goalieMaxMoves() )
         {
             M_pos.x = x * side();
             M_pos.y = y * side();
-            M_stadium.collisions();
-        }
-        else if ( ( M_stadium.playmode() == PM_FreeKick_Left
-                    || M_stadium.playmode() == PM_FreeKick_Right )
-                  && M_stadium.ballCatcher() == this )
-        {
-            if ( ServerParam::instance().goalieMaxMoves() < 0
-                 || M_goalie_moves_since_catch < ServerParam::instance().goalieMaxMoves() )
-            {
-                M_pos.x = x * side();
-                M_pos.y = y * side();
-                ++M_goalie_moves_since_catch;
-            }
-            else
-            {
-                send( "(error too_many_moves)" );
-            }
+            ++M_goalie_moves_since_catch;
         }
         else
         {
-            return;
+            send( "(error too_many_moves)" );
         }
-
-        M_command_done = true;
-        ++M_move_count;
     }
+    else
+    {
+        return;
+    }
+
+    M_command_done = true;
+    ++M_move_count;
 }
 
 void
@@ -1772,200 +1840,202 @@ void
 Player::tackle( double power_or_angle,
                 bool foul )
 {
-    if ( ! M_command_done )
+    if ( M_command_done )
     {
-        M_command_done = true;
-        M_tackle_cycles = ServerParam::instance().tackleCycles();
-        ++M_tackle_count;
+        return;
+    }
 
-        PVector player_2_ball = M_stadium.ball().pos() - pos();
-        player_2_ball.rotate( - angleBodyCommitted() );
+    M_command_done = true;
+    M_tackle_cycles = ServerParam::instance().tackleCycles();
+    ++M_tackle_count;
 
-        double tackle_dist = ( player_2_ball.x > 0.0
-                               ? ServerParam::instance().tackleDist()
-                               : ServerParam::instance().tackleBackDist() );
+    PVector player_2_ball = M_stadium.ball().pos() - pos();
+    player_2_ball.rotate( - angleBodyCommitted() );
 
-        if ( std::fabs( tackle_dist ) <= 1.0e-5 )
+    double tackle_dist = ( player_2_ball.x > 0.0
+                           ? ServerParam::instance().tackleDist()
+                           : ServerParam::instance().tackleBackDist() );
+
+    if ( std::fabs( tackle_dist ) <= 1.0e-5 )
+    {
+        M_state |= TACKLE_FAULT;
+        return;
+    }
+
+    double exponent = ServerParam::instance().tackleExponent();
+
+    // 2009-10-22 akiyama: foul option
+    if ( foul )
+    {
+        foul = false;
+
+        const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+              p != end;
+              ++p )
         {
-            M_state |= TACKLE_FAULT;
-            return;
-        }
-
-        double exponent = ServerParam::instance().tackleExponent();
-
-        // 2009-10-22 akiyama: foul option
-        if ( foul )
-        {
-            foul = false;
-
-            const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-            for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-                  p != end;
-                  ++p )
+            if ( (*p)->isEnabled()
+                 && (*p)->side() != this->side()
+                 && (*p)->ballKickable() )
             {
-                if ( (*p)->isEnabled()
-                     && (*p)->side() != this->side()
-                     && (*p)->ballKickable() )
-                {
-                    foul = true;
-                    exponent = ServerParam::instance().foulExponent();
-                    break;
-                }
+                foul = true;
+                exponent = ServerParam::instance().foulExponent();
+                break;
             }
         }
+    }
 
-        // tackle failure probability
-        double prob = ( std::pow( std::fabs( player_2_ball.x ) / tackle_dist,
-                                  exponent )
-                        + std::pow( std::fabs( player_2_ball.y ) / ServerParam::instance().tackleWidth(),
-                                    exponent ) );
+    // tackle failure probability
+    double prob = ( std::pow( std::fabs( player_2_ball.x ) / tackle_dist,
+                              exponent )
+                    + std::pow( std::fabs( player_2_ball.y ) / ServerParam::instance().tackleWidth(),
+                                exponent ) );
 
-        if ( prob < 1.0 )
+    if ( prob < 1.0 )
+    {
+        boost::bernoulli_distribution<> rng( 1 - prob );
+        boost::variate_generator< rcss::random::DefaultRNG &,
+            boost::bernoulli_distribution<> >
+            dst( rcss::random::DefaultRNG::instance(), rng );
+
+        if ( dst() )
         {
-            boost::bernoulli_distribution<> rng( 1 - prob );
-            boost::variate_generator< rcss::random::DefaultRNG &,
-                boost::bernoulli_distribution<> >
-                dst( rcss::random::DefaultRNG::instance(), rng );
+            M_state |= TACKLE;
 
-            if ( dst() )
+            if ( M_stadium.playmode() == PM_BeforeKickOff ||
+                 M_stadium.playmode() == PM_AfterGoal_Left ||
+                 M_stadium.playmode() == PM_AfterGoal_Right  ||
+                 M_stadium.playmode() == PM_OffSide_Left ||
+                 M_stadium.playmode() == PM_OffSide_Right ||
+                 M_stadium.playmode() == PM_Foul_Charge_Left ||
+                 M_stadium.playmode() == PM_Foul_Charge_Right ||
+                 M_stadium.playmode() == PM_Foul_Push_Left ||
+                 M_stadium.playmode() == PM_Foul_Push_Right ||
+                 M_stadium.playmode() == PM_Back_Pass_Left ||
+                 M_stadium.playmode() == PM_Back_Pass_Right ||
+                 M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
+                 M_stadium.playmode() == PM_Free_Kick_Fault_Right ||
+                 M_stadium.playmode() == PM_TimeOver )
             {
-                M_state |= TACKLE;
+                return;
+            }
 
-                if ( M_stadium.playmode() == PM_BeforeKickOff ||
-                     M_stadium.playmode() == PM_AfterGoal_Left ||
-                     M_stadium.playmode() == PM_AfterGoal_Right  ||
-                     M_stadium.playmode() == PM_OffSide_Left ||
-                     M_stadium.playmode() == PM_OffSide_Right ||
-                     M_stadium.playmode() == PM_Foul_Charge_Left ||
-                     M_stadium.playmode() == PM_Foul_Charge_Right ||
-                     M_stadium.playmode() == PM_Foul_Push_Left ||
-                     M_stadium.playmode() == PM_Foul_Push_Right ||
-                     M_stadium.playmode() == PM_Back_Pass_Left ||
-                     M_stadium.playmode() == PM_Back_Pass_Right ||
-                     M_stadium.playmode() == PM_Free_Kick_Fault_Left ||
-                     M_stadium.playmode() == PM_Free_Kick_Fault_Right ||
-                     M_stadium.playmode() == PM_TimeOver )
-                {
-                    return;
-                }
+            if ( foul )
+            {
+                M_tackle_cycles = 0;
+            }
 
-                if ( foul )
-                {
-                    M_tackle_cycles = 0;
-                }
+            double power_rate = 1.0;
+            PVector accel( 0.0, 0.0 );
 
-                double power_rate = 1.0;
-                PVector accel( 0.0, 0.0 );
-
-                // 2008-02-07 akiyama
-                // new tackle model based on the Thomas Gabel's proposal
-                if ( version() >= 12.0 )
-                {
-                    double angle = NormalizeMoment( power_or_angle );
-                    double eff_power
-                        = ( ServerParam::instance().maxBackTacklePower()
-                            + ( ( ServerParam::instance().maxTacklePower()
-                                  - ServerParam::instance().maxBackTacklePower() )
-                                * ( 1.0 - ( std::fabs( angle ) / M_PI ) )
-                                //* ( 1.0 - std::pow( std::fabs( angle ) / M_PI, 2.0 ) )
-                                )
+            // 2008-02-07 akiyama
+            // new tackle model based on the Thomas Gabel's proposal
+            if ( version() >= 12.0 )
+            {
+                double angle = NormalizeMoment( power_or_angle );
+                double eff_power
+                    = ( ServerParam::instance().maxBackTacklePower()
+                        + ( ( ServerParam::instance().maxTacklePower()
+                              - ServerParam::instance().maxBackTacklePower() )
+                            * ( 1.0 - ( std::fabs( angle ) / M_PI ) )
+                            //* ( 1.0 - std::pow( std::fabs( angle ) / M_PI, 2.0 ) )
                             )
-                        * ServerParam::instance().tacklePowerRate();
+                        )
+                    * ServerParam::instance().tacklePowerRate();
 
-                    eff_power *= 1.0 - 0.5*( std::fabs( player_2_ball.th() ) / M_PI );
+                eff_power *= 1.0 - 0.5*( std::fabs( player_2_ball.th() ) / M_PI );
 
-                    accel = PVector::fromPolar( eff_power,
-                                                angle + angleBodyCommitted() );
+                accel = PVector::fromPolar( eff_power,
+                                            angle + angleBodyCommitted() );
 
-//                     std::cerr << M_stadium.time()
-//                               << ": v12 tackle arg=" << power_or_angle
-//                               << " angle=" << angle
-//                               << " angl_diff=" << Rad2Deg( player_2_ball.th() )
-//                               << " eff_power=" << eff_power
-//                               << std::endl;
-                }
-                else
-                {
-                    // Calculate the accleration that will be applied to the ball
-                    double power = NormalizeTacklePower( power_or_angle );
-                    double eff_power = power * ServerParam::instance().tacklePowerRate();
-
-                    if ( power >= 0.0 )
-                    {
-                        power_rate = power / ServerParam::instance().maxTacklePower();
-                    }
-                    else if ( std::fabs( power ) < 1.0e-10 )
-                    {
-                        power_rate = 0.0;
-                    }
-                    else if ( std::fabs( ServerParam::instance().maxBackTacklePower() ) > 1.0e-10 )
-                    {
-                        power_rate = -power / ServerParam::instance().maxBackTacklePower();
-                    }
-
-                    // Reduce the acceleration by the probability of kicking it.
-                    // For instance when the ball is on the boundry of the tackle
-                    // area, the acceleration is very low as one only barely touches
-                    // the ball.
-                    //eff_power *= 1 - prob;
-
-                    eff_power *= 1.0 - 0.5*( std::fabs( player_2_ball.th() ) / M_PI );
-
-                    accel = PVector::fromPolar( eff_power,
-                                                angleBodyCommitted() );
-
-//                     std::cerr << M_stadium.time()
-//                               << ": v11 tackle arg=" << power_or_angle
-//                               << " power=" << power
-//                               << " angl_diff=" << Rad2Deg( player_2_ball.th() )
-//                               << " eff_power=" << eff_power
-//                               << std::endl;
-                }
-
-//                 // pfr 8/14/00: for RC2000 evaluation
-//                 // add noise to kick
-//                 {
-//                     double maxrnd = ( M_kick_rand * power * ( 1 - prob )
-//                                       / ServerParam::instance().maxPower() );
-//                     PVector kick_noise( drand( -maxrnd, maxrnd ),
-//                                         drand( -maxrnd, maxrnd ) );
-//                     accel += kick_noise;
-//                 }
-
-                // akiyama 2008-01-30
-                // new kick noise
-
-                // [0.5, 1]
-                double pos_rate = 0.5 + 0.5*( 1.0 - prob );
-                // [0.5, 1]
-                double speed_rate
-                    = 0.5
-                    + 0.5 * ( M_stadium.ball().vel().r()
-                              / ( ServerParam::instance().ballSpeedMax()
-                                  * ServerParam::instance().ballDecay() ) );
-                // [0, 2*tackle_rand]
-                // tackle_rand = kick_rand * server::tackle_rand_factor
-                double max_rand = M_kick_rand * ServerParam::instance().tackleRandFactor()
-                    * power_rate
-                    * ( pos_rate + speed_rate );
-                PVector tackle_noise = PVector::fromPolar( drand( 0.0, max_rand ),
-                                                           drand( -M_PI, M_PI ) );
-                accel += tackle_noise;
-
-                M_stadium.kickTaken( *this, accel );
-                M_stadium.tackleTaken( *this, foul );
+                //                     std::cerr << M_stadium.time()
+                //                               << ": v12 tackle arg=" << power_or_angle
+                //                               << " angle=" << angle
+                //                               << " angl_diff=" << Rad2Deg( player_2_ball.th() )
+                //                               << " eff_power=" << eff_power
+                //                               << std::endl;
             }
             else
             {
-                M_stadium.failedTackleTaken( *this, foul );
-                M_state |= ( TACKLE | TACKLE_FAULT );
+                // Calculate the accleration that will be applied to the ball
+                double power = NormalizeTacklePower( power_or_angle );
+                double eff_power = power * ServerParam::instance().tacklePowerRate();
+
+                if ( power >= 0.0 )
+                {
+                    power_rate = power / ServerParam::instance().maxTacklePower();
+                }
+                else if ( std::fabs( power ) < 1.0e-10 )
+                {
+                    power_rate = 0.0;
+                }
+                else if ( std::fabs( ServerParam::instance().maxBackTacklePower() ) > 1.0e-10 )
+                {
+                    power_rate = -power / ServerParam::instance().maxBackTacklePower();
+                }
+
+                // Reduce the acceleration by the probability of kicking it.
+                // For instance when the ball is on the boundry of the tackle
+                // area, the acceleration is very low as one only barely touches
+                // the ball.
+                //eff_power *= 1 - prob;
+
+                eff_power *= 1.0 - 0.5*( std::fabs( player_2_ball.th() ) / M_PI );
+
+                accel = PVector::fromPolar( eff_power,
+                                            angleBodyCommitted() );
+
+                //                     std::cerr << M_stadium.time()
+                //                               << ": v11 tackle arg=" << power_or_angle
+                //                               << " power=" << power
+                //                               << " angl_diff=" << Rad2Deg( player_2_ball.th() )
+                //                               << " eff_power=" << eff_power
+                //                               << std::endl;
             }
+
+            //                 // pfr 8/14/00: for RC2000 evaluation
+            //                 // add noise to kick
+            //                 {
+            //                     double maxrnd = ( M_kick_rand * power * ( 1 - prob )
+            //                                       / ServerParam::instance().maxPower() );
+            //                     PVector kick_noise( drand( -maxrnd, maxrnd ),
+            //                                         drand( -maxrnd, maxrnd ) );
+            //                     accel += kick_noise;
+            //                 }
+
+            // akiyama 2008-01-30
+            // new kick noise
+
+            // [0.5, 1]
+            double pos_rate = 0.5 + 0.5*( 1.0 - prob );
+            // [0.5, 1]
+            double speed_rate
+                = 0.5
+                + 0.5 * ( M_stadium.ball().vel().r()
+                          / ( ServerParam::instance().ballSpeedMax()
+                              * ServerParam::instance().ballDecay() ) );
+            // [0, 2*tackle_rand]
+            // tackle_rand = kick_rand * server::tackle_rand_factor
+            double max_rand = M_kick_rand * ServerParam::instance().tackleRandFactor()
+                * power_rate
+                * ( pos_rate + speed_rate );
+            PVector tackle_noise = PVector::fromPolar( drand( 0.0, max_rand ),
+                                                       drand( -M_PI, M_PI ) );
+            accel += tackle_noise;
+
+            M_stadium.kickTaken( *this, accel );
+            M_stadium.tackleTaken( *this, foul );
         }
         else
         {
             M_stadium.failedTackleTaken( *this, foul );
-            M_state |= TACKLE_FAULT;
+            M_state |= ( TACKLE | TACKLE_FAULT );
         }
+    }
+    else
+    {
+        M_stadium.failedTackleTaken( *this, foul );
+        M_state |= TACKLE_FAULT;
     }
 }
 
@@ -2457,7 +2527,8 @@ Player::resetCommandFlags()
         --M_foul_cycles;
     }
 
-    if ( tackleCycles() == 0
+    if ( M_kick_cycles <= 0
+         && tackleCycles() == 0
          && foulCycles() == 0 )
     {
         M_command_done = false;

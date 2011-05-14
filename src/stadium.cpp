@@ -597,6 +597,8 @@ Stadium::createObjects()
         M_players[i+MAX_PLAYER] = p_r;
     }
 
+    M_shuffle_players = M_players;
+
     M_coach = new Coach( *this );
 
     M_olcoaches[0] = new OnlineCoach( *this, *M_team_l );
@@ -830,10 +832,11 @@ Stadium::initOnlineCoach( const char * teamname,
 void
 Stadium::step()
 {
+    const PlayerCont::iterator end = M_players.end();
+
     //
     // reset command flags
     //
-    const PlayerCont::iterator end = M_players.end();
     for ( PlayerCont::iterator p = M_players.begin();
           p != end;
           ++p )
@@ -930,6 +933,18 @@ Stadium::step()
           ++p )
     {
         (*p)->resetState();
+    }
+
+    //
+    // delayed effects
+    //
+    std::random_shuffle( M_shuffle_players.begin(), M_shuffle_players.end(), irand );
+    for ( PlayerCont::iterator p = M_shuffle_players.begin(),
+              p_end = M_shuffle_players.end();
+          p != p_end;
+          ++p )
+    {
+        (*p)->doLongKick();
     }
 }
 
@@ -1841,6 +1856,19 @@ Stadium::ballCaught( const Player & catcher )
     {
         M_ball_catcher = &catcher;
     }
+}
+
+void
+Stadium::ballPunched( const Player & catcher,
+                      const PVector & accel )
+{
+    M_ball->push( accel );
+
+    for_each( M_referees.begin(), M_referees.end(),
+              Referee::doBallTouched( catcher ) );
+
+    for_each( M_referees.begin(), M_referees.end(),
+              Referee::doPunchedBall( catcher ) );
 }
 
 void

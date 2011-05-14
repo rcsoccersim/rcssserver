@@ -1,3 +1,30 @@
+2011-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/heteroplayer.cpp:
+	* src/heteroplayer.h:
+	* src/initsender.cpp:
+	* src/pcombuilder.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/player_command_parser.ypp:
+	* src/player_command_tok.lpp:
+	* src/playerparam.cpp:
+	* src/playerparam.h:
+	* src/referee.cpp:
+	* src/referee.h:
+	* src/serverparam.cpp:
+	* src/serverparam.h:
+	* src/stadium.cpp:
+	* src/stadium.h:
+	* src/types.h:
+	- added the immediate red card rule to the intentional foul.
+	- added server::red_card_probability (default value : 0.0).
+	- improved goalie catch model. When a goalie fails the catch
+	probabilistically, the ball is accelerated to the goalie's catch
+	directionthe. In the current implementation, the ball vecolity is
+	simply reversed along the goalie's catch direction.
+	- implemented long_kick for testing purpose.
+
 2011-05-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:

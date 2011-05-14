@@ -42,21 +42,21 @@ public:
     HeteroPlayer( int );
     ~HeteroPlayer();
 
-    const double & playerSpeedMax() const { return M_player_speed_max; }
-    const double & staminaIncMax() const { return M_stamina_inc_max; }
-    const double & playerDecay() const { return M_player_decay; }
-    const double & inertiaMoment() const { return M_inertia_moment; }
-    const double & dashPowerRate() const { return M_dash_power_rate; }
-    const double & playerSize() const { return M_player_size; }
-    const double & kickableMargin() const { return M_kickable_margin; }
-    const double & kickRand() const { return M_kick_rand; }
-    const double & extraStamina() const { return M_extra_stamina; }
-    const double & effortMax() const { return M_effort_max; }
-    const double & effortMin() const { return M_effort_min; }
+    double playerSpeedMax() const { return M_player_speed_max; }
+    double staminaIncMax() const { return M_stamina_inc_max; }
+    double playerDecay() const { return M_player_decay; }
+    double inertiaMoment() const { return M_inertia_moment; }
+    double dashPowerRate() const { return M_dash_power_rate; }
+    double playerSize() const { return M_player_size; }
+    double kickableMargin() const { return M_kickable_margin; }
+    double kickRand() const { return M_kick_rand; }
+    double extraStamina() const { return M_extra_stamina; }
+    double effortMax() const { return M_effort_max; }
+    double effortMin() const { return M_effort_min; }
 
-    const double & kickPowerRate() const { return M_kick_power_rate; }
-    const double & foulDetectProbability() const { return M_foul_detect_probability; }
-    const double & catchAreaLengthStretch() const { return M_catchable_area_l_stretch; }
+    double kickPowerRate() const { return M_kick_power_rate; }
+    double foulDetectProbability() const { return M_foul_detect_probability; }
+    double catchAreaLengthStretch() const { return M_catchable_area_l_stretch; }
 
     std::ostream & print( std::ostream & o ) const;
 
@@ -66,11 +66,6 @@ public:
                           const unsigned int version,
                           const int id ) const;
 private:
-
-    template < typename T >
-    void serializeParam( std::ostream & o,
-                         const std::string & name,
-                         const T & value ) const;
 
     double delta( const double & min,
                   const double & max );
@@ -92,6 +87,7 @@ private:
     double M_kick_power_rate;
     double M_foul_detect_probability;
     double M_catchable_area_l_stretch;
+
 };
 
 inline

@@ -111,6 +111,7 @@ protected:
 
     Ball * M_ball;
     PlayerCont M_players; //!< player instance container
+    PlayerCont M_shuffle_players; //!< reference player container
     Coach * M_coach;
     OnlineCoachCont M_olcoaches;
     Team * M_team_l;
@@ -431,6 +432,8 @@ public:
     void failedTackleTaken( const Player & tackler,
                             const bool foul );
     void ballCaught( const Player & catcher );
+    void ballPunched( const Player & catcher,
+                      const PVector & accel );
 
     void collisions();
 

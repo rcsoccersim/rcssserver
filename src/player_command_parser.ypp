@@ -84,6 +84,7 @@ namespace
 %token RCSS_PCOM_TURN "turn"
 %token RCSS_PCOM_TURN_NECK "turn_neck"
 %token RCSS_PCOM_KICK "kick"
+%token RCSS_PCOM_LONG_KICK "long_kick"
 %token RCSS_PCOM_CATCH "catch"
 %token RCSS_PCOM_SAY "say"
 %token RCSS_PCOM_UNQ_SAY "unquoted say"
@@ -143,6 +144,7 @@ command : dash_com
           | turn_com
           | turn_neck_com
           | kick_com
+          | long_kick_com
           | catch_com
           | say_com
           | sense_body_com
@@ -185,6 +187,12 @@ turn_neck_com : RCSS_PCOM_LP RCSS_PCOM_TURN_NECK floating_point_number RCSS_PCOM
 kick_com : RCSS_PCOM_LP RCSS_PCOM_KICK floating_point_number floating_point_number RCSS_PCOM_RP
            {
              BUILDER.kick( $< m_double >3, $< m_double >4 );
+           }
+;
+
+long_kick_com : RCSS_PCOM_LP RCSS_PCOM_LONG_KICK floating_point_number floating_point_number RCSS_PCOM_RP
+           {
+             BUILDER.long_kick( $< m_double >3, $< m_double >4 );
            }
 ;
 

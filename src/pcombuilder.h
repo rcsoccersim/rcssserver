@@ -81,6 +81,7 @@ public:
     virtual void turn( double moment ) = 0;
     virtual void turn_neck( double moment ) = 0;
     virtual void kick( double power, double dir ) = 0;
+    virtual void long_kick( double power, double dir ) = 0;
     virtual void goalieCatch( double dir ) = 0;
     virtual void say( std::string message ) = 0;
     virtual void sense_body() = 0;

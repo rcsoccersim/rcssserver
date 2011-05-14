@@ -129,6 +129,7 @@ HeteroPlayer::HeteroPlayer()
                                          PP.catchAreaLengthStretchMax() );
         M_catchable_area_l_stretch = tmp_delta;
 
+        //
         double real_speed_max
             = ( SP.maxPower() * M_dash_power_rate * M_effort_max )
             / ( 1.0 - M_player_decay );
@@ -236,6 +237,7 @@ HeteroPlayer::setDefault()
     M_effort_max = SP.effortInit();
     M_effort_min = SP.effortMin();
 
+    // v14
     M_kick_power_rate = SP.kickPowerRate();
     M_foul_detect_probability = SP.foulDetectProbability();
     M_catchable_area_l_stretch = 1.0;
@@ -291,40 +293,43 @@ HeteroPlayer::convertToStruct( int id ) const
     return tmp;
 }
 
+namespace {
+
 template < typename T >
 void
-HeteroPlayer::serializeParam( std::ostream & o,
-                              const std::string & name,
-                              const T & value ) const
+serialize_param( std::ostream & o,
+                 const std::string & name,
+                 const T & value )
 {
     o << '(' << name << ' ' << value << ')';
 }
 
+}
 
 void
 HeteroPlayer::serializeParams( std::ostream & o,
                                const unsigned int version,
                                const int id ) const
 {
-    serializeParam( o, "id", id );
-    serializeParam( o, "player_speed_max", playerSpeedMax() );
-    serializeParam( o, "stamina_inc_max",  staminaIncMax() );
-    serializeParam( o, "player_decay",     playerDecay() );
-    serializeParam( o, "inertia_moment",   inertiaMoment() );
-    serializeParam( o, "dash_power_rate",  dashPowerRate() );
-    serializeParam( o, "player_size",      playerSize() );
-    serializeParam( o, "kickable_margin",  kickableMargin() );
-    serializeParam( o, "kick_rand",        kickRand() );
-    serializeParam( o, "extra_stamina",    extraStamina() );
-    serializeParam( o, "effort_max",       effortMax() );
-    serializeParam( o, "effort_min",       effortMin() );
+    serialize_param( o, "id", id );
+    serialize_param( o, "player_speed_max", playerSpeedMax() );
+    serialize_param( o, "stamina_inc_max",  staminaIncMax() );
+    serialize_param( o, "player_decay",     playerDecay() );
+    serialize_param( o, "inertia_moment",   inertiaMoment() );
+    serialize_param( o, "dash_power_rate",  dashPowerRate() );
+    serialize_param( o, "player_size",      playerSize() );
+    serialize_param( o, "kickable_margin",  kickableMargin() );
+    serialize_param( o, "kick_rand",        kickRand() );
+    serialize_param( o, "extra_stamina",    extraStamina() );
+    serialize_param( o, "effort_max",       effortMax() );
+    serialize_param( o, "effort_min",       effortMin() );
 
     if ( version < 14 )
     {
         return;
     }
 
-    serializeParam( o, "kick_power_rate", kickPowerRate() );
-    serializeParam( o, "foul_detect_probability", foulDetectProbability() );
-    serializeParam( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
+    serialize_param( o, "kick_power_rate", kickPowerRate() );
+    serialize_param( o, "foul_detect_probability", foulDetectProbability() );
+    serialize_param( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
 }

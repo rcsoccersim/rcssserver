@@ -120,41 +120,41 @@ public:
 
     bool allowMultDefaultType() const { return M_allow_mult_default_type; }
 
-    const double & playerSpeedMaxDeltaMin() const { return M_player_speed_max_delta_min; }
+    double playerSpeedMaxDeltaMin() const { return M_player_speed_max_delta_min; }
 
-    const double & playerSpeedMaxDeltaMax() const { return M_player_speed_max_delta_max; }
-    const double & staminaIncMaxDeltaFactor() const { return M_stamina_inc_max_delta_factor; }
+    double playerSpeedMaxDeltaMax() const { return M_player_speed_max_delta_max; }
+    double staminaIncMaxDeltaFactor() const { return M_stamina_inc_max_delta_factor; }
 
-    const double & playerDecayDeltaMin() const { return M_player_decay_delta_min; }
-    const double & playerDecayDeltaMax() const { return M_player_decay_delta_max; }
-    const double & inertiaMomentDeltaFactor() const { return M_inertia_moment_delta_factor; }
+    double playerDecayDeltaMin() const { return M_player_decay_delta_min; }
+    double playerDecayDeltaMax() const { return M_player_decay_delta_max; }
+    double inertiaMomentDeltaFactor() const { return M_inertia_moment_delta_factor; }
 
-    const double & dashPowerRateDeltaMin() const { return M_dash_power_rate_delta_min; }
-    const double & dashPowerRateDeltaMax() const { return M_dash_power_rate_delta_max; }
-    const double & playerSizeDeltaFactor() const { return M_player_size_delta_factor; }
+    double dashPowerRateDeltaMin() const { return M_dash_power_rate_delta_min; }
+    double dashPowerRateDeltaMax() const { return M_dash_power_rate_delta_max; }
+    double playerSizeDeltaFactor() const { return M_player_size_delta_factor; }
 
-    const double & kickableMarginDeltaMin() const { return M_kickable_margin_delta_min; }
-    const double & kickableMarginDeltaMax() const { return M_kickable_margin_delta_max; }
-    const double & kickRandDeltaFactor() const { return M_kick_rand_delta_factor; }
+    double kickableMarginDeltaMin() const { return M_kickable_margin_delta_min; }
+    double kickableMarginDeltaMax() const { return M_kickable_margin_delta_max; }
+    double kickRandDeltaFactor() const { return M_kick_rand_delta_factor; }
 
-    const double & extraStaminaDeltaMin() const { return M_extra_stamina_delta_min; }
-    const double & extraStaminaDeltaMax() const { return M_extra_stamina_delta_max; }
-    const double & effortMaxDeltaFactor() const { return M_effort_max_delta_factor; }
-    const double & effortMinDeltaFactor() const { return M_effort_min_delta_factor; }
+    double extraStaminaDeltaMin() const { return M_extra_stamina_delta_min; }
+    double extraStaminaDeltaMax() const { return M_extra_stamina_delta_max; }
+    double effortMaxDeltaFactor() const { return M_effort_max_delta_factor; }
+    double effortMinDeltaFactor() const { return M_effort_min_delta_factor; }
 
     int randomSeed() const { return M_random_seed; }
 
-    const double & newDashPowerRateDeltaMin() const { return M_new_dash_power_rate_delta_min; }
-    const double & newDashPowerRateDeltaMax() const { return M_new_dash_power_rate_delta_max; }
-    const double & newStaminaIncMaxDeltaFactor() const { return M_new_stamina_inc_max_delta_factor; }
+    double newDashPowerRateDeltaMin() const { return M_new_dash_power_rate_delta_min; }
+    double newDashPowerRateDeltaMax() const { return M_new_dash_power_rate_delta_max; }
+    double newStaminaIncMaxDeltaFactor() const { return M_new_stamina_inc_max_delta_factor; }
 
-    const double & kickPowerRateDeltaMin() const { return M_kick_power_rate_delta_min; }
-    const double & kickPowerRateDeltaMax() const { return M_kick_power_rate_delta_max; }
-    const double & foulDetectProbabilityDeltaFactor() const { return M_foul_detect_probability_delta_factor; }
+    double kickPowerRateDeltaMin() const { return M_kick_power_rate_delta_min; }
+    double kickPowerRateDeltaMax() const { return M_kick_power_rate_delta_max; }
+    double foulDetectProbabilityDeltaFactor() const { return M_foul_detect_probability_delta_factor; }
 
     //bool allowDefaultGoalie() const { return M_allow_default_goalie; }
-    const double & catchAreaLengthStretchMin() const { return M_catchable_area_l_stretch_min; }
-    const double & catchAreaLengthStretchMax() const { return M_catchable_area_l_stretch_max; }
+    double catchAreaLengthStretchMin() const { return M_catchable_area_l_stretch_min; }
+    double catchAreaLengthStretchMax() const { return M_catchable_area_l_stretch_max; }
 
     bool getInt( const std::string & param,
                  int & value ) const;
@@ -162,8 +162,8 @@ public:
     bool getBool( const std::string & param,
                   bool & value ) const;
 
-    bool getDoub( const std::string & param,
-                  double & value ) const;
+    bool getDouble( const std::string & param,
+                    double & value ) const;
 
     bool getStr( const std::string & param,
                  std::string & value ) const;

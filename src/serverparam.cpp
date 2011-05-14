@@ -342,6 +342,14 @@ const double ServerParam::TACKLE_RAND_FACTOR = 2.0;
 const double ServerParam::FOUL_DETECT_PROBABILITY = 0.5;
 const double ServerParam::FOUL_EXPONENT = 10.0;
 const int ServerParam::FOUL_CYCLES = 5;
+const bool ServerParam::GOLDEN_GOAL = false; // [15.0.0] true -> false
+
+// 15.0.0
+const double ServerParam::RED_CARD_PROBABILITY = 0.0;
+
+// XXX
+const double ServerParam::LONG_KICK_POWER_FACTOR = 1.0;
+const int ServerParam::LONG_KICK_DELAY = 2;
 
 
 ServerParam &
@@ -891,9 +899,18 @@ ServerParam::addParams()
               "", 14 );
     addParam( "foul_exponent", M_foul_exponent, "", 14 );
     addParam( "foul_cycles", M_foul_cycles, "", 14 );
-    //addParam( "random_seed", M_random_seed, "", 14 );
     addParam( "golden_goal", M_golden_goal, "", 14 );
 
+    // v15
+    addParam( "red_card_probability",
+              rcss::conf::makeSetter( this, &ServerParam::setRedCardProbability ),
+              rcss::conf::makeGetter( M_red_card_probability ),
+              "", 15 );
+
+    // XXX
+    // addParam( "random_seed", M_random_seed, "", 999 );
+    // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
+    // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
 }
 
 void
@@ -1071,6 +1088,12 @@ void
 ServerParam::setFoulDetectProbability( double value )
 {
     M_foul_detect_probability = std::max( 0.0, std::min( value, 1.0 ) );
+}
+
+void
+ServerParam::setRedCardProbability( double value )
+{
+    M_red_card_probability = std::max( 0.0, std::min( value, 1.0 ) );
 }
 
 void
@@ -1339,8 +1362,14 @@ ServerParam::setDefaults()
     M_foul_exponent = FOUL_EXPONENT;
     M_foul_cycles = FOUL_CYCLES;
     M_random_seed = -1;
-    M_golden_goal = false;
+    M_golden_goal = GOLDEN_GOAL;
 
+    // 15.0.0
+    M_red_card_probability = RED_CARD_PROBABILITY;
+
+    // XXX
+    M_long_kick_power_factor = LONG_KICK_POWER_FACTOR;
+    M_long_kick_delay = LONG_KICK_DELAY;
 
     setHalfTime( HALF_TIME );
     setExtraHalfTime( EXTRA_HALF_TIME );
@@ -1524,7 +1553,7 @@ ServerParam::getBool( const std::string & param,
 }
 
 bool
-ServerParam::getDoub( const std::string & param,
+ServerParam::getDouble( const std::string & param,
                       double & value ) const
 {
     return M_builder->get( param, value );

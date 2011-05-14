@@ -29,8 +29,6 @@
 #include "types.h"
 #include "object.h"
 
-#include <ctime>
-
 #include <set>
 #include <vector>
 
@@ -79,6 +77,9 @@ public:
     void ballCaught( const Player & )
       { }
 
+    virtual
+    void ballPunched( const Player & )
+      { }
 
     virtual
     void ballTouched( const Player & )
@@ -179,6 +180,20 @@ public:
         void operator()( Referee * ref )
           {
               ref->ballCaught( M_catcher );
+          }
+    };
+
+    class doPunchedBall {
+    private:
+        const Player & M_goalie;
+    public:
+        doPunchedBall( const Player & goalie )
+            : M_goalie( goalie )
+          { }
+
+        void operator()( Referee * ref )
+          {
+              ref->ballPunched( M_goalie );
           }
     };
 
@@ -527,6 +542,9 @@ public:
     void ballCaught( const Player & catcher );
 
     virtual
+    void ballPunched( const Player & catcher );
+
+    virtual
     void analyse();
 
     virtual
@@ -576,6 +594,7 @@ private:
 
     void callFoul( const Player & tackler );
     void callYellowCard( const Player & tackler );
+    void callRedCard( const Player & tackler );
 
 };
 
@@ -590,17 +609,8 @@ private:
     int M_keepers, M_takers;
     int M_time;
     int M_take_time;
-    time_t M_start_time;
 public:
-    KeepawayRef( Stadium & stadium )
-        : Referee( stadium ),
-          M_episode( 0 ),
-          M_keepers( 0 ),
-          M_takers( 0 ),
-          M_time( 0 ),
-          M_take_time( 0 ),
-          M_start_time( std::time( NULL ) )
-      {}
+    KeepawayRef( Stadium & stadium );
 
     virtual
     ~KeepawayRef()
@@ -641,16 +651,7 @@ private:
 
     bool M_timeover;
 public:
-    PenaltyRef( Stadium& stadium )
-        : Referee( stadium )
-        , M_timer( -1 )
-        , M_pen_nr_taken( 0 )
-        , M_bDebug( false )
-        , M_cur_pen_taker( NEUTRAL )
-        , M_last_taker( NULL )
-        , M_prev_ball_pos( 0.0, 0.0 )
-        , M_timeover( false )
-      { }
+    PenaltyRef( Stadium& stadium );
 
     virtual
     ~PenaltyRef()
@@ -666,7 +667,10 @@ public:
     void playModeChange( PlayMode pm );
 
     virtual
-    void ballCaught( const Player & );
+    void ballCaught( const Player & catcher );
+
+    virtual
+    void ballPunched( const Player & catcher );
 
 
 private:
