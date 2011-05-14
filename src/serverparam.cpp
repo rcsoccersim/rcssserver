@@ -107,7 +107,7 @@ const int ServerParam::SENSE_BODY_INTERVAL_MSEC = 100;
 const int ServerParam::SEND_VISUALINFO_INTERVAL_MSEC = 100;
 
 const int ServerParam::HALF_TIME = 300;
-const int ServerParam::DROP_TIME = 200;
+const int ServerParam::DROP_TIME = 100;
 
 const double ServerParam::PITCH_LENGTH = 105.0;
 const double ServerParam::PITCH_WIDTH = 68.0;
@@ -1339,7 +1339,7 @@ ServerParam::setDefaults()
     M_foul_exponent = FOUL_EXPONENT;
     M_foul_cycles = FOUL_CYCLES;
     M_random_seed = -1;
-    M_golden_goal = true;
+    M_golden_goal = false;
 
 
     setHalfTime( HALF_TIME );

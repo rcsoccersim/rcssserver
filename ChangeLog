@@ -1,5 +1,19 @@
 2011-05-14  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/player.cpp:
+	* src/referee.cpp:
+	* src/referee.h:
+	* src/serverparam.cpp:
+	* src/stadium.cpp:
+	* src/stadium.h:
+	- improved the offside referee. now, the referee checks whether
+	offside candidate players try to approach the ball or not. if a
+	candidate player performs kick/tackle within
+	server::offside_active_area from the ball or touch the ball,
+	the referee calls offside.
+	- added short time (5 cycles) to clear opposite side players from
+	the ball during stoppage time of set play.
+
 	* src/csvsaver.h:
 	* src/referee.h:
 	* src/stadium.h:

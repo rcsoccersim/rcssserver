@@ -38,6 +38,10 @@
 #include <strstream>
 #endif
 
+namespace {
+const int CLEAR_PLAYER_TIME = 5;
+}
+
 const char * KeepawayRef::trainingMsg = "training Keepaway 1";
 const int KeepawayRef::TURNOVER_TIME = 4;
 
@@ -842,48 +846,47 @@ const int OffsideRef::AFTER_OFFSIDE_WAIT = 30;
 void
 OffsideRef::kickTaken( const Player & kicker )
 {
-    if ( ! ServerParam::instance().useOffside() )
-    {
-        return;
-    }
-
-    if ( M_last_kick_time == M_stadium.time()
-         && M_last_kick_stoppage_time == M_stadium.stoppageTime() )
-    {
-
-        M_last_kicker_side = NEUTRAL;
-        M_offside_candidates.clear();
-        return;
-    }
-
-    M_last_kick_time = M_stadium.time();
-    M_last_kick_stoppage_time = M_stadium.stoppageTime();
-    M_last_kicker_side = kicker.side();
-
     setOffsideMark( kicker );
 }
 
 void
-OffsideRef::ballTouched( const Player & player )
+OffsideRef::failedKickTaken( const Player & kicker )
+{
+    checkIntentionalAction( kicker );
+}
+
+void
+OffsideRef::failedTackleTaken( const Player & tackler )
+{
+    checkIntentionalAction( tackler );
+}
+
+void
+OffsideRef::checkIntentionalAction( const Player & kicker )
 {
     if ( ! ServerParam::instance().useOffside() )
     {
         return;
     }
 
-    if ( M_last_kick_time == M_stadium.time()
-         && M_last_kick_stoppage_time == M_stadium.stoppageTime() )
+    for ( std::vector< Candidate >::iterator it = M_offside_candidates.begin(),
+              end = M_offside_candidates.end();
+          it != end;
+          ++it )
     {
-
-        M_last_kicker_side = NEUTRAL;
-        M_offside_candidates.clear();
-        return;
+        if ( it->player_ == &kicker
+             && it->player_->pos().distance2( M_stadium.ball().pos() )
+             < std::pow( ServerParam::instance().offsideActiveArea(), 2 ) )
+        {
+            M_offside_pos = it->pos_;
+            callOffside();
+        }
     }
+}
 
-    M_last_kick_time = M_stadium.time();
-    M_last_kick_stoppage_time = M_stadium.stoppageTime();
-    M_last_kicker_side = player.side();
-
+void
+OffsideRef::ballTouched( const Player & player )
+{
     setOffsideMark( player );
 }
 
@@ -913,11 +916,18 @@ OffsideRef::analyse()
 
     if ( M_stadium.playmode() == PM_OffSide_Left )
     {
+        ++M_after_offside_time;
+
         //clearPlayersFromBall( LEFT );
-        checkPlayerAfterOffside();
-        if ( ++M_after_offside_time > AFTER_OFFSIDE_WAIT )
+        if ( M_after_offside_time > AFTER_OFFSIDE_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( LEFT );
+        }
+
+        checkPlayerAfterOffside();
+
+        if ( M_after_offside_time > AFTER_OFFSIDE_WAIT )
+        {
             M_stadium.changePlayMode( PM_FreeKick_Right );
         }
         return;
@@ -925,11 +935,18 @@ OffsideRef::analyse()
 
     if ( M_stadium.playmode() == PM_OffSide_Right )
     {
+        ++M_after_offside_time;
+
         //clearPlayersFromBall( RIGHT );
-        checkPlayerAfterOffside();
-        if ( ++M_after_offside_time > AFTER_OFFSIDE_WAIT )
+        if ( M_after_offside_time > AFTER_OFFSIDE_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( RIGHT );
+        }
+
+        checkPlayerAfterOffside();
+
+        if ( M_after_offside_time > AFTER_OFFSIDE_WAIT )
+        {
             M_stadium.changePlayMode( PM_FreeKick_Left );
         }
         return;
@@ -941,12 +958,14 @@ OffsideRef::analyse()
         return;
     }
 
+#if 0
     bool found = false;
     {
         double dist2 = std::pow( ServerParam::instance().offsideActiveArea(), 2 );
 
-        for ( std::vector< Candidate >::const_iterator it = M_offside_candidates.begin();
-              it != M_offside_candidates.end();
+        for ( std::vector< Candidate >::const_iterator it = M_offside_candidates.begin(),
+                  end = M_offside_candidates.end();
+              it != end;
               ++it )
         {
             if ( ! it->player_->isEnabled() ) continue;
@@ -965,6 +984,7 @@ OffsideRef::analyse()
     {
         callOffside();
     }
+#endif
 }
 
 void
@@ -979,8 +999,28 @@ OffsideRef::playModeChange( PlayMode pm )
 void
 OffsideRef::setOffsideMark( const Player & kicker )
 {
-    for ( std::vector< Candidate >::iterator it = M_offside_candidates.begin();
-          it != M_offside_candidates.end();
+    if ( ! ServerParam::instance().useOffside() )
+    {
+        return;
+    }
+
+    if ( M_last_kick_time == M_stadium.time()
+         && M_last_kick_stoppage_time == M_stadium.stoppageTime() )
+    {
+
+        M_last_kicker_side = NEUTRAL;
+        M_offside_candidates.clear();
+        return;
+    }
+
+    M_last_kick_time = M_stadium.time();
+    M_last_kick_stoppage_time = M_stadium.stoppageTime();
+    M_last_kicker_side = kicker.side();
+
+
+    for ( std::vector< Candidate >::iterator it = M_offside_candidates.begin(),
+              end = M_offside_candidates.end();
+          it != end;
           ++it )
     {
         if ( it->player_ == &kicker )
@@ -1177,23 +1217,23 @@ OffsideRef::callOffside()
 void
 OffsideRef::checkPlayerAfterOffside()
 {
-    CArea c( M_offside_pos, ServerParam::instance().offsideActiveArea() );
-
     Side offsideside = NEUTRAL;
-    PVector ce, si;
+    PVector center( 0.0, 0.0 ), size( 0.0, 0.0 );
 
     if ( M_stadium.playmode() == PM_OffSide_Right )
     {
-        ce += PVector( ServerParam::PITCH_LENGTH/4 + M_offside_pos.x/2, 0.0 );
-        si += PVector( ServerParam::PITCH_LENGTH/2 - M_offside_pos.x,
-                       ServerParam::PITCH_WIDTH );
+        center.assign( +ServerParam::PITCH_LENGTH/4 + M_offside_pos.x/2,
+                       0.0 );
+        size.assign( ServerParam::PITCH_LENGTH/2 - M_offside_pos.x,
+                     ServerParam::PITCH_WIDTH );
         offsideside = RIGHT;
     }
     else if ( M_stadium.playmode() == PM_OffSide_Left )
     {
-        ce += PVector( - ServerParam::PITCH_LENGTH/4 + M_offside_pos.x/2, 0.0 );
-        si += PVector( ServerParam::PITCH_LENGTH/2 + M_offside_pos.x,
-                       ServerParam::PITCH_WIDTH );
+        center.assign( -ServerParam::PITCH_LENGTH/4 + M_offside_pos.x/2,
+                       0.0 );
+        size.assign( ServerParam::PITCH_LENGTH/2 + M_offside_pos.x,
+                     ServerParam::PITCH_WIDTH );
         offsideside = LEFT;
     }
     else
@@ -1201,33 +1241,34 @@ OffsideRef::checkPlayerAfterOffside()
         return;
     }
 
-    RArea fld( ce, si );
+    //const CArea c( M_ofefside_pos, ServerParam::instance().offsideActiveArea() );
+    const CArea c( M_offside_pos, 2.5 );
+    const RArea fld( center, size );
 
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
+    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(),
+              end = M_stadium.players().end();
           p != end;
           ++p )
     {
         if ( ! (*p)->isEnabled() ) continue;
+        if ( (*p)->side() != offsideside ) continue;
 
-        if ( (*p)->side() == offsideside )
+        if ( c.inArea( (*p)->pos() ) )
         {
-            if ( c.inArea( (*p)->pos() ) )
+            (*p)->moveTo( c.nearestEdge( (*p)->pos() ) );
+        }
+
+        if ( ! fld.inArea( (*p)->pos() ))
+        {
+            if ( M_stadium.playmode() == PM_OffSide_Right )
             {
-                (*p)->moveTo( c.nearestEdge( (*p)->pos() ) );
+                (*p)->moveTo( fld.nearestVEdge( (*p)->pos() )
+                              + PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
             }
-            if ( ! fld.inArea( (*p)->pos() ))
+            else
             {
-                if ( M_stadium.playmode() == PM_OffSide_Right )
-                {
-                    (*p)->moveTo( fld.nearestVEdge( (*p)->pos() )
-                                  + PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
-                }
-                else
-                {
-                    (*p)->moveTo( fld.nearestVEdge( (*p)->pos() )
-                                  - PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
-                }
+                (*p)->moveTo( fld.nearestVEdge( (*p)->pos() )
+                              - PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
             }
         }
     }
@@ -1380,10 +1421,16 @@ FreeKickRef::analyse()
 
     if ( pm == PM_Free_Kick_Fault_Left )
     {
+        ++M_after_free_kick_fault_time;
+
         //clearPlayersFromBall( LEFT );
-        if ( ++M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT )
+        if ( M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( LEFT );
+        }
+
+        if ( M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT )
+        {
             M_stadium.changePlayMode( PM_FreeKick_Right );
         }
         return;
@@ -1391,10 +1438,16 @@ FreeKickRef::analyse()
 
     if ( pm == PM_Free_Kick_Fault_Right )
     {
+        ++M_after_free_kick_fault_time;
+
         //clearPlayersFromBall( RIGHT );
-        if ( ++M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT )
+        if ( M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( RIGHT );
+        }
+
+        if ( M_after_free_kick_fault_time > AFTER_FREE_KICK_FAULT_WAIT )
+        {
             M_stadium.changePlayMode( PM_FreeKick_Left );
         }
         return;
@@ -2149,10 +2202,16 @@ CatchRef::analyse()
 
     if ( pm == PM_Back_Pass_Left )
     {
+        ++M_after_back_pass_time;
+
         //clearPlayersFromBall( LEFT );
-        if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT )
+        if ( M_after_back_pass_time > AFTER_BACKPASS_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( LEFT );
+        }
+
+        if ( M_after_back_pass_time > AFTER_BACKPASS_WAIT )
+        {
             //M_stadium.changePlayMode( PM_FreeKick_Right );
             M_stadium.changePlayMode( PM_IndFreeKick_Right );
         }
@@ -2161,10 +2220,16 @@ CatchRef::analyse()
 
     if ( pm == PM_Back_Pass_Right )
     {
+        ++M_after_back_pass_time;
+
         //clearPlayersFromBall( RIGHT );
-        if ( ++M_after_back_pass_time > AFTER_BACKPASS_WAIT )
+        if ( M_after_back_pass_time > AFTER_BACKPASS_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( RIGHT );
+        }
+
+        if ( M_after_back_pass_time > AFTER_BACKPASS_WAIT )
+        {
             //M_stadium.changePlayMode( PM_FreeKick_Left );
             M_stadium.changePlayMode( PM_IndFreeKick_Left );
         }
@@ -2173,10 +2238,16 @@ CatchRef::analyse()
 
     if ( pm == PM_CatchFault_Left )
     {
+        ++M_after_catch_fault_time;
+
         //clearPlayersFromBall( LEFT );
-        if( ++M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
+        if ( M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( LEFT );
+        }
+
+        if ( M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
+        {
             //M_stadium.changePlayMode( PM_IndFreeKick_Right );
             M_stadium.changePlayMode( PM_FreeKick_Right );
         }
@@ -2185,10 +2256,16 @@ CatchRef::analyse()
 
     if ( pm == PM_CatchFault_Right )
     {
+        ++M_after_catch_fault_time;
+
         //clearPlayersFromBall( RIGHT );
-        if( ++M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
+        if ( M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( RIGHT );
+        }
+
+        if ( M_after_catch_fault_time > AFTER_CATCH_FAULT_WAIT )
+        {
             //M_stadium.changePlayMode( PM_IndFreeKick_Left );
             M_stadium.changePlayMode( PM_FreeKick_Left );
         }
@@ -2388,7 +2465,7 @@ FoulRef::tackleTaken( const Player & tackler,
     }
     else if ( detect_charge )
     {
-        callFoul( tackler, false );
+        callFoul( tackler );
     }
 }
 
@@ -2405,10 +2482,16 @@ FoulRef::analyse()
     if ( pm == PM_Foul_Charge_Left
          || pm == PM_Foul_Push_Left )
     {
+        ++M_after_foul_time;
+
         //clearPlayersFromBall( LEFT );
-        if ( ++M_after_foul_time > AFTER_FOUL_WAIT )
+        if ( M_after_foul_time > AFTER_FOUL_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( LEFT );
+        }
+
+        if ( M_after_foul_time > AFTER_FOUL_WAIT )
+        {
             if ( Referee::inPenaltyArea( LEFT, M_stadium.ball().pos() ) )
             {
                 M_stadium.changePlayMode( PM_IndFreeKick_Right );
@@ -2424,10 +2507,16 @@ FoulRef::analyse()
     if ( pm == PM_Foul_Charge_Right
          || pm == PM_Foul_Push_Right )
     {
+        ++M_after_foul_time;
+
         //clearPlayersFromBall( RIGHT );
-        if ( ++M_after_foul_time > AFTER_FOUL_WAIT )
+        if ( M_after_foul_time > AFTER_FOUL_WAIT - CLEAR_PLAYER_TIME )
         {
             clearPlayersFromBall( RIGHT );
+        }
+
+        if ( M_after_foul_time > AFTER_FOUL_WAIT )
+        {
             if ( Referee::inPenaltyArea( RIGHT, M_stadium.ball().pos() ) )
             {
                 M_stadium.changePlayMode( PM_IndFreeKick_Left );
@@ -2442,8 +2531,7 @@ FoulRef::analyse()
 }
 
 void
-FoulRef::callFoul( const Player & tackler,
-                   const bool /*intentional*/ )
+FoulRef::callFoul( const Player & tackler )
 {
     PVector pos = truncateToPitch( tackler.pos() );
     pos = moveOutOfGoalArea( NEUTRAL, pos );
@@ -2453,7 +2541,6 @@ FoulRef::callFoul( const Player & tackler,
     if ( tackler.side() == LEFT )
     {
         pos = moveOutOfPenalty( RIGHT, pos );
-        //M_stadium.placeBall( intentional ? PM_Foul_Push_Left : PM_Foul_Charge_Left,
         M_stadium.placeBall( PM_Foul_Charge_Left,
                              RIGHT, pos );
     }
@@ -2472,7 +2559,7 @@ FoulRef::callFoul( const Player & tackler,
 void
 FoulRef::callYellowCard( const Player & tackler )
 {
-    callFoul( tackler, true );
+    callFoul( tackler );
 
     M_stadium.yellowCard( tackler.side(),
                           tackler.unum() );

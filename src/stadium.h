@@ -425,8 +425,11 @@ public:
 
     void kickTaken( const Player & kicker,
                     const PVector & accel );
+    void failedKickTaken( const Player & kicker );
     void tackleTaken( const Player & tackler,
                       const bool foul );
+    void failedTackleTaken( const Player & tackler,
+                            const bool foul );
     void ballCaught( const Player & catcher );
 
     void collisions();

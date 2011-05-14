@@ -1110,6 +1110,7 @@ Player::kick( double power,
         if ( ! ballKickable() )
         {
             M_state |= KICK_FAULT;
+            M_stadium.failedKickTaken( *this );
             return;
         }
 
@@ -1956,11 +1957,13 @@ Player::tackle( double power_or_angle,
             }
             else
             {
+                M_stadium.failedTackleTaken( *this, foul );
                 M_state |= ( TACKLE | TACKLE_FAULT );
             }
         }
         else
         {
+            M_stadium.failedTackleTaken( *this, foul );
             M_state |= TACKLE_FAULT;
         }
     }

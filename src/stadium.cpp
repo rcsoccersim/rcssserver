@@ -1795,12 +1795,28 @@ Stadium::kickTaken( const Player & kicker,
 }
 
 void
+Stadium::failedKickTaken( const Player & kicker )
+{
+    for_each( M_referees.begin(), M_referees.end(),
+              Referee::doFailedKickTaken( kicker ) );
+}
+
+void
 Stadium::tackleTaken( const Player & tackler,
                       const bool foul )
 {
     for_each( M_referees.begin(), M_referees.end(),
               Referee::doTackleTaken( tackler, foul ) );
 }
+
+void
+Stadium::failedTackleTaken( const Player & tackler,
+                            const bool foul )
+{
+    for_each( M_referees.begin(), M_referees.end(),
+              Referee::doFailedTackleTaken( tackler, foul ) );
+}
+
 
 void
 Stadium::ballCaught( const Player & catcher )

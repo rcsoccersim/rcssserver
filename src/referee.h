@@ -62,8 +62,17 @@ public:
       { }
 
     virtual
+    void failedKickTaken( const Player & )
+      { }
+
+    virtual
     void tackleTaken( const Player &,
                       const bool )
+      { }
+
+    virtual
+    void failedTackleTaken( const Player &,
+                            const bool )
       { }
 
     virtual
@@ -111,6 +120,20 @@ public:
           }
     };
 
+    class doFailedKickTaken {
+    private:
+        const Player & M_kicker;
+    public:
+        doFailedKickTaken( const Player & kicker )
+            : M_kicker( kicker )
+          { }
+
+        void operator()( Referee * ref )
+          {
+              ref->failedKickTaken( M_kicker );
+          }
+    };
+
     class doTackleTaken {
     private:
         const Player & M_tackler;
@@ -125,6 +148,23 @@ public:
         void operator()( Referee * ref )
           {
               ref->tackleTaken( M_tackler, M_foul );
+          }
+    };
+
+    class doFailedTackleTaken {
+    private:
+        const Player & M_tackler;
+        const bool M_foul;
+    public:
+        doFailedTackleTaken( const Player & tackler,
+                             const bool foul )
+            : M_tackler( tackler ),
+              M_foul( foul )
+          { }
+
+        void operator()( Referee * ref )
+          {
+              ref->failedTackleTaken( M_tackler, M_foul );
           }
     };
 
@@ -304,6 +344,12 @@ public:
     void kickTaken( const Player & kicker );
 
     virtual
+    void failedKickTaken( const Player & kicker );
+
+    virtual
+    void failedTackleTaken( const Player & kicker );
+
+    virtual
     void ballTouched( const Player & player );
 
     virtual
@@ -314,6 +360,7 @@ public:
 
 private:
 
+    void checkIntentionalAction( const Player & kicker );
     void setOffsideMark( const Player & kicker );
 
     void callOffside();
@@ -527,8 +574,7 @@ public:
 
 private:
 
-    void callFoul( const Player & tackler,
-                   const bool intentional );
+    void callFoul( const Player & tackler );
     void callYellowCard( const Player & tackler );
 
 };
