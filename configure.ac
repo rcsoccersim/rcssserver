@@ -2,9 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([RCSSServer],[14.0.3],[sserver-admin@users.sf.net],[rcssserver])
-
-#LT_PREREQ([2.2.4])
+LT_PREREQ([2.2])
+AC_INIT([RCSSServer],[15.0.0],[sserver-admin@users.sf.net],[rcssserver])
 
 #AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news])

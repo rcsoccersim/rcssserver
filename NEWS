@@ -1,3 +1,40 @@
+[15.0.0]
+  * New parameters:
+    - server::red_card_probability (default value: 0.0)
+
+  * Changed parameters:
+    - server::drop_ball_time (200 -> 100)
+    - server::golden_goal (true -> false)
+
+  * Improvement of the offside referee. The automatic referee checks
+    whether offside position players actually touched to the ball or
+    not, or whether offside position players intended to approach the
+    ball by kick/tackle command and their position is located within
+    server::offside_active_area from the ball.
+
+  * Improvement of the catch model.
+    - If goalie fails to catch the ball beyond the fuzzy catchable
+      area, the ball has no effect. (same as the previous model)
+    - If goalie fails to catch the ball within a fuzzy catchable area,
+      the ball is accelerated to the catch command direction. It is
+      similar to the ball bouncing from the wall that the normal
+      vector's direction is same as the catch command direction.
+
+  * Improvement of the foul model. In the previous foul model, players
+    never get the red card immediately even if they intentionally
+    perform a foul action. As a result, players can perform an
+    intentional foul safely if they have no yellow card. Now,
+    the server::red_card_probability variable is used to determine
+    whether a player get the red card if it performs a intentional
+    foul, or whether a players get the yellow card if it performs a
+    dangerous tackle. The actual red card probability becomes 0.005
+    if player's foul_detect_probability is 0.5.
+
+  * Removing automatic player clearance during stoppage time. For
+    example, left side players can approach to the ball during the
+    playmode offside_l, but they are kept away from the ball before
+    the playmode is changed to freekick_r.
+
 [14.0.3]
   * Fixed a bug of the overtime handling when server::golden_goal is
     false. Thanks go to Thomas Gabel for reporting the problem.

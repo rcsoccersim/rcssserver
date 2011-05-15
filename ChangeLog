@@ -1,5 +1,9 @@
 2011-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a major version number. Official release 15.0.0.
+
 	* src/audio.cpp:
 	* src/bodysender.cpp:
 	* src/coach.cpp:
