@@ -33,4 +33,4 @@
 
 
 char Copyright[] = "Copyright (C) 1995, 1996, 1997, 1998, 1999 Electrotechnical Laboratory.\n\
-2000 - 2010 RoboCup Soccer Simulator Maintenance Group.\n";
+2000 - 2011 RoboCup Soccer Simulator Maintenance Group.\n";

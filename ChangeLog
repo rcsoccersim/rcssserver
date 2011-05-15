@@ -4,6 +4,9 @@
 	* configure.ac:
 	- updated a major version number. Official release 15.0.0.
 
+	* src/version.h:
+	- updated a copyright message.
+
 	* src/audio.cpp:
 	* src/bodysender.cpp:
 	* src/coach.cpp:
