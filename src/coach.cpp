@@ -135,12 +135,14 @@ Coach::setSenders( const double & client_version )
     if ( ! rcss::SerializerCoach::factory().getCreator( ser_cre,
                                                         (int)client_version ) )
     {
+        std::cerr << "No SerializerCoach::Creator v" << client_version << std::endl;
         return false;
     }
 
     const rcss::SerializerCoach::Ptr ser = ser_cre();
     if( ! ser )
     {
+        std::cerr << "No SerializerCoach v" << client_version << std::endl;
         return false;
     }
 
@@ -153,6 +155,7 @@ Coach::setSenders( const double & client_version )
     if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
                                                           (int)client_version ) )
     {
+        std::cerr << "No VisualSenderCoach::Creator v" << client_version << std::endl;
         return false;
     }
     M_observer->setVisualSender( visual_cre( visual_params ) );
@@ -167,6 +170,7 @@ Coach::setSenders( const double & client_version )
     if( ! rcss::AudioSenderCoach::factory().getCreator( audio_cre,
                                                         (int)client_version ) )
     {
+        std::cerr << "No AudioSenderCoach::Creator v" << client_version << std::endl;
         return false;
     }
     setAudioSender( audio_cre( audio_params ) );
@@ -180,6 +184,7 @@ Coach::setSenders( const double & client_version )
     if ( ! rcss::InitSenderOfflineCoach::factory().getCreator( init_cre,
                                                                (int)client_version ) )
     {
+        std::cerr << "No InitSenderCoach::Creator v" << client_version << std::endl;
         return false;
     }
 
@@ -1162,12 +1167,14 @@ OnlineCoach::setSenders( const double & client_version )
     if ( ! rcss::SerializerOnlineCoach::factory().getCreator( creator,
                                                               (int)client_version ) )
     {
+        std::cerr << "No SerializerOnlineCoach::Creator v" << client_version << std::endl;
         return false;
     }
 
     const rcss::SerializerOnlineCoach::Ptr ser = creator();
     if ( ! ser )
     {
+        std::cerr << "No SerializerOnlineCoach v" << client_version << std::endl;
         return false;
     }
     //this->setSerializer( *ser );
@@ -1181,6 +1188,7 @@ OnlineCoach::setSenders( const double & client_version )
     if ( ! rcss::VisualSenderCoach::factory().getCreator( visual_cre,
                                                           (int)client_version ) )
     {
+        std::cerr << "No VisualSenderCoach::Creator v" << client_version << std::endl;
         return false;
     }
     M_observer->setVisualSender( visual_cre( visual_params ) );
@@ -1194,6 +1202,7 @@ OnlineCoach::setSenders( const double & client_version )
     if ( ! rcss::AudioSenderOnlineCoach::factory().getCreator( audio_cre,
                                                                (int)client_version ) )
     {
+        std::cerr << "No AudioSenderCoach::Creator v" << client_version << std::endl;
         return false;
     }
     this->setAudioSender( audio_cre( audio_params ) );
@@ -1207,6 +1216,7 @@ OnlineCoach::setSenders( const double & client_version )
     if ( ! rcss::InitSenderOnlineCoach::factory().getCreator( init_cre,
                                                               (int)client_version ) )
     {
+        std::cerr << "No InitSenderCoach::Creator v" << client_version << std::endl;
         return false;
     }
 

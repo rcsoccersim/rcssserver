@@ -331,7 +331,7 @@ SerializerMonitor::Ptr
 SerializerMonitorStdv4::create()
 {
     SerializerCommon::Creator cre_common;
-    if ( ! SerializerCommon::factory().getCreator( cre_common, 14 ) )
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 15 ) )
     {
         return SerializerMonitor::Ptr();
     }

@@ -1204,10 +1204,14 @@ Player::kick( double power,
     ++M_kick_count;
 }
 
+// 2011-05-14 akiyama
+// added for testing purpose
 void
 Player::long_kick( double power,
                    double dir )
 {
+    return;
+
     if ( M_command_done )
     {
         return;
@@ -2209,12 +2213,14 @@ Player::setSenders()
     if ( ! rcss::SerializerPlayer::factory().getCreator( ser_cre,
                                                          (int)version() ) )
     {
+        std::cerr << "No SerializerPlayer::Creator v" << version() << std::endl;
         return false;
     }
 
     const rcss::SerializerPlayer::Ptr ser = ser_cre();
     if ( ! ser )
     {
+        std::cerr << "No SerializerPlayer v" << version() << std::endl;
         return false;
     }
 
@@ -2225,6 +2231,7 @@ Player::setSenders()
     if ( ! rcss::BodySenderPlayer::factory().getCreator( body_cre,
                                                          (int)version() ) )
     {
+        std::cerr << "No BodySenderPlayer::Creator v" << version() << std::endl;
         return false;
     }
     M_body_observer->setBodySender( body_cre( body_params ) );
@@ -2237,6 +2244,7 @@ Player::setSenders()
     if ( ! rcss::VisualSenderPlayer::factory().getCreator( vis_cre,
                                                            (int)version() ) )
     {
+        std::cerr << "No VisualSenderPlayer::Creator v" << version() << std::endl;
         return false;
     }
     M_observer->setVisualSender( vis_cre( visual_params ) );
@@ -2250,6 +2258,7 @@ Player::setSenders()
     if ( ! rcss::InitSenderPlayer::factory().getCreator( init_cre,
                                                          (int)version() ) )
     {
+        std::cerr << "No InitSenderPlayer::Creator v" << version() << std::endl;
         return false;
     }
     M_init_observer->setInitSender( init_cre( init_params ) );
@@ -2263,6 +2272,7 @@ Player::setSenders()
     if ( ! rcss::FullStateSenderPlayer::factory().getCreator( full_cre,
                                                               (int)version() ) )
     {
+        std::cerr << "No FullSenderPlayer::Creator v" << version() << std::endl;
         return false;
     }
     M_fullstate_observer->setFullStateSender( full_cre( fs_params ) );
@@ -2276,6 +2286,7 @@ Player::setSenders()
     if ( ! rcss::AudioSenderPlayer::factory().getCreator( audio_cre,
                                                           (int)version() ) )
     {
+        std::cerr << "No AudioSenderPlayer::Creator v" << version() << std::endl;
         return false;
     }
     setAudioSender( audio_cre( audio_params ) );

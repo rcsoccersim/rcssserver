@@ -135,6 +135,7 @@ SerializerCoachStdv14::create()
 
 namespace {
 RegHolder v14 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::create, 14 );
+RegHolder v15 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::create, 15 );
 }
 
 }

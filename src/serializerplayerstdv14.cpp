@@ -139,6 +139,7 @@ SerializerPlayerStdv14::create()
 
 namespace {
 RegHolder v14 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 14 );
+RegHolder v15 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 15 );
 }
 
 }

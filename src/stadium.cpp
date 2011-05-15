@@ -934,18 +934,6 @@ Stadium::step()
     {
         (*p)->resetState();
     }
-
-    //
-    // delayed effects
-    //
-    std::random_shuffle( M_shuffle_players.begin(), M_shuffle_players.end(), irand );
-    for ( PlayerCont::iterator p = M_shuffle_players.begin(),
-              p_end = M_shuffle_players.end();
-          p != p_end;
-          ++p )
-    {
-        (*p)->doLongKick();
-    }
 }
 
 void
@@ -2109,6 +2097,9 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
 void
 Stadium::doRecvFromClients()
 {
+    static int s_time = 0;
+    static int s_stoppage_time = 0;
+
     timeval tv_start, tv_end;
 
     if ( M_logger.isTextLogOpen()
@@ -2117,6 +2108,28 @@ Stadium::doRecvFromClients()
         gettimeofday( &tv_start, NULL );
     }
 
+    //
+    // delayed effects
+    //
+    if ( s_time != M_time
+         && s_stoppage_time != M_stoppage_time )
+    {
+        s_time = M_time;
+        s_stoppage_time = M_stoppage_time;
+
+        std::random_shuffle( M_shuffle_players.begin(), M_shuffle_players.end(), irand );
+        for ( PlayerCont::iterator p = M_shuffle_players.begin(),
+                  p_end = M_shuffle_players.end();
+              p != p_end;
+              ++p )
+        {
+            (*p)->doLongKick();
+        }
+    }
+
+    //
+    // receive message and process commands
+    //
     udp_recv_message();
     udp_recv_from_online_coach();
     udp_recv_from_coach();

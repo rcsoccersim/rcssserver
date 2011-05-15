@@ -348,7 +348,7 @@ const bool ServerParam::GOLDEN_GOAL = false; // [15.0.0] true -> false
 const double ServerParam::RED_CARD_PROBABILITY = 0.0;
 
 // XXX
-const double ServerParam::LONG_KICK_POWER_FACTOR = 1.0;
+const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
 
 

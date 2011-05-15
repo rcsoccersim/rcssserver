@@ -258,6 +258,10 @@ Stadium::parsePlayerInit( const char * message,
         Player * p = initPlayer( teamname, version, goalie, cli_addr );
         if ( p )
         {
+            std::cout << "A new (v" << static_cast< int >( version ) << ") "
+                      << "player (" << teamname << ' ' << p->unum() << ") connected."
+                      << std::endl;
+
             M_logger.writePlayerLog( *p, message, RECV );
         }
 
@@ -288,6 +292,8 @@ Stadium::parsePlayerInit( const char * message,
         Player * p = reconnectPlayer( teamname, unum, cli_addr );
         if ( p )
         {
+            std::cout << "A player (" << teamname << ' ' << p->unum() << ") reconnected."
+                      << std::endl;
             M_logger.writePlayerLog( *p, message, RECV );
         }
 
@@ -329,7 +335,7 @@ Stadium::parseMonitorInit( const char * message,
             delete mon;
             return true;
         }
-        std::cout << "a new (v" << ver << ") monitor connected\n";
+        std::cout << "A new (v" << ver << ") monitor connected." << std::endl;
 
         mon->setEnforceDedicatedPort( ver >= 2.0 );
         M_monitors.push_back( mon );
@@ -445,8 +451,8 @@ Stadium::parseCoachInit( const char * message,
         Coach * coach = initCoach( version, cli_addr );
         if ( coach )
         {
-            std::cout << "a new (v" << coach->version()
-                      << ") offline coach connected" << std::endl;
+            std::cout << "A new (v" << coach->version() << ") "
+                      << "offline coach connected" << std::endl;
             M_logger.writeCoachLog( message, RECV );
         }
     }
@@ -607,6 +613,10 @@ Stadium::parseOnlineCoachInit( const char * message,
     OnlineCoach * olc = initOnlineCoach( teamname, coachname, version, addr );
     if ( olc )
     {
+        std::cout << "A new (v" << static_cast< int >( version ) << ") "
+                  << "online coach (" << teamname << ") connected."
+                  << std::endl;;
+
         M_logger.writeOnlineCoachLog( *olc, message, RECV );
     }
 }

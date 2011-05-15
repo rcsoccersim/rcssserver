@@ -151,7 +151,8 @@ Monitor::setSenders()
         if ( ! rcss::DispSenderMonitor::factory().getCreator( disp_cre,
                                                               (int)version() ) )
         {
-            std::cerr << "failed to create DispSenderMonitor" << std::endl;
+            std::cerr << "failed to create DispSenderMonitor v" << version()
+                      << std::endl;
             return false;
         }
         M_observer->setDispSender( disp_cre( disp_params ) );
@@ -169,7 +170,8 @@ Monitor::setSenders()
         if ( ! rcss::InitSenderMonitor::factory().getCreator( init_cre,
                                                               (int)version() ) )
         {
-            std::cerr << "failed to create InitSenderMonitor" << std::endl;
+            std::cerr << "failed to create InitSenderMonitor v" << version()
+                      << std::endl;
             return false;
         }
         M_init_observer->setInitSender( init_cre( init_params ) );

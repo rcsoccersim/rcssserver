@@ -128,12 +128,14 @@ Logger::setSenders()
     rcss::SerializerMonitor::Creator ser_cre;
     if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre, monitor_version ) )
     {
+        std::cerr << "No SerializerMonitor::Creator v" << monitor_version << std::endl;
         return false;
     }
 
     const rcss::SerializerMonitor::Ptr ser = ser_cre();
     if ( ! ser )
     {
+        std::cerr << "No SerializerMonitor v" << monitor_version << std::endl;
         return false;
     }
 
@@ -148,6 +150,7 @@ Logger::setSenders()
         rcss::InitSenderLogger::Creator init_cre;
         if ( ! rcss::InitSenderLogger::factory().getCreator( init_cre, log_version ) )
         {
+            std::cerr << "No InitSenderLogger::Creator v" << log_version << std::endl;
             return false;
         }
         M_init_observer->setInitSender( init_cre( init_params ) );
@@ -162,6 +165,7 @@ Logger::setSenders()
         rcss::DispSenderLogger::Creator disp_cre;
         if ( ! rcss::DispSenderLogger::factory().getCreator( disp_cre, log_version ) )
         {
+            std::cerr << "No DispSenderLogger::Creator v" << log_version << std::endl;
             return false;
         }
         M_observer->setDispSender( disp_cre( disp_params ) );

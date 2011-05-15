@@ -1,5 +1,28 @@
 2011-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/audio.cpp:
+	* src/bodysender.cpp:
+	* src/coach.cpp:
+	* src/fullstatesender.cpp:
+	* src/initsendercoach.cpp:
+	* src/initsenderonlinecoach.cpp:
+	* src/initsenderplayer.cpp:
+	* src/logger.cpp:
+	* src/monitor.cpp:
+	* src/netif.cpp:
+	* src/player.cpp:
+	* src/player.h:
+	* src/serializercoachstdv14.cpp:
+	* src/serializercommonstdv8.cpp:
+	* src/serializermonitor.cpp:
+	* src/serializeronlinecoachstdv14.cpp:
+	* src/serializerplayerstdv14.cpp:
+	* src/serverparam.cpp:
+	* src/stadium.cpp:
+	* src/visualsendercoach.cpp:
+	* src/visualsenderplayer.cpp:
+	- supported version 15 clients.
+
 	* src/heteroplayer.cpp:
 	* src/heteroplayer.h:
 	* src/initsender.cpp:

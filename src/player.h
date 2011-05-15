@@ -399,6 +399,7 @@ public:
                 const PVector & vel,
                 const PVector & accel );
 
+    // 2011-05-14 akiyama
     void doLongKick();
 
 protected:
