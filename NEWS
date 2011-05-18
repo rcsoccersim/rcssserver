@@ -35,6 +35,10 @@
     playmode offside_l, but they are kept away from the ball before
     the playmode is changed to freekick_r.
 
+  * allowed '+' as a team name character.
+
+  * Fixed a build problem caused by boost::filesystem3.
+
 [14.0.3]
   * Fixed a bug of the overtime handling when server::golden_goal is
     false. Thanks go to Thomas Gabel for reporting the problem.
