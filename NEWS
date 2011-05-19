@@ -25,10 +25,11 @@
     perform a foul action. As a result, players can perform an
     intentional foul safely if they have no yellow card. Now,
     the server::red_card_probability variable is used to determine
-    whether a player get the red card if it performs a intentional
+    whether a player get the red card if it performs an intentional
     foul, or whether a players get the yellow card if it performs a
-    dangerous tackle. The actual red card probability becomes 0.005
-    if player's foul_detect_probability is 0.5.
+    dangerous tackle. If red_card_probability is 0.01 and player's
+    foul_detect_probability is 0.5, the actual red card probability
+    becomes 0.005.
 
   * Removing automatic player clearance during stoppage time. For
     example, left side players can approach to the ball during the
