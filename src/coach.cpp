@@ -1456,6 +1456,11 @@ OnlineCoach::parse_command( const char * command )
             }
             else
             {
+                if ( builder.getMsg() != NULL )
+                {
+                    rcss::clang::Msg * msg = builder.detatchMsg().release();
+                    delete msg;
+                }
                 send( "(error could_not_parse_say)" );
             }
         }
