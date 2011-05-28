@@ -42,6 +42,10 @@
 namespace rcss {
 namespace clang {
 
+namespace {
+const size_t STR_SIZE = 8;
+}
+
 
 template< typename X >
 inline
@@ -939,6 +943,11 @@ void
 MsgBuilder::buildDefineDir( const std::string & name )
 {
     traceBuild< DefDir * >();
+    if ( name.length() > STR_SIZE )
+    {
+        throw BuilderErr( __FILE__, __LINE__,
+                          "Over the max string size." );
+    }
     add( new DefDir( name, checkAndGetDir() ) );
 }
 
@@ -947,6 +956,11 @@ void
 MsgBuilder::buildDefineReg( const std::string & name )
 {
     traceBuild< DefReg * >();
+    if ( name.length() > STR_SIZE )
+    {
+        throw BuilderErr( __FILE__, __LINE__,
+                          "Over the max string size." );
+    }
     add( new DefReg( name, checkAndGetRegion() ) );
 }
 
@@ -955,6 +969,11 @@ void
 MsgBuilder::buildDefineAct( const std::string & name )
 {
     traceBuild< DefAct * >();
+    if ( name.length() > STR_SIZE )
+    {
+        throw BuilderErr( __FILE__, __LINE__,
+                          "Over the max string size." );
+    }
     add( new DefAct( name, checkAndGetAction() ) );
 }
 
@@ -1115,6 +1134,11 @@ void
 MsgBuilder::buildActNamed( const std::string & name )
 {
     traceBuild< ActNamed * >();
+    if ( name.length() > STR_SIZE )
+    {
+        throw BuilderErr( __FILE__, __LINE__,
+                          "Over the max string size." );
+    }
     add( new ActNamed( name ) );
 }
 
@@ -1205,6 +1229,11 @@ void
 MsgBuilder::buildDirNamed( const std::string& name )
 {
     traceBuild< DirNamed * >();
+    if ( name.length() > STR_SIZE )
+    {
+        throw BuilderErr( __FILE__, __LINE__,
+                          "Over the max string size." );
+    }
     add( new DirNamed( name ) );
 }
 

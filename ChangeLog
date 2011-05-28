@@ -1,3 +1,10 @@
+2011-05-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/clangmsgbuilder.cpp:
+	* src/coach.cpp:
+	- added a clang parser exception handling.
+	- set the restriction to the length of directive name string.
+
 2011-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
