@@ -745,6 +745,7 @@ MsgBuilder::onNotEmpty() const
 MsgBuilder::MsgBuilder()
     : M_min_ver( (unsigned int)-1 ),
       M_max_ver( 0 ),
+      M_str_var_size( 8 ),
       M_freeform_msg_size( 128 )
 {
 
@@ -870,18 +871,6 @@ MsgBuilder::setVer( const unsigned int & min,
     {
         M_msg->setVer( min, max );
     }
-}
-
-void
-MsgBuilder::setFreeformMsgSize( const unsigned int len )
-{
-    M_freeform_msg_size = len;
-}
-
-unsigned int
-MsgBuilder::freeformMsgSize() const
-{
-    return M_freeform_msg_size;
 }
 
 

@@ -61,6 +61,7 @@ private:
     std::auto_ptr< Msg > M_msg;
     unsigned int M_min_ver;
     unsigned int M_max_ver;
+    unsigned int M_str_var_size;
     unsigned int M_freeform_msg_size;
 
 public:
@@ -88,20 +89,20 @@ public:
 
 protected:
 
-	class ItemType {
-	public:
-	    ItemType()
+    class ItemType {
+    public:
+        ItemType()
             : m_type( NONE )
           { }
 
-	    ~ItemType()
+        ~ItemType()
           { }
 
-	    void clear();
+        void clear();
 
 
-	    union Items
-	    {
+        union Items
+        {
             MetaToken* m_meta_token;
             Action* m_action;
             Dir* m_dir;
@@ -119,59 +120,59 @@ protected:
             ActivateRules* m_activate;
             Rule* m_rule;
             RuleID* m_rid;
-	    };
+        };
 
-	    Types m_type;
-	    Items m_item;
-	};
+        Types m_type;
+        Items m_item;
+    };
 
     std::stack< ItemType > M_items;
 
-	std::auto_ptr< MetaToken > getMetaToken();
-	std::auto_ptr< Action > getAction();
-	std::auto_ptr< Dir > getDir();
-	std::auto_ptr< Cond > getCond();
-	std::auto_ptr< CondList > getCondList();
-	std::auto_ptr< Token > getToken();
-	std::auto_ptr< Def > getDef();
-	std::auto_ptr< Region > getRegion();
-	std::auto_ptr< Point > getPoint();
-	std::auto_ptr< UNum > getUNum();
-	BallMoveToken getBMT();
-	std::auto_ptr< UNumSet > getUNumSet();
-	std::auto_ptr< std::string > getStr();
+    std::auto_ptr< MetaToken > getMetaToken();
+    std::auto_ptr< Action > getAction();
+    std::auto_ptr< Dir > getDir();
+    std::auto_ptr< Cond > getCond();
+    std::auto_ptr< CondList > getCondList();
+    std::auto_ptr< Token > getToken();
+    std::auto_ptr< Def > getDef();
+    std::auto_ptr< Region > getRegion();
+    std::auto_ptr< Point > getPoint();
+    std::auto_ptr< UNum > getUNum();
+    BallMoveToken getBMT();
+    std::auto_ptr< UNumSet > getUNumSet();
+    std::auto_ptr< std::string > getStr();
     std::auto_ptr< RuleIDList > getRIDList();
     std::auto_ptr< ActivateRules > getActivateRules();
     std::auto_ptr< Rule > getRule();
     std::auto_ptr< RuleID > getRID();
-	bool isItem( Types type ) const;
-	bool checkIsItem( Types type ) const;
+    bool isItem( Types type ) const;
+    bool checkIsItem( Types type ) const;
 
-	std::auto_ptr< MetaToken > checkAndGetMetaToken();
-	std::auto_ptr< Action > checkAndGetAction();
-	std::auto_ptr< Dir > checkAndGetDir();
-	std::auto_ptr< Cond > checkAndGetCond();
+    std::auto_ptr< MetaToken > checkAndGetMetaToken();
+    std::auto_ptr< Action > checkAndGetAction();
+    std::auto_ptr< Dir > checkAndGetDir();
+    std::auto_ptr< Cond > checkAndGetCond();
     std::auto_ptr< CondList > checkAndGetCondList();
     std::auto_ptr< Token > checkAndGetToken();
-	std::auto_ptr< Def > checkAndGetDef();
-	std::auto_ptr< Region > checkAndGetRegion();
-	std::auto_ptr< Point > checkAndGetPoint();
-	std::auto_ptr< UNum > checkAndGetUNum();
-	BallMoveToken checkAndGetBMT();
-	std::auto_ptr< UNumSet > checkAndGetUNumSet();
+    std::auto_ptr< Def > checkAndGetDef();
+    std::auto_ptr< Region > checkAndGetRegion();
+    std::auto_ptr< Point > checkAndGetPoint();
+    std::auto_ptr< UNum > checkAndGetUNum();
+    BallMoveToken checkAndGetBMT();
+    std::auto_ptr< UNumSet > checkAndGetUNumSet();
     std::auto_ptr< std::string > checkAndGetStr();
     std::auto_ptr< RuleIDList > checkAndGetRIDList();
-	std::auto_ptr< ActivateRules > checkAndGetActivateRules();
-	std::auto_ptr< Rule > checkAndGetRule();
-	RuleID checkAndGetRID();
+    std::auto_ptr< ActivateRules > checkAndGetActivateRules();
+    std::auto_ptr< Rule > checkAndGetRule();
+    RuleID checkAndGetRID();
 
-	void add( MetaToken * meta );
-	void add( Action * action );
-	void add( Dir * dir );
-	void add( Cond * cond );
-	void add( CondList * cond_list );
-	void add( Token * token );
-	void add( Def * def );
+    void add( MetaToken * meta );
+    void add( Action * action );
+    void add( Dir * dir );
+    void add( Cond * cond );
+    void add( CondList * cond_list );
+    void add( Token * token );
+    void add( Def * def );
     void add( Region * region );
     void add( Point * point );
     void add( UNum * unum );
@@ -208,10 +209,16 @@ public:
                  const unsigned int & max );
 
     virtual
-    void setFreeformMsgSize( const unsigned int len );
+    void setStrVarSize( const unsigned int len ) { M_str_var_size = len; }
 
     virtual
-    unsigned int freeformMsgSize() const;
+    unsigned int strVarSize() const { return M_str_var_size; }
+
+    virtual
+    void setFreeformMsgSize( const unsigned int len ) { M_freeform_msg_size = len; }
+
+    virtual
+    unsigned int freeformMsgSize() const { return M_freeform_msg_size; }
 
     virtual
     void setTime( const int & time );

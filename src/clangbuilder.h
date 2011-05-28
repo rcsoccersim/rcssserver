@@ -69,6 +69,13 @@ public:
     void setVer( const unsigned int & min,
                  const unsigned int & max ) = 0;
 
+
+    virtual
+    void setStrVarSize( const unsigned int len ) = 0;
+
+    virtual
+    unsigned int strVarSize() const = 0;
+
     virtual
     void setFreeformMsgSize( const unsigned int len ) = 0;
 

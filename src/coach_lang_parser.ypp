@@ -267,18 +267,42 @@ activation_element : RCSS_CLANG_LP RCSS_CLANG_ON_OFF id_list RCSS_CLANG_RP
 ;
 
 id_list : RCSS_CLANG_VAR
-          { BUILDER.buildRuleID( $1.getStr() );
-            BUILDER.buildRuleIDList(); }
+          {
+              std::string var = $1.getStr();
+              if ( var.length() > BUILDER.strVarSize() )
+                  YYERROR;
+              else
+              {
+                  BUILDER.buildRuleID( var );
+                  BUILDER.buildRuleIDList();
+              }
+          }
         | RCSS_CLANG_LP id_list2 RCSS_CLANG_RP
-          { BUILDER.buildRuleIDList(); }
+          {
+              BUILDER.buildRuleIDList();
+          }
         | RCSS_CLANG_ALL
-          { BUILDER.buildRuleIDListALL(); }
+          {
+              BUILDER.buildRuleIDListALL();
+          }
 ;
 
 id_list2 : id_list2 RCSS_CLANG_VAR
-            { BUILDER.buildRuleID( $2.getStr() ); }
-          | RCSS_CLANG_VAR
-            { BUILDER.buildRuleID( $1.getStr() ); }
+           {
+               std::string var = $2.getStr();
+               if ( var.length() > BUILDER.strVarSize() )
+                   YYERROR;
+               else
+                   BUILDER.buildRuleID( var );
+           }
+         | RCSS_CLANG_VAR
+           {
+               std::string var = $1.getStr();
+							 if ( var.length() > BUILDER.strVarSize() )
+                   YYERROR;
+               else
+                   BUILDER.buildRuleID( var );
+           }
 ;
 
 del_mess : RCSS_CLANG_LP RCSS_CLANG_DEL id_list RCSS_CLANG_RP
@@ -308,26 +332,58 @@ define_token_list : define_token_list define_token
                   | define_token
 ;
 
-define_token : RCSS_CLANG_LP RCSS_CLANG_DEFINEC RCSS_CLANG_STR
-               condition RCSS_CLANG_RP
-               { BUILDER.buildDefineCond( rcss::stripQuotes( $3.getStr() ) ); }
-             | RCSS_CLANG_LP RCSS_CLANG_DEFINED
-               RCSS_CLANG_STR directive RCSS_CLANG_RP
-               { BUILDER.buildDefineDir( rcss::stripQuotes( $3.getStr() ) ); }
-             | RCSS_CLANG_LP RCSS_CLANG_DEFINER
-               RCSS_CLANG_STR region RCSS_CLANG_RP
-               { BUILDER.buildDefineReg( rcss::stripQuotes( $3.getStr() ) ); }
-             | RCSS_CLANG_LP RCSS_CLANG_DEFINEA
-               RCSS_CLANG_STR action RCSS_CLANG_RP
-               { BUILDER.buildDefineAct( rcss::stripQuotes( $3.getStr() ) ); }
+define_token : RCSS_CLANG_LP RCSS_CLANG_DEFINEC RCSS_CLANG_STR condition RCSS_CLANG_RP
+               {
+                   std::string str = rcss::stripQuotes( $3.getStr() );
+                   if ( str.length() > BUILDER.strVarSize() )
+                       YYERROR;
+                   else
+                       BUILDER.buildDefineCond( str );
+               }
+             | RCSS_CLANG_LP RCSS_CLANG_DEFINED RCSS_CLANG_STR directive RCSS_CLANG_RP
+               {
+                   std::string str = rcss::stripQuotes( $3.getStr() );
+                   if ( str.length() > BUILDER.strVarSize() )
+                       YYERROR;
+                   else
+                       BUILDER.buildDefineDir( str );
+               }
+             | RCSS_CLANG_LP RCSS_CLANG_DEFINER RCSS_CLANG_STR region RCSS_CLANG_RP
+               {
+                   std::string str = rcss::stripQuotes( $3.getStr() );
+                   if ( str.length() > BUILDER.strVarSize() )
+                       YYERROR;
+                   else
+                       BUILDER.buildDefineReg( str );
+               }
+             | RCSS_CLANG_LP RCSS_CLANG_DEFINEA RCSS_CLANG_STR action RCSS_CLANG_RP
+               {
+                   std::string str = rcss::stripQuotes( $3.getStr() );
+                   if ( str.length() > BUILDER.strVarSize() )
+                       YYERROR;
+                   else
+                       BUILDER.buildDefineAct( str );
+               }
              | RCSS_CLANG_LP RCSS_CLANG_DEFRULE define_rule RCSS_CLANG_RP
                { BUILDER.setVer( 8 ); }
 ;
 
 define_rule : RCSS_CLANG_VAR RCSS_CLANG_MODEL rule
-            { BUILDER.buildDefineModelRule( $1.getStr() ); }
+              {
+                  std::string var = $1.getStr();
+                  if ( var.length() > BUILDER.strVarSize() )
+                      YYERROR;
+                  else
+                      BUILDER.buildDefineModelRule( var );
+              }
             | RCSS_CLANG_VAR RCSS_CLANG_DIREC rule
-            { BUILDER.buildDefineDirectiveRule( $1.getStr() ); }
+              {
+                  std::string var = $1.getStr();
+                  if ( var.length() > BUILDER.strVarSize() )
+                      YYERROR;
+                  else
+                      BUILDER.buildDefineDirectiveRule( var );
+              }
 ;
 
 rule : RCSS_CLANG_LP condition directive_list RCSS_CLANG_RP
@@ -345,24 +401,24 @@ rule_list : rule_list rule
 /* freeform messages */
 freeform_mess : RCSS_CLANG_LP RCSS_CLANG_FREEFORM RCSS_CLANG_STR RCSS_CLANG_RP
                 {
-                  std::string str = rcss::stripQuotes( $3.getStr() );
-                  /*if( str.length() > ServerParam::instance().freeformMsgSize() )*/
-                  if( str.length() > BUILDER.freeformMsgSize() )
-                    YYERROR;
-                  else
+                    std::string str = rcss::stripQuotes( $3.getStr() );
+                    /*if( str.length() > ServerParam::instance().freeformMsgSize() )*/
+                    if( str.length() > BUILDER.freeformMsgSize() )
+                        YYERROR;
+                    else
                     {
-                      BUILDER.buildFreeformMsg( str );
-                      BUILDER.setVer( 8, 7 );
+                        BUILDER.buildFreeformMsg( str );
+                        BUILDER.setVer( 8, 7 );
                     }
                 }
 ;
 
 /* unsupported messages */
 unsupp_mess : RCSS_CLANG_LP RCSS_CLANG_UNSUPP RCSS_CLANG_RP
-                {
+              {
                   BUILDER.buildUnsuppMsg();
                   BUILDER.setVer( 8, 7 );
-                }
+              }
 ;
 
 info_mess : RCSS_CLANG_LP RCSS_CLANG_INFO
@@ -415,7 +471,13 @@ action : RCSS_CLANG_LP RCSS_CLANG_POS
        | RCSS_CLANG_LP RCSS_CLANG_HTYPE RCSS_CLANG_INT RCSS_CLANG_RP
          { BUILDER.buildActHetType( $3.getInt() ); }
        | RCSS_CLANG_STR
-         { BUILDER.buildActNamed( rcss::stripQuotes( $1.getStr() ) ); }
+         {
+             std::string str = rcss::stripQuotes( $1.getStr() );
+             if ( str.length() > BUILDER.strVarSize() )
+                 YYERROR;
+             else
+                 BUILDER.buildActNamed( str );
+         }
        | RCSS_CLANG_LP RCSS_CLANG_PASS
          region RCSS_CLANG_RP
         { BUILDER.buildActPassReg();
@@ -447,12 +509,18 @@ action : RCSS_CLANG_LP RCSS_CLANG_POS
            BUILDER.setVer( 8 ); }
 ;
 
-directive : RCSS_CLANG_LP RCSS_CLANG_DO_DONT
-            RCSS_CLANG_TEAM unum_set action_list RCSS_CLANG_RP
-            { BUILDER.buildDirComm( $2.getBool(),
-                                                $3.getBool() ); }
+directive : RCSS_CLANG_LP RCSS_CLANG_DO_DONT RCSS_CLANG_TEAM unum_set action_list RCSS_CLANG_RP
+            {
+                BUILDER.buildDirComm( $2.getBool(), $3.getBool() );
+            }
           | RCSS_CLANG_STR
-            { BUILDER.buildDirNamed( rcss::stripQuotes( $1.getStr() ) ); }
+            {
+                std::string str = rcss::stripQuotes( $1.getStr() );
+                if ( str.length() > BUILDER.strVarSize() )
+                    YYERROR;
+                else
+                    BUILDER.buildDirNamed( str );
+            }
 ;
 
 action_list : action_list action {}
@@ -491,17 +559,39 @@ condition: RCSS_CLANG_LP RCSS_CLANG_TRUE_KW RCSS_CLANG_RP
            condition RCSS_CLANG_RP
            { BUILDER.buildCondNot(); }
          | RCSS_CLANG_STR
-           { BUILDER.buildCondNamed( rcss::stripQuotes( $1.getStr() ) ); }
+           {
+               std::string str = $1.getStr();
+               if ( str.length() > BUILDER.strVarSize() )
+                   YYERROR;
+               else
+                   BUILDER.buildCondNamed( str );
+           }
          | RCSS_CLANG_LP cond_comp RCSS_CLANG_RP
            { BUILDER.setVer( 8 ); }
          | RCSS_CLANG_LP RCSS_CLANG_UNUM
            RCSS_CLANG_VAR unum_set RCSS_CLANG_RP
-           { BUILDER.buildCondUNum( rcss::clang::UNum( $3.getStr() ) );
-             BUILDER.setVer( 8 ); }
+           {
+               std::string var = $3.getStr();
+               if ( var.length() > BUILDER.strVarSize() )
+                   YYERROR;
+               else
+               {
+                   BUILDER.buildCondUNum( rcss::clang::UNum( $3.getStr() ) );
+                   BUILDER.setVer( 8 );
+               }
+           }
          | RCSS_CLANG_LP RCSS_CLANG_UNUM
            RCSS_CLANG_STR unum_set RCSS_CLANG_RP
-           { BUILDER.buildCondUNum( rcss::clang::UNum( $3.getStr() ) );
-             BUILDER.setVer( 8 ); }
+           {
+               std::string str = $3.getStr();
+               if ( str.length() > BUILDER.strVarSize() )
+                   YYERROR;
+               else
+               {
+                   BUILDER.buildCondUNum( str );
+                   BUILDER.setVer( 8 );
+               }
+           }
 ;
 
 cond_comp : time_comp {}
@@ -568,7 +658,13 @@ region : RCSS_CLANG_LP RCSS_CLANG_NULL_REGION RCSS_CLANG_RP
          region_list RCSS_CLANG_RP
          { BUILDER.buildRegUnion(); }
        | RCSS_CLANG_STR
-         { BUILDER.buildRegNamed( rcss::stripQuotes( $1.getStr() ) ); }
+         {
+             std::string str = rcss::stripQuotes( $1.getStr() );
+             if ( str.length() > BUILDER.strVarSize() )
+                 YYERROR;
+             else
+                 BUILDER.buildRegNamed( str );
+         }
        | point
          { BUILDER.buildRegPoint(); }
        | RCSS_CLANG_LP RCSS_CLANG_TRI
@@ -587,43 +683,69 @@ region_list : region_list region
 ;
 
 point : RCSS_CLANG_LP RCSS_CLANG_PT num num RCSS_CLANG_RP
-        { BUILDER.buildPointSimple( $3.getDoub(),
-                                                $4.getDoub() ); }
+        {
+            BUILDER.buildPointSimple( $3.getDoub(), $4.getDoub() );
+        }
       | RCSS_CLANG_LP RCSS_CLANG_PT num num point RCSS_CLANG_RP
-        { BUILDER.buildPointRel( $3.getDoub(),
-                                             $4.getDoub() ); }
+        {
+            BUILDER.buildPointRel( $3.getDoub(), $4.getDoub() );
+        }
       | RCSS_CLANG_LP RCSS_CLANG_PT RCSS_CLANG_BALL RCSS_CLANG_RP
-        { BUILDER.buildPointBall(); }
-      | RCSS_CLANG_LP RCSS_CLANG_PT RCSS_CLANG_TEAM RCSS_CLANG_INT
-        RCSS_CLANG_RP
-        { BUILDER.buildPointPlayer( $3.getBool(),
-                     rcss::clang::UNum( ( rcss::clang::UNum::unum_t )$4.getInt() ) ); }
-      | RCSS_CLANG_LP RCSS_CLANG_PT RCSS_CLANG_TEAM RCSS_CLANG_VAR
-        RCSS_CLANG_RP
-        { BUILDER.buildPointPlayer( $3.getBool(),
-                                                rcss::clang::UNum( $4.getStr() ) );
-          BUILDER.setVer( 8 ); }
-      | RCSS_CLANG_LP RCSS_CLANG_PT RCSS_CLANG_TEAM RCSS_CLANG_STR
-        RCSS_CLANG_RP
-        { BUILDER.buildPointPlayer( $3.getBool(),
-                                                rcss::clang::UNum( $4.getStr() ) );
-          BUILDER.setVer( 8 ); }
+        {
+            BUILDER.buildPointBall();
+        }
+      | RCSS_CLANG_LP RCSS_CLANG_PT RCSS_CLANG_TEAM RCSS_CLANG_INT RCSS_CLANG_RP
+        {
+            BUILDER.buildPointPlayer( $3.getBool(),
+                                      rcss::clang::UNum( ( rcss::clang::UNum::unum_t )$4.getInt() ) );
+        }
+      | RCSS_CLANG_LP RCSS_CLANG_PT RCSS_CLANG_TEAM RCSS_CLANG_VAR RCSS_CLANG_RP
+        {
+            std::string var = $4.getStr();
+            if ( var.length() > BUILDER.strVarSize() )
+                YYERROR;
+            else
+            {
+                BUILDER.buildPointPlayer( $3.getBool(),
+                                          rcss::clang::UNum( $4.getStr() ) );
+                BUILDER.setVer( 8 );
+            }
+        }
+      | RCSS_CLANG_LP RCSS_CLANG_PT RCSS_CLANG_TEAM RCSS_CLANG_STR RCSS_CLANG_RP
+        {
+            std::string str = $4.getStr();
+            if ( str.length() > BUILDER.strVarSize() )
+                YYERROR;
+            else
+            {
+                BUILDER.buildPointPlayer( $3.getBool(), str );
+                BUILDER.setVer( 8 );
+            }
+        }
       | RCSS_CLANG_LP point_list RCSS_CLANG_RP {}
 ;
 
 point_list : point_list RCSS_CLANG_PLUS point_list
-           { BUILDER.buildPointArith( $2.getArithOp() );
-                BUILDER.setVer( 8 ); }
-            | point_list RCSS_CLANG_MINUS point_list
-           { BUILDER.buildPointArith( $2.getArithOp() );
-                BUILDER.setVer( 8 ); }
-            | point_list RCSS_CLANG_MULT point_list
-           { BUILDER.buildPointArith( $2.getArithOp() );
-                BUILDER.setVer( 8 ); }
-            | point_list RCSS_CLANG_DIV point_list
-           { BUILDER.buildPointArith( $2.getArithOp() );
-                BUILDER.setVer( 8 ); }
-            | point {}
+             {
+                 BUILDER.buildPointArith( $2.getArithOp() );
+                 BUILDER.setVer( 8 );
+             }
+           | point_list RCSS_CLANG_MINUS point_list
+             {
+                 BUILDER.buildPointArith( $2.getArithOp() );
+                 BUILDER.setVer( 8 );
+              }
+           | point_list RCSS_CLANG_MULT point_list
+             {
+                 BUILDER.buildPointArith( $2.getArithOp() );
+                 BUILDER.setVer( 8 );
+             }
+           | point_list RCSS_CLANG_DIV point_list
+             {
+                 BUILDER.buildPointArith( $2.getArithOp() );
+                 BUILDER.setVer( 8 );
+             }
+           | point {}
 ;
 
 num : RCSS_CLANG_INT
@@ -641,18 +763,31 @@ unum_list : unum
 ;
 
 unum : RCSS_CLANG_INT
-            { BUILDER.buildUNum(
-            rcss::clang::UNum( ( rcss::clang::UNum::unum_t )$1.getInt() ) ); }
-          | RCSS_CLANG_VAR
-            {
-     BUILDER.buildUNum( rcss::clang::UNum( $1.getStr() ) );
-              BUILDER.setVer( 8 );
-            }
-          | RCSS_CLANG_STR
-            {
-     BUILDER.buildUNum( rcss::clang::UNum( $1.getStr() ) );
-              BUILDER.setVer( 8 );
-            }
+       {
+           BUILDER.buildUNum( rcss::clang::UNum( ( rcss::clang::UNum::unum_t )$1.getInt() ) );
+       }
+     | RCSS_CLANG_VAR
+       {
+           std::string var = $1.getStr();
+           if ( var.length() > BUILDER.strVarSize() )
+               YYERROR;
+           else
+           {
+               BUILDER.buildUNum( rcss::clang::UNum( var ) );
+               BUILDER.setVer( 8 );
+           }
+       }
+     | RCSS_CLANG_STR
+       {
+           std::string str = rcss::stripQuotes( $1.getStr() );
+           if ( str.length() > BUILDER.strVarSize() )
+               YYERROR;
+           else
+           {
+               BUILDER.buildUNum( rcss::clang::UNum( str ) );
+               BUILDER.setVer( 8 );
+           }
+       }
 ;
 
 bmove_token_set : RCSS_CLANG_LB bmove_token_list RCSS_CLANG_RB

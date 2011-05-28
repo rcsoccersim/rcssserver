@@ -41,7 +41,8 @@ class DelMsg;
 class Msg {
 
 public:
-	enum Types { META, FREEFORM, INFO, ADVICE, DEFINE, DEL, RULE, UNSUP };
+
+    enum Types { META, FREEFORM, INFO, ADVICE, DEFINE, DEL, RULE, UNSUP };
 
 protected:
     Msg();
@@ -51,8 +52,8 @@ public:
     virtual
     ~Msg();
 
-	virtual
-	Types getType() const = 0;
+    virtual
+    Types getType() const = 0;
 
     virtual
     std::auto_ptr< Msg > deepCopy() const = 0;

@@ -28,6 +28,7 @@
 namespace rcss {
 namespace clang {
 
+
 Msg::Msg()
     : M_time_recv( -1 ),
       M_min_ver( (unsigned int)-1 ),
