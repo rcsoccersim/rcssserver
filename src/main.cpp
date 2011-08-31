@@ -25,29 +25,21 @@
 #include <config.h>
 #endif
 
-#include "param.h"
-#include "types.h"
-#include "utility.h"
-#include "object.h"
-#include "player.h"
 #include "stadium.h"
 #include "serverparam.h"
 #include "version.h"
 
-#include "timer.h"
 #include "stdtimer.h"
 #include "synctimer.h"
 
 #include <boost/shared_ptr.hpp>
 
 #include <iostream>
+#include <locale>
 #include <cmath>
+#include <cstring>
 #include <csignal>
 #include <cerrno>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 namespace {
 
@@ -64,6 +56,8 @@ sigHandle( int )
 int
 main( int argc, char *argv[] )
 {
+    std::locale::global( std::locale::classic() );
+
     std::cout << PACKAGE << "-" << VERSION << "\n\n"
               << Copyright << std::endl;
 
