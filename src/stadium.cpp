@@ -878,10 +878,16 @@ Stadium::step()
               || playmode() == PM_CatchFault_Right
               || playmode() == PM_CatchFault_Left )
     {
+        PlayMode pm = playmode();
         clearBallCatcher();
         incMovableObjects();
         ++M_stoppage_time;
         for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        if ( pm != playmode() )
+        {
+            ++M_time;
+            M_stoppage_time = 0;
+        }
     }
     else if ( playmode() != PM_BeforeKickOff && playmode() != PM_TimeOver )
     {
