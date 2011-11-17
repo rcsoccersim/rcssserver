@@ -1,3 +1,14 @@
+2011-11-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* m4/ax_boost_base.m4:
+	* m4/ax_boost_filesystem.m4:
+	* m4/ax_boost_system.m4:
+	* m4/ax_prog_bison.m4:
+	* m4/ax_prog_flex.m4:
+	* src/synctimer.cpp:
+	- fixed boost detection problems.
+	- fixed a compiler warning.
+
 2011-09-02  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/stadium.cpp:

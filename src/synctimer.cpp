@@ -31,8 +31,6 @@
 void
 SyncTimer::run()
 {
-    bool shutdown = false;
-
     // for explanation different counters, see StandardTimer::run
     // big difference is that the loop is not started when a new signal comes,
     // but rather immediately when the previous loop has ended. Each loop
@@ -54,7 +52,6 @@ SyncTimer::run()
         q_svt  = ServerParam::instance().lcmStep()/ServerParam::instance().coachVisualStep();
     bool sent_synch_see = false;
 
-    //while (!shutdown)
     while ( getTimeableRef().alive() )
     {
         lcmt += TIMEDELTA;
@@ -132,7 +129,6 @@ SyncTimer::run()
         //we do a c_synch-1 because of the offset
         if ( lcmt >= ServerParam::instance().simStep() * ( c_synch - 1 ) + ServerParam::instance().synchOffset() )
         {
-            shutdown = getTimeableRef().sendThink();
             /* because of the strange offset nature here,
                we let the lcmt advancement below handle the resetting to 1 */
             c_synch++;

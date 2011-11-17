@@ -14,6 +14,7 @@
 # LICENSE
 #
 #   Copyright (c) 2009 Francesco Salvestrini <salvestrini@users.sourceforge.net>
+#   Copyright (c) 2010 Diego Elio Petteno` <flameeyes@gmail.com>
 #
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License as published by the
@@ -41,24 +42,23 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 8
+#serial 9
 
 AC_DEFUN([AX_PROG_BISON], [
   AC_REQUIRE([AC_PROG_YACC])
-  AC_REQUIRE([AC_PROG_SED])
+  AC_REQUIRE([AC_PROG_EGREP])
 
   AC_CACHE_CHECK([if bison is the parser generator],[ax_cv_prog_bison],[
-    AS_IF([test "`echo \"$YACC\" | $SED 's,^.*\(bison\).*$,\1,'`" = "bison" ],[
-      ax_cv_prog_bison=yes
-    ],[
-      ax_cv_prog_bison=no
-    ])
+    AS_IF([$YACC --version 2>/dev/null | $EGREP -q '^bison '],
+      [ax_cv_prog_bison=yes], [ax_cv_prog_bison=no])
   ])
-  AS_IF([test "$ax_cv_prog_bison" = yes],[
-    :
-    $1
-  ],[
-    :
-    $2
-  ])
+  AS_IF([test "$ax_cv_prog_bison" = "yes"], [
+      dnl replace the yacc-compatible compiler with the real bison, as
+      dnl otherwise autoconf limits us to the POSIX yacc.
+      dnl We also change the generated filename to the old one, so that
+      dnl automake's ylwrap can deal with it.
+      YACC="${YACC% -y} -o y.tab.c"
+    ] m4_ifnblank([$1], [[$1]]),
+    m4_ifnblank([$2], [[$2]])
+  )
 ])

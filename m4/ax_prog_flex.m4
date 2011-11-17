@@ -14,6 +14,7 @@
 # LICENSE
 #
 #   Copyright (c) 2009 Francesco Salvestrini <salvestrini@users.sourceforge.net>
+#   Copyright (c) 2010 Diego Elio Petteno` <flameeyes@gmail.com>
 #
 #   This program is free software; you can redistribute it and/or modify it
 #   under the terms of the GNU General Public License as published by the
@@ -41,24 +42,18 @@
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
 
-#serial 8
+#serial 9
 
 AC_DEFUN([AX_PROG_FLEX], [
   AC_REQUIRE([AM_PROG_LEX])
-  AC_REQUIRE([AC_PROG_SED])
+  AC_REQUIRE([AC_PROG_EGREP])
 
   AC_CACHE_CHECK([if flex is the lexer generator],[ax_cv_prog_flex],[
-    AS_IF([test "`echo \"$LEX\" | $SED 's,^.*\(flex\).*$,\1,'`" = "flex"],[
-      ax_cv_prog_flex=yes
-    ],[
-      ax_cv_prog_flex=no
-    ])
+    AS_IF([$LEX --version 2>/dev/null | $EGREP -q '^flex '],
+      [ax_cv_prog_flex=yes], [ax_cv_prog_flex=no])
   ])
-  AS_IF([test "$ax_cv_prog_flex" = yes],[
-    :
-    $1
-  ],[
-    :
-    $2
-  ])
+  AS_IF([test "$ax_cv_prog_flex" = "yes"],
+    m4_ifnblank([$1], [[$1]]),
+    m4_ifnblank([$2], [[$2]])
+  )
 ])
