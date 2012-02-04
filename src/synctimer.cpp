@@ -129,6 +129,7 @@ SyncTimer::run()
         //we do a c_synch-1 because of the offset
         if ( lcmt >= ServerParam::instance().simStep() * ( c_synch - 1 ) + ServerParam::instance().synchOffset() )
         {
+            getTimeableRef().sendThink();
             /* because of the strange offset nature here,
                we let the lcmt advancement below handle the resetting to 1 */
             c_synch++;
