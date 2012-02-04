@@ -19,6 +19,15 @@
 	* src/main.cpp:
 	- set "C" to the global locale.
 
+2011-06-07  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version number. Official release 15.0.1.
+
+	* src/clangmsgbuilder.cpp:
+	- added exception handlings for illegal clang name/id strings.
+
 2011-05-29  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach.cpp:
@@ -32,6 +41,11 @@
 	* src/coach_lang_parser.ypp:
 	- fixed a defect of clang specification. Now, the length of
 	directive name is restricted within 8 by default.
+
+	* src/clangmsgbuilder.cpp:
+	* src/coach.cpp:
+	- set the restriction to the length of directive name string.
+	- added exception handlings for illegal clang directive names.
 
 2011-05-15  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

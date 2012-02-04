@@ -1309,7 +1309,23 @@ OnlineCoach::parse_command( const char * command )
 
             rcss::clang::Parser parser( builder );
 
-            int ret = parser.parse( command );
+            int ret = 1;
+            try
+            {
+                ret = parser.parse( command );
+            }
+            catch ( std::exception & e )
+            {
+                std::cerr << e.what() << std::endl;
+                if ( builder.getMsg() != NULL )
+                {
+                    rcss::clang::Msg * msg = builder.detatchMsg().release();
+                    delete msg;
+                }
+                send( "(error could_not_parse_say)" );
+                return;
+            }
+
             if ( ret == 0 && builder.getMsg() != NULL )
             {
                 //succeful parse

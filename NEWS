@@ -1,3 +1,7 @@
+[15.0.1]
+  * Fixed a defect of clang specification. Now, directive names or
+    ID strings are limited within 8 characters.
+
 [15.0.0]
   * New parameters:
     - server::red_card_probability (default value: 0.0)
