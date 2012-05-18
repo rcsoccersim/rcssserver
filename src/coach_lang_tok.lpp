@@ -202,11 +202,15 @@ direc     { return RCSS_CLANG_DIREC; }
 {REAL} { *M_lexed_val = atof(yytext); return RCSS_CLANG_REAL; }
 {EXP}  { *M_lexed_val = atof(yytext); return RCSS_CLANG_REAL; }
 
-\"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\" { *M_lexed_val = yytext ;
-													      return RCSS_CLANG_STR; }
+\"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\" {
+    *M_lexed_val = yytext ;
+    return RCSS_CLANG_STR;
+}
 
-[abe-oqrt-zA-Z_][a-zA-Z0-9_]* { *M_lexed_val = yytext;
-												 return RCSS_CLANG_VAR; }
+[abe-oqrt-zA-Z_][a-zA-Z0-9_]* {
+    *M_lexed_val = yytext;
+    return RCSS_CLANG_VAR;
+}
 
 . { return RCSS_CLANG_ERROR; }
 

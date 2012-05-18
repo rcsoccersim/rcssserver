@@ -1,5 +1,9 @@
 2012-05-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/coach_lang_parser.ypp:
+	* src/coach_lang_tok.lpp:
+	- align the code.
+
 	* src/utility.h:
 	- fixed a problem of zero division in Quantize().
 
