@@ -1,7 +1,19 @@
+2012-05-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/utility.h:
+	- fixed a problem of zero division in Quantize().
+
+	* src/referee.cpp:
+	- fixed a bug of player clearance after fouls.
+
+	* src/object.cpp:
+	* src/object.h:
+	- improve the implementation of rotate() method.
+
 2012-02-05  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/synctimer.cpp:
-	- fixed the bug of synch mode.
+	- fixed a bug of synch mode.
 
 2011-11-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 

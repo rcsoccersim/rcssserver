@@ -61,19 +61,6 @@
  *===================================================================
  */
 
-const
-PVector &
-PVector::rotate(const double & ang)
-{
-    double r1 = r();
-    double th1 = th();
-
-    x = r1 * std::cos( th1 + ang );
-    y = r1 * std::sin( th1 + ang );
-
-    return *this;
-}
-
 bool
 PVector::between( const PVector & begin,
                   const PVector & end ) const

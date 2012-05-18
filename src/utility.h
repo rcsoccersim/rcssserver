@@ -101,7 +101,9 @@ double
 Quantize( const double & v,
           const double & q )
 {
-    return rint( v / q ) * q;
+    return ( q < EPS
+             ? v
+             : rint( v / q ) * q );
 }
 
 inline

@@ -292,13 +292,13 @@ private:
               return calcDegDir( sight_2_line_ang + M_PI*0.5 );
       }
 
-    double calcUnQuantDist( const PObject& obj ) const
+    double calcUnQuantDist( const PObject & obj ) const
       {
           return self().pos().distance( obj.pos() );
       }
 
-    double calcQuantDist( const double& dist,
-                          const double& qstep ) const
+    double calcQuantDist( const double & dist,
+                          const double & qstep ) const
       {
           return Quantize( std::exp( Quantize( std::log( dist + EPS ), qstep ) ), 0.1 );
       }

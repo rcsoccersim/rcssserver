@@ -680,14 +680,24 @@ Referee::clearPlayersFromBall( const Side side )
     const PlayMode pm = M_stadium.playmode();
 
     const double clear_dist = ( ( pm == PM_Back_Pass_Left
-                                  || pm == PM_Back_Pass_Right )
+                                  || pm == PM_Back_Pass_Right
+                                  || ( ( pm == PM_Foul_Charge_Left
+                                         || pm == PM_Foul_Push_Left )
+                                       && inPenaltyArea( LEFT, M_stadium.ball().pos() ) )
+                                  || ( ( pm == PM_Foul_Charge_Right
+                                         || pm == PM_Foul_Push_Right )
+                                       && inPenaltyArea( RIGHT, M_stadium.ball().pos() ) ) )
                                 ? ServerParam::GOAL_AREA_LENGTH
                                 : ServerParam::KICK_OFF_CLEAR_DISTANCE );
     const bool indirect = ( pm == PM_Back_Pass_Left
                             || pm == PM_Back_Pass_Right
+                            || pm == PM_Foul_Charge_Left
+                            || pm == PM_Foul_Charge_Right
+                            || pm == PM_Foul_Push_Left
+                            || pm == PM_Foul_Push_Right
                             || pm == PM_IndFreeKick_Left
                             || pm == PM_IndFreeKick_Right );
-    const double goal_half_width = ServerParam::instance().goalWidth()*0.5;
+    //const double goal_half_width = ServerParam::instance().goalWidth()*0.5;
 
     const double max_x = ServerParam::PITCH_LENGTH*0.5 + ServerParam::PITCH_MARGIN;
     const double max_y = ServerParam::PITCH_WIDTH*0.5 + ServerParam::PITCH_MARGIN;
@@ -710,8 +720,7 @@ Referee::clearPlayersFromBall( const Side side )
                  || (*it)->side() == side )
             {
                 if ( indirect
-                     && std::fabs( (*it)->pos().x ) >= ServerParam::PITCH_LENGTH*0.5
-                     && std::fabs( (*it)->pos().y ) <= goal_half_width )
+                     && std::fabs( (*it)->pos().x ) >= ServerParam::PITCH_LENGTH*0.5 )
                 {
                     // defender is allowed to stand on the goal line.
                     continue;
@@ -735,8 +744,7 @@ Referee::clearPlayersFromBall( const Side side )
                     }
 
                     if ( indirect
-                         && std::fabs( new_pos.x ) > ServerParam::PITCH_LENGTH*0.5
-                         && std::fabs( new_pos.y ) < goal_half_width )
+                         && std::fabs( new_pos.x ) > ServerParam::PITCH_LENGTH*0.5 )
                     {
                         double tangent
                             = ( new_pos.y - M_stadium.ball().pos().y )

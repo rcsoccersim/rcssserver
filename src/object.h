@@ -74,9 +74,8 @@ public:
         , y( yy )
       { }
 
-    const
-    PVector & assign( const double & xx,
-                      const double & yy )
+    const PVector & assign( const double & xx,
+                            const double & yy )
       {
           x = xx;
           y = yy;
@@ -88,8 +87,7 @@ public:
           return PVector( -x, -y );
       }
 
-    const
-    PVector &	operator+() const
+    const PVector & operator+() const
       {
           return *this;
       }
@@ -139,7 +137,7 @@ public:
                    : std::atan2( y, x ) );
       }
 
-    const PVector & normalize( const double & l = 1.0 )
+    const PVector & normalize( const double l = 1.0 )
       {
           *this *= ( l / std::max( r(), EPS ) );
           return *this;
@@ -155,8 +153,13 @@ public:
           return ( PVector( *this ) -= orig ).r();
       }
 
-    const
-    PVector & rotate( const double & ang );
+    const PVector & rotate( const double ang )
+      {
+          double c = std::cos( ang );
+          double s = std::sin( ang );
+          return assign( this->x * c - this->y * s,
+                         this->x * s + this->y * c );
+      }
 
     bool between( const PVector & begin,
                   const PVector & end ) const;
