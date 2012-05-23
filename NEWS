@@ -1,3 +1,10 @@
+[15.1.0]
+  * Fixed a defect of boost detection by updating autoconf macros.
+
+  * Fixed a bug of referee's player clearance operation after fouls.
+
+  * Fixed a defect of zero division in Quantize method.
+
 [15.0.1]
   * Fixed a defect of clang specification. Now, directive names or
     ID strings are limited within 8 characters.

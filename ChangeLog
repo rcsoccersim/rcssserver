@@ -1,5 +1,9 @@
 2012-05-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a minor version number. Official release 15.1.0.
+
 	* m4/ax_boost_filesystem.m4:
 	- updated autoconf macro
 
