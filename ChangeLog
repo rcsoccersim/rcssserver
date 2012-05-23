@@ -4,6 +4,9 @@
 	* configure.ac:
 	- updated a minor version number. Official release 15.1.0.
 
+	* src/version.h:
+	- updated the copyright message.
+
 	* m4/ax_boost_filesystem.m4:
 	- updated autoconf macro
 
