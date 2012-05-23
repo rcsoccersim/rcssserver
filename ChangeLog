@@ -1,3 +1,8 @@
+2012-05-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* m4/ax_boost_filesystem.m4:
+	- updated autoconf macro
+
 2012-05-18  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/coach_lang_parser.ypp:
