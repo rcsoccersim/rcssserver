@@ -1,3 +1,21 @@
+2012-05-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/netif.cpp:
+	* src/netif.h:
+	* src/Makefile.am:
+	* src/coach.cpp:
+	* src/coach.h:
+	* src/object.h:
+	* src/player.cpp:
+	* src/player.h:
+	* src/stadium.cpp:
+	* src/stadium.h:
+	* src/team.cpp:
+	* src/team.h:
+	- implemented a variation of change_player_type command, that can
+	change an exsiting player to goalie. not fully tested yet
+	- deleted netif.{h,cpp}
+
 2012-05-23  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

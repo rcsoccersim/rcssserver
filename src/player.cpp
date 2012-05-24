@@ -447,6 +447,22 @@ Player::discard()
 }
 
 void
+Player::changeToGoalie()
+{
+    M_goalie = true;
+
+    setEnable();
+
+    {
+        char lname[128], sname[128];
+        snprintf( lname, 128, PLAYER_NAME_FORMAT, team()->name().c_str(), unum() );
+        snprintf( sname, 128, PLAYER_NAME_FORMAT_SHORT, team()->name().c_str(), unum(),
+                  isGoalie() ? GOALIE_VISUAL_STRING : "" );
+        setName( lname, sname );
+    }
+}
+
+void
 Player::parseMsg( char * msg,
                   const size_t & len )
 {

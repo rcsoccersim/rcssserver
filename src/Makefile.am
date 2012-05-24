@@ -103,7 +103,6 @@ rcssserver_SOURCES = \
 	logger.cpp \
 	main.cpp \
 	monitor.cpp \
-	netif.cpp \
 	pcombuilder.cpp \
 	pcomparser.cpp \
 	player.cpp \

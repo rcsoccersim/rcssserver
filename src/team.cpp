@@ -342,6 +342,44 @@ Team::substitute( const Player * player,
 }
 
 
+bool
+Team::changePlayerToGoalie( const Player * player )
+{
+    if ( ! player )
+    {
+        return false;
+    }
+
+    Player * candidate = static_cast< Player * >( 0 );
+    for ( int i = 0; i < this->size(); ++i )
+    {
+        if ( M_players[i]->isEnabled() )
+        {
+            if ( M_players[i]->isGoalie() )
+            {
+                return false;
+            }
+
+            if ( player == M_players[i] )
+            {
+                candidate = M_players[i];
+            }
+        }
+    }
+
+    if ( ! candidate )
+    {
+        std::cerr << __FILE__ << ":" << __LINE__
+                  << " Warning: no such player." << std::endl;
+        return false;
+    }
+
+    candidate->changeToGoalie();
+
+    return true;
+}
+
+
 void
 Team::addTeamGraphic( const unsigned int x,
                       const unsigned int y,

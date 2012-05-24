@@ -194,14 +194,12 @@ public:
           return M_subs_count;
       }
 
-    const
-    std::map< int, int > & ptypeCount() const
+    const std::map< int, int > & ptypeCount() const
       {
           return M_ptype_count;
       }
 
-    const
-    std::map< int, int > & ptypeUsedCount() const
+    const std::map< int, int > & ptypeUsedCount() const
       {
           return M_ptype_used_count;
       }
@@ -212,6 +210,8 @@ public:
 
     void substitute( const Player * player,
                      const int player_type );
+
+    bool changePlayerToGoalie( const Player * player );
 
     OnlineCoach * olcoach()
       {

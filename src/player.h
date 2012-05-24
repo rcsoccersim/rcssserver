@@ -202,6 +202,8 @@ public:
     void disable();
     void discard();
 
+    void changeToGoalie();
+
     //
     // receive message
     //

@@ -42,17 +42,11 @@
 #include <boost/lexical_cast.hpp>
 
 #include <iostream>
+#include <sstream>
 #include <cstdio>
 #include <cstring>
 #include <cctype>
 #include <cmath>
-
-// #ifdef HAVE_NETINET_IN_H
-// #include <netinet/in.h>
-// #endif
-// #ifdef HAVE_WINSOCK2_H
-// #include <winsock2.h>
-// #endif
 
 namespace {
 
@@ -249,7 +243,6 @@ Coach::parseMsg( char * msg,
 void
 Coach::parse_command( const char * command )
 {
-#if 1
     char com[128];
 
     if ( std::sscanf( command, " ( %127[-0-9a-zA-Z.+*/?<>_] ", com ) != 1 )
@@ -327,14 +320,24 @@ Coach::parse_command( const char * command )
     {
         char name[128];
         int unum, player_type;
-        if ( std::sscanf( command, " ( change_player_type %s %d %d ) ",
-                          name, &unum, &player_type ) != 3 )
+        char goalie[16];
+
+        if ( std::sscanf( command, " ( change_player_type %127s %d %d ) ",
+                          name, &unum, &player_type ) == 3 )
+        {
+            change_player_type( name, unum, player_type );
+        }
+        else if ( std::sscanf( command, " ( change_player_type %127s %d %15[^ ( )] ) ",
+                               name, &unum, goalie ) == 3
+                  && ! std::strncmp( goalie, "goalie", 6 ) )
+        {
+            change_player_type_goalie( name, unum );
+        }
+        else
         {
             send( "(error illegal_command_form)" );
-            return;
         }
 
-        change_player_type( name, unum, player_type );
         return;
     }
     //pfr:SYNCH
@@ -361,178 +364,6 @@ Coach::parse_command( const char * command )
         send( "(error unknown_command)" );
         return;
     }
-#else
-    const char * buf = command;;
-    int n_read = 0;
-    int count = 0;
-
-    while ( *buf != '\0' )
-    {
-        while ( std::isspace( *buf ) ) ++buf;
-        if ( *buf == '\0' ) break;
-
-        if ( ! std::strncmp( buf, "(start)", 7 ) )
-        {
-            buf += 7;
-            Stadium::kick_off( M_stadium );
-            send( "(ok start)" );
-        }
-        else if ( ! std::strncmp( buf, "(change_mode ", 13 ) )
-        {
-            int n = parse_change_mode( buf );
-            if ( n == 0 )
-            {
-                send( "(error illegal_command_form)" );
-                //std::cerr << "Error parsing >" << buf << "<\n";
-                return;
-            }
-            buf += n;
-        }
-        else if ( ! std::strcmp( buf, "move" ) )
-        {
-            int n = parse_move( buf );
-            if ( n == 0 )
-            {
-                send( "(error illegal_command_form)" );
-                //std::cerr << "Error parsing >" << buf << "<\n";
-                return;
-            }
-            buf += n;
-        }
-        else if ( ! std::strncmp( buf, "(look)", 6 ) )
-        {
-            buf += 6;
-            look();
-        }
-        else if ( ! std::strncmp( buf, "(team_names)", 12 ) )
-        {
-            buf += 12;
-            team_names();
-        }
-        else if ( ! std::strncmp( buf, "(recover)", 9 ) )
-        {
-            buf += 9;
-            recover();
-        }
-        else if ( ! std::strncmp( buf, "(check_ball)", 12 ) )
-        {
-            buf += 12;
-            check_ball();
-        }
-        else if( ! std::strncmp( buf, "(say ", 5 ) )
-        {
-            buf += 5;
-            char msg[MaxMesg];
-            if ( *buf == '"'
-                 && std::sscanf( buf, " \"%[-0-9a-zA-Z ().+*/?<>_]\" ) %n ",
-                                 msg, &n_read ) == 1 )
-            {
-                buf += n_read;
-            }
-            else if ( std::sscanf( buf, "%[-0-9a-zA-Z ().+*/?<>_]",
-                                   msg ) == 1 )
-            {
-                //chop_last_parenthesis( msg, ServerParam::instance().freeformMsgSize() );
-                int l = std::strlen( msg );
-                if ( msg[l-1] == ')' )
-                {
-                    msg[l-1] = '\0';
-                }
-                else
-                {
-                    send( "(error illegal_command_form)" );
-                    //std::cerr << "Error parsing >" << buf << "<\n";
-                    return;
-                }
-            }
-            else
-            {
-                send( "(error illegal_command_form)" );
-                //std::cerr << "Error parsing >" << buf << "<\n";
-                return;
-            }
-
-            M_stadium.sendCoachAudio( *this, msg );
-            send( "(ok say)" );
-        }
-        else if ( ! std::strncmp( buf, "(ear ", 5 ) )
-        {
-            char mode[16] ;
-            if ( std::sscanf( buf," ( ear %15[^ ()] ) %n ",
-                              mode, &n_read ) != 1 )
-            {
-                send( "(error illegal_command_form)" );
-                return;
-            }
-            buf += n_read;
-
-            ear( mode );
-            return;
-        }
-        else if ( ! std::strncmp( buf, "(eye ", 5 ) )
-        {
-            char mode[16] ;
-            if ( std::sscanf( buf, " ( eye %15[^ ()] ) %n ",
-                              mode, &n_read ) != 1 )
-            {
-                send( "(error illegal_command_form)" );
-                return;
-            }
-
-            eye( mode );
-            return;
-        }
-        else if ( ! std::strncmp( buf, "(change_player_type ", 20 ) )
-        {
-            char name[128];
-            int unum, player_type;
-            if ( std::sscanf( buf, " ( change_player_type %s %d %d ) %n ",
-                              name, &unum, &player_type, &n_read ) != 3 )
-            {
-                send( "(error illegal_command_form)" );
-                return;
-            }
-            buf += n_read;
-
-            change_player_type( name, unum, player_type );
-            return;
-        }
-        //pfr:SYNCH
-        else if ( ! std::strncmp( buf, "(done)", 6 ) )
-        {
-            //std::cerr << "Recv trainer done" << std::endl;
-            M_done_received = true;
-            return;
-        }
-        else if ( ! std::strncmp( buf, "(compression ", 13 ) )
-        {
-            int level;
-            if ( std::sscanf( buf, " ( compression %d ) %n ",
-                              &level, &n_read ) != 1 )
-            {
-                send( "(error illegal_command_form)" );
-                return;
-            }
-            buf += n_read;
-
-            compression( level );
-            return;
-        }
-        else
-        {
-            send( "(error unknown_command)" );
-            return;
-        }
-
-        ++count;
-    }
-
-
-    if ( count == 0 )
-    {
-        send( "(error illegal_command_form)" );
-    }
-#endif
 }
 
 
@@ -769,19 +600,11 @@ Coach::compression( int level )
     }
 
 
-#ifdef HAVE_SSTREAM
     std::ostringstream reply;
     reply << "(ok compression " << level << ")";
     send ( reply.str().c_str() );
-#else
-    std::ostrstream reply;
 
-    reply << "(ok compression " << level << ")" << std::ends;
-    send ( reply.str() );
-    reply.freeze( false );
-#endif
     setCompressionLevel ( level );
-
 #else
     send ( "(warning compression_unsupported)" );
 #endif
@@ -794,11 +617,7 @@ Coach::look()
     {
         M_observer->sendLook();
     }
-// #ifdef HAVE_SSTREAM
 //     std::ostringstream ost;
-// #else
-//     std::ostrstream ost;
-// #endif
 
 //     ost << "(ok look " << stad.time();
 //     if ( version() >= 7.0 )
@@ -856,23 +675,13 @@ Coach::look()
 //                 << ")" ;
 //     }
 //     ost << ")" << std::endl;
-// #ifdef HAVE_SSTREAM
 //     send(ost.str().c_str());
-// #else
-//     ost << std::ends;
-//     send(ost.str());
-//     ost.freeze();
-// #endif
 }
 
 void
 Coach::team_names()
 {
-#ifdef HAVE_SSTREAM
     std::ostringstream ost;
-#else
-    std::ostrstream ost;
-#endif
 
     ost << "(ok team_names";
 
@@ -887,13 +696,7 @@ Coach::team_names()
     }
 
     ost << ")" << std::endl;
-#ifdef HAVE_SSTREAM
     send( ost.str().c_str() );
-#else
-    ost<< std::ends;
-    send( ost.str() );
-    ost.freeze();
-#endif
 }
 
 void
@@ -901,16 +704,9 @@ Coach::recover()
 {
     M_stadium.recoveryPlayers();
 
-#ifdef HAVE_SSTREAM
     std::ostringstream ost;
     ost << "(ok recover)" << std::endl;
     send( ost.str().c_str() );
-#else
-    std::ostrstream ost;
-    ost << "(ok recover)" << std::endl << std::ends;
-    send( ost.str() );
-    ost.freeze();
-#endif
 }
 
 
@@ -919,7 +715,6 @@ Coach::change_player_type( const std::string & team_name,
                            int unum,
                            int player_type )
 {
-
     const Team * team = NULL;
     if ( M_stadium.teamLeft().name() == team_name )
     {
@@ -970,17 +765,84 @@ Coach::change_player_type( const std::string & team_name,
     send( buf );
 }
 
+void
+Coach::change_player_type_goalie( const std::string & team_name,
+                                  int unum )
+{
+    const Team * team = NULL;
+    if ( M_stadium.teamLeft().name() == team_name )
+    {
+        team = &( M_stadium.teamLeft() );
+    }
+
+    if ( M_stadium.teamRight().name() == team_name )
+    {
+        team = &( M_stadium.teamRight() );
+    }
+
+    if ( ! team )
+    {
+        send( "(warning no_team_found)" );
+        return;
+    }
+
+    if ( change_player_type_goalie_impl( team, unum ) )
+    {
+        char buf[64];
+        snprintf ( buf, 64, "(ok change_player_type %s %d goalie)",
+                   team_name.c_str(), unum );
+        send( buf );
+    }
+}
+
+bool
+Coach::change_player_type_goalie_impl( const Team * team,
+                                       int unum )
+{
+    if ( ! team )
+    {
+        send( "(warning no_team_found)" );
+        return false;
+    }
+
+    const Player * player = static_cast< const Player * >( 0 );
+
+    for ( int i = 0; i < team->size(); ++i )
+    {
+        const Player * p = team->player( i );
+
+        if ( ! p ) continue;
+        if ( ! p->isEnabled() ) continue;
+
+        if ( p->isGoalie() )
+        {
+            send( "(error goalie_already_exists)" );
+            return false;
+        }
+
+        if ( p->unum() == unum )
+        {
+            player = p;
+        }
+    }
+
+    if ( ! player )
+    {
+        send( "(warning no_such_player)" );
+        return false;
+    }
+
+    M_stadium.changePlayerToGoalie( player );
+
+    return true;
+}
 
 
 void
 Coach::send_visual_info()
 {
     M_observer->sendVisual();
-// #ifdef HAVE_SSTREAM
 //     std::ostringstream ost;
-// #else
-//     std::ostrstream ost;
-// #endif
 
 //     if ( version() >= 7.0 )
 //         ost << "(see_global " << M_stadium.time();
@@ -1059,42 +921,21 @@ Coach::send_visual_info()
 //         }
 //     }
 //     ost << ")" << std::endl;
-// #ifdef HAVE_SSTREAM
 //     send( ost.str().c_str() );
-// #else
-//     ost << std::ends;
-
-//     send( ost.str() );
-//     ost.freeze( false );
-// #endif
 }
 
 void
 Coach::check_ball()
 {
-#ifdef HAVE_SSTREAM
-    std::ostringstream ost;
-#else
-    std::ostrstream ost;
-#endif
-
     static const char * BallPosInfoStr[] = BALL_POS_INFO_STRINGS;
     BallPosInfo info = M_stadium.ballPosInfo();
 
+    std::ostringstream ost;
     ost << "(ok check_ball " << M_stadium.time() << " " ;
-
     ost << BallPosInfoStr[info] << ")";
-
     ost << std::ends;
 
-#ifdef HAVE_SSTREAM
     send( ost.str().c_str() );
-#else
-    ost << std::ends;
-
-    send( ost.str() );
-    ost.freeze( false );
-#endif
 }
 
 
@@ -1138,11 +979,7 @@ OnlineCoach::disable()
 {
     if ( M_assigned )
     {
-        //std::cout << "An online coach disconnected\n";
         std::cout << "An online coach disconnected : ("
-//                   << ( side() == LEFT
-//                        ? M_stadium.teamLeft().name()
-//                        : M_stadium.teamRight().name() );
                   << M_team.name();
         if ( ! name().empty() ) std::cout <<  " " << name();
         std::cout << ")\n";
@@ -1529,22 +1366,26 @@ OnlineCoach::parse_command( const char * command )
         eye( mode );
         return;
     }
-//     else if ( ! std::strcmp( com, "change_player_types" ) )
-//     {
-//         change_player_types( command );
-//         return;
-//     }
     else if ( ! std::strcmp ( com, "change_player_type" ) )
     {
         int unum, player_type;
+        char goalie[16];
         if ( std::sscanf( command, " ( change_player_type %d %d )",
-                          &unum, &player_type ) != 2 )
+                          &unum, &player_type ) == 2 )
+        {
+            change_player_type( unum, player_type );
+        }
+        else if ( std::sscanf( command, " ( change_player_type %d %15[^ ( )] ) ",
+                               &unum, goalie ) == 2
+                  && ! std::strncmp( goalie, "goalie", 6 ) )
+        {
+            change_player_type_goalie( unum );
+        }
+        else
         {
             send( "(error illegal_command_form)" );
-            return;
         }
 
-        change_player_type( unum, player_type );
         return;
     }
     //pfr:SYNCH
@@ -1775,7 +1616,6 @@ OnlineCoach::change_player_type( int unum,
               unum, player_type );
     send( buf );
 }
-
 
 void
 OnlineCoach::change_player_types( const char * command )
@@ -2009,16 +1849,22 @@ OnlineCoach::team_graphic( const char * command )
     M_team.addTeamGraphic( x, y, holder );
     M_stadium.sendTeamGraphic( side(), x, y );
 
-#ifdef HAVE_SSTREAM
     std::ostringstream msg;
     msg << "(ok team_graphic " << x << " " << y << ")";
     send( msg.str().c_str() );
-#else
-    std::ostrstream msg;
-    msg << "(ok team_graphic " << x << " " << y << ")" << std::ends;
-    send( msg.str() );
-    msg.freeze( false );
-#endif
+}
+
+
+void
+OnlineCoach::change_player_type_goalie( int unum )
+{
+    if ( change_player_type_goalie_impl( &M_team, unum ) )
+    {
+        char buf[64];
+        snprintf ( buf, 64, "(ok change_player_type %d goalie)",
+                   unum );
+        send( buf );
+    }
 }
 
 

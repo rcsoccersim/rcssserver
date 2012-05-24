@@ -415,10 +415,13 @@ private:
 public:
     void substitute( const Player * player,
                      const int player_type_id );
-
     void broadcastSubstitution( const int side,
                                 const int unum,
                                 const int player_type );
+
+    bool changePlayerToGoalie( const Player * player );
+    void broadcastChangePlayerToGoalie( const Player * player );
+
 
     void setPlayerState( const Side side,
                          const int unum,

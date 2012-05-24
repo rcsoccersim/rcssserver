@@ -414,20 +414,17 @@ public:
           return M_id;
       }
 
-    const
-    std::string & name() const
+    const std::string & name() const
       {
           return M_name;
       }
 
-    const
-    std::string & shortName() const
+    const std::string & shortName() const
       {
           return M_short_name;
       }
 
-    const
-    std::string & closeName() const
+    const std::string & closeName() const
       {
           return M_close_name;
       }
@@ -437,20 +434,17 @@ public:
           return M_short_close_name;
       }
 
-    const
-    double & objectVersion() const
+    double objectVersion() const
       {
           return M_object_version;
       }
 
-    const
-    double & size() const
+    double size() const
       {
           return M_size;
       }
 
-    const
-    PVector & pos() const
+    const PVector & pos() const
       {
           return M_pos;
       }

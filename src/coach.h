@@ -90,7 +90,7 @@ public:
                    const size_t & len );
 
     virtual
-    void parse_command( const char *command );
+    void parse_command( const char * command );
 
     virtual
     Side side() const
@@ -112,8 +112,7 @@ public:
           return M_hear;
       }
 
-    const
-    double & version() const
+    double version() const
       {
           return M_version;
       }
@@ -130,17 +129,27 @@ private:
     void change_mode( std::string mode );
 
     void ear( std::string mode );
-public:
-    void eye( std::string mode );
-    void compression( int level );
-    void look();
-    void team_names();
+
     void recover();
-    void check_ball();
     void change_player_type( const std::string & team_name,
                              int unum,
                              int player_type );
 
+    void change_player_type_goalie( const std::string & team_name,
+                                    int unum );
+
+protected:
+    void check_ball();
+    void look();
+    void team_names();
+    void eye( std::string mode );
+    bool change_player_type_goalie_impl( const Team * team,
+                                         int unum );
+    void compression( int level );
+
+    void sendOKEye();
+
+public:
     void send_visual_info();
 
     void resetCommandFlags()
@@ -149,11 +158,6 @@ public:
       }
 
     void sendExternalMsg();
-
-protected:
-
-    void sendOKEye();
-
 };
 
 /*!
@@ -237,23 +241,24 @@ public:
 
 private:
     void change_player_types( const char * command );
-public:
+
     void change_player_type( int unum,
                              int player_type );
 
+    void change_player_type_goalie( int unum );
+
     void team_graphic( const char * command );
 
+public:
+    void sendPlayerClangVer();
+    void sendPlayerClangVer( const Player & player );
 
     /* this deques and says any messages which should come out
        returns the number of messages se nt out */
     int check_message_queue( int time );
 
-
     //returns whether it updated anything
     bool update_messages_left( int time );
-
-    void sendPlayerClangVer();
-    void sendPlayerClangVer( const Player & player );
 
 };
 
