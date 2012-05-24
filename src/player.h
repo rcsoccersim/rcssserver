@@ -194,7 +194,7 @@ public:
             int number );
     ~Player();
 
-    bool init( const double & ver,
+    bool init( const double ver,
                const bool goalie );
     bool setSenders();
 

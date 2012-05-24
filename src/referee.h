@@ -249,6 +249,13 @@ protected:
 
     void clearPlayersFromBall( const Side side );
 
+
+    void checkFoul( const Player & tackler,
+                    const bool foul,
+                    bool * detect_charge,
+                    bool * detect_yellow,
+                    bool * detect_red );
+
 public:
     static
     PVector truncateToPitch( PVector ball_pos );
@@ -362,6 +369,10 @@ public:
     void failedKickTaken( const Player & kicker );
 
     virtual
+    void tackleTaken( const Player & tackler,
+                      const bool foul );
+
+    virtual
     void failedTackleTaken( const Player & kicker );
 
     virtual
@@ -417,6 +428,10 @@ public:
 
     virtual
     void kickTaken( const Player & kicker );
+
+    virtual
+    void tackleTaken( const Player & kicker,
+                      const bool foul );
 
     virtual
     void ballTouched( const Player & player );
@@ -482,6 +497,10 @@ public:
     void kickTaken( const Player & kicker );
 
     virtual
+    void tackleTaken( const Player & kicker,
+                      const bool foul );
+
+    virtual
     void ballTouched( const Player & player );
 
     virtual
@@ -534,6 +553,10 @@ public:
 
     virtual
     void kickTaken( const Player & kicker );
+
+    virtual
+    void tackleTaken( const Player & kicker,
+                      const bool foul );
 
     virtual
     void ballTouched( const Player & player );
@@ -662,6 +685,10 @@ public:
 
     virtual
     void kickTaken( const Player & kicker );
+
+    virtual
+    void tackleTaken( const Player & tackler,
+                      const bool foul );
 
     virtual
     void playModeChange( PlayMode pm );

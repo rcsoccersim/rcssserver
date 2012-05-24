@@ -1,3 +1,38 @@
+2012-05-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* src/player.cpp:
+	* src/player.h:
+	* src/referee.cpp:
+	* src/referee.h:
+	* src/stadium.cpp:
+	* src/stadium.h:
+	- changed the policy of tackle event handler. now, the tackle
+	event handers are called without kick event handler.
+	- fixed defects that foul can be performed without any penalty
+
+	* src/coach.cpp:
+	- added the rule that forbid to use new change_player_type command
+	during play_on and penalty shootouts
+
+	* src/audio.cpp:
+	* src/bodysender.cpp:
+	* src/fullstatesender.cpp:
+	* src/initsender.h:
+	* src/initsendercoach.cpp:
+	* src/initsenderonlinecoach.cpp:
+	* src/initsenderplayer.cpp:
+	* src/serializercoachstdv14.cpp:
+	* src/serializercommonstdv8.cpp:
+	* src/serializeronlinecoachstdv14.cpp:
+	* src/serializerplayerstdv14.cpp:
+	* src/visualsendercoach.cpp:
+	* src/visualsenderplayer.cpp:
+	- added version 16 creators.
+
+	* src/serverparam.cpp:
+	- changed the date format of log files. The second inforamation is
+	added by default.
+
 2012-05-24  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/netif.cpp:

@@ -61,12 +61,12 @@ public:
                       const Stadium & stadium,
                       unsigned int version,
                       const bool new_line = false )
-        : M_transport( transport )
-        , M_serializer( serializer )
-        , M_stadium( stadium )
-        , M_version( version )
-        , M_new_line( new_line )
-      {}
+        : M_transport( transport ),
+          M_serializer( serializer ),
+          M_stadium( stadium ),
+          M_version( version ),
+          M_new_line( new_line )
+      { }
 
     virtual
     ~InitSenderCommon()
@@ -77,14 +77,12 @@ public:
           return M_transport;
       }
 
-    const
-    Serializer & serializer()
+    const Serializer & serializer()
       {
           return *M_serializer;
       }
 
-    const
-    Stadium & stadium()
+    const Stadium & stadium()
       {
           return M_stadium;
       }
@@ -191,7 +189,7 @@ public:
                             stad,
                             version,
                             new_line )
-      {}
+      { }
 
     virtual
     ~InitSenderCommonV1()
@@ -234,7 +232,7 @@ public:
                               stad,
                               version,
                               new_line )
-      {}
+      { }
 
     virtual
     ~InitSenderCommonV7()

@@ -1954,8 +1954,13 @@ Stadium::failedKickTaken( const Player & kicker )
 
 void
 Stadium::tackleTaken( const Player & tackler,
+                      const PVector & accel,
                       const bool foul )
 {
+    M_ball_catcher = static_cast< const Player * >( 0 );
+
+    M_ball->push( accel );
+
     for_each( M_referees.begin(), M_referees.end(),
               Referee::doTackleTaken( tackler, foul ) );
 }

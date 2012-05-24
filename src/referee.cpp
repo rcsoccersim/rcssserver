@@ -342,7 +342,7 @@ Referee::inPenaltyArea( const Side side,
     {
         // according to FIFA the ball is catchable if it is at
         // least partly within the penalty area, thus we add ball size
-        static RArea pen_area( PVector( +ServerParam::PITCH_LENGTH/2
+        static RArea pen_area( PVector( + ServerParam::PITCH_LENGTH/2
                                         - ServerParam::PENALTY_AREA_LENGTH/2.0,
                                         0.0 ),
                                PVector( ServerParam::PENALTY_AREA_LENGTH
@@ -804,6 +804,126 @@ Referee::clearPlayersFromBall( const Side side )
     }
 }
 
+void
+Referee::checkFoul( const Player & tackler,
+                    const bool foul,
+                    bool * detect_charge,
+                    bool * detect_yellow,
+                    bool * detect_red )
+{
+    bool foul_charge = false;
+    bool yellow_card = false;
+    bool red_card = false;
+
+    boost::bernoulli_distribution<> rng( tackler.foulDetectProbability() );
+    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
+        dst( rcss::random::DefaultRNG::instance(), rng );
+
+    // 2011-05-14 akiyama
+    // added red card probability
+    boost::bernoulli_distribution<> red_rng( ServerParam::instance().redCardProbability() );
+    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
+        red_dst( rcss::random::DefaultRNG::instance(), red_rng );
+
+    const double ball_dist2 = tackler.pos().distance2( M_stadium.ball().pos() );
+    const double ball_angle = ( M_stadium.ball().pos() - tackler.pos() ).th();
+
+    //std::cerr << M_stadium.time() << " (tackleTaken) "
+    //          << " (tackler " << SideStr( tackler.side() ) << ' ' << tackler.unum() << ")"
+    //          << std::endl;
+
+    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
+    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
+          p != end;
+          ++p )
+    {
+        if ( ! (*p)->isEnabled() ) continue;
+        if ( (*p)->side() == tackler.side() ) continue;
+
+        if ( ! (*p)->ballKickable() ) continue; // no kickable
+
+        bool pre_check = false;
+        if ( foul )
+        {
+            (*p)->setFoulCharged();
+
+            //std::cerr << "---->" << (*p)->unum() << " intentional foul. prob=" << rng.p() << std::endl;
+            if ( dst() )
+            {
+                //std::cerr << "----> " << (*p)->unum() << " detected intentional foul." << std::endl;
+                pre_check = true;
+                foul_charge = true;
+            }
+        }
+
+        if ( ! (*p)->dashed() )
+        {
+            //std::cerr << "----> " << (*p)->unum() << " no dash." << std::endl;
+            continue; // no dashing
+        }
+
+        PVector player_rel = (*p)->pos() - tackler.pos();
+
+        if ( player_rel.r2() > ball_dist2 )
+        {
+            //std::cerr << "----> " << (*p)->unum() << " ball near." << std::endl;
+            continue; // further than ball
+        }
+
+        //std::cerr << "--> (player " << SideStr( (*p)->side() ) << ' ' << (*p)->unum() << ")\n";
+
+        player_rel.rotate( -ball_angle );
+
+        if ( player_rel.x < 0.0
+             || std::fabs( player_rel.y ) > (*p)->size() + tackler.size() )
+        {
+            //std::cerr << "----> " << (*p)->unum() << " behind or big y_diff. rel=" << player_rel
+            //          << std::endl;
+            continue;
+        }
+
+        double body_diff = std::fabs( normalize_angle( (*p)->angleBodyCommitted() - ball_angle ) );
+        if ( body_diff > M_PI*0.5 )
+        {
+            //std::cerr << "----> " << (*p)->unum() << " over body angle. angle=" << body_diff / M_PI * 180.0
+            //          << std::endl;
+            continue;
+        }
+
+        if ( foul )
+        {
+            if ( pre_check )
+            {
+                //std::cerr << "----> " << (*p)->unum() << " detected yellow_card." << std::endl;
+                yellow_card = true;
+                if ( red_dst() )
+                {
+                    yellow_card = false;
+                    red_card = true;
+                }
+            }
+        }
+        else
+        {
+            if ( dst() )
+            {
+                //std::cerr << "----> " << (*p)->unum() << " detected foul. prob=" << rng.p() << std::endl;
+                foul_charge = true;
+                if ( red_dst() )
+                {
+                    yellow_card = true;
+                }
+            }
+        }
+        //std::cerr << "----> not detected foul. prob=" << rng.p()<< std::endl;
+    }
+
+    *detect_charge = foul_charge;
+    *detect_yellow = yellow_card;
+    *detect_red = red_card;
+}
+
+
 //**********
 // BallStuckRef
 //**********
@@ -862,6 +982,13 @@ void
 OffsideRef::failedKickTaken( const Player & kicker )
 {
     checkIntentionalAction( kicker );
+}
+
+void
+OffsideRef::tackleTaken( const Player & tackler,
+                         const bool )
+{
+    setOffsideMark( tackler );
 }
 
 void
@@ -1387,6 +1514,13 @@ FreeKickRef::kickTaken( const Player & kicker )
             }
         }
     }
+}
+
+void
+FreeKickRef::tackleTaken( const Player & tackler,
+                          const bool )
+{
+    kickTaken( tackler );
 }
 
 void
@@ -1930,6 +2064,14 @@ TouchRef::kickTaken( const Player & kicker )
     }
 }
 
+
+void
+TouchRef::tackleTaken( const Player & tackler,
+                       const bool )
+{
+    kickTaken( tackler );
+}
+
 void
 TouchRef::ballTouched( const Player & kicker )
 {
@@ -2138,6 +2280,13 @@ CatchRef::kickTaken( const Player & kicker )
     //         // from team A cacthes it.  This should not be concidered a back pass and
     //         // the else if make sure of that.
     //     }
+}
+
+void
+CatchRef::tackleTaken( const Player & tackler,
+                       const bool )
+{
+    kickTaken( tackler );
 }
 
 void
@@ -2431,108 +2580,7 @@ FoulRef::tackleTaken( const Player & tackler,
     bool detect_yellow = false;
     bool detect_red = false;
 
-    boost::bernoulli_distribution<> rng( tackler.foulDetectProbability() );
-    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
-        dst( rcss::random::DefaultRNG::instance(), rng );
-
-    // 2011-05-14 akiyama
-    // added red card probability
-    boost::bernoulli_distribution<> red_rng( ServerParam::instance().redCardProbability() );
-    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
-        red_dst( rcss::random::DefaultRNG::instance(), red_rng );
-
-    const double ball_dist2 = tackler.pos().distance2( M_stadium.ball().pos() );
-    const double ball_angle = ( M_stadium.ball().pos() - tackler.pos() ).th();
-
-    //std::cerr << M_stadium.time() << " (tackleTaken) "
-    //          << " (tackler " << SideStr( tackler.side() ) << ' ' << tackler.unum() << ")"
-    //          << std::endl;
-
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
-    {
-        if ( ! (*p)->isEnabled() ) continue;
-        if ( (*p)->side() == tackler.side() ) continue;
-
-        if ( ! (*p)->ballKickable() ) continue; // no kickable
-
-        bool pre_check = false;
-        if ( foul )
-        {
-            (*p)->setFoulCharged();
-
-            //std::cerr << "---->" << (*p)->unum() << " intentional foul. prob=" << rng.p() << std::endl;
-            if ( dst() )
-            {
-                //std::cerr << "----> " << (*p)->unum() << " detected intentional foul." << std::endl;
-                pre_check = true;
-                detect_charge = true;
-            }
-        }
-
-        if ( ! (*p)->dashed() )
-        {
-            //std::cerr << "----> " << (*p)->unum() << " no dash." << std::endl;
-            continue; // no dashing
-        }
-
-        PVector player_rel = (*p)->pos() - tackler.pos();
-
-        if ( player_rel.r2() > ball_dist2 )
-        {
-            //std::cerr << "----> " << (*p)->unum() << " ball near." << std::endl;
-            continue; // further than ball
-        }
-
-        //std::cerr << "--> (player " << SideStr( (*p)->side() ) << ' ' << (*p)->unum() << ")\n";
-
-        player_rel.rotate( -ball_angle );
-
-        if ( player_rel.x < 0.0
-             || std::fabs( player_rel.y ) > (*p)->size() + tackler.size() )
-        {
-            //std::cerr << "----> " << (*p)->unum() << " behind or big y_diff. rel=" << player_rel
-            //          << std::endl;
-            continue;
-        }
-
-        double body_diff = std::fabs( normalize_angle( (*p)->angleBodyCommitted() - ball_angle ) );
-        if ( body_diff > M_PI*0.5 )
-        {
-            //std::cerr << "----> " << (*p)->unum() << " over body angle. angle=" << body_diff / M_PI * 180.0
-            //          << std::endl;
-            continue;
-        }
-
-        if ( foul )
-        {
-            if ( pre_check )
-            {
-                //std::cerr << "----> " << (*p)->unum() << " detected yellow_card." << std::endl;
-                detect_yellow = true;
-                if ( red_dst() )
-                {
-                    detect_red = true;
-                }
-            }
-        }
-        else
-        {
-            if ( dst() )
-            {
-                //std::cerr << "----> " << (*p)->unum() << " detected foul. prob=" << rng.p() << std::endl;
-                detect_charge = true;
-                if ( red_dst() )
-                {
-                    detect_yellow = true;
-                }
-            }
-        }
-
-        //std::cerr << "----> not detected foul. prob=" << rng.p()<< std::endl;
-    }
+    checkFoul( tackler, foul, &detect_charge, &detect_yellow, &detect_red );
 
     if ( detect_red )
     {
@@ -3270,11 +3318,6 @@ PenaltyRef::kickTaken( const Player & kicker )
         return;
     }
 
-    if ( M_bDebug )
-    {
-        std::cerr << "kick taken in mode " << M_stadium.playmode() << std::endl;
-    }
-
     if ( M_stadium.ballCatcher() != NULL )
     {
         std::cerr << "player kicked and goalie catched at the same time" << std::endl;
@@ -3322,7 +3365,7 @@ PenaltyRef::kickTaken( const Player & kicker )
                   && ! kicker.isGoalie() )
         {
             // field player in the defending team must not kick the ball.
-            penalty_foul( (Side)( -M_cur_pen_taker ) );
+            penalty_foul( static_cast< Side >( -M_cur_pen_taker ) );
         }
         else
         {
@@ -3356,7 +3399,44 @@ PenaltyRef::kickTaken( const Player & kicker )
     {
         M_stadium.placeBall( M_pen_side, M_stadium.ball().pos() );
     }
+
 }
+
+
+void
+PenaltyRef::tackleTaken( const Player & tackler,
+                         const bool foul )
+{
+    if ( ! isPenaltyShootOut( M_stadium.playmode() ) )
+    {
+        return;
+    }
+
+    bool detect_charge = false;
+    bool detect_yellow = false;
+    bool detect_red = false;
+
+    checkFoul( tackler, foul, &detect_charge, &detect_yellow, &detect_red );
+
+    if ( detect_charge
+         || detect_yellow
+         || detect_red )
+    {
+        if ( tackler.side() == M_cur_pen_taker )
+        {
+            penalty_foul( M_cur_pen_taker );
+        }
+        else
+        {
+            penalty_foul( static_cast< Side >( -M_cur_pen_taker ) );
+        }
+    }
+    else
+    {
+        kickTaken( tackler );
+    }
+}
+
 
 void
 PenaltyRef::playModeChange( PlayMode pm )
@@ -3458,9 +3538,6 @@ PenaltyRef::penalty_miss( Side side )
 void
 PenaltyRef::penalty_foul( const Side side )
 {
-    if ( M_bDebug )
-        std::cerr << "penalty_foul " << side << std::endl;
-
     M_stadium.sendRefereeAudio( ( side == LEFT
                                   ?  "penalty_foul_l"
                                   : "penalty_foul_r" ) );

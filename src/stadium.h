@@ -431,6 +431,7 @@ public:
                     const PVector & accel );
     void failedKickTaken( const Player & kicker );
     void tackleTaken( const Player & tackler,
+                      const PVector & accel,
                       const bool foul );
     void failedTackleTaken( const Player & tackler,
                             const bool foul );

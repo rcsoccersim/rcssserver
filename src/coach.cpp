@@ -1858,11 +1858,27 @@ OnlineCoach::team_graphic( const char * command )
 void
 OnlineCoach::change_player_type_goalie( int unum )
 {
+    const PlayMode pm = M_stadium.playmode();
+    if ( pm == PM_PlayOn )
+    {
+        send( "(warning cannot_change_goalie_while_playon)" );
+        return;
+    }
+
+    if ( pm == PM_PenaltyReady_Left
+         || pm == PM_PenaltyReady_Right
+         || pm == PM_PenaltyTaken_Left
+         || pm == PM_PenaltyTaken_Right )
+    {
+        send( "(warning cannot_change_goalie_while_penalty_taken)" );
+        return;
+    }
+
     if ( change_player_type_goalie_impl( &M_team, unum ) )
     {
         char buf[64];
-        snprintf ( buf, 64, "(ok change_player_type %d goalie)",
-                   unum );
+        snprintf( buf, 64, "(ok change_player_type %d goalie)",
+                  unum );
         send( buf );
     }
 }

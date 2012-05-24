@@ -267,7 +267,7 @@ Player::~Player()
 }
 
 bool
-Player::init( const double & ver,
+Player::init( const double ver,
               const bool goalie )
 {
     M_version = ver;
@@ -2043,8 +2043,7 @@ Player::tackle( double power_or_angle,
                                                        drand( -M_PI, M_PI ) );
             accel += tackle_noise;
 
-            M_stadium.kickTaken( *this, accel );
-            M_stadium.tackleTaken( *this, foul );
+            M_stadium.tackleTaken( *this, accel, foul );
         }
         else
         {
@@ -2146,7 +2145,7 @@ Player::ear( bool on,
 }
 
 // 2008-02-09 akiyama
-// comand to change the see message timer
+// command to change the see message timer
 void
 Player::synch_see()
 {
