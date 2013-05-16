@@ -1,3 +1,11 @@
+2013-05-16  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* configure.ac:
+	* m4/ax_boost_filesystem.m4:
+	* m4/ax_boost_system.m4:
+	- update autoconf macros for checking boost libraries.
+	- add error routine for checking boost libraries.
+
 2012-05-25  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/player.cpp:
