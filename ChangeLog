@@ -30,8 +30,10 @@
 	* src/referee.h:
 	* src/stadium.cpp:
 	* src/stadium.h:
-	- changed the policy of tackle event handler. now, the tackle
-	event handelrs are called without kick event handler.
+	- changed the policy of kick and tackle event handler. now, the
+	kick event handlers are never called when players perform tackle
+	command. Instead, some procedures are added to the tackle event
+	handler in order to handle kicking events.
 	- fixed defects that foul can be performed without any penalty
 
 	* src/coach.cpp:
