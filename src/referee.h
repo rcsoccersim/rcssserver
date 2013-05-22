@@ -526,8 +526,22 @@ private:
     static const int AFTER_BACKPASS_WAIT;
     static const int AFTER_CATCH_FAULT_WAIT;
 
+    struct Kicker {
+        int time_;
+        Side side_;
+        int unum_;
+        Kicker( const int time,
+                const Side side,
+                const int unum )
+            : time_( time ),
+              side_( side ),
+              unum_( unum )
+          { }
+    };
+
     int M_last_back_passer_time;
     const Player * M_last_back_passer;
+    const Player * M_before_last_back_passer;
 
     bool M_team_l_touched;
     bool M_team_r_touched;
@@ -541,6 +555,7 @@ public:
         : Referee( stadium ),
           M_last_back_passer_time( 0 ),
           M_last_back_passer( NULL ),
+          M_before_last_back_passer( NULL ),
           M_team_l_touched( false ),
           M_team_r_touched( false ),
           M_after_back_pass_time( 0 ),

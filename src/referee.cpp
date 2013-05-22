@@ -1147,7 +1147,6 @@ OffsideRef::setOffsideMark( const Player & kicker )
     if ( M_last_kick_time == M_stadium.time()
          && M_last_kick_stoppage_time == M_stadium.stoppageTime() )
     {
-
         M_last_kicker_side = NEUTRAL;
         M_offside_candidates.clear();
         return;
@@ -2233,53 +2232,33 @@ const int CatchRef::AFTER_CATCH_FAULT_WAIT = 30;
 void
 CatchRef::kickTaken( const Player & kicker )
 {
-    //     if ( ! kicker.isGoalie() )
+    if ( kicker.side() == LEFT )
     {
-        if ( kicker.side() == LEFT )
-        {
-            M_team_l_touched = true;
-        }
-        else if ( kicker.side() == RIGHT )
-        {
-            M_team_r_touched = true;
-        }
-
-        if ( M_team_l_touched && M_team_r_touched )
-        {
-            M_last_back_passer = NULL;
-        }
-        else if ( kicker.isGoalie() )
-        {
-            if ( M_last_back_passer
-                 && M_last_back_passer->side() != kicker.side() )
-            {
-
-            }
-            else
-            {
-                M_last_back_passer = &kicker;
-                M_last_back_passer_time = M_stadium.time();
-            }
-        }
-        else if ( M_last_back_passer != &kicker )
-        {
-            M_last_back_passer = &kicker;
-            if ( ! M_last_back_passer
-                 || M_last_back_passer->side() != kicker.side() )
-            {
-                M_last_back_passer_time = M_stadium.time();
-            }
-        }
+        M_team_l_touched = true;
     }
-    //     else if ( M_last_back_passer != NULL
-    //               && M_last_back_passer->team() != kicker.team() )
-    //     {
-    //         M_last_back_passer = NULL;
-    //         // The else if above is to handle rare situations where a player from team
-    //         // A kicks the ball, the goalie from team B kicks it, and then the goalie
-    //         // from team A cacthes it.  This should not be concidered a back pass and
-    //         // the else if make sure of that.
-    //     }
+    else if ( kicker.side() == RIGHT )
+    {
+        M_team_r_touched = true;
+    }
+
+    if ( M_team_l_touched && M_team_r_touched )
+    {
+        M_last_back_passer = NULL;
+        M_before_last_back_passer = NULL;
+    }
+
+    //! check if a different player kicked the ball
+    if ( M_last_back_passer != &kicker )
+    {
+        M_before_last_back_passer = M_last_back_passer;
+		M_last_back_passer = &kicker;
+		M_last_back_passer_time = M_stadium.time();
+    }
+    else
+    {
+        //! same player is kicking the ball again, update last kick time
+		M_last_back_passer_time = M_stadium.time();
+    }
 }
 
 void
@@ -2293,21 +2272,20 @@ void
 CatchRef::ballTouched( const Player & player )
 {
     // If ball is not kicked, back pass violation is never taken.
-    //    if ( ! player.isGoalie() )
-    {
-        if ( player.side() == LEFT )
-        {
-            M_team_l_touched = true;
-        }
-        else if ( player.side() == RIGHT )
-        {
-            M_team_r_touched = true;
-        }
 
-        if ( M_team_l_touched && M_team_r_touched )
-        {
-            M_last_back_passer = NULL;
-        }
+    if ( player.side() == LEFT )
+    {
+        M_team_l_touched = true;
+    }
+    else if ( player.side() == RIGHT )
+    {
+        M_team_r_touched = true;
+    }
+
+    if ( M_team_l_touched && M_team_r_touched )
+    {
+        M_before_last_back_passer = NULL;
+        M_last_back_passer = NULL;
     }
 }
 
@@ -2335,20 +2313,28 @@ CatchRef::ballCaught( const Player & catcher )
          && M_stadium.playmode() != PM_TimeOver
          && M_stadium.time() != M_last_back_passer_time
          && M_last_back_passer != NULL
-         //&& M_last_back_passer != &catcher
          && M_last_back_passer->team() == catcher.team()
          && ServerParam::instance().backPasses() )
     {
-        //M_last_back_passer->alive |= BACK_PASS;
-        M_stadium.setPlayerState( M_last_back_passer->side(),
-                                  M_last_back_passer->unum(),
-                                  BACK_PASS );
-        callBackPass( catcher.side() );
+        if ( M_last_back_passer == &catcher
+             && M_before_last_back_passer
+             && M_before_last_back_passer->team() != catcher.team() )
+        {
+            // no backpass violatoin, if last kicker is goalie itself and before kicker is opponent
+        }
+        else
+        {
+            M_stadium.setPlayerState( M_last_back_passer->side(),
+                                      M_last_back_passer->unum(),
+                                      BACK_PASS );
+            callBackPass( catcher.side() );
 
-        return;
+            return;
+        }
     }
 
     M_last_back_passer = NULL;
+    M_before_last_back_passer = NULL;
 
     awardFreeKick( catcher.side(), M_stadium.ball().pos() );
 }
@@ -2361,7 +2347,6 @@ CatchRef::ballPunched( const Player & catcher )
     {
         return;
     }
-
 
     // check handling violation
     if ( M_stadium.playmode() != PM_AfterGoal_Left
@@ -2379,15 +2364,22 @@ CatchRef::ballPunched( const Player & catcher )
          && M_stadium.playmode() != PM_TimeOver
          && M_stadium.time() != M_last_back_passer_time
          && M_last_back_passer != NULL
-         //&& M_last_back_passer != &catcher
          && M_last_back_passer->team() == catcher.team()
          && ServerParam::instance().backPasses() )
     {
-        //M_last_back_passer->alive |= BACK_PASS;
-        M_stadium.setPlayerState( M_last_back_passer->side(),
-                                  M_last_back_passer->unum(),
-                                  BACK_PASS );
-        callBackPass( catcher.side() );
+        if ( M_last_back_passer == &catcher
+             && M_before_last_back_passer
+             && M_before_last_back_passer->team() != catcher.team() )
+        {
+            // no backpass violatoin, if last kicker is goalie itself and before kicker is opponent
+        }
+        else
+        {
+            M_stadium.setPlayerState( M_last_back_passer->side(),
+                                      M_last_back_passer->unum(),
+                                      BACK_PASS );
+            callBackPass( catcher.side() );
+        }
 
         return;
     }
@@ -2500,6 +2492,7 @@ CatchRef::playModeChange( PlayMode pmode )
 {
     if ( pmode != PM_PlayOn )
     {
+        M_before_last_back_passer = NULL;
         M_last_back_passer = NULL;
     }
 
@@ -2507,7 +2500,6 @@ CatchRef::playModeChange( PlayMode pmode )
          || pmode == PM_Back_Pass_Left )
     {
         M_stadium.clearBallCatcher();
-        M_last_back_passer = NULL;
         M_after_back_pass_time = 0;
     }
     else if ( pmode == PM_CatchFault_Left
