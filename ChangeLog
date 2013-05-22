@@ -1,5 +1,12 @@
 2013-05-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* NEWS:
+	* configure.ac:
+	- updated a minor version number. Official release 15.2.0.
+
+	* src/version.h:
+	- updated the copyright message.
+
 	* src/coach.cpp:
 	- disable new change_player_type format. this command should be
 	enabled again when v16 simulator is released.

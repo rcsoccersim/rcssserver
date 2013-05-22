@@ -1,3 +1,16 @@
+[15.2.0]
+  * Fixed an issue with the CatchRef which did not allow a goalie to
+    catch the ball, after having intercepted it from an opponent,
+    dribbled to its own area and catch it. Regardless of the
+    interception position, this should never lead to a foul being
+    called. Thanks go to Fernando Almeida for reporting the problem
+    and providing the patch.
+
+  * Changed the defalut value of server::log_date_format from
+    "%Y%m%d%H%M-" to "%Y%m%d%H%M%S-".
+
+  * Fixed a defect of boost detection.
+
 [15.1.0]
   * Fixed a defect of boost detection by updating autoconf macros.
 
