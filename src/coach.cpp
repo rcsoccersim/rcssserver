@@ -327,12 +327,14 @@ Coach::parse_command( const char * command )
         {
             change_player_type( name, unum, player_type );
         }
+#if 0
         else if ( std::sscanf( command, " ( change_player_type %127s %d %15[^ ( )] ) ",
                                name, &unum, goalie ) == 3
                   && ! std::strncmp( goalie, "goalie", 6 ) )
         {
             change_player_type_goalie( name, unum );
         }
+#endif
         else
         {
             send( "(error illegal_command_form)" );
