@@ -1,3 +1,14 @@
+2013-05-27  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version number. Official release 15.2.1.
+
+	* src/referee.cpp:
+	- fix a bug of the backpass detection. Two or more players from
+	different teams kick the ball in the same game cycle, the back
+	passer candidate should be deteted in that game cycle.
+
 2013-05-22  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
