@@ -1,3 +1,8 @@
+[15.2.1]
+  * Fixed a bug of the backpass detection. Two or more players from
+    different teams kick the ball in the same game cycle, the back
+    passer candidates are erased.
+
 [15.2.0]
   * Fixed an issue with the CatchRef which did not allow a goalie to
     catch the ball, after having intercepted it from an opponent,

@@ -320,7 +320,7 @@ Coach::parse_command( const char * command )
     {
         char name[128];
         int unum, player_type;
-        char goalie[16];
+        // char goalie[16];
 
         if ( std::sscanf( command, " ( change_player_type %127s %d %d ) ",
                           name, &unum, &player_type ) == 3 )

@@ -2245,6 +2245,7 @@ CatchRef::kickTaken( const Player & kicker )
     {
         M_last_back_passer = NULL;
         M_before_last_back_passer = NULL;
+        return;
     }
 
     //! check if a different player kicked the ball
@@ -2385,6 +2386,7 @@ CatchRef::ballPunched( const Player & catcher )
     }
 
     M_last_back_passer = NULL;
+    M_before_last_back_passer = NULL;
 }
 
 
