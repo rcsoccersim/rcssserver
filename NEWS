@@ -1,7 +1,12 @@
+[15.2.2]
+  * Fixed a bug of the backpass detection. If kick and catch are taken
+    simultaneously by same team players but the before kicker also
+    belongs to the same team, the backpass violation is detected.
+
 [15.2.1]
   * Fixed a bug of the backpass detection. Two or more players from
-    different teams kick the ball in the same game cycle, the back
-    passer candidates are erased.
+    different teams kick the ball in the same game cycle, the backpass
+    violation is never detected.
 
 [15.2.0]
   * Fixed an issue with the CatchRef which did not allow a goalie to
