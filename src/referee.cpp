@@ -2309,19 +2309,24 @@ CatchRef::ballCaught( const Player & catcher )
     }
 
     // check backpass violation
-    if ( M_stadium.playmode() != PM_AfterGoal_Left
+    if ( ServerParam::instance().backPasses()
+         && M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         && M_stadium.time() != M_last_back_passer_time
          && M_last_back_passer != NULL
-         && M_last_back_passer->team() == catcher.team()
-         && ServerParam::instance().backPasses() )
+         && M_last_back_passer->team() == catcher.team() )
     {
         if ( M_last_back_passer == &catcher
-             && M_before_last_back_passer
+             && M_before_last_back_passer != NULL
              && M_before_last_back_passer->team() != catcher.team() )
         {
-            // no backpass violatoin, if last kicker is goalie itself and before kicker is opponent
+            // no backpass violation, if last kicker is goalie itself and before kicker is opponent
+        }
+        else if ( M_stadium.time() == M_last_back_passer_time
+                  && ( M_before_last_back_passer == NULL
+                       || M_before_last_back_passer->team() != catcher.team() ) )
+        {
+            // no backpass violation. kick and catch are taken simultaneously
         }
         else
         {
