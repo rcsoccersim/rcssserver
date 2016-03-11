@@ -26,8 +26,6 @@
 #include <rcssbase/parser.h>
 #include "player_command_tok.h"
 
-extern int RCSS_PCOM_parse( void * );
-
 namespace rcss {
 namespace pcom {
 
@@ -37,7 +35,9 @@ class Parser
     : public rcss::Parser {
 public:
     typedef rcss::pcom::Lexer Lexer;
-    typedef int (*ParserFunc)( void * );
+
+    class Param;
+    typedef int (*ParserFunc)( Param & );
 
     class Param {
     private:
@@ -77,7 +77,7 @@ private:
     bool doParse( std::istream & strm )
       {
           M_param.getLexer().switch_streams( &strm, &std::cerr );
-          return M_parser( (void*)&M_param ) == 0;
+          return M_parser( M_param ) == 0;
       }
 
 public:
@@ -91,5 +91,6 @@ public:
 }
 }
 
+extern int RCSS_PCOM_parse( rcss::pcom::Parser::Param & param );
 
 #endif

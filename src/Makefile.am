@@ -64,7 +64,8 @@ pkginclude_HEADERS = \
 	clangaction.h \
 	clangutil.h \
 	coach_lang_comp.h \
-	coach_lang_parser.h \
+	coach_lang_parser.hpp \
+	player_command_parser.hpp \
 	arithop.h \
 	compop.h \
 	cond.h \
@@ -235,9 +236,9 @@ rcssserver_LDADD = \
 
 
 BUILT_SOURCES = \
-	coach_lang_parser.h \
+	coach_lang_parser.hpp \
 	coach_lang_tok.cpp \
-	player_command_parser.h \
+	player_command_parser.hpp \
 	player_command_tok.cpp
 
 AM_YFLAGS=-d
@@ -293,10 +294,10 @@ EXTRA_DIST = \
 
 CLEANFILES = \
 	coach_lang_parser.cpp \
-	coach_lang_parser.h \
+	coach_lang_parser.hpp \
 	coach_lang_tok.cpp \
 	player_command_parser.cpp \
-	player_command_parser.h \
+	player_command_parser.hpp \
 	player_command_tok.cpp \
 	*~ \
 	core

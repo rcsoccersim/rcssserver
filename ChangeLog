@@ -1,3 +1,16 @@
+2016-03-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* m4/ax_boost_base.m4:
+	* m4/ax_boost_system.m4:
+	* src/Makefile.am:
+	* src/clangparser.h:
+	* src/coach_lang_parser.ypp:
+	* src/coach_lang_tok.lpp:
+	* src/pcomparser.h:
+	* src/player_command_parser.ypp:
+	* src/player_command_tok.lpp:
+	- fix bison3 build problems. support Ubuntu 14.04.
+
 2013-06-17  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

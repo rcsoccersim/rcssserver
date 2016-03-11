@@ -71,27 +71,15 @@
 
 #define YYERROR_VERBOSE
 
-void yyerror (const char* s);
-int yyerror (char* s);
-
-#define YYPARSE_PARAM param
+void yyerror (rcss::clang::Parser::Param &param, const char* s);
+int yyerror (rcss::clang::Parser::Param &param, char* s);
 
 namespace
 {
-  rcss::clang::Parser::Param&
-  getParam( void* param )
-  {
-    static rcss::clang::Parser::Param* cached_param
-                   = reinterpret_cast< rcss::clang::Parser::Param* >( param );
-    if( cached_param != param )
-      cached_param = reinterpret_cast< rcss::clang::Parser::Param* >( param );
-    return *cached_param;
-  }
-
   inline
   rcss::clang::Builder&
-  getBuilder( void* param )
-  { return getParam( param ).getBuilder(); }
+  getBuilder( rcss::clang::Parser::Param &param )
+  { return param.getBuilder(); }
 
 #define YYSTYPE rcss::clang::Parser::Lexer::Holder
 
@@ -106,14 +94,15 @@ namespace
 
 }
 
-#define YYLEX_PARAM getParam( param )
-
 #define BUILDER getBuilder( param )
 
 %}
 
 /* BISON DECLARATIONS */
-%pure_parser
+%pure-parser
+
+%parse-param {rcss::clang::Parser::Param &param}
+%lex-param {rcss::clang::Parser::Param &param}
 
 %token RCSS_CLANG_INT
 %token RCSS_CLANG_REAL
@@ -988,14 +977,14 @@ extern "C" void parse()
   // dumby function use to make the library easy to find with autoconf
 }
 
-void yyerror (const char*)
+void yyerror (rcss::clang::Parser::Param & /*param*/, const char*)
 {
 /*   std::cerr << s << std::endl;*/
   //do nothing
 }
 
-int yyerror (char* s)
+int yyerror (rcss::clang::Parser::Param &param, char* s)
 {
-	yyerror ( (const char*)s );
+	yyerror ( param, (const char*)s );
 	return 0;
 }

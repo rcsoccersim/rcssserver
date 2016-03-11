@@ -30,27 +30,14 @@
 
 #define    yyparse    RCSS_PCOM_parse
 
-void yyerror( const char* s );
-int yyerror( char* s );
-
-#define YYPARSE_PARAM param
+void yyerror( rcss::pcom::Parser::Param& param, const char* s );
+int yyerror( rcss::pcom::Parser::Param& param, char* s );
 
 namespace
 {
-  rcss::pcom::Parser::Param&
-  getParam( void* param )
+  inline rcss::pcom::Builder& getBuilder( rcss::pcom::Parser::Param& param )
   {
-    static rcss::pcom::Parser::Param* cached_param
-                   = reinterpret_cast< rcss::pcom::Parser::Param* >( param );
-    if( cached_param != param ){
-      cached_param = reinterpret_cast< rcss::pcom::Parser::Param* >( param );
-    }
-    return *cached_param;
-  }
-
-  inline rcss::pcom::Builder& getBuilder( void* param )
-  {
-    return getParam( param ).getBuilder();
+    return param.getBuilder();
   }
 
 #define YYSTYPE rcss::pcom::Parser::Lexer::Holder
@@ -64,14 +51,15 @@ namespace
 
 }
 
-#define YYLEX_PARAM getParam( param )
-
 #define BUILDER getBuilder( param )
 
 %}
 
 /* BISON DECLARATIONS */
-%pure_parser
+%pure-parser
+
+%parse-param {rcss::pcom::Parser::Param& param}
+%lex-param {rcss::pcom::Parser::Param& param}
 
 %token RCSS_PCOM_INT
 %token RCSS_PCOM_REAL
@@ -424,14 +412,14 @@ floating_point_number : RCSS_PCOM_INT
 %%
 
 
-void yyerror (const char* s)
+void yyerror (rcss::pcom::Parser::Param& param, const char* s)
 {
   std::cerr << s << std::endl;
   //do nothing
 }
 
-int yyerror (char* s)
+int yyerror (rcss::pcom::Parser::Param& param, char* s)
 {
-  yyerror ( (const char*)s );
+  yyerror ( param, (const char*)s );
   return 0;
 }
