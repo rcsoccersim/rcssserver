@@ -1,3 +1,6 @@
+[15.3.0]
+  * Fixed bison3 build problems. Supported Ubuntu 14.04.
+
 [15.2.2]
   * Fixed a bug of the backpass detection. If kick and catch are taken
     simultaneously by same team players but the before kicker also

@@ -1,3 +1,9 @@
+2016-05-13  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- updated a point version number. Official release 15.3.0.
+
 2016-03-11  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* m4/ax_boost_base.m4:
