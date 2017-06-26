@@ -992,7 +992,8 @@ OffsideRef::tackleTaken( const Player & tackler,
 }
 
 void
-OffsideRef::failedTackleTaken( const Player & tackler )
+OffsideRef::failedTackleTaken( const Player & tackler,
+                               const bool )
 {
     checkIntentionalAction( tackler );
 }

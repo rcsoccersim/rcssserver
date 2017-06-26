@@ -56,42 +56,33 @@ public:
       { }
 
     virtual
-    void kickTaken( const Player & )
-      { }
+    void kickTaken( const Player & ) = 0;
 
     virtual
-    void failedKickTaken( const Player & )
-      { }
+    void failedKickTaken( const Player & ) = 0;
 
     virtual
     void tackleTaken( const Player &,
-                      const bool )
-      { }
+                      const bool ) = 0;
 
     virtual
     void failedTackleTaken( const Player &,
-                            const bool )
-      { }
+                            const bool ) = 0;
 
     virtual
-    void ballCaught( const Player & )
-      { }
+    void ballCaught( const Player & ) = 0;
 
     virtual
-    void ballPunched( const Player & )
-      { }
+    void ballPunched( const Player & ) = 0;
 
     virtual
-    void ballTouched( const Player & )
-      { }
+    void ballTouched( const Player & ) = 0;
 
     virtual
-    void analyse()
-      { }
+    void analyse() = 0;
 
     virtual
-    void playModeChange( PlayMode )
-      { }
+    void playModeChange( PlayMode ) = 0;
 
     //
     //
@@ -294,9 +285,33 @@ public:
         : Referee( stadium )
       { }
 
-    virtual
+    void kickTaken( const Player & )
+      { }
+
+    void failedKickTaken( const Player & )
+      { }
+
+    void tackleTaken( const Player &,
+                      const bool )
+      { }
+
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
+
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
+    void ballTouched( const Player & )
+      { }
+
     void analyse();
 
+    void playModeChange( PlayMode )
+      { }
 };
 
 /*--------------------------------------------------------*/
@@ -315,8 +330,33 @@ public:
           M_counter( 0 )
       { }
 
-    virtual
+    void kickTaken( const Player & )
+      { }
+
+    void failedKickTaken( const Player & )
+      { }
+
+    void tackleTaken( const Player &,
+                      const bool )
+      { }
+
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
+
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
+    void ballTouched( const Player & )
+      { }
+
     void analyse();
+
+    void playModeChange( PlayMode )
+      { }
 };
 
 /*--------------------------------------------------------*/
@@ -361,27 +401,26 @@ public:
           M_after_offside_time( 0 )
       { }
 
-
-    virtual
     void kickTaken( const Player & kicker );
 
-    virtual
     void failedKickTaken( const Player & kicker );
 
-    virtual
     void tackleTaken( const Player & tackler,
                       const bool foul );
 
-    virtual
-    void failedTackleTaken( const Player & kicker );
+    void failedTackleTaken( const Player & kicker,
+                            const bool );
 
-    virtual
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
     void ballTouched( const Player & player );
 
-    virtual
     void analyse();
 
-    virtual
     void playModeChange( PlayMode pm );
 
 private:
@@ -426,20 +465,28 @@ public:
     ~FreeKickRef()
       { }
 
-    virtual
     void kickTaken( const Player & kicker );
 
-    virtual
+    void failedKickTaken( const Player & )
+      { }
+
     void tackleTaken( const Player & kicker,
                       const bool foul );
 
-    virtual
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
+
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
     void ballTouched( const Player & player );
 
-    virtual
     void analyse();
 
-    virtual
     void playModeChange( PlayMode pm );
 
 private:
@@ -490,20 +537,28 @@ public:
     ~TouchRef()
       {}
 
-    virtual
-    void analyse();
-
-    virtual
     void kickTaken( const Player & kicker );
 
-    virtual
+    void failedKickTaken( const Player & )
+      { }
+
     void tackleTaken( const Player & kicker,
                       const bool foul );
 
-    virtual
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
+
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
     void ballTouched( const Player & player );
 
-    virtual
+    void analyse();
+
     void playModeChange( PlayMode pm );
 
 private:
@@ -566,26 +621,26 @@ public:
     ~CatchRef()
       { }
 
-    virtual
     void kickTaken( const Player & kicker );
 
-    virtual
+    void failedKickTaken( const Player & )
+      { }
+
     void tackleTaken( const Player & kicker,
                       const bool foul );
 
-    virtual
-    void ballTouched( const Player & player );
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
 
-    virtual
     void ballCaught( const Player & catcher );
 
-    virtual
     void ballPunched( const Player & catcher );
 
-    virtual
+    void ballTouched( const Player & player );
+
     void analyse();
 
-    virtual
     void playModeChange( PlayMode pmode );
 
 private:
@@ -618,14 +673,30 @@ public:
     ~FoulRef()
       { }
 
-    virtual
+    void kickTaken( const Player & )
+      { }
+
+    void failedKickTaken( const Player & )
+      { }
+
     void tackleTaken( const Player & tackler,
                       const bool foul );
 
-    virtual
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
+
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
+    void ballTouched( const Player & )
+      { }
+
     void analyse();
 
-    virtual
     void playModeChange( PlayMode pm );
 
 private:
@@ -654,10 +725,31 @@ public:
     ~KeepawayRef()
       { }
 
-    virtual
+    void kickTaken( const Player & )
+      { }
+
+    void failedKickTaken( const Player & )
+      { }
+
+    void tackleTaken( const Player &,
+                      const bool )
+      { }
+
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
+
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
+    void ballTouched( const Player & )
+      { }
+
     void analyse();
 
-    virtual
     void playModeChange( PlayMode pm );
 
 private:
@@ -695,25 +787,28 @@ public:
     ~PenaltyRef()
       { }
 
-    virtual
-    void analyse();
-
-    virtual
     void kickTaken( const Player & kicker );
 
-    virtual
+    void failedKickTaken( const Player & )
+      { }
+
     void tackleTaken( const Player & tackler,
                       const bool foul );
 
-    virtual
-    void playModeChange( PlayMode pm );
+    void failedTackleTaken( const Player &,
+                            const bool )
+      { }
 
-    virtual
     void ballCaught( const Player & catcher );
 
-    virtual
     void ballPunched( const Player & catcher );
 
+    void ballTouched( const Player & )
+      { }
+
+    void analyse();
+
+    void playModeChange( PlayMode pm );
 
 private:
 
@@ -740,6 +835,5 @@ private:
     void penalty_score( const Side side );
 
 };
-
 
 #endif //REFEREE_H

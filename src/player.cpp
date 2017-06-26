@@ -1492,12 +1492,12 @@ Player::goalieCatch( double dir )
 
         PVector accel = vel - M_stadium.ball().vel();
 
-        std::cerr << M_stadium.time()
-                  << ": goalieCatch probabilistic failure."
-                  << " vel=" << M_stadium.ball().vel()
-                  << " new_vel=" << vel
-                  << " accel=" << accel
-                  << std::endl;
+        // std::cerr << M_stadium.time()
+        //           << ": goalieCatch probabilistic failure."
+        //           << " vel=" << M_stadium.ball().vel()
+        //           << " new_vel=" << vel
+        //           << " accel=" << accel
+        //           << std::endl;
 
         M_stadium.ballPunched( *this, accel );
     }
