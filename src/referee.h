@@ -56,13 +56,15 @@ public:
       { }
 
     virtual
-    void kickTaken( const Player & ) = 0;
+    void kickTaken( const Player &,
+                    const double ) = 0;
 
     virtual
     void failedKickTaken( const Player & ) = 0;
 
     virtual
     void tackleTaken( const Player &,
+                      const double,
                       const bool ) = 0;
 
     virtual
@@ -101,14 +103,17 @@ public:
     class doKickTaken {
     private:
         const Player & M_kicker;
+        const double M_accel_r;
     public:
-        doKickTaken( const Player & kicker )
-            : M_kicker( kicker )
+        doKickTaken( const Player & kicker,
+                     const double accel_r )
+            : M_kicker( kicker ),
+              M_accel_r( accel_r )
           { }
 
         void operator()( Referee * ref )
           {
-              ref->kickTaken( M_kicker );
+              ref->kickTaken( M_kicker, M_accel_r );
           }
     };
 
@@ -129,17 +134,20 @@ public:
     class doTackleTaken {
     private:
         const Player & M_tackler;
+        const double M_accel_r;
         const bool M_foul;
     public:
         doTackleTaken( const Player & tackler,
+                       const double accel_r,
                        const bool foul )
             : M_tackler( tackler ),
+              M_accel_r( accel_r ),
               M_foul( foul )
           { }
 
         void operator()( Referee * ref )
           {
-              ref->tackleTaken( M_tackler, M_foul );
+              ref->tackleTaken( M_tackler, M_accel_r, M_foul );
           }
     };
 
@@ -285,13 +293,15 @@ public:
         : Referee( stadium )
       { }
 
-    void kickTaken( const Player & )
+    void kickTaken( const Player &,
+                    const double )
       { }
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player &,
+                      const double,
                       const bool )
       { }
 
@@ -330,13 +340,15 @@ public:
           M_counter( 0 )
       { }
 
-    void kickTaken( const Player & )
+    void kickTaken( const Player &,
+                    const double )
       { }
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player &,
+                      const double,
                       const bool )
       { }
 
@@ -384,6 +396,7 @@ private:
 
     int M_last_kick_time;
     int M_last_kick_stoppage_time;
+    double M_last_kick_accel_r;
     Side M_last_kicker_side;
     std::vector< Candidate > M_offside_candidates;
 
@@ -396,16 +409,19 @@ public:
         : Referee( stadium ),
           M_last_kick_time( -1 ),
           M_last_kick_stoppage_time( -1 ),
+          M_last_kick_accel_r( 0.0 ),
           M_last_kicker_side( NEUTRAL ),
           M_offside_pos(),
           M_after_offside_time( 0 )
       { }
 
-    void kickTaken( const Player & kicker );
+    void kickTaken( const Player & kicker,
+                    const double accel_r );
 
     void failedKickTaken( const Player & kicker );
 
     void tackleTaken( const Player & tackler,
+                      const double accel_r,
                       const bool foul );
 
     void failedTackleTaken( const Player & kicker,
@@ -426,7 +442,8 @@ public:
 private:
 
     void checkIntentionalAction( const Player & kicker );
-    void setOffsideMark( const Player & kicker );
+    void setOffsideMark( const Player & kicker,
+                         const double accel_r );
 
     void callOffside();
 
@@ -465,12 +482,14 @@ public:
     ~FreeKickRef()
       { }
 
-    void kickTaken( const Player & kicker );
+    void kickTaken( const Player & kicker,
+                    const double accel_r );
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player & kicker,
+                      const double accel_r,
                       const bool foul );
 
     void failedTackleTaken( const Player &,
@@ -516,6 +535,8 @@ private:
     static const int AFTER_GOAL_WAIT;
 
     const Player * M_last_touched;
+    int M_last_touched_time;
+    double M_last_touched_accel_r;
 
     const Player * M_last_indirect_kicker;
     bool M_indirect_mode;
@@ -527,6 +548,8 @@ public:
     TouchRef( Stadium& stadium )
         : Referee( stadium ),
           M_last_touched( NULL ),
+          M_last_touched_time( 0 ),
+          M_last_touched_accel_r( 0.0 ),
           M_last_indirect_kicker( NULL ),
           M_indirect_mode( false ),
           M_after_goal_time( 0 ),
@@ -537,12 +560,14 @@ public:
     ~TouchRef()
       {}
 
-    void kickTaken( const Player & kicker );
+    void kickTaken( const Player & kicker,
+                    const double accel_r );
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player & kicker,
+                      const double accel_r,
                       const bool foul );
 
     void failedTackleTaken( const Player &,
@@ -595,6 +620,7 @@ private:
     };
 
     int M_last_back_passer_time;
+    double M_last_back_passer_accel_r;
     const Player * M_last_back_passer;
     const Player * M_before_last_back_passer;
 
@@ -609,6 +635,7 @@ public:
     CatchRef( Stadium & stadium )
         : Referee( stadium ),
           M_last_back_passer_time( 0 ),
+          M_last_back_passer_accel_r( 0.0 ),
           M_last_back_passer( NULL ),
           M_before_last_back_passer( NULL ),
           M_team_l_touched( false ),
@@ -621,12 +648,14 @@ public:
     ~CatchRef()
       { }
 
-    void kickTaken( const Player & kicker );
+    void kickTaken( const Player & kicker,
+                    const double accel_r );
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player & kicker,
+                      const double accel_r,
                       const bool foul );
 
     void failedTackleTaken( const Player &,
@@ -673,13 +702,15 @@ public:
     ~FoulRef()
       { }
 
-    void kickTaken( const Player & )
+    void kickTaken( const Player &,
+                    const double )
       { }
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player & tackler,
+                      const double accel_r,
                       const bool foul );
 
     void failedTackleTaken( const Player &,
@@ -725,13 +756,15 @@ public:
     ~KeepawayRef()
       { }
 
-    void kickTaken( const Player & )
+    void kickTaken( const Player &,
+                    const double )
       { }
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player &,
+                      const double,
                       const bool )
       { }
 
@@ -787,12 +820,14 @@ public:
     ~PenaltyRef()
       { }
 
-    void kickTaken( const Player & kicker );
+    void kickTaken( const Player & kicker,
+                    const double accel_r );
 
     void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player & tackler,
+                      const double accel_r,
                       const bool foul );
 
     void failedTackleTaken( const Player &,
