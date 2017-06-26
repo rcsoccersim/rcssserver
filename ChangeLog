@@ -1,5 +1,10 @@
 2017-06-26  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
+	* src/referee.cpp:
+	* src/referee.h:
+	* src/stadium.cpp:
+	- tackle/kick changes provided by Nader Zare.
+
 	* src/player.cpp:
 	* src/referee.cpp:
 	* src/referee.h:

@@ -1942,7 +1942,7 @@ Stadium::kickTaken( const Player & kicker,
     M_ball->push( accel );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doKickTaken( kicker ) );
+              Referee::doKickTaken( kicker, accel.r() ) );
 }
 
 void
@@ -1962,7 +1962,7 @@ Stadium::tackleTaken( const Player & tackler,
     M_ball->push( accel );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doTackleTaken( tackler, foul ) );
+              Referee::doTackleTaken( tackler, accel.r(), foul ) );
 }
 
 void

@@ -973,9 +973,10 @@ BallStuckRef::analyse()
 const int OffsideRef::AFTER_OFFSIDE_WAIT = 30;
 
 void
-OffsideRef::kickTaken( const Player & kicker )
+OffsideRef::kickTaken( const Player & kicker,
+                       const double accel_r )
 {
-    setOffsideMark( kicker );
+    setOffsideMark( kicker, accel_r );
 }
 
 void
@@ -986,9 +987,10 @@ OffsideRef::failedKickTaken( const Player & kicker )
 
 void
 OffsideRef::tackleTaken( const Player & tackler,
+                         const double accel_r,
                          const bool )
 {
-    setOffsideMark( tackler );
+    setOffsideMark( tackler, accel_r );
 }
 
 void
@@ -999,7 +1001,7 @@ OffsideRef::failedTackleTaken( const Player & tackler,
 }
 
 // 2011-05-14 akiyama
-// added offside checking based on intentional actione based
+// added offside checking based on intentional action
 void
 OffsideRef::checkIntentionalAction( const Player & kicker )
 {
@@ -1026,7 +1028,7 @@ OffsideRef::checkIntentionalAction( const Player & kicker )
 void
 OffsideRef::ballTouched( const Player & player )
 {
-    setOffsideMark( player );
+    setOffsideMark( player, 0.0 );
 }
 
 void
@@ -1138,7 +1140,8 @@ OffsideRef::playModeChange( PlayMode pm )
 }
 
 void
-OffsideRef::setOffsideMark( const Player & kicker )
+OffsideRef::setOffsideMark( const Player & kicker,
+                            const double accel_r )
 {
     if ( ! ServerParam::instance().useOffside() )
     {
@@ -1153,10 +1156,19 @@ OffsideRef::setOffsideMark( const Player & kicker )
         return;
     }
 
+    if ( M_last_kick_time != M_stadium.time() )
+    {
+        M_last_kick_accel_r = 0.0;
+    }
+
     M_last_kick_time = M_stadium.time();
     M_last_kick_stoppage_time = M_stadium.stoppageTime();
-    M_last_kicker_side = kicker.side();
 
+    if ( M_last_kick_accel_r < accel_r )
+    {
+        M_last_kicker_side = kicker.side();
+        M_last_kick_accel_r = accel_r;
+    }
 
     for ( std::vector< Candidate >::iterator it = M_offside_candidates.begin(),
               end = M_offside_candidates.end();
@@ -1421,7 +1433,8 @@ OffsideRef::checkPlayerAfterOffside()
 const int FreeKickRef::AFTER_FREE_KICK_FAULT_WAIT = 30;
 
 void
-FreeKickRef::kickTaken( const Player & kicker )
+FreeKickRef::kickTaken( const Player & kicker,
+                        const double )
 {
     if ( isPenaltyShootOut( M_stadium.playmode() ) )
     {
@@ -1518,9 +1531,10 @@ FreeKickRef::kickTaken( const Player & kicker )
 
 void
 FreeKickRef::tackleTaken( const Player & tackler,
+                          const double accel_r,
                           const bool )
 {
-    kickTaken( tackler );
+    kickTaken( tackler, accel_r );
 }
 
 void
@@ -2042,7 +2056,8 @@ TouchRef::analyseImpl()
 }
 
 void
-TouchRef::kickTaken( const Player & kicker )
+TouchRef::kickTaken( const Player & kicker,
+                     const double accel_r )
 {
     if ( std::fabs( M_stadium.ball().pos().x )
          <= ServerParam::PITCH_LENGTH * 0.5 + ServerParam::instance().ballSize() )
@@ -2060,16 +2075,28 @@ TouchRef::kickTaken( const Player & kicker )
             M_last_indirect_kicker = &kicker;
         }
 
-        M_last_touched = &kicker;
+        if ( M_last_touched_time == M_stadium.time()
+             && M_last_touched_accel_r <= accel_r )
+        {
+            M_last_touched = &kicker;
+            M_last_touched_accel_r = accel_r;
+        }
+        else if ( M_last_touched_time < M_stadium.time() )
+        {
+            M_last_touched = &kicker;
+            M_last_touched_time = M_stadium.time();
+            M_last_touched_accel_r = accel_r;
+        }
     }
 }
 
 
 void
 TouchRef::tackleTaken( const Player & tackler,
+                       const double accel_r,
                        const bool )
 {
-    kickTaken( tackler );
+    kickTaken( tackler, accel_r );
 }
 
 void
@@ -2091,7 +2118,18 @@ TouchRef::ballTouched( const Player & kicker )
             M_last_indirect_kicker = &kicker;
         }
 
-        M_last_touched = &kicker;
+        if ( M_last_touched_time == M_stadium.time()
+             && M_last_touched_accel_r <= 0.0 )
+        {
+            M_last_touched = &kicker;
+            M_last_touched_accel_r = 0.0;
+        }
+        else if ( M_last_touched_time < M_stadium.time() )
+        {
+            M_last_touched = &kicker;
+            M_last_touched_time = M_stadium.time();
+            M_last_touched_accel_r = 0.0;
+        }
     }
 }
 
@@ -2231,7 +2269,8 @@ const int CatchRef::AFTER_BACKPASS_WAIT = 30;
 const int CatchRef::AFTER_CATCH_FAULT_WAIT = 30;
 
 void
-CatchRef::kickTaken( const Player & kicker )
+CatchRef::kickTaken( const Player & kicker,
+                     const double )
 {
     if ( kicker.side() == LEFT )
     {
@@ -2253,21 +2292,22 @@ CatchRef::kickTaken( const Player & kicker )
     if ( M_last_back_passer != &kicker )
     {
         M_before_last_back_passer = M_last_back_passer;
-		M_last_back_passer = &kicker;
-		M_last_back_passer_time = M_stadium.time();
+        M_last_back_passer = &kicker;
+        M_last_back_passer_time = M_stadium.time();
     }
     else
     {
         //! same player is kicking the ball again, update last kick time
-		M_last_back_passer_time = M_stadium.time();
+        M_last_back_passer_time = M_stadium.time();
     }
 }
 
 void
 CatchRef::tackleTaken( const Player & tackler,
+                       const double accel_r,
                        const bool )
 {
-    kickTaken( tackler );
+    kickTaken( tackler, accel_r );
 }
 
 void
@@ -2569,6 +2609,7 @@ const int FoulRef::AFTER_FOUL_WAIT = 30;
 
 void
 FoulRef::tackleTaken( const Player & tackler,
+                      const double,
                       const bool foul )
 {
     if ( isPenaltyShootOut( M_stadium.playmode() ) )
@@ -3311,7 +3352,8 @@ PenaltyRef::ballPunched( const Player & catcher )
 
 
 void
-PenaltyRef::kickTaken( const Player & kicker )
+PenaltyRef::kickTaken( const Player & kicker,
+                       const double )
 {
     if ( ! isPenaltyShootOut( M_stadium.playmode() ) )
     {
@@ -3405,6 +3447,7 @@ PenaltyRef::kickTaken( const Player & kicker )
 
 void
 PenaltyRef::tackleTaken( const Player & tackler,
+                         const double accel_r,
                          const bool foul )
 {
     if ( ! isPenaltyShootOut( M_stadium.playmode() ) )
@@ -3433,7 +3476,7 @@ PenaltyRef::tackleTaken( const Player & tackler,
     }
     else
     {
-        kickTaken( tackler );
+        kickTaken( tackler, accel_r );
     }
 }
 
