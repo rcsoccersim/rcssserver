@@ -1,3 +1,10 @@
+[15.4.0]
+  * Improvement of the referee. When two or more players kick/tackle
+    the ball in the same cycle, the last kicker is the one that
+	provided higher acceleration to the ball and not the one that sent
+	the last kick/tackle command to the server. Thanks go to Nader
+	Zare for providing the patch.
+
 [15.3.0]
   * Fixed bison3 build problems. Supported Ubuntu 14.04.
 
