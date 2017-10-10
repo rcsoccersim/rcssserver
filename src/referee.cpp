@@ -2617,6 +2617,11 @@ FoulRef::tackleTaken( const Player & tackler,
         return;
     }
 
+    if ( ServerParam::instance().keepAwayMode() )
+    {
+        return;
+    }
+
     bool detect_charge = false;
     bool detect_yellow = false;
     bool detect_red = false;
