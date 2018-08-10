@@ -68,7 +68,7 @@ class Msg;
 class AudioSender
     : protected Sender {
 public:
-    typedef std::auto_ptr< rcss::AudioSender > Ptr;
+    typedef std::shared_ptr< rcss::AudioSender > Ptr;
 
 protected:
     const Stadium& M_stadium;
@@ -149,23 +149,14 @@ public:
     Listener()
       { }
 
-    Listener( AudioSender & sender )
-        : BaseObserver< AudioSender >( sender )
-      { }
-
-    Listener( std::auto_ptr< AudioSender > sender )
+    Listener( std::shared_ptr< AudioSender > sender )
         : BaseObserver< AudioSender >( sender )
       { }
 
     ~Listener()
       { }
 
-    void setAudioSender( AudioSender & sender )
-      {
-          BaseObserver< AudioSender >::setSender( sender );
-      }
-
-    void setAudioSender( std::auto_ptr< AudioSender > sender )
+    void setAudioSender( std::shared_ptr< AudioSender > sender )
       {
           BaseObserver< AudioSender >::setSender( sender );
       }

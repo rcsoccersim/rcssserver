@@ -86,7 +86,7 @@ public:
           { }
     };
 
-    typedef std::auto_ptr< BodySenderPlayer > Ptr;
+    typedef std::shared_ptr< BodySenderPlayer > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -140,23 +140,14 @@ public:
     BodyObserverPlayer()
       { }
 
-    BodyObserverPlayer( BodySenderPlayer & sender )
-        : BaseObserver< BodySenderPlayer >( sender )
-      { }
-
-    BodyObserverPlayer( std::auto_ptr< BodySenderPlayer > sender )
+    BodyObserverPlayer( std::shared_ptr< BodySenderPlayer > sender )
         : BaseObserver< BodySenderPlayer >( sender )
       { }
 
     ~BodyObserverPlayer()
       { }
 
-    void setBodySender( BodySenderPlayer & sender )
-      {
-          BaseObserver< BodySenderPlayer >::setSender( sender );
-      }
-
-    void setBodySender( std::auto_ptr< BodySenderPlayer > sender )
+    void setBodySender( std::shared_ptr< BodySenderPlayer > sender )
       {
           BaseObserver< BodySenderPlayer >::setSender( sender );
       }

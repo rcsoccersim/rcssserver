@@ -67,7 +67,7 @@ public:
     };
 
 public:
-    typedef std::auto_ptr< InitSenderPlayer > Ptr;
+    typedef std::shared_ptr< InitSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -132,23 +132,14 @@ public:
     InitObserverPlayer()
       { }
 
-    InitObserverPlayer( InitSenderPlayer & sender )
-        : BaseObserver< InitSenderPlayer >( sender )
-      { }
-
-    InitObserverPlayer( std::auto_ptr< InitSenderPlayer > sender )
+    InitObserverPlayer( std::shared_ptr< InitSenderPlayer > sender )
         : BaseObserver< InitSenderPlayer >( sender )
       { }
 
     ~InitObserverPlayer()
       { }
 
-    void setInitSender( InitSenderPlayer & sender )
-      {
-          BaseObserver< InitSenderPlayer >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderPlayer > sender )
+    void setInitSender( std::shared_ptr< InitSenderPlayer > sender )
       {
           BaseObserver< InitSenderPlayer >::setSender( sender );
       }

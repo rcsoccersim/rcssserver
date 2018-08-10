@@ -73,7 +73,7 @@ public:
     };
 
 public:
-    typedef std::auto_ptr< VisualSenderCoach > Ptr;
+    typedef std::shared_ptr< VisualSenderCoach > Ptr;
     typedef Ptr (*Creator)( const VisualSenderCoach::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -137,23 +137,14 @@ public:
     ObserverCoach()
       { }
 
-    ObserverCoach( VisualSenderCoach & sender )
-        : BaseObserver< VisualSenderCoach >( sender )
-      { }
-
-    ObserverCoach( std::auto_ptr< VisualSenderCoach > sender )
+    ObserverCoach( std::shared_ptr< VisualSenderCoach > sender )
         : BaseObserver< VisualSenderCoach >( sender )
       { }
 
     ~ObserverCoach()
       {}
 
-    void setVisualSender( VisualSenderCoach & sender )
-      {
-          BaseObserver< VisualSenderCoach >::setSender( sender );
-      }
-
-    void setVisualSender( std::auto_ptr< VisualSenderCoach > sender )
+    void setVisualSender( std::shared_ptr< VisualSenderCoach > sender )
       {
           BaseObserver< VisualSenderCoach >::setSender( sender );
       }

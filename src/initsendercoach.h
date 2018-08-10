@@ -127,23 +127,14 @@ public:
     InitObserverOfflineCoach()
       { }
 
-    InitObserverOfflineCoach( InitSenderOfflineCoach & sender )
-        : BaseObserver< InitSenderOfflineCoach >( sender )
-      { }
-
-    InitObserverOfflineCoach( std::auto_ptr< InitSenderOfflineCoach > sender )
+    InitObserverOfflineCoach( std::shared_ptr< InitSenderOfflineCoach > sender )
         : BaseObserver< InitSenderOfflineCoach >( sender )
       { }
 
     ~InitObserverOfflineCoach()
       { }
 
-    void setInitSender( InitSenderOfflineCoach & sender )
-      {
-          BaseObserver< InitSenderOfflineCoach >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderOfflineCoach > sender )
+    void setInitSender( std::shared_ptr< InitSenderOfflineCoach > sender )
       {
           BaseObserver< InitSenderOfflineCoach >::setSender( sender );
       }

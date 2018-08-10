@@ -130,19 +130,10 @@ public:
     InitObserverLogger()
       { }
 
-    InitObserverLogger( InitSenderLogger & sender )
-        : BaseObserver< InitSenderLogger >( sender )
-      { }
-
     ~InitObserverLogger()
       { }
 
-    void setInitSender( InitSenderLogger & sender )
-      {
-          BaseObserver< InitSenderLogger >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderLogger > sender )
+    void setInitSender( std::shared_ptr< InitSenderLogger > sender )
       {
           BaseObserver< InitSenderLogger >::setSender( sender );
       }

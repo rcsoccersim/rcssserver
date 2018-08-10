@@ -60,7 +60,7 @@ public:
           { }
     };
 
-    typedef std::auto_ptr< InitSenderMonitor > Ptr;
+    typedef std::shared_ptr< InitSenderMonitor > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -124,19 +124,10 @@ public:
     InitObserverMonitor()
       { }
 
-    InitObserverMonitor( InitSenderMonitor & sender )
-        : BaseObserver< InitSenderMonitor >( sender )
-      { }
-
     ~InitObserverMonitor()
       { }
 
-    void setInitSender( InitSenderMonitor & sender )
-      {
-          BaseObserver< InitSenderMonitor >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderMonitor > sender )
+    void setInitSender( std::shared_ptr< InitSenderMonitor > sender )
       {
           BaseObserver< InitSenderMonitor >::setSender( sender );
       }

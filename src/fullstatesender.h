@@ -91,7 +91,7 @@ public:
           { }
     };
 
-    typedef std::auto_ptr< FullStateSenderPlayer > Ptr;
+    typedef std::shared_ptr< FullStateSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -152,23 +152,14 @@ public:
     FullStateObserver()
       { }
 
-    FullStateObserver( FullStateSenderPlayer & sender )
-        : BaseObserver< FullStateSenderPlayer >( sender )
-      { }
-
-    FullStateObserver( std::auto_ptr< FullStateSenderPlayer > sender )
+    FullStateObserver( std::shared_ptr< FullStateSenderPlayer > sender )
         : BaseObserver< FullStateSenderPlayer >( sender )
       { }
 
     ~FullStateObserver()
       { }
 
-    void setFullStateSender( FullStateSenderPlayer & sender )
-      {
-          BaseObserver< FullStateSenderPlayer >::setSender( sender );
-      }
-
-    void setFullStateSender( std::auto_ptr< FullStateSenderPlayer > sender )
+    void setFullStateSender( std::shared_ptr< FullStateSenderPlayer > sender )
       {
           BaseObserver< FullStateSenderPlayer >::setSender( sender );
       }

@@ -136,23 +136,14 @@ public:
     InitObserverOnlineCoach()
       { }
 
-    InitObserverOnlineCoach( InitSenderOnlineCoach & sender )
-        : BaseObserver< InitSenderOnlineCoach >( sender )
-      { }
-
-    InitObserverOnlineCoach( std::auto_ptr< InitSenderOnlineCoach > sender )
+    InitObserverOnlineCoach( std::shared_ptr< InitSenderOnlineCoach > sender )
         : BaseObserver< InitSenderOnlineCoach >( sender )
       { }
 
     ~InitObserverOnlineCoach()
       { }
 
-    void setInitSender( InitSenderOnlineCoach & sender )
-      {
-          BaseObserver< InitSenderOnlineCoach >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderOnlineCoach > sender )
+    void setInitSender( std::shared_ptr< InitSenderOnlineCoach > sender )
       {
           BaseObserver< InitSenderOnlineCoach >::setSender( sender );
       }

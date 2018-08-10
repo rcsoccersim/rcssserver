@@ -83,7 +83,7 @@ private:
     int M_sendcnt;
 
 public:
-    typedef std::auto_ptr< VisualSenderPlayer > Ptr;
+    typedef std::shared_ptr< VisualSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const VisualSenderPlayer::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -148,23 +148,14 @@ public:
     ObserverPlayer()
       { }
 
-    ObserverPlayer( VisualSenderPlayer & sender )
-        : BaseObserver< VisualSenderPlayer >( sender )
-      { }
-
-    ObserverPlayer( std::auto_ptr< VisualSenderPlayer > sender )
+    ObserverPlayer( std::shared_ptr< VisualSenderPlayer > sender )
         : BaseObserver< VisualSenderPlayer >( sender )
       { }
 
     ~ObserverPlayer()
       { }
 
-    void setVisualSender( VisualSenderPlayer & sender )
-      {
-          BaseObserver< VisualSenderPlayer >::setSender( sender );
-      }
-
-    void setVisualSender( std::auto_ptr< VisualSenderPlayer > sender )
+    void setVisualSender( std::shared_ptr< VisualSenderPlayer > sender )
       {
           BaseObserver< VisualSenderPlayer >::setSender( sender );
       }

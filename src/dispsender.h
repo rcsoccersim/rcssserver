@@ -149,23 +149,14 @@ public:
     ObserverMonitor()
       { }
 
-    ObserverMonitor( DispSenderMonitor & sender )
-        : BaseObserver< DispSenderMonitor >( sender )
-      { }
-
-    ObserverMonitor( std::auto_ptr< DispSenderMonitor > sender )
+    ObserverMonitor( std::shared_ptr< DispSenderMonitor > sender )
         : BaseObserver< DispSenderMonitor >( sender )
       { }
 
     ~ObserverMonitor()
       { }
 
-    void setDispSender( DispSenderMonitor & sender )
-      {
-          BaseObserver< DispSenderMonitor >::setSender( sender );
-      }
-
-    void setDispSender( std::auto_ptr< DispSenderMonitor > sender )
+    void setDispSender( std::shared_ptr< DispSenderMonitor > sender )
       {
           BaseObserver< DispSenderMonitor >::setSender( sender );
       }
@@ -377,23 +368,14 @@ public:
     ObserverLogger()
       { }
 
-    ObserverLogger( DispSenderLogger & sender )
-        : BaseObserver< DispSenderLogger >( sender )
-      { }
-
-    ObserverLogger( std::auto_ptr< DispSenderLogger > sender )
+    ObserverLogger( std::shared_ptr< DispSenderLogger > sender )
         : BaseObserver< DispSenderLogger >( sender )
       { }
 
     ~ObserverLogger()
       { }
 
-    void setDispSender( DispSenderLogger & sender )
-      {
-          BaseObserver< DispSenderLogger >::setSender( sender );
-      }
-
-    void setDispSender( std::auto_ptr< DispSenderLogger > sender )
+    void setDispSender( std::shared_ptr< DispSenderLogger > sender )
       {
           BaseObserver< DispSenderLogger >::setSender( sender );
       }

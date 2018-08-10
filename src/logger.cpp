@@ -108,6 +108,18 @@ Logger::Logger( Stadium & stadium )
 Logger::~Logger()
 {
     this->close();
+
+    if ( M_init_observer )
+    {
+        delete M_init_observer;
+        M_init_observer = static_cast< rcss::InitObserverLogger * >( 0 );
+    }
+
+    if ( M_observer )
+    {
+        delete M_observer;
+        M_observer = static_cast< rcss::ObserverLogger * >( 0 );
+    }
 }
 
 bool

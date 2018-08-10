@@ -43,48 +43,28 @@ class BaseObserver {
 public:
     typedef S Sender;
 private:
-    Sender * M_sender;
-    bool M_owns_sender;
+    std::shared_ptr< Sender > M_sender;
 
 public:
     BaseObserver()
-        : M_sender( NULL ),
-          M_owns_sender( false )
       { }
 
-    BaseObserver( Sender & sender )
-        : M_sender( &sender ),
-          M_owns_sender( false )
-      { }
-
-    BaseObserver( std::auto_ptr< Sender > sender )
-        : M_sender( sender.release() ),
-          M_owns_sender( true )
+    BaseObserver( std::shared_ptr< Sender > sender )
+        : M_sender( sender )
       { }
 
 
     ~BaseObserver()
-      {
-          clear();
-      }
+      { }
 
-    void setSender( Sender & sender )
+    void setSender( std::shared_ptr< Sender > sender )
       {
-          clear();
-          M_sender = &sender;
-          M_owns_sender = false;
-      }
-
-    void setSender( std::auto_ptr< Sender > sender )
-      {
-          clear();
-          M_sender = sender.release();
-          M_owns_sender = true;
+          M_sender = sender;
       }
 
     Sender & sender()
       {
-          if ( M_sender == NULL )
+          if ( ! M_sender )
           {
               throw util::NullErr( __FILE__, __LINE__,
                                    "Sender is null" );
@@ -94,7 +74,7 @@ public:
 
     const Sender & sender() const
       {
-          if ( M_sender == NULL )
+          if ( ! M_sender )
           {
               throw util::NullErr( __FILE__, __LINE__,
                                    "Sender is null" );
@@ -103,14 +83,6 @@ public:
       }
 
 private:
-    void clear()
-      {
-          if ( M_owns_sender )
-          {
-              delete M_sender;
-              M_sender = NULL;
-          }
-      }
 
     BaseObserver( const BaseObserver & ); // not used;
     BaseObserver & operator=( const BaseObserver & ); // not used;
