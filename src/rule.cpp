@@ -286,7 +286,7 @@ SimpleRule::printPretty( std::ostream & out,
           i != getDirs().end();
           ++i )
     {
-        out << (*i)->printPretty( out, lineheader + " -" );
+        (*i)->printPretty( out, lineheader + " -" );
     }
     return out;
 }
@@ -380,7 +380,7 @@ NestedRule::printPretty( std::ostream & out,
           i != getRules().end();
           ++i )
     {
-        out << (*i)->printPretty( out, lineheader + " -" );
+        (*i)->printPretty( out, lineheader + " -" );
     }
     return out;
 }
@@ -432,7 +432,7 @@ IDListRule::printPretty( std::ostream & out,
                          const std::string & lineheader ) const
 {
     out << lineheader << "IDList Rule:\n";
-    return out << M_rids.printPretty( out, lineheader + " -" );
+    return M_rids.printPretty( out, lineheader + " -" );
 }
 
 std::auto_ptr< Rule >
