@@ -58,7 +58,7 @@ public:
                                const Side side,
                                const unsigned int x,
                                const unsigned int y,
-                               const XPMHolder * xpm ) const;
+                               const XPMHolder & xpm ) const;
 };
 
 

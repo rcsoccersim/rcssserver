@@ -241,11 +241,11 @@ DispSenderMonitorV1::sendTeamGraphic( const Side side,
                                       const unsigned int x,
                                       const unsigned int y )
 {
-    const XPMHolder * xpm = ( side == LEFT
-                              ? stadium().teamLeft().teamGraphic( x, y )
-                              : side == RIGHT
-                              ? stadium().teamRight().teamGraphic( x, y )
-                              : static_cast< const XPMHolder * >( 0 ) );
+    const std::shared_ptr< const XPMHolder > xpm = ( side == LEFT
+                                                     ? stadium().teamLeft().teamGraphic( x, y )
+                                                     : side == RIGHT
+                                                     ? stadium().teamRight().teamGraphic( x, y )
+                                                     : std::shared_ptr< const XPMHolder >() );
     if ( ! xpm
          || ! xpm->valid() )
     {
@@ -254,7 +254,7 @@ DispSenderMonitorV1::sendTeamGraphic( const Side side,
 
     std::ostringstream data;
 
-    serializer().serializeTeamGraphic( data, side, x, y, xpm );
+    serializer().serializeTeamGraphic( data, side, x, y, *xpm );
 
     sendMsg( MSG_BOARD, data.str().c_str() );
 }
@@ -681,11 +681,11 @@ DispSenderLoggerV1::sendTeamGraphic( const Side side,
                                      const unsigned int x,
                                      const unsigned int y )
 {
-    const XPMHolder * xpm = ( side == LEFT
-                              ? stadium().teamLeft().teamGraphic( x, y )
-                              : side == RIGHT
-                              ? stadium().teamRight().teamGraphic( x, y )
-                              : static_cast< const XPMHolder * >( 0 ) );
+    const std::shared_ptr< const XPMHolder > xpm = ( side == LEFT
+                                                     ? stadium().teamLeft().teamGraphic( x, y )
+                                                     : side == RIGHT
+                                                     ? stadium().teamRight().teamGraphic( x, y )
+                                                     : std::shared_ptr< const XPMHolder >() );
     if ( ! xpm
          || ! xpm->valid() )
     {
@@ -694,7 +694,7 @@ DispSenderLoggerV1::sendTeamGraphic( const Side side,
 
     std::ostringstream data;
 
-    serializer().serializeTeamGraphic( data, side, x, y, xpm );
+    serializer().serializeTeamGraphic( data, side, x, y, *xpm );
 
     sendMsg( MSG_BOARD, data.str().c_str() );
 }

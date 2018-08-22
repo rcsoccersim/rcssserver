@@ -58,7 +58,7 @@ public:
                                 const std::string & line_header ) const = 0;
 
     virtual
-    std::auto_ptr< Point > deepCopy() const = 0;
+    std::shared_ptr< Point > deepCopy() const = 0;
 };
 
 inline
@@ -98,9 +98,9 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const
       {
-          return std::auto_ptr< Point >( new PointSimple( *this ) );
+          return std::shared_ptr< Point >( new PointSimple( *this ) );
       }
 
     const geom::Vector2D & getVec() const
@@ -122,14 +122,14 @@ public:
 
     PointRel( const double & x,
               const double & y,
-              std::auto_ptr< Point > origin )
+              std::shared_ptr< Point > origin )
         : Point(),
           M_origin( origin ),
           M_offset( x, y )
       { }
 
     PointRel( const PointSimple offset,
-              std::auto_ptr< Point > origin )
+              std::shared_ptr< Point > origin )
         : Point(),
           M_origin( origin ),
           M_offset( offset )
@@ -146,7 +146,7 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Point > deepCopy() const;
+    std::shared_ptr< Point > deepCopy() const;
 
 
     PointSimple getOffset() const
@@ -160,7 +160,7 @@ public:
       }
 
 private:
-	std::auto_ptr< Point > M_origin;
+	std::shared_ptr< Point > M_origin;
     PointSimple M_offset;
 };
 
@@ -183,9 +183,9 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const
       {
-          return std::auto_ptr< Point >( new PointBall( *this ) );
+          return std::shared_ptr< Point >( new PointBall( *this ) );
       }
 
 };
@@ -213,9 +213,9 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const
       {
-          return std::auto_ptr< Point >( new PointPlayer( *this ) );
+          return std::shared_ptr< Point >( new PointPlayer( *this ) );
       }
 
 private:
@@ -230,8 +230,8 @@ class PointArith
 private:
     PointArith(); // not used
 public:
-    PointArith( std::auto_ptr< Point > pt1,
-                std::auto_ptr< Point > pt2,
+    PointArith( std::shared_ptr< Point > pt1,
+                std::shared_ptr< Point > pt2,
                 const util::ArithOp & arith_op );
     PointArith( const PointArith & pt );
 
@@ -248,13 +248,13 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const
       {
-          return std::auto_ptr< Point >( new PointArith( *this ) );
+          return std::shared_ptr< Point >( new PointArith( *this ) );
       }
 
 private:
-    std::auto_ptr< Point > M_points[2];
+    std::shared_ptr< Point > M_points[2];
     const util::ArithOp * M_arith_op;
     unsigned int M_idx;
 };
@@ -276,7 +276,7 @@ public:
                                 const std::string & line_header ) const = 0;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const = 0;
+    std::shared_ptr< Region > deepCopy() const = 0;
 };
 
 inline
@@ -306,9 +306,9 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const
+    std::shared_ptr< Region > deepCopy() const
       {
-          return std::auto_ptr< Region >( new RegNull( *this ) );
+          return std::shared_ptr< Region >( new RegNull( *this ) );
       }
 };
 
@@ -319,10 +319,10 @@ private:
     RegQuad( const RegQuad & ); // not used
     RegQuad & operator=( const RegQuad & ); // not used
 public:
-	RegQuad( std::auto_ptr< Point > pt0,
-             std::auto_ptr< Point > pt1,
-             std::auto_ptr< Point > pt2,
-             std::auto_ptr< Point > pt3 );
+	RegQuad( std::shared_ptr< Point > pt0,
+             std::shared_ptr< Point > pt1,
+             std::shared_ptr< Point > pt2,
+             std::shared_ptr< Point > pt3 );
 	~RegQuad()
       { }
 
@@ -334,10 +334,10 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const;
 
 private:
-	std::auto_ptr< Point > M_points[ 4 ];
+	std::shared_ptr< Point > M_points[ 4 ];
 };
 
 
@@ -346,7 +346,7 @@ class RegArc
 private:
 	RegArc(); // not used
 public:
-    RegArc( std::auto_ptr< Point > center,
+    RegArc( std::shared_ptr< Point > center,
             const double & start_rad,
             const double & end_rad,
             const double & start_ang,
@@ -362,20 +362,20 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const;
 
 private:
     /* start rad <= end_rad */
     double M_start_rad, M_end_rad;
     double M_start_ang, M_span_ang;
-	std::auto_ptr< Point > M_center;
+	std::shared_ptr< Point > M_center;
 };
 
 
 class RegUnion
     : public Region {
 public:
-	typedef std::list< Region * > Storage;
+	typedef std::list< std::shared_ptr< Region > > Storage;
 
     RegUnion()
         : Region()
@@ -399,7 +399,7 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const;
 
     Storage & getRegions()
       {
@@ -434,9 +434,9 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const
+    std::shared_ptr< Region > deepCopy() const
       {
-          return std::auto_ptr< Region >( new RegNamed( *this ) );
+          return std::shared_ptr< Region >( new RegNamed( *this ) );
       }
 
 private:
@@ -452,7 +452,7 @@ private:
     RegPoint & operator=( const RegPoint & point ); // not used
 public:
 
-    RegPoint( std::auto_ptr< Point > point );
+    RegPoint( std::shared_ptr< Point > point );
     ~RegPoint();
 
     virtual
@@ -463,13 +463,13 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const
+    std::shared_ptr< Region > deepCopy() const
       {
-          return std::auto_ptr< Region >( new RegPoint( *this ) );
+          return std::shared_ptr< Region >( new RegPoint( *this ) );
       }
 
 private:
-    std::auto_ptr< Point > M_point;
+    std::shared_ptr< Point > M_point;
 };
 
 
@@ -478,9 +478,9 @@ class RegTri
 private:
     RegTri(); // not used
 public:
-    RegTri( std::auto_ptr< Point > pt0,
-            std::auto_ptr< Point > pt1,
-            std::auto_ptr< Point > pt2 );
+    RegTri( std::shared_ptr< Point > pt0,
+            std::shared_ptr< Point > pt1,
+            std::shared_ptr< Point > pt2 );
 
     ~RegTri()
       { }
@@ -493,10 +493,10 @@ public:
                                 const std::string & line_header ) const;
 
 	virtual
-    std::auto_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const;
 
 private:
-	std::auto_ptr< Point > m_points[ 3 ];
+	std::shared_ptr< Point > m_points[ 3 ];
 };
 
 
@@ -507,8 +507,8 @@ private:
     RegRec(); // not used
 
 public:
-    RegRec( std::auto_ptr< Point > pt0,
-            std::auto_ptr< Point > pt1 );
+    RegRec( std::shared_ptr< Point > pt0,
+            std::shared_ptr< Point > pt1 );
 
     ~RegRec()
       { }
@@ -521,10 +521,10 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const;
 
 private:
-	std::auto_ptr< Point > M_points[ 2 ];
+	std::shared_ptr< Point > M_points[ 2 ];
 };
 
 }

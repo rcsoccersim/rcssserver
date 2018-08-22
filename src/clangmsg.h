@@ -56,7 +56,7 @@ public:
     Types getType() const = 0;
 
     virtual
-    std::auto_ptr< Msg > deepCopy() const = 0;
+    std::shared_ptr< Msg > deepCopy() const = 0;
 
     virtual
     std::ostream & print( std::ostream & out ) const = 0;

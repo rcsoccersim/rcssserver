@@ -66,7 +66,7 @@ public:
           { }
     };
 
-    typedef std::auto_ptr< rcss::InitSenderOfflineCoach > Ptr;
+    typedef std::shared_ptr< rcss::InitSenderOfflineCoach > Ptr;
     typedef Ptr (*Creator)( const Params& );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 

@@ -176,7 +176,7 @@ private:
     int M_freeform_messages_said;
     int M_freeform_messages_allowed;
 
-    std::deque< rcss::clang::Msg * > M_message_queue;
+    std::deque< std::shared_ptr< rcss::clang::Msg > > M_message_queue;
 
     int M_define_messages_left;
     int M_advice_messages_left;

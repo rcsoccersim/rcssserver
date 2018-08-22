@@ -42,10 +42,11 @@ UnsuppMsg::~UnsuppMsg()
 
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 UnsuppMsg::deepCopy() const
 {
-    return std::auto_ptr< Msg >( new UnsuppMsg( *this ) );
+    std::shared_ptr< Msg > rval( new UnsuppMsg( *this ) );
+    return rval;
 }
 
 std::ostream &

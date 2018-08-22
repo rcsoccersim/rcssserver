@@ -72,12 +72,12 @@ SerializerMonitorStdv1::serializeTeamGraphic( std::ostream & os,
                                               const Side side,
                                               const unsigned int x,
                                               const unsigned int y,
-                                              const XPMHolder * xpm ) const
+                                              const XPMHolder & xpm ) const
 {
     os << "(team_graphic_"
        << ( side == LEFT ? "l" : "r" )
        << " (" << x << " " << y << " "
-       << *xpm << ")";
+       << xpm << ")";
 }
 
 

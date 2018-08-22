@@ -88,7 +88,7 @@ public:
     ~Rule();
 
     virtual
-    std::auto_ptr< Rule > deepCopy() const = 0;
+    std::shared_ptr< Rule > deepCopy() const = 0;
 
     virtual
     std::ostream & print( std::ostream & out ) const = 0;
@@ -102,27 +102,25 @@ class CondRule
     : public Rule {
 public:
 
-	CondRule( std::auto_ptr< Cond > cond );
+	CondRule( std::shared_ptr< Cond > cond );
 
 	virtual
 	~CondRule();
 
 	const Cond * getCond() const;
 
-	std::auto_ptr< Cond > detachCond();
-
 private:
-	std::auto_ptr< Cond > M_cond;
+	std::shared_ptr< Cond > M_cond;
 };
 
 
 class SimpleRule
     : public CondRule {
 public:
-    typedef std::list< Dir * > Storage;
+    typedef std::list< std::shared_ptr< Dir > > Storage;
 
-    SimpleRule( std::auto_ptr< Cond > cond );
-    SimpleRule( std::auto_ptr< Cond > cond,
+    SimpleRule( std::shared_ptr< Cond > cond );
+    SimpleRule( std::shared_ptr< Cond > cond,
                 const Storage & dirs );
     ~SimpleRule();
 
@@ -134,7 +132,7 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Rule > deepCopy() const;
+    std::shared_ptr< Rule > deepCopy() const;
 
     const Storage & getDirs() const;
 
@@ -146,11 +144,11 @@ private:
 class NestedRule
     : public CondRule {
 public:
-    typedef std::list< Rule * > Storage;
+    typedef std::list< std::shared_ptr< Rule > > Storage;
 
-    NestedRule( std::auto_ptr< Cond > cond );
+    NestedRule( std::shared_ptr< Cond > cond );
 
-    NestedRule( std::auto_ptr< Cond > cond,
+    NestedRule( std::shared_ptr< Cond > cond,
                 const Storage & rules );
 
     virtual
@@ -164,7 +162,7 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Rule > deepCopy() const;
+    std::shared_ptr< Rule > deepCopy() const;
 
     const Storage & getRules() const;
 
@@ -188,7 +186,7 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Rule > deepCopy() const;
+    std::shared_ptr< Rule > deepCopy() const;
 
     const RuleIDList & getIDList() const;
 

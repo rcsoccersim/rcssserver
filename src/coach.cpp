@@ -962,13 +962,6 @@ OnlineCoach::OnlineCoach( Stadium & stadium,
 
 OnlineCoach::~OnlineCoach()
 {
-    while ( ! M_message_queue.empty() )
-    {
-        rcss::clang::Msg * msg = *M_message_queue.begin();
-        M_message_queue.pop_front();
-        delete msg;
-    }
-
     if ( M_init_observer_olcoach )
     {
         delete M_init_observer_olcoach;
@@ -1156,21 +1149,16 @@ OnlineCoach::parse_command( const char * command )
             catch ( std::exception & e )
             {
                 std::cerr << e.what() << std::endl;
-                if ( builder.getMsg() != NULL )
-                {
-                    rcss::clang::Msg * msg = builder.detatchMsg().release();
-                    delete msg;
-                }
                 send( "(error could_not_parse_say)" );
                 return;
             }
 
-            if ( ret == 0 && builder.getMsg() != NULL )
+            if ( ret == 0 && builder.getMsg() )
             {
                 //succeful parse
                 bool should_queue = false;
 
-                rcss::clang::Msg * msg = builder.detatchMsg().release();
+                std::shared_ptr< rcss::clang::Msg > msg = builder.getMsg();
 
                 msg->setTimeRecv( M_stadium.time() );
 
@@ -1304,18 +1292,9 @@ OnlineCoach::parse_command( const char * command )
                     M_message_queue.push_back( msg );
                     send( "(ok say)" );
                 }
-                else
-                {
-                    delete msg;
-                }
             }
             else
             {
-                if ( builder.getMsg() != NULL )
-                {
-                    rcss::clang::Msg * msg = builder.detatchMsg().release();
-                    delete msg;
-                }
                 send( "(error could_not_parse_say)" );
             }
         }
@@ -1474,7 +1453,7 @@ OnlineCoach::check_message_queue( int time )
           i > 0 && M_message_queue.size() > 0;
           ++i )
     {
-        rcss::clang::Msg* msg = *( M_message_queue.begin() );
+        std::shared_ptr< rcss::clang::Msg > msg =  M_message_queue.front();
 
         if ( M_stadium.playmode() != PM_PlayOn
              || time - msg->getTimeRecv() >= ServerParam::instance().clangMessDelay() )
@@ -1484,7 +1463,6 @@ OnlineCoach::check_message_queue( int time )
             say( *msg );
 
             M_message_queue.pop_front();
-            delete msg;
             ++messages_sent;
         }
         else
@@ -1834,7 +1812,7 @@ OnlineCoach::team_graphic( const char * command )
         send( "(warning invalid_tile_location)" );
     }
 
-    std::auto_ptr< XPMHolder > holder( new XPMHolder( command ) );
+    std::shared_ptr< XPMHolder > holder( new XPMHolder( command ) );
     if ( ! holder->valid() )
     {
         send( "(error invalid_xpm_data)" );

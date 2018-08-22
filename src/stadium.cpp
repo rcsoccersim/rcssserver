@@ -125,16 +125,6 @@ Stadium::Stadium()
 
 Stadium::~Stadium()
 {
-    for ( std::list< ResultSaver * >::iterator i = M_savers.begin();
-          i != M_savers.end();
-          ++i )
-    {
-        if ( *i )
-        {
-            delete *i;
-            *i = static_cast< ResultSaver * >( 0 );
-        }
-    }
     M_savers.clear();
 
     for ( std::list< Referee * >::iterator i = M_referees.begin();
@@ -262,7 +252,7 @@ Stadium::init()
         {
             ResultSaver::Ptr saver = creator();
             std::cout << saver->getName() << ": Ready\n";
-            M_savers.push_back( saver.release() );
+            M_savers.push_back( saver );
         }
         else
         {
@@ -3293,30 +3283,30 @@ namespace rcss {
 void
 save_results( ResultSaver::team_id id,
               const Team & team,
-              ResultSaver * saver )
+              ResultSaver & saver )
 {
     if ( ! team.name().empty() )
     {
-        saver->saveTeamName( id, team.name() );
+        saver.saveTeamName( id, team.name() );
     }
 
     if ( team.olcoach()
          && ! team.olcoach()->name().empty() )
     {
-        saver->saveCoachName( id, team.olcoach()->name() );
+        saver.saveCoachName( id, team.olcoach()->name() );
     }
 
-    saver->saveScore( id, team.point() );
+    saver.saveScore( id, team.point() );
 
     if ( team.penaltyTaken() )
     {
-        saver->savePenTaken( id, team.penaltyTaken() );
-        saver->savePenScored( id, team.penaltyPoint() );
+        saver.savePenTaken( id, team.penaltyTaken() );
+        saver.savePenScored( id, team.penaltyPoint() );
     }
 
     if ( team.penaltyWon() )
     {
-        saver->saveCoinTossWinner( id );
+        saver.saveCoinTossWinner( id );
     }
 }
 }
@@ -3330,7 +3320,7 @@ Stadium::saveResults()
     }
 
     std::cout << "\nSaving Results:"  << std::endl;
-    for ( std::list< ResultSaver * >::iterator i = M_savers.begin();
+    for ( std::list< ResultSaver::Ptr >::iterator i = M_savers.begin();
           i != M_savers.end();
           ++i )
     {
@@ -3343,14 +3333,14 @@ Stadium::saveResults()
             {
                 rcss::save_results( ResultSaver::TEAM_LEFT,
                                     *M_team_l,
-                                    *i );
+                                    **i );
             }
 
             if ( M_team_r )
             {
                 rcss::save_results( ResultSaver::TEAM_RIGHT,
                                     *M_team_r,
-                                    *i );
+                                    **i );
             }
 
             if ( (*i)->saveComplete() )

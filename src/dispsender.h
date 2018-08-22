@@ -105,7 +105,7 @@ private:
     const Stadium & M_stadium;
 
 public:
-    typedef std::auto_ptr< DispSenderMonitor > Ptr;
+    typedef std::shared_ptr< DispSenderMonitor > Ptr;
     typedef Ptr (*Creator)( const DispSenderMonitor::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -324,7 +324,7 @@ private:
     const Stadium & M_stadium;
 
 public:
-    typedef std::auto_ptr< DispSenderLogger > Ptr;
+    typedef std::shared_ptr< DispSenderLogger > Ptr;
     typedef Ptr (*Creator)( const DispSenderLogger::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 

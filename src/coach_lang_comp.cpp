@@ -94,25 +94,25 @@ DirComm::printPretty( std::ostream & out,
 void
 DirComm::clearActions()
 {
-    for ( Storage::iterator i = M_actions.begin();
-          i != M_actions.end();
-          ++i )
-    {
-        delete *i;
-    }
+    // for ( Storage::iterator i = M_actions.begin();
+    //       i != M_actions.end();
+    //       ++i )
+    // {
+    //     delete *i;
+    // }
     M_actions.clear();
 }
 
 
-DirComm::Storage
-DirComm::detachActions()
-{
-    Storage rval = M_actions;
-    M_actions.clear();
-    return rval;
-}
+// DirComm::Storage
+// DirComm::detachActions()
+// {
+//     Storage rval = M_actions;
+//     M_actions.clear();
+//     return rval;
+// }
 
-std::auto_ptr< Dir >
+std::shared_ptr< Dir >
 DirComm::deepCopy() const
 {
     Storage new_actions;
@@ -120,13 +120,14 @@ DirComm::deepCopy() const
           i != getActions().end();
           ++i )
     {
-        new_actions.push_back( (*i)->deepCopy().release() );
+        new_actions.push_back( (*i)->deepCopy() );
     }
 
-    return std::auto_ptr< Dir >( new DirComm( M_positive,
+    std::shared_ptr< Dir > rval( new DirComm( M_positive,
                                               M_our_side,
                                               M_players,
                                               new_actions ) );
+    return rval;
 }
 
 
@@ -226,19 +227,13 @@ TokRule::printPretty( std::ostream & out,
 void
 TokRule::clearDirs()
 {
-    for ( Storage::iterator i = M_dirs.begin();
-          i != M_dirs.end();
-          ++i )
-    {
-        delete *i;
-    }
     M_dirs.clear();
 }
 
-std::auto_ptr< Token >
+std::shared_ptr< Token >
 TokRule::deepCopy() const
 {
-    std::auto_ptr< Cond > new_cond;
+    std::shared_ptr< Cond > new_cond;
     if ( getCond() )
     {
         new_cond = getCond()->deepCopy();
@@ -249,12 +244,13 @@ TokRule::deepCopy() const
           i != M_dirs.end();
           ++i )
     {
-        new_dirs.push_back( (*i)->deepCopy().release() );
+        new_dirs.push_back( (*i)->deepCopy() );
     }
 
-    return std::auto_ptr< Token >( new TokRule( M_ttl,
+    std::shared_ptr< Token > rval( new TokRule( M_ttl,
                                                 new_cond,
                                                 new_dirs ) );
+    return rval;
 }
 
 
@@ -434,21 +430,24 @@ DefRule::printPretty( std::ostream & out,
     return out;
 }
 
-std::auto_ptr< Def >
+std::shared_ptr< Def >
 DefRule::deepCopy() const
 {
+    std::shared_ptr< Def > rval;
     if ( getRule() )
     {
-        return std::auto_ptr< Def >( new DefRule( getName(),
-                                                  getRule()->deepCopy(),
-                                                  M_model ) );
+        rval = std::shared_ptr< Def >( new DefRule( getName(),
+                                                    getRule()->deepCopy(),
+                                                    M_model ) );
     }
     else
     {
-        return std::auto_ptr< Def >( new DefRule( getName(),
-                                                  std::auto_ptr< Rule >(),
-                                                  M_model ) );
+        rval = std::shared_ptr< Def >( new DefRule( getName(),
+                                                    std::shared_ptr< Rule >(),
+                                                    M_model ) );
     }
+
+    return rval;
 }
 
 }

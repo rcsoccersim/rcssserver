@@ -56,7 +56,7 @@ public:
           { }
     };
 
-    typedef std::auto_ptr< InitSenderLogger > Ptr;
+    typedef std::shared_ptr< InitSenderLogger > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 

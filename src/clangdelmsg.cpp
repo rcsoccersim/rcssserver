@@ -49,10 +49,11 @@ DelMsg::~DelMsg()
 
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 DelMsg::deepCopy() const
 {
-    return std::auto_ptr< Msg >( new DelMsg( *this ) );
+    std::shared_ptr< Msg > rval( new DelMsg( *this ) );
+    return rval;
 }
 
 std::ostream &

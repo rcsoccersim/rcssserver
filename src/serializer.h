@@ -1155,7 +1155,7 @@ public:
                                const Side,
                                const unsigned int,
                                const unsigned int,
-                               const XPMHolder * ) const
+                               const XPMHolder & ) const
       { }
 };
 

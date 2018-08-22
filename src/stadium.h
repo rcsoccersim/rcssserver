@@ -29,6 +29,7 @@
 #include "field.h"
 #include "weather.h"
 #include "logger.h"
+#include "resultsaver.hpp"
 
 #include <rcssbase/gzip/gzfstream.hpp>
 #include <rcssbase/net/udpsocket.hpp>
@@ -50,7 +51,6 @@ class OnlineCoach;
 class Team;
 
 class Referee;
-class ResultSaver;
 
 struct timeval;
 
@@ -142,7 +142,7 @@ protected:
 
     tm m_real_time;
 
-    std::list< ResultSaver * > M_savers;
+    std::list< ResultSaver::Ptr > M_savers;
 
 public:
 
