@@ -180,8 +180,6 @@ public:
           M_actions.push_front( action );
       }
 
-    // Storage detachActions();
-
     virtual
     std::shared_ptr< Dir > deepCopy() const;
 
@@ -346,30 +344,10 @@ public:
           return M_ttl;
       }
 
-//     void set( int ttl )
-//       {
-//           M_ttl = ttl;
-//       }
-
-//     Cond * getCond()
-//       {
-//           return M_cond.get();
-//       }
-
-    const Cond * getCond() const
-      {
-          return M_cond.get();
-      }
-
-    void set( std::shared_ptr< Cond > cond )
+    void setCond( std::shared_ptr< Cond > cond )
       {
           M_cond = cond;
       }
-
-//     std::shared_ptr< Cond > detachCond()
-//       {
-//           return M_cond;
-//       }
 
     const Storage & getDirs() const
       {
@@ -382,12 +360,6 @@ public:
       }
 
  	void clearDirs();
-
-//     void set( const Storage & dirs )
-//       {
-//           clearDirs();
-//           M_dirs =  dirs;
-//       }
 
 private:
 	int M_ttl;
@@ -453,7 +425,7 @@ class DefCond
 public:
     DefCond()
         : Def(),
-          M_cond( (Cond*)NULL )
+          M_cond()
       { }
 
     DefCond( const std::string & name,
@@ -491,21 +463,6 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    Cond * getCond()
-      {
-          return M_cond.get();
-      }
-
-    const Cond * getCond() const
-      {
-          return M_cond.get();
-      }
-
-    void setCond( std::shared_ptr< Cond > & cond )
-      {
-          M_cond = cond;
-      }
-
 private:
     std::shared_ptr< Cond > M_cond;
 };
@@ -516,7 +473,7 @@ class DefDir
 public:
     DefDir()
         : Def(),
-          M_dir( (Dir*)NULL )
+          M_dir()
       { }
 
     DefDir( const std::string & name,
@@ -554,21 +511,6 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    Dir * getDir()
-      {
-          return M_dir.get();
-      }
-
-    const Dir * getDir() const
-      {
-          return M_dir.get();
-      }
-
-    void setDir( std::shared_ptr< Dir > & dir )
-      {
-          M_dir = dir;
-      }
-
 private:
     std::shared_ptr< Dir > M_dir;
 };
@@ -579,7 +521,7 @@ class DefReg
 public:
     DefReg()
         : Def(),
-          M_reg( (Region*)NULL )
+          M_reg()
       { }
 
     DefReg( const std::string & name,
@@ -617,21 +559,6 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    Region * getReg()
-      {
-          return M_reg.get();
-      }
-
-    const Region * getReg() const
-      {
-          return M_reg.get();
-      }
-
-    void setReg( std::shared_ptr< Region > & reg )
-      {
-          M_reg = reg;
-      }
-
 private:
     std::shared_ptr< Region > M_reg;
 };
@@ -642,7 +569,7 @@ class DefAct
 public:
     DefAct()
         : Def(),
-          M_act( (Action*)NULL )
+          M_act()
       { }
 
     DefAct( const std::string & name,
@@ -679,21 +606,6 @@ public:
     virtual
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
-
-    Action * getAction()
-      {
-          return M_act.get();
-      }
-
-    const Action * getAction() const
-      {
-          return M_act.get();
-      }
-
-    void setAction( std::shared_ptr< Action > & act )
-      {
-          M_act = act;
-      }
 
 private:
     std::shared_ptr< Action > M_act;
@@ -736,21 +648,6 @@ public:
     virtual
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
-
-    const Rule * getRule() const
-      {
-          return M_rule.get();
-      }
-
-    bool isModel() const
-      {
-          return M_model;
-      }
-
-    void setModel( bool model )
-      {
-          M_model = model;
-      }
 
 private:
 	std::shared_ptr< Rule > M_rule;

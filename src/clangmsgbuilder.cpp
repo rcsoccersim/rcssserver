@@ -1059,7 +1059,7 @@ MsgBuilder::buildTokenRule( const int & ttl )
         }
     }
 
-    token->set( checkAndGetCond() );
+    token->setCond( checkAndGetCond() );
     add( token );
 }
 
