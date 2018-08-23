@@ -27,7 +27,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Logger;
 
@@ -42,12 +42,12 @@ public:
     public:
         std::ostream & M_transport;
         const Logger & M_self;
-        const boost::shared_ptr< SerializerMonitor > M_serializer;
+        const std::shared_ptr< SerializerMonitor > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Logger & self,
-                const boost::shared_ptr< SerializerMonitor > serializer,
+                const std::shared_ptr< SerializerMonitor > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_self( self ),
@@ -62,7 +62,7 @@ public:
 
 private:
 
-    const boost::shared_ptr< SerializerMonitor > M_serializer;
+    const std::shared_ptr< SerializerMonitor > M_serializer;
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
       stuff like velocity, stamina, etc */
@@ -79,7 +79,7 @@ public:
 protected:
 
     InitSenderLogger( const Params & params,
-                      const boost::shared_ptr< InitSenderCommon > common );
+                      const std::shared_ptr< InitSenderCommon > common );
 
     const
     SerializerMonitor & serializer() const
@@ -178,7 +178,7 @@ public:
 
 protected:
     InitSenderLoggerV1( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -211,7 +211,7 @@ public:
 
 protected:
     InitSenderLoggerV2( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -244,7 +244,7 @@ public:
 
 protected:
     InitSenderLoggerV3( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -278,7 +278,7 @@ public:
 
 protected:
     InitSenderLoggerV4( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -312,7 +312,7 @@ public:
 
 protected:
     InitSenderLoggerV5( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual

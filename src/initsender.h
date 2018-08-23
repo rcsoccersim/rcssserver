@@ -28,7 +28,7 @@
 #include "serverparam.h"
 #include "playerparam.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Stadium;
 class HeteroPlayer;
@@ -50,14 +50,14 @@ class Serializer;
 class InitSenderCommon {
 private:
     std::ostream & M_transport;
-    const boost::shared_ptr< Serializer > M_serializer;
+    const std::shared_ptr< Serializer > M_serializer;
     const Stadium & M_stadium;
     const unsigned int M_version;
     const bool M_new_line;
 
 public:
     InitSenderCommon( std::ostream & transport,
-                      const boost::shared_ptr< Serializer > serializer,
+                      const std::shared_ptr< Serializer > serializer,
                       const Stadium & stadium,
                       unsigned int version,
                       const bool new_line = false )
@@ -120,12 +120,12 @@ public:
 class InitSender
     : protected Sender {
 private:
-    boost::shared_ptr< InitSenderCommon > m_common_sender;
+    std::shared_ptr< InitSenderCommon > m_common_sender;
 
 protected:
 
     InitSender( std::ostream & transport,
-                const boost::shared_ptr< InitSenderCommon > & common );
+                const std::shared_ptr< InitSenderCommon > & common );
 
 public:
     virtual
@@ -180,7 +180,7 @@ class InitSenderCommonV1
 {
 public:
     InitSenderCommonV1( std::ostream & transport,
-                        const boost::shared_ptr< Serializer > serializer,
+                        const std::shared_ptr< Serializer > serializer,
                         const Stadium & stad,
                         unsigned int version,
                         const bool new_line = false )
@@ -223,7 +223,7 @@ class InitSenderCommonV7
     : public InitSenderCommonV1 {
 public:
     InitSenderCommonV7( std::ostream & transport,
-                        const boost::shared_ptr< Serializer > serializer,
+                        const std::shared_ptr< Serializer > serializer,
                         const Stadium & stad,
                         unsigned int version,
                         const bool new_line = false )
@@ -268,7 +268,7 @@ class InitSenderCommonV8
     : public InitSenderCommonV7 {
 public:
     InitSenderCommonV8( std::ostream & transport,
-                        const boost::shared_ptr< Serializer > serializer,
+                        const std::shared_ptr< Serializer > serializer,
                         const Stadium & stad,
                         unsigned int version,
                         const bool new_line = false )

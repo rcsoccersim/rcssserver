@@ -29,7 +29,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Player;
 
@@ -75,11 +75,11 @@ public:
     public:
         std::ostream & M_transport;
         const Player & M_self;
-        const boost::shared_ptr< SerializerPlayer > M_serializer;
+        const std::shared_ptr< SerializerPlayer > M_serializer;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const boost::shared_ptr< SerializerPlayer > ser )
+                const std::shared_ptr< SerializerPlayer > ser )
             : M_transport( transport ),
               M_self( self ),
               M_serializer( ser )
@@ -112,7 +112,7 @@ protected:
       }
 
 private:
-    const boost::shared_ptr< SerializerPlayer > M_serializer;
+    const std::shared_ptr< SerializerPlayer > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       BodyObserver and BodyObserver should have virtual functions for

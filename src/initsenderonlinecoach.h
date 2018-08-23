@@ -27,7 +27,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Stadium;
 class Player;
@@ -54,12 +54,12 @@ public:
     public:
         std::ostream & M_transport;
         const OnlineCoach & M_self;
-        const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+        const std::shared_ptr< SerializerOnlineCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const OnlineCoach & self,
-                const boost::shared_ptr< SerializerOnlineCoach > serializer,
+                const std::shared_ptr< SerializerOnlineCoach > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -81,7 +81,7 @@ public:
 
 protected:
     InitSenderOnlineCoach( const Params & params,
-                           const boost::shared_ptr< InitSenderCommon > common );
+                           const std::shared_ptr< InitSenderCommon > common );
 
     const
     SerializerOnlineCoach & serializer() const
@@ -109,7 +109,7 @@ public:
     void sendPlayerClangVer( const Player & ) = 0;
 
 private:
-    const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+    const std::shared_ptr< SerializerOnlineCoach > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
@@ -207,7 +207,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV1( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -245,7 +245,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV6( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -273,7 +273,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV7( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -300,7 +300,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV8( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual

@@ -27,7 +27,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Player;
 
@@ -52,12 +52,12 @@ public:
     public:
         std::ostream & M_transport;
         const Player & M_self;
-        const boost::shared_ptr< SerializerPlayer > M_serializer;
+        const std::shared_ptr< SerializerPlayer > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const boost::shared_ptr< SerializerPlayer > serializer,
+                const std::shared_ptr< SerializerPlayer > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -79,7 +79,7 @@ public:
 
 protected:
     InitSenderPlayer( const Params & params,
-                      const boost::shared_ptr< InitSenderCommon > common );
+                      const std::shared_ptr< InitSenderCommon > common );
 
     const
     SerializerPlayer & serializer() const
@@ -100,7 +100,7 @@ protected:
       }
 
 private:
-    const boost::shared_ptr< SerializerPlayer > M_serializer;
+    const std::shared_ptr< SerializerPlayer > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
@@ -198,7 +198,7 @@ public:
 
 protected:
     InitSenderPlayerV1( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -234,7 +234,7 @@ public:
 
 protected:
     InitSenderPlayerV7( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -261,7 +261,7 @@ public:
 
 protected:
     InitSenderPlayerV8( const Params & params,
-                        const boost::shared_ptr< InitSenderCommon > common );
+                        const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual

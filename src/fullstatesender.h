@@ -28,7 +28,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Stadium;
 class Player;
@@ -77,12 +77,12 @@ public:
     public:
         std::ostream & M_transport;
         const Player & M_self;
-        const boost::shared_ptr< SerializerPlayer > M_serializer;
+        const std::shared_ptr< SerializerPlayer > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const boost::shared_ptr< SerializerPlayer > serializer,
+                const std::shared_ptr< SerializerPlayer > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_self( self ),
@@ -96,7 +96,7 @@ public:
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
 private:
-    const boost::shared_ptr< SerializerPlayer > M_serializer;
+    const std::shared_ptr< SerializerPlayer > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       FullStateObserver and FullStateObserver should have virtual functions for

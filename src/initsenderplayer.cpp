@@ -51,7 +51,7 @@ InitSenderPlayer::factory()
 
 
 InitSenderPlayer::InitSenderPlayer( const Params & params,
-                                    const boost::shared_ptr< InitSenderCommon > common )
+                                    const std::shared_ptr< InitSenderCommon > common )
     : InitSender( params.M_transport, common ),
       M_serializer( params.M_serializer ),
       M_self( params.M_self ),
@@ -82,7 +82,7 @@ InitSenderPlayer::~InitSenderPlayer()
 
 InitSenderPlayerV1::InitSenderPlayerV1( const Params & params )
     : InitSenderPlayer( params,
-                        boost::shared_ptr< rcss::InitSenderCommon >
+                        std::shared_ptr< rcss::InitSenderCommon >
                         ( new InitSenderCommonV1( params.M_transport,
                                                   params.M_serializer,
                                                   params.M_stadium,
@@ -92,7 +92,7 @@ InitSenderPlayerV1::InitSenderPlayerV1( const Params & params )
 }
 
 InitSenderPlayerV1::InitSenderPlayerV1( const Params& params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderPlayer( params, common )
 {
 
@@ -169,7 +169,7 @@ InitSenderPlayerV1::sendChangedPlayers()
 
 InitSenderPlayerV7::InitSenderPlayerV7( const Params & params )
     : InitSenderPlayerV1( params,
-                          boost::shared_ptr< rcss::InitSenderCommon >
+                          std::shared_ptr< rcss::InitSenderCommon >
                           ( new InitSenderCommonV7( params.M_transport,
                                                     params.M_serializer,
                                                     params.M_stadium,
@@ -179,7 +179,7 @@ InitSenderPlayerV7::InitSenderPlayerV7( const Params & params )
 }
 
 InitSenderPlayerV7::InitSenderPlayerV7( const Params & params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderPlayerV1( params, common )
 {
 
@@ -229,7 +229,7 @@ InitSenderPlayerV7::sendChangedPlayers()
 
 InitSenderPlayerV8::InitSenderPlayerV8( const Params & params )
     : InitSenderPlayerV7( params,
-                          boost::shared_ptr< rcss::InitSenderCommon >
+                          std::shared_ptr< rcss::InitSenderCommon >
                           ( new InitSenderCommonV8( params.M_transport,
                                                     params.M_serializer,
                                                     params.M_stadium,
@@ -239,7 +239,7 @@ InitSenderPlayerV8::InitSenderPlayerV8( const Params & params )
 }
 
 InitSenderPlayerV8::InitSenderPlayerV8( const Params& params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderPlayerV7( params, common )
 {
 
