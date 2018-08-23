@@ -185,7 +185,7 @@ protected:
     void add( RuleID rid );
 
     void checkItemsEmpty() const;
-    void setMsg( Msg * msg );
+    void setMsg( std::shared_ptr< Msg > msg );
     void emptyStack();
     void clear();
     void onNoItems() const;

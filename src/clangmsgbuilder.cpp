@@ -807,10 +807,9 @@ MsgBuilder::checkItemsEmpty() const
 
 
 void
-MsgBuilder::setMsg( Msg* msg )
+MsgBuilder::setMsg( std::shared_ptr< Msg > msg )
 {
-    std::shared_ptr< Msg > tmp( msg );
-    M_msg = tmp;
+    M_msg = msg;
     setVer( M_min_ver, M_max_ver );
     checkItemsEmpty();
 }
@@ -899,7 +898,7 @@ void
 MsgBuilder::buildMetaMsg()
 {
     traceBuild< MetaMsg * >();
-    MetaMsg * msg( new MetaMsg() );
+    std::shared_ptr< MetaMsg > msg( new MetaMsg() );
     if ( checkIsItem( META ) )
     {
         while ( isItem( META ) )
@@ -907,6 +906,7 @@ MsgBuilder::buildMetaMsg()
             msg->getTokens().push_front( getMetaToken() );
         }
     }
+
     setMsg( msg );
 }
 
@@ -925,7 +925,7 @@ void
 MsgBuilder::buildDefineMsg()
 {
     traceBuild< DefineMsg * >();
-    DefineMsg* msg = new DefineMsg();
+    std::shared_ptr< DefineMsg > msg( new DefineMsg() );
     if ( checkIsItem( DEF ) )
     {
         while ( isItem( DEF ) )
@@ -1002,7 +1002,8 @@ void
 MsgBuilder::buildFreeformMsg( const std::string & str )
 {
     traceBuild< FreeformMsg * >();
-    setMsg( new FreeformMsg( str ) );
+    std::shared_ptr< Msg > msg( new FreeformMsg( str ) );
+    setMsg( msg );
 }
 
 
@@ -1010,7 +1011,8 @@ void
 MsgBuilder::buildUnsuppMsg()
 {
     traceBuild< UnsuppMsg * >();
-    setMsg( new UnsuppMsg() );
+    std::shared_ptr< Msg > msg( new UnsuppMsg() );
+    setMsg( msg );
 }
 
 
@@ -1018,7 +1020,7 @@ void
 MsgBuilder::buildInfoMsg()
 {
     traceBuild< InfoMsg * >();
-    InfoMsg * msg = new InfoMsg();
+    std::shared_ptr< InfoMsg > msg( new InfoMsg() );
     if ( checkIsItem( TOKEN ) )
     {
         while ( isItem( TOKEN ) )
@@ -1034,7 +1036,7 @@ void
 MsgBuilder::buildAdviceMsg()
 {
     traceBuild< AdviceMsg * >();
-    AdviceMsg* msg = new AdviceMsg();
+    std::shared_ptr< AdviceMsg > msg( new AdviceMsg() );
     if ( checkIsItem( TOKEN ) )
     {
         while ( isItem( TOKEN ) )
@@ -1659,7 +1661,7 @@ void
 MsgBuilder::buildRuleMsg()
 {
     traceBuild< RuleMsg * >();
-    RuleMsg * msg = new RuleMsg();
+    std::shared_ptr< RuleMsg > msg( new RuleMsg() );
     if ( checkIsItem( ACTIVATE ) )
     {
         while ( isItem( ACTIVATE ) )
@@ -1745,7 +1747,7 @@ void
 MsgBuilder::buildDelMsg()
 {
     traceBuild< DelMsg * >();
-    DelMsg * msg = new DelMsg;
+    std::shared_ptr< DelMsg > msg( new DelMsg() );
     if ( isItem( RID ) )
     {
         RuleIDList rids;
