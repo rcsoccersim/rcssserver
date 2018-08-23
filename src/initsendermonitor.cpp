@@ -57,7 +57,7 @@ InitSenderMonitor::factory()
 
 
 InitSenderMonitor::InitSenderMonitor( const Params & params,
-                                      const boost::shared_ptr< InitSenderCommon > common )
+                                      const std::shared_ptr< InitSenderCommon > common )
     : InitSender( params.M_transport, common ),
       M_serializer( params.M_serializer ),
       M_self( params.M_self ),
@@ -81,7 +81,7 @@ InitSenderMonitor::~InitSenderMonitor()
 
 InitSenderMonitorV1::InitSenderMonitorV1( const Params & params )
     : InitSenderMonitor( params,
-                         boost::shared_ptr< InitSenderCommon >
+                         std::shared_ptr< InitSenderCommon >
                          ( new InitSenderCommonV1( params.M_transport,
                                                    params.M_serializer,
                                                    params.M_stadium,
@@ -91,7 +91,7 @@ InitSenderMonitorV1::InitSenderMonitorV1( const Params & params )
 }
 
 InitSenderMonitorV1::InitSenderMonitorV1( const Params & params,
-                                          const boost::shared_ptr< InitSenderCommon > common )
+                                          const std::shared_ptr< InitSenderCommon > common )
     : InitSenderMonitor( params, common )
 {
 
@@ -155,7 +155,7 @@ InitSenderMonitorV1::sendPlayMode()
 
 InitSenderMonitorV2::InitSenderMonitorV2( const Params & params )
     : InitSenderMonitorV1( params,
-                           boost::shared_ptr< InitSenderCommon >
+                           std::shared_ptr< InitSenderCommon >
                            ( new InitSenderCommonV1( params.M_transport,
                                                      params.M_serializer,
                                                      params.M_stadium,
@@ -165,7 +165,7 @@ InitSenderMonitorV2::InitSenderMonitorV2( const Params & params )
 }
 
 InitSenderMonitorV2::InitSenderMonitorV2( const Params & params,
-                                          const boost::shared_ptr< InitSenderCommon > common )
+                                          const std::shared_ptr< InitSenderCommon > common )
     : InitSenderMonitorV1( params, common )
 {
 
@@ -231,7 +231,7 @@ InitSenderMonitorV2::sendPlayerTypes()
 
 InitSenderMonitorV3::InitSenderMonitorV3( const Params & params )
     : InitSenderMonitorV2( params,
-                         boost::shared_ptr< InitSenderCommon >
+                         std::shared_ptr< InitSenderCommon >
                            ( new InitSenderCommonV8( params.M_transport,
                                                      params.M_serializer,
                                                      params.M_stadium,
@@ -242,7 +242,7 @@ InitSenderMonitorV3::InitSenderMonitorV3( const Params & params )
 }
 
 InitSenderMonitorV3::InitSenderMonitorV3( const Params & params,
-                                          const boost::shared_ptr< InitSenderCommon > common )
+                                          const std::shared_ptr< InitSenderCommon > common )
     : InitSenderMonitorV2( params, common )
 {
 

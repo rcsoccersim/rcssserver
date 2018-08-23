@@ -29,7 +29,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Player;
 
@@ -75,18 +75,18 @@ public:
     public:
         std::ostream & M_transport;
         const Player & M_self;
-        const boost::shared_ptr< SerializerPlayer > M_serializer;
+        const std::shared_ptr< SerializerPlayer > M_serializer;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const boost::shared_ptr< SerializerPlayer > ser )
+                const std::shared_ptr< SerializerPlayer > ser )
             : M_transport( transport ),
               M_self( self ),
               M_serializer( ser )
           { }
     };
 
-    typedef std::auto_ptr< BodySenderPlayer > Ptr;
+    typedef std::shared_ptr< BodySenderPlayer > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -112,7 +112,7 @@ protected:
       }
 
 private:
-    const boost::shared_ptr< SerializerPlayer > M_serializer;
+    const std::shared_ptr< SerializerPlayer > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       BodyObserver and BodyObserver should have virtual functions for
@@ -140,23 +140,14 @@ public:
     BodyObserverPlayer()
       { }
 
-    BodyObserverPlayer( BodySenderPlayer & sender )
-        : BaseObserver< BodySenderPlayer >( sender )
-      { }
-
-    BodyObserverPlayer( std::auto_ptr< BodySenderPlayer > sender )
+    BodyObserverPlayer( std::shared_ptr< BodySenderPlayer > sender )
         : BaseObserver< BodySenderPlayer >( sender )
       { }
 
     ~BodyObserverPlayer()
       { }
 
-    void setBodySender( BodySenderPlayer & sender )
-      {
-          BaseObserver< BodySenderPlayer >::setSender( sender );
-      }
-
-    void setBodySender( std::auto_ptr< BodySenderPlayer > sender )
+    void setBodySender( std::shared_ptr< BodySenderPlayer > sender )
       {
           BaseObserver< BodySenderPlayer >::setSender( sender );
       }

@@ -27,7 +27,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Monitor;
 
@@ -46,12 +46,12 @@ public:
     public:
         std::ostream & M_transport;
         const Monitor & M_self;
-        const boost::shared_ptr< SerializerMonitor > M_serializer;
+        const std::shared_ptr< SerializerMonitor > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Monitor & self,
-                const boost::shared_ptr< SerializerMonitor > serializer,
+                const std::shared_ptr< SerializerMonitor > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_self( self ),
@@ -60,13 +60,13 @@ public:
           { }
     };
 
-    typedef std::auto_ptr< InitSenderMonitor > Ptr;
+    typedef std::shared_ptr< InitSenderMonitor > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
 private:
 
-    const boost::shared_ptr< SerializerMonitor > M_serializer;
+    const std::shared_ptr< SerializerMonitor > M_serializer;
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
       stuff like velocity, stamina, etc */
@@ -83,7 +83,7 @@ public:
 protected:
 
     InitSenderMonitor( const Params & params,
-                       const boost::shared_ptr< InitSenderCommon > common );
+                       const std::shared_ptr< InitSenderCommon > common );
 
     const
     SerializerMonitor & serializer() const
@@ -124,19 +124,10 @@ public:
     InitObserverMonitor()
       { }
 
-    InitObserverMonitor( InitSenderMonitor & sender )
-        : BaseObserver< InitSenderMonitor >( sender )
-      { }
-
     ~InitObserverMonitor()
       { }
 
-    void setInitSender( InitSenderMonitor & sender )
-      {
-          BaseObserver< InitSenderMonitor >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderMonitor > sender )
+    void setInitSender( std::shared_ptr< InitSenderMonitor > sender )
       {
           BaseObserver< InitSenderMonitor >::setSender( sender );
       }
@@ -190,7 +181,7 @@ public:
 
 protected:
     InitSenderMonitorV1( const Params & params,
-                         const boost::shared_ptr< InitSenderCommon > common );
+                         const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -230,7 +221,7 @@ public:
 
 protected:
     InitSenderMonitorV2( const Params & params,
-                         const boost::shared_ptr< InitSenderCommon > common );
+                         const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -260,7 +251,7 @@ public:
 
 protected:
     InitSenderMonitorV3( const Params & params,
-                         const boost::shared_ptr< InitSenderCommon > common );
+                         const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual

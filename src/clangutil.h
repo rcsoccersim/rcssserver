@@ -73,9 +73,9 @@ public:
     std::ostream & print( std::ostream & out ) const;
 
 
-    std::auto_ptr< BallMove > deepCopy() const
+    std::shared_ptr< BallMove > deepCopy() const
       {
-          return std::auto_ptr< BallMove >( new BallMove( *this ) );
+          return std::shared_ptr< BallMove >( new BallMove( *this ) );
       }
 private:
     unsigned M_entries;

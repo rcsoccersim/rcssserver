@@ -48,10 +48,11 @@ FreeformMsg::~FreeformMsg()
 
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 FreeformMsg::deepCopy() const
 {
-    return std::auto_ptr< Msg >( new FreeformMsg( *this ) );
+    std::shared_ptr< Msg > rval( new FreeformMsg( *this ) );
+    return rval;
 }
 
 std::ostream &

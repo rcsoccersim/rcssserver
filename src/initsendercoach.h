@@ -27,7 +27,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Coach;
 
@@ -52,12 +52,12 @@ public:
     public:
         std::ostream & M_transport;
         const Coach & M_self;
-        const boost::shared_ptr< SerializerCoach > M_serializer;
+        const std::shared_ptr< SerializerCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Coach & self,
-                const boost::shared_ptr< SerializerCoach > serializer,
+                const std::shared_ptr< SerializerCoach > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_self( self ),
@@ -66,7 +66,7 @@ public:
           { }
     };
 
-    typedef std::auto_ptr< rcss::InitSenderOfflineCoach > Ptr;
+    typedef std::shared_ptr< rcss::InitSenderOfflineCoach > Ptr;
     typedef Ptr (*Creator)( const Params& );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -78,7 +78,7 @@ public:
 
 protected:
     InitSenderOfflineCoach( const Params & params,
-                            const boost::shared_ptr< InitSenderCommon > common );
+                            const std::shared_ptr< InitSenderCommon > common );
 
     const
     SerializerCoach & serializer() const
@@ -99,7 +99,7 @@ protected:
       }
 
 private:
-    const boost::shared_ptr< SerializerCoach > M_serializer;
+    const std::shared_ptr< SerializerCoach > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
@@ -127,23 +127,14 @@ public:
     InitObserverOfflineCoach()
       { }
 
-    InitObserverOfflineCoach( InitSenderOfflineCoach & sender )
-        : BaseObserver< InitSenderOfflineCoach >( sender )
-      { }
-
-    InitObserverOfflineCoach( std::auto_ptr< InitSenderOfflineCoach > sender )
+    InitObserverOfflineCoach( std::shared_ptr< InitSenderOfflineCoach > sender )
         : BaseObserver< InitSenderOfflineCoach >( sender )
       { }
 
     ~InitObserverOfflineCoach()
       { }
 
-    void setInitSender( InitSenderOfflineCoach & sender )
-      {
-          BaseObserver< InitSenderOfflineCoach >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderOfflineCoach > sender )
+    void setInitSender( std::shared_ptr< InitSenderOfflineCoach > sender )
       {
           BaseObserver< InitSenderOfflineCoach >::setSender( sender );
       }
@@ -198,7 +189,7 @@ public:
 
 protected:
     InitSenderOfflineCoachV1( const Params & params,
-                              const boost::shared_ptr< InitSenderCommon > common );
+                              const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -231,7 +222,7 @@ public:
 
 protected:
     InitSenderOfflineCoachV7( const Params & params,
-                              const boost::shared_ptr< InitSenderCommon > common );
+                              const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -256,7 +247,7 @@ public:
 
 protected:
     InitSenderOfflineCoachV8( const Params& params,
-                              const boost::shared_ptr< InitSenderCommon > common );
+                              const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual

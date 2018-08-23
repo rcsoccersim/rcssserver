@@ -81,165 +81,103 @@ traceAdding()
 void
 MsgBuilder::ItemType::clear()
 {
-    switch ( m_type ) {
-    case NONE:
-        break;
-    case META:
-        delete m_item.m_meta_token;
-        break;
-    case ACTION:
-        delete m_item.m_action;
-        break;
-    case DIR:
-        delete m_item.m_dir;
-        break;
-    case COND:
-        delete m_item.m_cond;
-        break;
-    case CONDLIST:
-        delete m_item.m_cond_list;
-        break;
-    case TOKEN:
-        delete m_item.m_token;
-        break;
-    case DEF:
-        delete m_item.m_def;
-        break;
-    case REG:
-        delete m_item.m_region;
-        break;
-    case POINT:
-        delete m_item.m_point;
-        break;
-    case UNUM:
-        delete m_item.m_unum;
-        break;
-    case BMT:
-        break;
-    case UNUMSET:
-        delete m_item.m_unum_set;
-        break;
-    case STR:
-        delete m_item.m_str;
-        break;
-    case RIDLIST:
-        delete m_item.m_rule_id_list;
-        break;
-    case ACTIVATE:
-        delete m_item.m_activate;
-        break;
-    case RULE:
-        delete m_item.m_rule;
-        break;
-    case RID:
-        break;
-    }
+    m_item = boost::any();
 }
 
-std::auto_ptr< MetaToken >
+std::shared_ptr< MetaToken >
 MsgBuilder::getMetaToken()
 {
     traceRemoving< MetaToken >();
-    std::auto_ptr< MetaToken > rval( M_items.top().m_item.m_meta_token );
-    //M_items.top().clear();
+    std::shared_ptr< MetaToken > rval = boost::any_cast< std::shared_ptr< MetaToken > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 MsgBuilder::getAction()
 {
     traceRemoving< Action >();
-    std::auto_ptr< Action > rval( M_items.top().m_item.m_action );
-    //M_items.top().clear();
+    std::shared_ptr< Action > rval = boost::any_cast< std::shared_ptr< Action > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
-std::auto_ptr< Dir >
+std::shared_ptr< Dir >
 MsgBuilder::getDir()
 {
     traceRemoving< Dir >();
-    std::auto_ptr< Dir > rval( M_items.top().m_item.m_dir );
-    //M_items.top().clear();
+    std::shared_ptr< Dir > rval = boost::any_cast< std::shared_ptr< Dir > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< Cond >
+std::shared_ptr< Cond >
 MsgBuilder::getCond()
 {
     traceRemoving< Cond >();
-    std::auto_ptr< Cond > rval( M_items.top().m_item.m_cond );
-    //M_items.top().clear();
+    std::shared_ptr< Cond > rval = boost::any_cast< std::shared_ptr< Cond > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< MsgBuilder::CondList >
+std::shared_ptr< MsgBuilder::CondList >
 MsgBuilder::getCondList()
 {
     traceRemoving< CondList >();
-    std::auto_ptr< CondList > rval( M_items.top().m_item.m_cond_list );
-    //M_items.top().clear();
+    std::shared_ptr< CondList > rval = boost::any_cast< std::shared_ptr< CondList > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< Token >
+std::shared_ptr< Token >
 MsgBuilder::getToken()
 {
     traceRemoving< Token >();
-    std::auto_ptr< Token > rval( M_items.top().m_item.m_token );
-    //M_items.top().clear();
+    std::shared_ptr< Token > rval = boost::any_cast< std::shared_ptr< Token > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< Def >
+std::shared_ptr< Def >
 MsgBuilder::getDef()
 {
     traceRemoving< Def >();
-    std::auto_ptr< Def > rval( M_items.top().m_item.m_def );
-    //M_items.top().clear();
+    std::shared_ptr< Def > rval = boost::any_cast< std::shared_ptr< Def > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 MsgBuilder::getRegion()
 {
     traceRemoving< Region >();
-    std::auto_ptr< Region > rval( M_items.top().m_item.m_region );
-    //M_items.top().clear();
+    std::shared_ptr< Region > rval = boost::any_cast< std::shared_ptr< Region > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< Point >
+std::shared_ptr< Point >
 MsgBuilder::getPoint()
 {
     traceRemoving< Point >();
-    std::auto_ptr< Point > rval( M_items.top().m_item.m_point );
-    //M_items.top().clear();
+    std::shared_ptr< Point > rval = boost::any_cast< std::shared_ptr< Point > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< UNum >
+std::shared_ptr< UNum >
 MsgBuilder::getUNum()
 {
     traceRemoving< UNum >();
-    std::auto_ptr< UNum > rval( M_items.top().m_item.m_unum );
-    //M_items.top().clear();
+    std::shared_ptr< UNum > rval = boost::any_cast< std::shared_ptr< UNum > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -249,73 +187,66 @@ BallMoveToken
 MsgBuilder::getBMT()
 {
     traceRemoving< BallMoveToken >();
-    BallMoveToken rval( M_items.top().m_item.m_bmt );
-    //M_items.top().clear();
+    BallMoveToken rval = boost::any_cast< BallMoveToken >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< UNumSet >
+std::shared_ptr< UNumSet >
 MsgBuilder::getUNumSet()
 {
     traceRemoving< UNumSet >();
-    std::auto_ptr< UNumSet > rval( M_items.top().m_item.m_unum_set );
-    //M_items.top().clear();
+    std::shared_ptr< UNumSet > rval = boost::any_cast< std::shared_ptr< UNumSet > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< std::string >
+std::shared_ptr< std::string >
 MsgBuilder::getStr()
 {
     traceRemoving< std::string >();
-    std::auto_ptr< std::string > rval( M_items.top().m_item.m_str );
-    //M_items.top().clear();
+    std::shared_ptr< std::string > rval = boost::any_cast< std::shared_ptr< std::string > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< RuleIDList >
+std::shared_ptr< RuleIDList >
 MsgBuilder::getRIDList()
 {
     traceRemoving< RuleIDList >();
-    std::auto_ptr< RuleIDList > rval( M_items.top().m_item.m_rule_id_list );
-    //M_items.top().clear();
+    std::shared_ptr< RuleIDList > rval = boost::any_cast< std::shared_ptr< RuleIDList > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< ActivateRules >
+std::shared_ptr< ActivateRules >
 MsgBuilder::getActivateRules()
 {
     traceRemoving< ActivateRules >();
-    std::auto_ptr< ActivateRules > rval( M_items.top().m_item.m_activate );
-    //M_items.top().clear();
+    std::shared_ptr< ActivateRules > rval = boost::any_cast< std::shared_ptr< ActivateRules > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
 
-std::auto_ptr< Rule >
+std::shared_ptr< Rule >
 MsgBuilder::getRule()
 {
     traceRemoving< Rule >();
-    std::auto_ptr< Rule > rval( M_items.top().m_item.m_rule );
-    //M_items.top().clear();
+    std::shared_ptr< Rule > rval = boost::any_cast< std::shared_ptr< Rule > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
 
-std::auto_ptr< RuleID >
+std::shared_ptr< RuleID >
 MsgBuilder::getRID()
 {
     traceRemoving< RuleID >();
-    std::auto_ptr< RuleID > rval( M_items.top().m_item.m_rid );
-    //M_items.top().clear();
+    std::shared_ptr< RuleID > rval = boost::any_cast< std::shared_ptr< RuleID > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -349,7 +280,7 @@ MsgBuilder::checkIsItem( Types type ) const
 }
 
 
-std::auto_ptr< MetaToken >
+std::shared_ptr< MetaToken >
 MsgBuilder::checkAndGetMetaToken()
 {
     if ( checkIsItem( META ) )
@@ -357,11 +288,11 @@ MsgBuilder::checkAndGetMetaToken()
         return getMetaToken();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< MetaToken >();
+    return std::shared_ptr< MetaToken >();
 }
 
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 MsgBuilder::checkAndGetAction()
 {
     if ( checkIsItem( ACTION ) )
@@ -369,10 +300,10 @@ MsgBuilder::checkAndGetAction()
         return getAction();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Action >();
+    return std::shared_ptr< Action >();
 }
 
-std::auto_ptr< Dir >
+std::shared_ptr< Dir >
 MsgBuilder::checkAndGetDir()
 {
     if ( checkIsItem( DIR ) )
@@ -380,11 +311,11 @@ MsgBuilder::checkAndGetDir()
         return getDir();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Dir >();
+    return std::shared_ptr< Dir >();
 }
 
 
-std::auto_ptr< Cond >
+std::shared_ptr< Cond >
 MsgBuilder::checkAndGetCond()
 {
     if ( checkIsItem( COND ) )
@@ -392,11 +323,11 @@ MsgBuilder::checkAndGetCond()
         return getCond();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Cond >();
+    return std::shared_ptr< Cond >();
 }
 
 
-std::auto_ptr< MsgBuilder::CondList >
+std::shared_ptr< MsgBuilder::CondList >
 MsgBuilder::checkAndGetCondList()
 {
     if ( checkIsItem( CONDLIST ) )
@@ -404,11 +335,11 @@ MsgBuilder::checkAndGetCondList()
         return getCondList();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< CondList >( new CondList() );
+    return std::shared_ptr< CondList >( new CondList() );
 }
 
 
-std::auto_ptr< Token >
+std::shared_ptr< Token >
 MsgBuilder::checkAndGetToken()
 {
     if ( checkIsItem( TOKEN ) )
@@ -416,11 +347,11 @@ MsgBuilder::checkAndGetToken()
         return getToken();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Token >();
+    return std::shared_ptr< Token >();
 }
 
 
-std::auto_ptr< Def >
+std::shared_ptr< Def >
 MsgBuilder::checkAndGetDef()
 {
     if ( checkIsItem( DEF ) )
@@ -428,11 +359,11 @@ MsgBuilder::checkAndGetDef()
         return getDef();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Def >();
+    return std::shared_ptr< Def >();
 }
 
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 MsgBuilder::checkAndGetRegion()
 {
     if ( checkIsItem( REG ) )
@@ -440,11 +371,11 @@ MsgBuilder::checkAndGetRegion()
         return getRegion();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Region >();
+    return std::shared_ptr< Region >();
 }
 
 
-std::auto_ptr< Point >
+std::shared_ptr< Point >
 MsgBuilder::checkAndGetPoint()
 {
     if ( checkIsItem( POINT ) )
@@ -452,11 +383,11 @@ MsgBuilder::checkAndGetPoint()
         return getPoint();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Point >();
+    return std::shared_ptr< Point >();
 }
 
 
-std::auto_ptr< UNum >
+std::shared_ptr< UNum >
 MsgBuilder::checkAndGetUNum()
 {
     if ( checkIsItem( UNUM ) )
@@ -464,7 +395,7 @@ MsgBuilder::checkAndGetUNum()
         return getUNum();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< UNum >( new UNum() );
+    return std::shared_ptr< UNum >( new UNum() );
 }
 
 
@@ -480,7 +411,7 @@ MsgBuilder::checkAndGetBMT()
 }
 
 
-std::auto_ptr< UNumSet >
+std::shared_ptr< UNumSet >
 MsgBuilder::checkAndGetUNumSet()
 {
     if ( checkIsItem( UNUMSET ) )
@@ -488,11 +419,11 @@ MsgBuilder::checkAndGetUNumSet()
         return getUNumSet();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< UNumSet >( new UNumSet() );
+    return std::shared_ptr< UNumSet >( new UNumSet() );
 }
 
 
-std::auto_ptr< std::string >
+std::shared_ptr< std::string >
 MsgBuilder::checkAndGetStr()
 {
     if ( checkIsItem( STR ) )
@@ -500,11 +431,11 @@ MsgBuilder::checkAndGetStr()
         return getStr();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< std::string >( new std::string() );
+    return std::shared_ptr< std::string >( new std::string() );
 }
 
 
-std::auto_ptr< RuleIDList >
+std::shared_ptr< RuleIDList >
 MsgBuilder::checkAndGetRIDList()
 {
     if ( checkIsItem( RIDLIST ) )
@@ -512,11 +443,11 @@ MsgBuilder::checkAndGetRIDList()
         return getRIDList();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< RuleIDList >();
+    return std::shared_ptr< RuleIDList >();
 }
 
 
-std::auto_ptr< ActivateRules >
+std::shared_ptr< ActivateRules >
 MsgBuilder::checkAndGetActivateRules()
 {
     if ( checkIsItem( ACTIVATE ) )
@@ -524,11 +455,11 @@ MsgBuilder::checkAndGetActivateRules()
         return getActivateRules();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< ActivateRules >();
+    return std::shared_ptr< ActivateRules >();
 }
 
 
-std::auto_ptr< Rule >
+std::shared_ptr< Rule >
 MsgBuilder::checkAndGetRule()
 {
     if ( checkIsItem( RULE ) )
@@ -536,7 +467,7 @@ MsgBuilder::checkAndGetRule()
         return getRule();
     }
     // no need for error handling as this is done by checkIsItem()
-    return std::auto_ptr< Rule >();
+    return std::shared_ptr< Rule >();
 }
 
 RuleID
@@ -550,148 +481,162 @@ MsgBuilder::checkAndGetRID()
     return RuleID();
 }
 
-void MsgBuilder::add( MetaToken * meta )
+void
+MsgBuilder::add( std::shared_ptr< MetaToken > meta )
 {
     traceAdding< MetaToken >();
     ItemType tmp;
-    tmp.m_item.m_meta_token = meta;
+    tmp.m_item = meta;
     tmp.m_type = META;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Action * action )
+void
+MsgBuilder::add( std::shared_ptr< Action > action )
 {
     traceAdding< Action >();
     ItemType tmp;
-    tmp.m_item.m_action = action;
+    tmp.m_item = action;
     tmp.m_type = ACTION;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Dir * dir )
+void
+MsgBuilder::add( std::shared_ptr< Dir > dir )
 {
     traceAdding< Dir >();
     ItemType tmp;
-    tmp.m_item.m_dir = dir;
+    tmp.m_item = dir;
     tmp.m_type = DIR;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Cond * cond )
+void
+MsgBuilder::add( std::shared_ptr< Cond > cond )
 {
     traceAdding< Cond >();
     ItemType tmp;
-    tmp.m_item.m_cond = cond;
+    tmp.m_item = cond;
     tmp.m_type = COND;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( MsgBuilder::CondList * cond_list )
+void
+MsgBuilder::add( std::shared_ptr< MsgBuilder::CondList > cond_list )
 {
     traceAdding< CondList >();
     ItemType tmp;
-    tmp.m_item.m_cond_list = cond_list;
+    tmp.m_item = cond_list;
     tmp.m_type = CONDLIST;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Token * token )
+void
+MsgBuilder::add( std::shared_ptr< Token > token )
 {
     traceAdding< Token >();
     ItemType tmp;
-    tmp.m_item.m_token = token;
+    tmp.m_item = token;
     tmp.m_type = TOKEN;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Def * def )
+void
+MsgBuilder::add( std::shared_ptr< Def > def )
 {
     traceAdding< Def >();
     ItemType tmp;
-    tmp.m_item.m_def = def;
+    tmp.m_item = def;
     tmp.m_type = DEF;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Region * region )
+void
+MsgBuilder::add( std::shared_ptr< Region > region )
 {
     traceAdding< Region >();
     ItemType tmp;
-    tmp.m_item.m_region = region;
+    tmp.m_item = region;
     tmp.m_type = REG;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( Point * point )
+void
+MsgBuilder::add( std::shared_ptr< Point > point )
 {
     traceAdding< Point >();
     ItemType tmp;
-    tmp.m_item.m_point = point;
+    tmp.m_item = point;
     tmp.m_type = POINT;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( UNum * unum )
+void
+MsgBuilder::add( std::shared_ptr< UNum > unum )
 {
     traceAdding< UNum >();
     ItemType tmp;
-    tmp.m_item.m_unum = unum;
+    tmp.m_item = unum;
     tmp.m_type = UNUM;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( BallMoveToken bmt )
+void
+MsgBuilder::add( BallMoveToken bmt )
 {
     traceAdding< BallMoveToken >();
     ItemType tmp;
-    tmp.m_item.m_bmt = bmt;
+    tmp.m_item = bmt;
     tmp.m_type = BMT;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( UNumSet * unum_set )
+void
+MsgBuilder::add( std::shared_ptr< UNumSet > unum_set )
 {
     traceAdding< UNumSet >();
     ItemType tmp;
-    tmp.m_item.m_unum_set = unum_set;
+    tmp.m_item = unum_set;
     tmp.m_type = UNUMSET;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( std::string * str )
+void
+MsgBuilder::add( std::shared_ptr< std::string > str )
 {
     traceAdding< std::string >();
     ItemType tmp;
-    tmp.m_item.m_str = str;
+    tmp.m_item = str;
     tmp.m_type = STR;
     M_items.push( tmp );
 }
 
-void MsgBuilder::add( RuleIDList * rid_list )
+void
+MsgBuilder::add( std::shared_ptr< RuleIDList > rid_list )
 {
     traceAdding< RuleIDList >();
     ItemType tmp;
-    tmp.m_item.m_rule_id_list = rid_list;
+    tmp.m_item = rid_list;
     tmp.m_type = RIDLIST;
     M_items.push( tmp );
 }
 
 void
-MsgBuilder::add( ActivateRules * act_rules )
+MsgBuilder::add( std::shared_ptr< ActivateRules > act_rules )
 {
     traceAdding< ActivateRules >();
     ItemType tmp;
-    tmp.m_item.m_activate = act_rules;
+    tmp.m_item = act_rules;
     tmp.m_type = ACTIVATE;
     M_items.push( tmp );
 }
 
 void
-MsgBuilder::add( Rule * rule )
+MsgBuilder::add( std::shared_ptr< Rule > rule )
 {
     traceAdding< Rule >();
     ItemType tmp;
-    tmp.m_item.m_rule = rule;
+    tmp.m_item = rule;
     tmp.m_type = RULE;
     M_items.push( tmp );
 }
@@ -701,7 +646,7 @@ MsgBuilder::add( RuleID rid )
 {
     traceAdding< BallMoveToken >();
     ItemType tmp;
-    tmp.m_item.m_rid = new RuleID( rid );
+    tmp.m_item = std::shared_ptr< RuleID >( new RuleID( rid ) );
     tmp.m_type = RID;
     M_items.push( tmp );
 }
@@ -720,7 +665,7 @@ MsgBuilder::emptyStack()
 void
 MsgBuilder::clear()
 {
-    M_msg.release();
+    M_msg.reset();
     M_min_ver = (unsigned int)-1;
     M_max_ver = 0;
 }
@@ -760,24 +705,11 @@ MsgBuilder::~MsgBuilder()
     emptyStack();
 }
 
-Msg*
+std::shared_ptr< Msg >
 MsgBuilder::getMsg()
-{
-    return M_msg.get();
-}
-
-const Msg *
-MsgBuilder::getMsg() const
-{
-    return M_msg.get();
-}
-
-std::auto_ptr< Msg >
-MsgBuilder::detatchMsg()
 {
     return M_msg;
 }
-
 
 void
 MsgBuilder::checkItemsEmpty() const
@@ -790,10 +722,9 @@ MsgBuilder::checkItemsEmpty() const
 
 
 void
-MsgBuilder::setMsg( Msg* msg )
+MsgBuilder::setMsg( std::shared_ptr< Msg > msg )
 {
-    std::auto_ptr< Msg > tmp( msg );
-    M_msg = tmp;
+    M_msg = msg;
     setVer( M_min_ver, M_max_ver );
     checkItemsEmpty();
 }
@@ -802,7 +733,7 @@ MsgBuilder::setMsg( Msg* msg )
 void
 MsgBuilder::setTime( const int & time )
 {
-    if ( M_msg.get() != NULL )
+    if ( M_msg )
     {
         M_msg->setTimeSend( time );
     }
@@ -812,7 +743,7 @@ MsgBuilder::setTime( const int & time )
 void
 MsgBuilder::setSide( const int & side )
 {
-    if ( M_msg.get() != NULL )
+    if ( M_msg )
     {
         M_msg->setSide( side );
     }
@@ -821,7 +752,7 @@ MsgBuilder::setSide( const int & side )
 void
 MsgBuilder::setTimeRecv( const int & time )
 {
-    if ( M_msg.get() != NULL )
+    if ( M_msg )
     {
         M_msg->setTimeRecv( time );
     }
@@ -871,7 +802,7 @@ MsgBuilder::setVer( const unsigned int & min,
         }
     }
 
-    if ( M_msg.get() != NULL )
+    if ( M_msg )
     {
         M_msg->setVer( min, max );
     }
@@ -882,14 +813,15 @@ void
 MsgBuilder::buildMetaMsg()
 {
     traceBuild< MetaMsg * >();
-    MetaMsg * msg( new MetaMsg() );
+    std::shared_ptr< MetaMsg > msg( new MetaMsg() );
     if ( checkIsItem( META ) )
     {
         while ( isItem( META ) )
         {
-            msg->getTokens().push_front( getMetaToken().release() );
+            msg->getTokens().push_front( getMetaToken() );
         }
     }
+
     setMsg( msg );
 }
 
@@ -898,7 +830,8 @@ void
 MsgBuilder::buildMetaTokenVer( const double& ver )
 {
     traceBuild< MetaTokenVer * >();
-    add( new MetaTokenVer( ver ) );
+    std::shared_ptr< MetaTokenVer > ptr( new MetaTokenVer( ver ) );
+    add( ptr );
 }
 
 
@@ -907,12 +840,12 @@ void
 MsgBuilder::buildDefineMsg()
 {
     traceBuild< DefineMsg * >();
-    DefineMsg* msg = new DefineMsg();
+    std::shared_ptr< DefineMsg > msg( new DefineMsg() );
     if ( checkIsItem( DEF ) )
     {
         while ( isItem( DEF ) )
         {
-            msg->getDefs().push_front( getDef().release() );
+            msg->getDefs().push_front( getDef() );
         }
     }
     setMsg( msg );
@@ -929,7 +862,9 @@ MsgBuilder::buildDefineCond( const std::string & name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new DefCond( name, checkAndGetCond() ) );
+
+    std::shared_ptr< DefCond > ptr( new DefCond( name, checkAndGetCond() ) );;
+    add( ptr );
 }
 
 
@@ -942,7 +877,9 @@ MsgBuilder::buildDefineDir( const std::string & name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new DefDir( name, checkAndGetDir() ) );
+
+    std::shared_ptr< DefDir > ptr( new DefDir( name, checkAndGetDir() ) );
+    add( ptr );
 }
 
 
@@ -955,7 +892,9 @@ MsgBuilder::buildDefineReg( const std::string & name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new DefReg( name, checkAndGetRegion() ) );
+
+    std::shared_ptr< DefReg > ptr( new DefReg( name, checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -968,7 +907,9 @@ MsgBuilder::buildDefineAct( const std::string & name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new DefAct( name, checkAndGetAction() ) );
+
+    std::shared_ptr< DefAct > ptr( new DefAct( name, checkAndGetAction() ) );
+    add( ptr );
 }
 
 
@@ -976,7 +917,8 @@ void
 MsgBuilder::buildFreeformMsg( const std::string & str )
 {
     traceBuild< FreeformMsg * >();
-    setMsg( new FreeformMsg( str ) );
+    std::shared_ptr< Msg > msg( new FreeformMsg( str ) );
+    setMsg( msg );
 }
 
 
@@ -984,7 +926,8 @@ void
 MsgBuilder::buildUnsuppMsg()
 {
     traceBuild< UnsuppMsg * >();
-    setMsg( new UnsuppMsg() );
+    std::shared_ptr< Msg > msg( new UnsuppMsg() );
+    setMsg( msg );
 }
 
 
@@ -992,12 +935,12 @@ void
 MsgBuilder::buildInfoMsg()
 {
     traceBuild< InfoMsg * >();
-    InfoMsg * msg = new InfoMsg();
+    std::shared_ptr< InfoMsg > msg( new InfoMsg() );
     if ( checkIsItem( TOKEN ) )
     {
         while ( isItem( TOKEN ) )
         {
-            msg->getTokens().push_front( getToken().release() );
+            msg->getTokens().push_front( getToken() );
         }
     }
     setMsg( msg );
@@ -1008,12 +951,12 @@ void
 MsgBuilder::buildAdviceMsg()
 {
     traceBuild< AdviceMsg * >();
-    AdviceMsg* msg = new AdviceMsg();
+    std::shared_ptr< AdviceMsg > msg( new AdviceMsg() );
     if ( checkIsItem( TOKEN ) )
     {
         while ( isItem( TOKEN ) )
         {
-            msg->getTokens().push_front( getToken().release() );
+            msg->getTokens().push_front( getToken() );
         }
     }
     setMsg( msg );
@@ -1024,15 +967,16 @@ void
 MsgBuilder::buildTokenRule( const int & ttl )
 {
     traceBuild< TokRule * >();
-    TokRule * token = new TokRule( ttl );
+    std::shared_ptr< TokRule > token( new TokRule( ttl ) );
     if ( checkIsItem( DIR ) )
     {
         while ( isItem( DIR ) )
         {
-            token->getDirs().push_front( getDir().release() );
+            token->getDirs().push_front( getDir() );
         }
     }
-    token->set( checkAndGetCond() );
+
+    token->setCond( checkAndGetCond() );
     add( token );
 }
 
@@ -1041,7 +985,9 @@ void
 MsgBuilder::buildTokenClear()
 {
     traceBuild< TokClear * >();
-    add( new TokClear() );
+
+    std::shared_ptr< Token > ptr( new TokClear() );
+    add( ptr );
 }
 
 
@@ -1049,7 +995,9 @@ void
 MsgBuilder::buildActPos()
 {
     traceBuild< ActPos * >();
-    add( new ActPos( checkAndGetRegion() ) );
+
+    std::shared_ptr< Action > ptr( new ActPos( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1057,7 +1005,8 @@ void
 MsgBuilder::buildActHome()
 {
     traceBuild< ActHome * >();
-    add( new ActHome( checkAndGetRegion() ) );
+    std::shared_ptr< Action > ptr( new ActHome( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1071,8 +1020,10 @@ MsgBuilder::buildActBallToReg()
         while( isItem( BMT ) )
             bm.addToken( getBMT() );
     }
-    std::auto_ptr< Region > reg = checkAndGetRegion();
-    add( new ActBallToReg( reg, bm ) );
+
+    std::shared_ptr< Region > reg = checkAndGetRegion();
+    std::shared_ptr< Action > ptr( new ActBallToReg( reg, bm ) );
+    add( ptr );
 }
 
 
@@ -1080,7 +1031,9 @@ void
 MsgBuilder::buildActBallToPlayer()
 {
     traceBuild< ActBallToPlayer * >();
-    add( new ActBallToPlayer( *checkAndGetUNumSet() ) );
+
+    std::shared_ptr< Action > ptr( new ActBallToPlayer( *checkAndGetUNumSet() ) );
+    add( ptr );
 }
 
 
@@ -1088,7 +1041,8 @@ void
 MsgBuilder::buildActMark()
 {
     traceBuild< ActMark * >();
-    add( new ActMark( *checkAndGetUNumSet() ) );
+    std::shared_ptr< Action > ptr( new ActMark( *checkAndGetUNumSet() ) );
+    add( ptr );
 }
 
 
@@ -1096,7 +1050,8 @@ void
 MsgBuilder::buildActMarkLinePlayer()
 {
     traceBuild< ActMarkLinePlayer * >();
-    add( new ActMarkLinePlayer( *checkAndGetUNumSet() ) );
+    std::shared_ptr< Action > ptr( new ActMarkLinePlayer( *checkAndGetUNumSet() ) );
+    add( ptr );
 }
 
 
@@ -1104,7 +1059,8 @@ void
 MsgBuilder::buildActMarkLineReg()
 {
     traceBuild< ActMarkLineReg * >();
-    add( new ActMarkLineReg( checkAndGetRegion() ) );
+    std::shared_ptr< Action > ptr( new ActMarkLineReg( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1112,7 +1068,8 @@ void
 MsgBuilder::buildActOffsideLine()
 {
     traceBuild< ActOffsidesLine * >();
-    add( new ActOffsidesLine( checkAndGetRegion() ) );
+    std::shared_ptr< Action > ptr( new ActOffsidesLine( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1120,7 +1077,8 @@ void
 MsgBuilder::buildActHetType( const int & type )
 {
     traceBuild< ActHetType * >();
-    add( new ActHetType( type ) );
+    std::shared_ptr< Action > ptr( new ActHetType( type ) );
+    add( ptr );
 }
 
 
@@ -1133,7 +1091,9 @@ MsgBuilder::buildActNamed( const std::string & name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new ActNamed( name ) );
+
+    std::shared_ptr< Action > ptr( new ActNamed( name ) );
+    add( ptr );
 }
 
 
@@ -1141,7 +1101,9 @@ void
 MsgBuilder::buildActPassReg()
 {
     traceBuild< ActPassReg * >();
-    add( new ActPassReg( checkAndGetRegion() ) );
+
+    std::shared_ptr< Action > ptr( new ActPassReg( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1149,7 +1111,9 @@ void
 MsgBuilder::buildActPassUNum()
 {
     traceBuild< ActPassUNum * >();
-    add( new ActPassUNum( *checkAndGetUNumSet() ) );
+
+    std::shared_ptr< Action > ptr( new ActPassUNum( *checkAndGetUNumSet() ) );
+    add( ptr );
 }
 
 
@@ -1157,7 +1121,9 @@ void
 MsgBuilder::buildActDribble()
 {
     traceBuild< ActDribble * >();
-    add( new ActDribble( checkAndGetRegion() ) );
+
+    std::shared_ptr< Action > ptr( new ActDribble( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1165,7 +1131,8 @@ void
 MsgBuilder::buildActClear()
 {
     traceBuild< ActClear * >();
-    add( new ActClear( checkAndGetRegion() ) );
+    std::shared_ptr< Action > ptr( new ActClear( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1173,7 +1140,8 @@ void
 MsgBuilder::buildActShoot()
 {
     traceBuild< ActShoot * >();
-    add( new ActShoot() );
+    std::shared_ptr< Action > ptr( new ActShoot() );
+    add( ptr );
 }
 
 
@@ -1181,7 +1149,8 @@ void
 MsgBuilder::buildActHold()
 {
     traceBuild< ActHold * >();
-    add( new ActHold() );
+    std::shared_ptr< Action > ptr( new ActHold() );
+    add( ptr );
 }
 
 
@@ -1189,7 +1158,8 @@ void
 MsgBuilder::buildActIntercept()
 {
     traceBuild< ActIntercept * >();
-    add( new ActIntercept() );
+    std::shared_ptr< Action > ptr( new ActIntercept() );
+    add( ptr );
 }
 
 
@@ -1197,7 +1167,8 @@ void
 MsgBuilder::buildActTackle()
 {
     traceBuild< ActTackle * >();
-    add( new ActTackle( *checkAndGetUNumSet() ) );
+    std::shared_ptr< Action > ptr( new ActTackle( *checkAndGetUNumSet() ) );
+    add( ptr);
 }
 
 
@@ -1205,8 +1176,8 @@ void
 MsgBuilder::buildDirComm( const bool& do_dont, const bool& our_side )
 {
     traceBuild< DirComm * >();
-    DirComm* dir = new DirComm( do_dont, our_side, UNumSet(),
-                                std::list< Action* >() );
+    std::shared_ptr< DirComm > dir( new DirComm( do_dont, our_side, UNumSet(),
+                                                 DirComm::Storage() ) );
     if ( checkIsItem( ACTION ) )
     {
         while ( isItem( ACTION ) )
@@ -1214,6 +1185,7 @@ MsgBuilder::buildDirComm( const bool& do_dont, const bool& our_side )
             dir->add( getAction() );
         }
     }
+
     dir->set( *checkAndGetUNumSet() );
     add( dir );
 }
@@ -1228,7 +1200,9 @@ MsgBuilder::buildDirNamed( const std::string& name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new DirNamed( name ) );
+
+    std::shared_ptr< Dir > ptr( new DirNamed( name ) );
+    add( ptr );
 }
 
 
@@ -1236,7 +1210,8 @@ void
 MsgBuilder::buildCondTrue()
 {
     traceBuild< CondBool * >();
-    add( new CondBool( true ) );
+    std::shared_ptr< Cond > ptr( new CondBool( true ) );
+    add( ptr );
 }
 
 
@@ -1244,7 +1219,8 @@ void
 MsgBuilder::buildCondFalse()
 {
     traceBuild< CondBool * >();
-    add( new CondBool( false ) );
+    std::shared_ptr< Cond > ptr( new CondBool( false ) );
+    add( ptr );
 }
 
 
@@ -1254,9 +1230,11 @@ MsgBuilder::buildCondPlayerPos( const bool & our_side,
                                 const int & max )
 {
     traceBuild< CondPlayerPos * >();
-    std::auto_ptr< Region > reg = checkAndGetRegion();
+    std::shared_ptr< Region > reg = checkAndGetRegion();
     UNumSet unums = *checkAndGetUNumSet();
-    add( new CondPlayerPos( our_side, unums, min, max, reg ) );
+
+    std::shared_ptr< Cond > ptr( new CondPlayerPos( our_side, unums, min, max, reg ) );
+    add( ptr );
 }
 
 
@@ -1264,7 +1242,9 @@ void
 MsgBuilder::buildCondBallPos()
 {
     traceBuild< CondBallPos * >();
-    add( new CondBallPos( checkAndGetRegion() ) );
+
+    std::shared_ptr< Cond > ptr( new CondBallPos( checkAndGetRegion() ) );
+    add( ptr );
 }
 
 
@@ -1272,7 +1252,10 @@ void
 MsgBuilder::buildCondBallOwner( const bool & our_side )
 {
     traceBuild< CondBallOwner * >();
-    add( new CondBallOwner( our_side, *checkAndGetUNumSet() ) );
+
+    std::shared_ptr< UNumSet > unumset = checkAndGetUNumSet();
+    std::shared_ptr< Cond > ptr( new CondBallOwner( our_side, *unumset ) );
+    add( ptr );
 }
 
 
@@ -1280,7 +1263,9 @@ void
 MsgBuilder::buildCondPlayMode( const PlayMode & play_mode )
 {
     traceBuild< CondPlayMode * >();
-    add( new CondPlayMode( play_mode ) );
+
+    std::shared_ptr< Cond > ptr( new CondPlayMode( play_mode ) );
+    add( ptr );
 }
 
 
@@ -1288,9 +1273,9 @@ void
 MsgBuilder::buildCondAnd()
 {
     traceBuild< CondAnd * >();
-    CondList l = *checkAndGetCondList();
-    std::auto_ptr< CondAnd > cond( new CondAnd( l ) );
-    add( cond.release() );
+    std::shared_ptr< CondList > l = checkAndGetCondList();
+    std::shared_ptr< Cond > cond( new CondAnd( *l ) );
+    add( cond );
 }
 
 
@@ -1298,9 +1283,9 @@ void
 MsgBuilder::buildCondOr()
 {
     traceBuild< CondOr * >();
-    CondList l = *checkAndGetCondList();
-    std::auto_ptr< CondOr > cond( new CondOr( l ) );
-    add( cond.release() );
+    std::shared_ptr< CondList > l = checkAndGetCondList();
+    std::shared_ptr< Cond > cond( new CondOr( *l ) );
+    add( cond );
 }
 
 
@@ -1308,7 +1293,8 @@ void
 MsgBuilder::buildCondNot()
 {
     traceBuild< CondNot * >();
-    add( new CondNot( checkAndGetCond() ) );
+    std::shared_ptr< Cond > cond( new CondNot( checkAndGetCond() ) );
+    add( cond );
 }
 
 
@@ -1321,7 +1307,9 @@ MsgBuilder::buildCondNamed( const std::string & name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new CondNamed( name ) );
+
+    std::shared_ptr< Cond > cond( new CondNamed( name ) );
+    add( cond );
 }
 
 
@@ -1330,7 +1318,8 @@ MsgBuilder::buildCondTime( const int & time,
                            const util::CompOp & comp )
 {
     traceBuild< CondTime * >();
-    add( new CondTime( time, comp ) );
+    std::shared_ptr< Cond > cond( new CondTime( time, comp ) );
+    add( cond );
 }
 
 
@@ -1339,7 +1328,8 @@ MsgBuilder::buildCondOppGoal( const int & goals,
                               const util::CompOp & comp )
 {
     traceBuild< CondOppGoal * >();
-    add( new CondOppGoal( goals, comp ) );
+    std::shared_ptr< Cond > cond( new CondOppGoal( goals, comp ) );
+    add( cond );
 }
 
 
@@ -1348,7 +1338,8 @@ MsgBuilder::buildCondOurGoal( const int & goals,
                               const util::CompOp & comp )
 {
     traceBuild< CondOurGoal * >();
-    add( new CondOurGoal( goals, comp ) );
+    std::shared_ptr< Cond > cond( new CondOurGoal( goals, comp ) );
+    add( cond );
 }
 
 
@@ -1357,7 +1348,8 @@ MsgBuilder::buildCondGoalDiff( const int & goals,
                                const util::CompOp & comp )
 {
     traceBuild< CondGoalDiff * >();
-    add( new CondGoalDiff( goals, comp ) );
+    std::shared_ptr< Cond > cond( new CondGoalDiff( goals, comp ) );
+    add( cond );
 }
 
 
@@ -1365,7 +1357,9 @@ void
 MsgBuilder::buildCondUNum( const rcss::clang::UNum & unum )
 {
     traceBuild< CondUNum * >();
-    add( new CondUNum( unum, *checkAndGetUNumSet() ) );
+    std::shared_ptr< UNumSet > unumset = checkAndGetUNumSet();
+    std::shared_ptr< Cond > ptr( new CondUNum( unum, *unumset ) );
+    add( ptr );
 }
 
 
@@ -1373,9 +1367,9 @@ void
 MsgBuilder::buildAddToCondList()
 {
     traceBuild< std::list< Cond * > >();
-    std::auto_ptr< Cond > c = checkAndGetCond();
-    CondList * l = checkAndGetCondList().release();
-    l->push_back( c.release() );
+    std::shared_ptr< Cond > c = checkAndGetCond();
+    std::shared_ptr< CondList > l = checkAndGetCondList();
+    l->push_back( c );
     add( l );
 }
 
@@ -1383,16 +1377,17 @@ void
 MsgBuilder::buildCreateCondList()
 {
     traceBuild< std::list< Cond * > >();
-    std::auto_ptr< Cond > c = checkAndGetCond();
-    CondList * l = new CondList();
-    l->push_back( c.release() );
+    std::shared_ptr< Cond > c = checkAndGetCond();
+    std::shared_ptr< CondList > l( new CondList() );
+    l->push_back( c );
     add( l );
 }
 void
 MsgBuilder::buildRegNull()
 {
     traceBuild< RegNull * >();
-    add( new RegNull() );
+    std::shared_ptr< Region > reg( new RegNull() );
+    add( reg );
 }
 
 
@@ -1400,11 +1395,13 @@ void
 MsgBuilder::buildRegQuad()
 {
     traceBuild< RegQuad * >();
-    std::auto_ptr< Point > p4 = checkAndGetPoint();
-    std::auto_ptr< Point > p3 = checkAndGetPoint();
-    std::auto_ptr< Point > p2 = checkAndGetPoint();
-    std::auto_ptr< Point > p1 = checkAndGetPoint();
-    add( new RegQuad( p1, p2, p3, p4 ) );
+    std::shared_ptr< Point > p4 = checkAndGetPoint();
+    std::shared_ptr< Point > p3 = checkAndGetPoint();
+    std::shared_ptr< Point > p2 = checkAndGetPoint();
+    std::shared_ptr< Point > p1 = checkAndGetPoint();
+
+    std::shared_ptr< Region > reg( new RegQuad( p1, p2, p3, p4 ) );
+    add( reg );
 }
 
 
@@ -1415,9 +1412,10 @@ MsgBuilder::buildRegArc( const double & start_rad,
                          const double & span_ang )
 {
     traceBuild< RegArc * >();
-    add( new RegArc( checkAndGetPoint(),
-                     start_rad, end_rad,
-                     start_ang, span_ang ) );
+    std::shared_ptr< Region > reg( new RegArc( checkAndGetPoint(),
+                                               start_rad, end_rad,
+                                               start_ang, span_ang ) );
+    add( reg );
 }
 
 
@@ -1425,15 +1423,16 @@ void
 MsgBuilder::buildRegUnion()
 {
     traceBuild< RegUnion * >();
-    std::auto_ptr< RegUnion > reg( new RegUnion() );
+    std::shared_ptr< RegUnion > reg( new RegUnion() );
     if ( checkIsItem( REG ) )
     {
         while ( isItem( REG ) )
         {
-            reg->getRegions().push_front( getRegion().release() );
+            std::shared_ptr< Region > r = getRegion();
+            reg->getRegions().push_front( r );
         }
     }
-    add( reg.release() );
+    add( reg );
 }
 
 
@@ -1446,7 +1445,9 @@ MsgBuilder::buildRegNamed( const std::string & name )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new RegNamed( name ) );
+
+    std::shared_ptr< Region > reg( new RegNamed( name ) );
+    add( reg );
 }
 
 
@@ -1454,7 +1455,8 @@ void
 MsgBuilder::buildRegPoint()
 {
     traceBuild< RegPoint * >();
-    add( new RegPoint( checkAndGetPoint() ) );
+    std::shared_ptr< Region > reg( new RegPoint( checkAndGetPoint() ) );
+    add( reg );
 }
 
 
@@ -1462,10 +1464,12 @@ void
 MsgBuilder::buildRegTri()
 {
     traceBuild< RegTri * >();
-    std::auto_ptr< Point > p3 = checkAndGetPoint();
-    std::auto_ptr< Point > p2 = checkAndGetPoint();
-    std::auto_ptr< Point > p1 = checkAndGetPoint();
-    add( new RegTri( p1, p2, p3 ) );
+    std::shared_ptr< Point > p3 = checkAndGetPoint();
+    std::shared_ptr< Point > p2 = checkAndGetPoint();
+    std::shared_ptr< Point > p1 = checkAndGetPoint();
+
+    std::shared_ptr< Region > reg( new RegTri( p1, p2, p3 ) );
+    add( reg );
 }
 
 
@@ -1473,9 +1477,11 @@ void
 MsgBuilder::buildRegRec()
 {
     traceBuild< RegRec * >();
-    std::auto_ptr< Point > p2 = checkAndGetPoint();
-    std::auto_ptr< Point > p1 = checkAndGetPoint();
-    add( new RegRec( p1, p2 ) );
+    std::shared_ptr< Point > p2 = checkAndGetPoint();
+    std::shared_ptr< Point > p1 = checkAndGetPoint();
+
+    std::shared_ptr< Region > reg( new RegRec( p1, p2 ) );
+    add( reg );
 }
 
 
@@ -1484,7 +1490,8 @@ MsgBuilder::buildPointSimple( const double & x,
                               const double & y )
 {
     traceBuild< PointSimple * >();
-    add( new PointSimple( x, y ) );
+    std::shared_ptr< Point > p( new PointSimple( x, y ) );
+    add( p );
 }
 
 
@@ -1493,7 +1500,8 @@ MsgBuilder::buildPointRel( const double & x,
                            const double & y )
 {
     traceBuild< PointRel * >();
-    add( new PointRel( x, y, checkAndGetPoint() ) );
+    std::shared_ptr< Point > p( new PointRel( x, y, checkAndGetPoint() ) );
+    add( p );
 }
 
 
@@ -1501,7 +1509,8 @@ void
 MsgBuilder::buildPointBall()
 {
     traceBuild< PointBall * >();
-    add( new PointBall() );
+    std::shared_ptr< Point > p( new PointBall() );
+    add( p );
 }
 
 
@@ -1510,7 +1519,8 @@ MsgBuilder::buildPointPlayer( const bool & our_side,
                               const UNum & unum )
 {
     traceBuild< PointPlayer * >();
-    add( new PointPlayer( our_side, unum ) );
+    std::shared_ptr< Point > p( new PointPlayer( our_side, unum ) );
+    add( p );
 }
 
 
@@ -1520,9 +1530,11 @@ MsgBuilder::buildPointArith( const rcss::util::ArithOp & arith_op )
     traceBuild< PointArith * >();
     // we need to make sure ordering is maintained, otherwise you could end
     // up with 'b / a', when 'a / b' was what was actually sent.
-    std::auto_ptr< Point > second = checkAndGetPoint();
-    std::auto_ptr< Point > first = checkAndGetPoint();
-    add( new PointArith( first, second, arith_op ) );
+    std::shared_ptr< Point > second = checkAndGetPoint();
+    std::shared_ptr< Point > first = checkAndGetPoint();
+
+    std::shared_ptr< Point > p( new PointArith( first, second, arith_op ) );
+    add ( p );
 }
 
 
@@ -1530,7 +1542,8 @@ void
 MsgBuilder::buildUNum( const UNum & unum )
 {
     traceBuild< UNum * >();
-    add( new UNum( unum ) );
+    std::shared_ptr< UNum > u( new UNum( unum ) );
+    add( u );
 }
 
 
@@ -1538,15 +1551,16 @@ void
 MsgBuilder::buildUNumSet()
 {
     traceBuild< UNumSet >();
-    UNumSet unums;
+    std::shared_ptr< UNumSet > unums( new UNumSet() );
     if( checkIsItem( UNUM ) )
     {
         while ( isItem( UNUM ) )
         {
-            unums.add( *getUNum() );
+            std::shared_ptr< UNum > u = getUNum();
+            unums->add( *u );
         }
     }
-    add( new UNumSet( unums ) );
+    add( unums );
 }
 
 
@@ -1562,7 +1576,7 @@ void
 MsgBuilder::buildRuleMsg()
 {
     traceBuild< RuleMsg * >();
-    RuleMsg * msg = new RuleMsg();
+    std::shared_ptr< RuleMsg > msg( new RuleMsg() );
     if ( checkIsItem( ACTIVATE ) )
     {
         while ( isItem( ACTIVATE ) )
@@ -1578,7 +1592,8 @@ void
 MsgBuilder::buildActivateAllRules( const bool & on )
 {
     traceBuild< ActivateRules >();
-    add( new ActivateRules( on, RuleIDList() ) );
+    std::shared_ptr< ActivateRules > ptr( new ActivateRules( on, RuleIDList() ) );
+    add( ptr );
 }
 
 
@@ -1586,7 +1601,7 @@ void
 MsgBuilder::buildActivateRules( const bool & on )
 {
     traceBuild< ActivateRules >();
-    ActivateRules * act = new ActivateRules( on, RuleIDList() );
+    std::shared_ptr< ActivateRules > act( new ActivateRules( on, RuleIDList() ) );
     if ( isItem( RID ) )
     {
         RuleIDList rids;
@@ -1618,17 +1633,19 @@ void
 MsgBuilder::buildRuleIDList()
 {
     traceBuild< RuleIDList >();
-    RuleIDList rids;
+    std::shared_ptr< RuleIDList > rids( new RuleIDList() );
     if ( checkIsItem( RID ) )
     {
         while ( isItem( RID ) )
         {
-            rids.push_front( *getRID() );
+            std::shared_ptr< RuleID > r = getRID();
+            rids->push_front( *r );
         }
         // by adding the items to the front, the original order is
         // maintained.
     }
-    add( new RuleIDList( rids ) );
+
+    add( rids );
 }
 
 
@@ -1636,7 +1653,8 @@ void
 MsgBuilder::buildRuleIDListALL()
 {
     traceBuild< RuleIDList >();
-    add( new RuleIDList() ); // an empty list == all rules.
+    std::shared_ptr< RuleIDList > rids( new RuleIDList() );
+    add( rids ); // an empty list == all rules.
 }
 
 
@@ -1644,7 +1662,7 @@ void
 MsgBuilder::buildDelMsg()
 {
     traceBuild< DelMsg * >();
-    DelMsg * msg = new DelMsg;
+    std::shared_ptr< DelMsg > msg( new DelMsg() );
     if ( isItem( RID ) )
     {
         RuleIDList rids;
@@ -1668,7 +1686,9 @@ MsgBuilder::buildDefineModelRule( const std::string & id )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new DefRule( id, checkAndGetRule(), true ) );
+
+    std::shared_ptr< Def > def( new DefRule( id, checkAndGetRule(), true ) );
+    add( def );
 }
 
 
@@ -1681,7 +1701,9 @@ MsgBuilder::buildDefineDirectiveRule( const std::string & id )
         throw BuilderErr( __FILE__, __LINE__,
                           "Over the max string size." );
     }
-    add( new DefRule( id, checkAndGetRule(), false ) );
+
+    std::shared_ptr< Def > def( new DefRule( id, checkAndGetRule(), false ) );
+    add( def );
 }
 
 
@@ -1694,11 +1716,13 @@ MsgBuilder::buildSimpleRule()
     {
         do
         {
-            dirs.push_front( getDir().release() );
+            dirs.push_front( getDir() );
         }
         while( isItem( DIR ) );
     }
-    add( new SimpleRule( checkAndGetCond(), dirs ) );
+
+    std::shared_ptr< Rule > rule( new SimpleRule( checkAndGetCond(), dirs ) );
+    add( rule );
 }
 
 
@@ -1711,11 +1735,14 @@ MsgBuilder::buildNestedRule()
     {
         do
         {
-            rules.push_front( getRule().release() );
+            std::shared_ptr< Rule > r = getRule();
+            rules.push_front( r );
         }
         while ( isItem( RULE ) );
     }
-    add( new NestedRule( checkAndGetCond(), rules ) );
+
+    std::shared_ptr< Rule > rule( new NestedRule( checkAndGetCond(), rules ) );
+    add( rule );
 }
 
 
@@ -1723,7 +1750,9 @@ void
 MsgBuilder::buildIDRule()
 {
     traceBuild< IDListRule * >();
-    add( new IDListRule( *checkAndGetRIDList() ) );
+    std::shared_ptr< RuleIDList > rids = checkAndGetRIDList();
+    std::shared_ptr< Rule > rule( new IDListRule( *rids ) );
+    add( rule );
 }
 
 }

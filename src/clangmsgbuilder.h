@@ -23,6 +23,9 @@
 #define CLANGMSGBUILDER_H
 
 #include "clangbuilder.h"
+
+#include <boost/any.hpp>
+
 #include <stack>
 #include <memory>
 #include <list>
@@ -58,14 +61,14 @@ class MsgBuilder
     : public Builder
 {
 private:
-    std::auto_ptr< Msg > M_msg;
+    std::shared_ptr< Msg > M_msg;
     unsigned int M_min_ver;
     unsigned int M_max_ver;
     unsigned int M_str_var_size;
     unsigned int M_freeform_msg_size;
 
 public:
-    typedef std::list< Cond* > CondList;
+    typedef std::list< std::shared_ptr< Cond > > CondList;
     enum Types {
         NONE,
         META,
@@ -100,92 +103,70 @@ protected:
 
         void clear();
 
-
-        union Items
-        {
-            MetaToken* m_meta_token;
-            Action* m_action;
-            Dir* m_dir;
-            Cond* m_cond;
-            CondList* m_cond_list;
-            Token* m_token;
-            Def* m_def;
-            Region* m_region;
-            Point* m_point;
-            UNum* m_unum;
-            BallMoveToken m_bmt;
-            UNumSet* m_unum_set;
-            std::string* m_str;
-            RuleIDList* m_rule_id_list;
-            ActivateRules* m_activate;
-            Rule* m_rule;
-            RuleID* m_rid;
-        };
-
         Types m_type;
-        Items m_item;
+        boost::any m_item;
     };
 
     std::stack< ItemType > M_items;
 
-    std::auto_ptr< MetaToken > getMetaToken();
-    std::auto_ptr< Action > getAction();
-    std::auto_ptr< Dir > getDir();
-    std::auto_ptr< Cond > getCond();
-    std::auto_ptr< CondList > getCondList();
-    std::auto_ptr< Token > getToken();
-    std::auto_ptr< Def > getDef();
-    std::auto_ptr< Region > getRegion();
-    std::auto_ptr< Point > getPoint();
-    std::auto_ptr< UNum > getUNum();
+    std::shared_ptr< MetaToken > getMetaToken();
+    std::shared_ptr< Action > getAction();
+    std::shared_ptr< Dir > getDir();
+    std::shared_ptr< Cond > getCond();
+    std::shared_ptr< CondList > getCondList();
+    std::shared_ptr< Token > getToken();
+    std::shared_ptr< Def > getDef();
+    std::shared_ptr< Region > getRegion();
+    std::shared_ptr< Point > getPoint();
+    std::shared_ptr< UNum > getUNum();
     BallMoveToken getBMT();
-    std::auto_ptr< UNumSet > getUNumSet();
-    std::auto_ptr< std::string > getStr();
-    std::auto_ptr< RuleIDList > getRIDList();
-    std::auto_ptr< ActivateRules > getActivateRules();
-    std::auto_ptr< Rule > getRule();
-    std::auto_ptr< RuleID > getRID();
+    std::shared_ptr< UNumSet > getUNumSet();
+    std::shared_ptr< std::string > getStr();
+    std::shared_ptr< RuleIDList > getRIDList();
+    std::shared_ptr< ActivateRules > getActivateRules();
+    std::shared_ptr< Rule > getRule();
+    std::shared_ptr< RuleID > getRID();
     bool isItem( Types type ) const;
     bool checkIsItem( Types type ) const;
 
-    std::auto_ptr< MetaToken > checkAndGetMetaToken();
-    std::auto_ptr< Action > checkAndGetAction();
-    std::auto_ptr< Dir > checkAndGetDir();
-    std::auto_ptr< Cond > checkAndGetCond();
-    std::auto_ptr< CondList > checkAndGetCondList();
-    std::auto_ptr< Token > checkAndGetToken();
-    std::auto_ptr< Def > checkAndGetDef();
-    std::auto_ptr< Region > checkAndGetRegion();
-    std::auto_ptr< Point > checkAndGetPoint();
-    std::auto_ptr< UNum > checkAndGetUNum();
+    std::shared_ptr< MetaToken > checkAndGetMetaToken();
+    std::shared_ptr< Action > checkAndGetAction();
+    std::shared_ptr< Dir > checkAndGetDir();
+    std::shared_ptr< Cond > checkAndGetCond();
+    std::shared_ptr< CondList > checkAndGetCondList();
+    std::shared_ptr< Token > checkAndGetToken();
+    std::shared_ptr< Def > checkAndGetDef();
+    std::shared_ptr< Region > checkAndGetRegion();
+    std::shared_ptr< Point > checkAndGetPoint();
+    std::shared_ptr< UNum > checkAndGetUNum();
     BallMoveToken checkAndGetBMT();
-    std::auto_ptr< UNumSet > checkAndGetUNumSet();
-    std::auto_ptr< std::string > checkAndGetStr();
-    std::auto_ptr< RuleIDList > checkAndGetRIDList();
-    std::auto_ptr< ActivateRules > checkAndGetActivateRules();
-    std::auto_ptr< Rule > checkAndGetRule();
+    std::shared_ptr< UNumSet > checkAndGetUNumSet();
+    std::shared_ptr< std::string > checkAndGetStr();
+    std::shared_ptr< RuleIDList > checkAndGetRIDList();
+    std::shared_ptr< ActivateRules > checkAndGetActivateRules();
+    std::shared_ptr< Rule > checkAndGetRule();
     RuleID checkAndGetRID();
 
-    void add( MetaToken * meta );
-    void add( Action * action );
-    void add( Dir * dir );
-    void add( Cond * cond );
-    void add( CondList * cond_list );
-    void add( Token * token );
-    void add( Def * def );
-    void add( Region * region );
-    void add( Point * point );
-    void add( UNum * unum );
+    void add( std::shared_ptr< MetaToken > meta );
+    void add( std::shared_ptr< Action > action );
+    void add( std::shared_ptr< Dir > dir );
+    void add( std::shared_ptr< Cond > cond );
+    void add( std::shared_ptr< CondList > cond_list );
+    void add( std::shared_ptr< Token > token );
+    void add( std::shared_ptr< Def > def );
+    void add( std::shared_ptr< Region > region );
+    void add( std::shared_ptr< Point > point );
+    void add( std::shared_ptr< UNum > unum );
     void add( BallMoveToken bmt );
-    void add( UNumSet * unum_set );
-    void add( std::string * str );
-    void add( RuleIDList * rid_list );
-    void add( ActivateRules * act_rules );
-    void add( Rule * rule );
+    void add( std::shared_ptr< UNumSet > unum_set );
+    void add( std::shared_ptr< std::string > str );
+    void add( std::shared_ptr< RuleIDList > rid_list );
+    void add( std::shared_ptr< ActivateRules > act_rules );
+    void add( std::shared_ptr< Rule > rule );
     void add( RuleID rid );
 
     void checkItemsEmpty() const;
-    void setMsg( Msg * msg );
+    void setMsg( std::shared_ptr< Msg > msg );
     void emptyStack();
     void clear();
     void onNoItems() const;
@@ -198,11 +179,8 @@ public:
     virtual
     ~MsgBuilder();
 
-    Msg * getMsg();
-
-    const Msg * getMsg() const;
-
-    std::auto_ptr< Msg > detatchMsg();
+    std::shared_ptr< Msg > getMsg();
+    void resetMsg();
 
     virtual
     void setVer( const unsigned int & min,

@@ -55,10 +55,11 @@ MetaTokenVer::~MetaTokenVer()
 
 }
 
-std::auto_ptr< MetaToken >
+std::shared_ptr< MetaToken >
 MetaTokenVer::deepCopy() const
 {
-    return std::auto_ptr< MetaToken >( new MetaTokenVer( *this ) );
+    std::shared_ptr< MetaToken > rval( new MetaTokenVer( *this ) );
+    return rval;
 }
 
 std::ostream &
@@ -92,16 +93,16 @@ MetaMsg::MetaMsg( const Storage & tokens )
 
 MetaMsg::~MetaMsg()
 {
-	for ( Storage::const_iterator i = M_tokens.begin();
-          i != M_tokens.end();
-          ++i )
-	{
-	    delete *i;
-	}
+	// for ( Storage::const_iterator i = M_tokens.begin();
+    //       i != M_tokens.end();
+    //       ++i )
+	// {
+	//     delete *i;
+	// }
 	M_tokens.clear();
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 MetaMsg::deepCopy() const
 {
 	Storage new_tokens;
@@ -109,9 +110,11 @@ MetaMsg::deepCopy() const
           i != M_tokens.end();
           ++i )
 	{
-	    new_tokens.push_back( (*i)->deepCopy().release() );
+	    new_tokens.push_back( (*i)->deepCopy() );
 	}
-	return std::auto_ptr< Msg >( new MetaMsg( new_tokens ) );
+
+	std::shared_ptr< Msg > rval( new MetaMsg( new_tokens ) );
+    return rval;
 }
 
 std::ostream &

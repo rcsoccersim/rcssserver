@@ -44,25 +44,21 @@ AdviceMsg::AdviceMsg( const Storage & tokens )
 
 AdviceMsg::~AdviceMsg()
 {
-    for ( Storage::iterator i = M_tokens.begin();
-          i != M_tokens.end();
-          ++i )
-	{
-	    delete *i;
-	}
 	M_tokens.clear();
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 AdviceMsg::deepCopy() const
 {
 	Storage new_tokens;
 	for( Storage::const_iterator i = M_tokens.begin();
 	     i != M_tokens.end(); ++i )
 	{
-	    new_tokens.push_back( (*i)->deepCopy().release() );
+	    new_tokens.push_back( (*i)->deepCopy() );
 	}
-	return std::auto_ptr< Msg >( new AdviceMsg( new_tokens ) );
+
+	std::shared_ptr< Msg > rval( new AdviceMsg( new_tokens ) );
+    return rval;
 }
 
 //     void

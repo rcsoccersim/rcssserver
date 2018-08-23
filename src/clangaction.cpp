@@ -182,7 +182,7 @@ ActPos::ActPos()
 
 }
 
-ActPos::ActPos( std::auto_ptr< Region > r )
+ActPos::ActPos( std::shared_ptr< Region > r )
 	: Action(),
       m_reg( r )
 {
@@ -194,15 +194,17 @@ ActPos::~ActPos()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActPos::deepCopy() const
 {
-	std::auto_ptr< Region > new_reg;
-    if ( m_reg.get() != NULL )
+	std::shared_ptr< Region > new_reg;
+    if ( m_reg )
     {
 	    new_reg = m_reg->deepCopy();
     }
-	return std::auto_ptr< Action >( new ActPos( new_reg ) );
+
+	std::shared_ptr< Action > rval( new ActPos( new_reg ) );
+    return rval;
 }
 
 //     void
@@ -258,7 +260,7 @@ ActHome::ActHome()
 
 }
 
-ActHome::ActHome( std::auto_ptr< Region > r )
+ActHome::ActHome( std::shared_ptr< Region > r )
     : Action(),
       m_reg( r )
 {
@@ -270,15 +272,17 @@ ActHome::~ActHome()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActHome::deepCopy() const
 {
-	std::auto_ptr< Region > new_reg;
-    if ( m_reg.get() != NULL )
+	std::shared_ptr< Region > new_reg;
+    if ( m_reg )
     {
 	    new_reg = m_reg->deepCopy();
     }
-	return std::auto_ptr< Action >( new ActHome( new_reg ) );
+
+	std::shared_ptr< Action > rval( new ActHome( new_reg ) );
+    return rval;
 }
 
 //     void
@@ -334,7 +338,7 @@ ActBallToReg::ActBallToReg()
 
 }
 
-ActBallToReg::ActBallToReg( std::auto_ptr< Region > reg,
+ActBallToReg::ActBallToReg( std::shared_ptr< Region > reg,
                             const BallMove & bmtset )
     : Action(),
       m_reg( reg ),
@@ -348,15 +352,17 @@ ActBallToReg::~ActBallToReg()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActBallToReg::deepCopy() const
 {
-	std::auto_ptr< Region > new_reg;
+	std::shared_ptr< Region > new_reg;
     if ( m_reg.get() != NULL )
     {
 	    new_reg = m_reg->deepCopy();
     }
-	return std::auto_ptr< Action >( new ActBallToReg( new_reg, m_bmtset ) );
+
+	std::shared_ptr< Action > rval( new ActBallToReg( new_reg, m_bmtset ) );
+    return rval;
 }
 
 //     void
@@ -449,10 +455,11 @@ ActBallToPlayer::~ActBallToPlayer()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActBallToPlayer::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActBallToPlayer( *this ) );
+    std::shared_ptr< Action > rval( new ActBallToPlayer( *this ) );
+    return rval;
 }
 
 //     void
@@ -525,10 +532,11 @@ ActMark::~ActMark()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActMark::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActMark( *this ) );
+    std::shared_ptr< Action > rval( new ActMark( *this ) );
+    return rval;
 }
 
 //     void
@@ -603,10 +611,11 @@ ActMarkLinePlayer::~ActMarkLinePlayer()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActMarkLinePlayer::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActMarkLinePlayer( *this ) );
+    std::shared_ptr< Action > rval( new ActMarkLinePlayer( *this ) );
+    return rval;
 }
 
 //     void
@@ -670,7 +679,7 @@ ActMarkLineReg::ActMarkLineReg()
 
 }
 
-ActMarkLineReg::ActMarkLineReg( std::auto_ptr< Region > reg )
+ActMarkLineReg::ActMarkLineReg( std::shared_ptr< Region > reg )
     : Action(),
       m_reg( reg )
 {
@@ -718,23 +727,26 @@ ActMarkLineReg::getRegion() const
     return m_reg.get();
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 ActMarkLineReg::detachRegion()
 {
     return m_reg;
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActMarkLineReg::deepCopy() const
 {
+    std::shared_ptr< Action > rval;
     if ( getRegion() )
     {
-        return std::auto_ptr< Action >( new ActMarkLineReg( getRegion()->deepCopy() ) );
+        rval = std::shared_ptr< Action >( new ActMarkLineReg( getRegion()->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Action >( new ActMarkLineReg() );
+        rval = std::shared_ptr< Action >( new ActMarkLineReg() );
     }
+
+    return rval;
 }
 
 
@@ -744,7 +756,7 @@ ActOffsidesLine::ActOffsidesLine()
 
 }
 
-ActOffsidesLine::ActOffsidesLine( std::auto_ptr< Region > r )
+ActOffsidesLine::ActOffsidesLine( std::shared_ptr< Region > r )
     : Action(),
       m_reg( r )
 {
@@ -756,24 +768,27 @@ ActOffsidesLine::~ActOffsidesLine()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActOffsidesLine::deepCopy() const
 {
+    std::shared_ptr< Action > rval;
     if ( getRegion() )
     {
-        return std::auto_ptr< Action >( new ActOffsidesLine( getRegion()->deepCopy() ) );
+        rval = std::shared_ptr< Action >( new ActOffsidesLine( getRegion()->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Action >( new ActOffsidesLine() );
+        rval = std::shared_ptr< Action >( new ActOffsidesLine() );
     }
+
+    return rval;
 }
 
 std::ostream &
 ActOffsidesLine::print( std::ostream & out ) const
 {
     out << "(oline ";
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << "(null)";
     }
@@ -789,7 +804,7 @@ ActOffsidesLine::printPretty( std::ostream & out,
                               const std::string & line_header ) const
 {
     out << line_header << "offsides line at: " << std::endl;
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << line_header << " (null)\n";
     }
@@ -807,7 +822,7 @@ ActOffsidesLine::getRegion() const
     return m_reg.get();
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 ActOffsidesLine::detachRegion()
 {
     return m_reg;
@@ -833,10 +848,11 @@ ActHetType::~ActHetType()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActHetType::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActHetType( *this ) );
+    std::shared_ptr< Action > rval( new ActHetType( *this ) );
+    return rval;
 }
 
 std::ostream &
@@ -878,10 +894,11 @@ ActNamed::~ActNamed()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActNamed::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActNamed( *this ) );
+    std::shared_ptr< Action > rval( new ActNamed( *this ) );
+    return rval;
 }
 
 std::ostream &
@@ -924,7 +941,7 @@ ActPassReg::ActPassReg()
 
 }
 
-ActPassReg::ActPassReg( std::auto_ptr< Region > reg )
+ActPassReg::ActPassReg( std::shared_ptr< Region > reg )
     : Action(),
       m_reg( reg )
 {
@@ -936,17 +953,20 @@ ActPassReg::~ActPassReg()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActPassReg::deepCopy() const
 {
+    std::shared_ptr< Action > rval;
     if ( getRegion() )
     {
-        return std::auto_ptr< Action >( new ActPassReg( getRegion()->deepCopy() ) );
+        rval = std::shared_ptr< Action >( new ActPassReg( getRegion()->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Action >( new ActPassReg() );
+        rval = std::shared_ptr< Action >( new ActPassReg() );
     }
+
+    return rval;
 }
 
 std::ostream &
@@ -987,7 +1007,7 @@ ActPassReg::getRegion() const
     return m_reg.get();
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 ActPassReg::detachRegion()
 {
     return m_reg;
@@ -1012,10 +1032,11 @@ ActPassUNum::~ActPassUNum()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActPassUNum::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActPassUNum( *this ) );
+    std::shared_ptr< Action > rval( new ActPassUNum( *this ) );
+    return rval;
 }
 
 std::ostream &
@@ -1065,7 +1086,7 @@ ActDribble::ActDribble()
 
 }
 
-ActDribble::ActDribble( std::auto_ptr< Region > reg )
+ActDribble::ActDribble( std::shared_ptr< Region > reg )
     : Action(),
       m_reg( reg )
 {
@@ -1077,17 +1098,20 @@ ActDribble::~ActDribble()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActDribble::deepCopy() const
 {
+    std::shared_ptr< Action > rval;
     if ( getRegion() )
     {
-        return std::auto_ptr< Action >( new ActDribble( getRegion()->deepCopy() ) );
+        rval = std::shared_ptr< Action >( new ActDribble( getRegion()->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Action >( new ActDribble() );
+        rval = std::shared_ptr< Action >( new ActDribble() );
     }
+
+    return rval;
 }
 
 std::ostream &
@@ -1128,7 +1152,7 @@ ActDribble::getRegion() const
     return m_reg.get();
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 ActDribble::detachRegion()
 {
     return m_reg;
@@ -1141,7 +1165,7 @@ ActClear::ActClear()
 
 }
 
-ActClear::ActClear( std::auto_ptr< Region > reg )
+ActClear::ActClear( std::shared_ptr< Region > reg )
     : Action(),
       m_reg( reg )
 {
@@ -1153,17 +1177,20 @@ ActClear::~ActClear()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActClear::deepCopy() const
 {
+    std::shared_ptr< Action > rval;
     if ( getRegion() )
     {
-        return std::auto_ptr< Action >( new ActClear( getRegion()->deepCopy() ) );
+        rval = std::shared_ptr< Action >( new ActClear( getRegion()->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Action >( new ActClear() );
+        rval = std::shared_ptr< Action >( new ActClear() );
     }
+
+    return rval;
 }
 
 std::ostream &
@@ -1204,7 +1231,7 @@ ActClear::getRegion() const
     return m_reg.get();
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 ActClear::detachRegion()
 {
     return m_reg;
@@ -1222,10 +1249,11 @@ ActShoot::~ActShoot()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActShoot::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActShoot( *this ) );
+    std::shared_ptr< Action > rval( new ActShoot( *this ) );
+    return rval;
 }
 
 std::ostream &
@@ -1253,10 +1281,11 @@ ActHold::~ActHold()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActHold::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActHold( *this ) );
+    std::shared_ptr< Action > rval( new ActHold( *this ) );
+    return rval;
 }
 
 std::ostream &
@@ -1284,10 +1313,11 @@ ActIntercept::~ActIntercept()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActIntercept::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActIntercept( *this ) );
+    std::shared_ptr< Action > rval( new ActIntercept( *this ) );
+    return rval;
 }
 
 std::ostream &
@@ -1322,10 +1352,11 @@ ActTackle::~ActTackle()
 
 }
 
-std::auto_ptr< Action >
+std::shared_ptr< Action >
 ActTackle::deepCopy() const
 {
-    return std::auto_ptr< Action >( new ActTackle( *this ) );
+    std::shared_ptr< Action > rval( new ActTackle( *this ) );
+    return rval;
 }
 
 std::ostream &

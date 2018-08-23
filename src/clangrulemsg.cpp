@@ -49,10 +49,11 @@ RuleMsg::~RuleMsg()
 
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 RuleMsg::deepCopy() const
 {
-	return std::auto_ptr< Msg >( new RuleMsg( *this ) );
+	std::shared_ptr< Msg > rval( new RuleMsg( *this ) );
+    return rval;
 }
 
 std::ostream &

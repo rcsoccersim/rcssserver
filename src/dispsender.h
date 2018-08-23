@@ -28,7 +28,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Stadium;
 class Logger;
@@ -80,12 +80,12 @@ public:
     public:
         std::ostream & M_transport;
         const Monitor & M_self;
-        const boost::shared_ptr< SerializerMonitor > M_serializer;
+        const std::shared_ptr< SerializerMonitor > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Monitor & self,
-                const boost::shared_ptr< SerializerMonitor > serializer,
+                const std::shared_ptr< SerializerMonitor > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -96,7 +96,7 @@ public:
 
 
 private:
-    const boost::shared_ptr< SerializerMonitor > M_serializer;
+    const std::shared_ptr< SerializerMonitor > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
@@ -105,7 +105,7 @@ private:
     const Stadium & M_stadium;
 
 public:
-    typedef std::auto_ptr< DispSenderMonitor > Ptr;
+    typedef std::shared_ptr< DispSenderMonitor > Ptr;
     typedef Ptr (*Creator)( const DispSenderMonitor::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -149,23 +149,14 @@ public:
     ObserverMonitor()
       { }
 
-    ObserverMonitor( DispSenderMonitor & sender )
-        : BaseObserver< DispSenderMonitor >( sender )
-      { }
-
-    ObserverMonitor( std::auto_ptr< DispSenderMonitor > sender )
+    ObserverMonitor( std::shared_ptr< DispSenderMonitor > sender )
         : BaseObserver< DispSenderMonitor >( sender )
       { }
 
     ~ObserverMonitor()
       { }
 
-    void setDispSender( DispSenderMonitor & sender )
-      {
-          BaseObserver< DispSenderMonitor >::setSender( sender );
-      }
-
-    void setDispSender( std::auto_ptr< DispSenderMonitor > sender )
+    void setDispSender( std::shared_ptr< DispSenderMonitor > sender )
       {
           BaseObserver< DispSenderMonitor >::setSender( sender );
       }
@@ -309,12 +300,12 @@ public:
     public:
         std::ostream & M_transport;
         const Logger & M_self;
-        const boost::shared_ptr< SerializerMonitor > M_serializer;
+        const std::shared_ptr< SerializerMonitor > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Logger & self,
-                const boost::shared_ptr< SerializerMonitor > serializer,
+                const std::shared_ptr< SerializerMonitor > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_self( self ),
@@ -324,7 +315,7 @@ public:
     };
 
 private:
-    const boost::shared_ptr< SerializerMonitor > M_serializer;
+    const std::shared_ptr< SerializerMonitor > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
@@ -333,7 +324,7 @@ private:
     const Stadium & M_stadium;
 
 public:
-    typedef std::auto_ptr< DispSenderLogger > Ptr;
+    typedef std::shared_ptr< DispSenderLogger > Ptr;
     typedef Ptr (*Creator)( const DispSenderLogger::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -377,23 +368,14 @@ public:
     ObserverLogger()
       { }
 
-    ObserverLogger( DispSenderLogger & sender )
-        : BaseObserver< DispSenderLogger >( sender )
-      { }
-
-    ObserverLogger( std::auto_ptr< DispSenderLogger > sender )
+    ObserverLogger( std::shared_ptr< DispSenderLogger > sender )
         : BaseObserver< DispSenderLogger >( sender )
       { }
 
     ~ObserverLogger()
       { }
 
-    void setDispSender( DispSenderLogger & sender )
-      {
-          BaseObserver< DispSenderLogger >::setSender( sender );
-      }
-
-    void setDispSender( std::auto_ptr< DispSenderLogger > sender )
+    void setDispSender( std::shared_ptr< DispSenderLogger > sender )
       {
           BaseObserver< DispSenderLogger >::setSender( sender );
       }

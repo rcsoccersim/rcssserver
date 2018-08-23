@@ -64,25 +64,37 @@ CondBool::printPretty( std::ostream & out,
 }
 
 
-std::auto_ptr< Cond >
+std::shared_ptr< Cond >
+CondBool::deepCopy() const
+{
+    std::shared_ptr< Cond > ptr(  new CondBool( *this ) );
+    return ptr;
+}
+
+
+std::shared_ptr< Cond >
 CondPlayerPos::deepCopy() const
 {
-    if ( M_reg.get() != NULL )
+    std::shared_ptr< Cond > ptr;
+
+    if ( M_reg )
     {
-        return std::auto_ptr< Cond >( new CondPlayerPos( M_our_side,
-                                                         M_players,
-                                                         M_min_match,
-                                                         M_max_match,
-                                                         M_reg->deepCopy() ) );
+        ptr = std::shared_ptr< Cond >( new CondPlayerPos( M_our_side,
+                                                          M_players,
+                                                          M_min_match,
+                                                          M_max_match,
+                                                          M_reg->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Cond >( new CondPlayerPos( M_our_side,
-                                                         M_players,
-                                                         M_min_match,
-                                                         M_max_match,
-                                                         std::auto_ptr< Region >() ) );
+        ptr = std::shared_ptr< Cond >( new CondPlayerPos( M_our_side,
+                                                          M_players,
+                                                          M_min_match,
+                                                          M_max_match,
+                                                          std::shared_ptr< Region >() ) );
     }
+
+    return ptr;
 }
 
 
@@ -160,17 +172,21 @@ CondBallPos::printPretty( std::ostream & out,
     return out;
 }
 
-std::auto_ptr< Cond >
+std::shared_ptr< Cond >
 CondBallPos::deepCopy() const
 {
+    std::shared_ptr< Cond > ptr;
+
     if ( getRegion() )
     {
-        return std::auto_ptr< Cond >( new CondBallPos( M_reg->deepCopy() ) );
+        ptr = std::shared_ptr< Cond >( new CondBallPos( M_reg->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Cond >( new CondBallPos() );
+        ptr = std::shared_ptr< Cond >( new CondBallPos() );
     }
+
+    return ptr;
 }
 
 
@@ -212,16 +228,10 @@ CondPlayMode::printPretty( std::ostream & out,
 
 CondAnd::~CondAnd()
 {
-    for ( Storage::iterator i = M_conds.begin();
-          i != M_conds.end();
-          ++i )
-    {
-        delete *i;
-    }
     M_conds.clear();
 }
 
-std::auto_ptr< Cond >
+std::shared_ptr< Cond >
 CondAnd::deepCopy() const
 {
     Storage new_conds;
@@ -229,9 +239,11 @@ CondAnd::deepCopy() const
           i != M_conds.end();
           ++i )
     {
-        new_conds.push_back( (*i)->deepCopy().release() );
+        new_conds.push_back( (*i)->deepCopy() );
     }
-    return std::auto_ptr< Cond >( new CondAnd( new_conds ) );
+
+    std::shared_ptr< Cond > rval( new CondAnd( new_conds ) );
+    return rval;
 }
 
 std::ostream &
@@ -242,13 +254,13 @@ CondAnd::print( std::ostream & out ) const
           iter != getConds().end();
           ++iter )
     {
-        if ( *iter == NULL )
+        if ( *iter )
         {
-            out << " (null)";
+            out << " " << **iter;
         }
         else
         {
-            out << " " << **iter;
+            out << " (null)";
         }
     }
     return out << ")";
@@ -263,13 +275,13 @@ CondAnd::printPretty( std::ostream & out,
           iter != getConds().end();
           ++iter )
     {
-        if ( *iter == NULL )
+        if ( *iter )
         {
-            out << line_header << " +(null)\n";
+            (*iter)->printPretty( out, line_header + " +" );
         }
         else
         {
-            (*iter)->printPretty( out, line_header + " +" );
+            out << line_header << " +(null)\n";
         }
     }
     return out;
@@ -282,7 +294,7 @@ CondAnd::eval( const Context & context ) const
           iter != getConds().end();
           ++iter )
     {
-        if ( *iter == NULL )
+        if ( ! *iter )
         {
             throw util::NullErr( __FILE__, __LINE__,
                                  "Null condition in CondAnd\n" );
@@ -299,16 +311,10 @@ CondAnd::eval( const Context & context ) const
 
 CondOr::~CondOr()
 {
-    for ( Storage::iterator i = M_conds.begin();
-          i != M_conds.end();
-          ++i )
-    {
-        delete *i;
-    }
     M_conds.clear();
 }
 
-std::auto_ptr< Cond >
+std::shared_ptr< Cond >
 CondOr::deepCopy() const
 {
     Storage new_conds;
@@ -316,9 +322,11 @@ CondOr::deepCopy() const
           i != M_conds.end();
           ++i )
     {
-        new_conds.push_back( (*i)->deepCopy().release() );
+        new_conds.push_back( (*i)->deepCopy() );
     }
-    return std::auto_ptr< Cond >( new CondOr( new_conds ) );
+
+    std::shared_ptr< Cond > ptr( new CondOr( new_conds ) );
+    return ptr;
 }
 
 std::ostream &
@@ -328,25 +336,35 @@ CondOr::print( std::ostream & out ) const
     for( Storage::const_iterator iter = getConds().begin();
          iter != getConds().end(); ++iter)
     {
-        if( *iter == NULL )
-            out << " (null)";
-        else
+        if ( *iter )
+        {
             out << " " << **iter;
+        }
+        else
+        {
+            out << " (null)";
+        }
     }
     return out << ")";
 }
 
 std::ostream&
-CondOr::printPretty( std::ostream& out, const std::string& line_header ) const
+CondOr::printPretty( std::ostream& out,
+                     const std::string& line_header ) const
 {
     out << line_header << "or" << std::endl;
     for( Storage::const_iterator iter = getConds().begin();
          iter != getConds().end(); ++iter )
     {
-        if( *iter == NULL )
-            out << line_header << " +(null)\n";
-        else
+        if ( *iter )
+        {
             (*iter)->printPretty( out, line_header + " +" );
+        }
+        else
+        {
+            out << line_header << " +(null)\n";
+        }
+
     }
     return out;
 }
@@ -358,7 +376,7 @@ CondOr::eval( const Context & context ) const
           iter != getConds().end();
           ++iter )
     {
-        if ( *iter == NULL )
+        if ( ! *iter )
         {
             throw util::NullErr( __FILE__, __LINE__,
                                  "Null condition in CondOr\n" );
@@ -373,30 +391,34 @@ CondOr::eval( const Context & context ) const
 }
 
 
-std::auto_ptr< Cond >
+std::shared_ptr< Cond >
 CondNot::deepCopy() const
 {
-    if ( M_cond.get() != NULL )
+    std::shared_ptr< Cond > ptr;
+
+    if ( M_cond )
     {
-        return std::auto_ptr< Cond >( new CondNot( M_cond->deepCopy() ) );
+        ptr = std::shared_ptr< Cond >( new CondNot( M_cond->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Cond >( new CondNot() );
+        ptr = std::shared_ptr< Cond >( new CondNot() );
     }
+
+    return ptr;
 }
 
 std::ostream &
 CondNot::print( std::ostream & out ) const
 {
     out << "(not ";
-    if ( getCond() == NULL )
+    if ( ! M_cond )
     {
         out << "(null)\n";
     }
     else
     {
-        out << *getCond();
+        out << *M_cond;
     }
     return out << ")";
 }
@@ -406,13 +428,13 @@ CondNot::printPretty( std::ostream & out,
                       const std::string & line_header ) const
 {
     out << line_header << "not " << std::endl;
-    if ( getCond() == NULL )
+    if ( ! M_cond  )
     {
         out << line_header << " (null)\n";
     }
     else
     {
-        getCond()->printPretty( out, line_header + " +" );
+        M_cond->printPretty( out, line_header + " +" );
     }
     return out;
 }
@@ -420,14 +442,14 @@ CondNot::printPretty( std::ostream & out,
 bool
 CondNot::eval( const Context & context ) const
 {
-    if ( getCond() == NULL )
+    if ( ! M_cond )
     {
         throw util::NullErr( __FILE__, __LINE__,
                              "Null condition in CondNot\n" );
     }
     else
     {
-        return ! ( getCond()->eval( context ) );
+        return ! ( M_cond->eval( context ) );
     }
 }
 

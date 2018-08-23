@@ -31,7 +31,7 @@ namespace clang {
 class InfoMsg
     : public Msg {
 public:
-    typedef std::list< Token * > Storage;
+    typedef std::list< std::shared_ptr< Token > > Storage;
 
     InfoMsg();
 private:
@@ -42,7 +42,7 @@ public:
     ~InfoMsg();
 
     virtual
-    std::auto_ptr< Msg > deepCopy() const;
+    std::shared_ptr< Msg > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;

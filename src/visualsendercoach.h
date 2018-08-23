@@ -30,7 +30,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Stadium;
 class Player;
@@ -58,12 +58,12 @@ public:
     public:
         std::ostream & M_transport;
         const Coach & M_self;
-        const boost::shared_ptr< SerializerCoach > M_serializer;
+        const std::shared_ptr< SerializerCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Coach & self,
-                const boost::shared_ptr< SerializerCoach > serializer,
+                const std::shared_ptr< SerializerCoach > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_self( self ),
@@ -73,7 +73,7 @@ public:
     };
 
 public:
-    typedef std::auto_ptr< VisualSenderCoach > Ptr;
+    typedef std::shared_ptr< VisualSenderCoach > Ptr;
     typedef Ptr (*Creator)( const VisualSenderCoach::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -113,7 +113,7 @@ public:
 
 private:
 
-    const boost::shared_ptr< SerializerCoach > M_serializer;
+    const std::shared_ptr< SerializerCoach > M_serializer;
 
     const Coach & M_self;
     const Stadium & M_stadium;
@@ -137,23 +137,14 @@ public:
     ObserverCoach()
       { }
 
-    ObserverCoach( VisualSenderCoach & sender )
-        : BaseObserver< VisualSenderCoach >( sender )
-      { }
-
-    ObserverCoach( std::auto_ptr< VisualSenderCoach > sender )
+    ObserverCoach( std::shared_ptr< VisualSenderCoach > sender )
         : BaseObserver< VisualSenderCoach >( sender )
       { }
 
     ~ObserverCoach()
       {}
 
-    void setVisualSender( VisualSenderCoach & sender )
-      {
-          BaseObserver< VisualSenderCoach >::setSender( sender );
-      }
-
-    void setVisualSender( std::auto_ptr< VisualSenderCoach > sender )
+    void setVisualSender( std::shared_ptr< VisualSenderCoach > sender )
       {
           BaseObserver< VisualSenderCoach >::setSender( sender );
       }

@@ -61,7 +61,7 @@ InitSenderLogger::factory()
 
 
 InitSenderLogger::InitSenderLogger( const Params & params,
-                                    const boost::shared_ptr< InitSenderCommon > common )
+                                    const std::shared_ptr< InitSenderCommon > common )
     : InitSender( params.M_transport, common ),
       M_serializer( params.M_serializer ),
       M_self( params.M_self ),
@@ -85,7 +85,7 @@ InitSenderLogger::~InitSenderLogger()
 
 InitSenderLoggerV1::InitSenderLoggerV1( const Params & params )
     : InitSenderLogger( params,
-                        boost::shared_ptr< InitSenderCommon >
+                        std::shared_ptr< InitSenderCommon >
                         ( new InitSenderCommonV1( params.M_transport,
                                                   params.M_serializer,
                                                   params.M_stadium,
@@ -95,7 +95,7 @@ InitSenderLoggerV1::InitSenderLoggerV1( const Params & params )
 }
 
 InitSenderLoggerV1::InitSenderLoggerV1( const Params & params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderLogger( params, common )
 {
 
@@ -153,7 +153,7 @@ InitSenderLoggerV1::sendTeam()
 
 InitSenderLoggerV2::InitSenderLoggerV2( const Params & params )
     : InitSenderLoggerV1( params,
-                          boost::shared_ptr< InitSenderCommon >
+                          std::shared_ptr< InitSenderCommon >
                           ( new InitSenderCommonV1( params.M_transport,
                                                     params.M_serializer,
                                                     params.M_stadium,
@@ -163,7 +163,7 @@ InitSenderLoggerV2::InitSenderLoggerV2( const Params & params )
 }
 
 InitSenderLoggerV2::InitSenderLoggerV2( const Params & params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderLoggerV1( params, common )
 {
 
@@ -226,7 +226,7 @@ InitSenderLoggerV2::sendTeam()
 
 InitSenderLoggerV3::InitSenderLoggerV3( const Params & params )
     : InitSenderLoggerV2( params,
-                          boost::shared_ptr< InitSenderCommon >
+                          std::shared_ptr< InitSenderCommon >
                           ( new InitSenderCommonV1( params.M_transport,
                                                     params.M_serializer,
                                                     params.M_stadium,
@@ -236,7 +236,7 @@ InitSenderLoggerV3::InitSenderLoggerV3( const Params & params )
 }
 
 InitSenderLoggerV3::InitSenderLoggerV3( const Params & params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderLoggerV2( params, common )
 {
 
@@ -348,7 +348,7 @@ InitSenderLoggerV3::sendTeam()
 
 InitSenderLoggerV4::InitSenderLoggerV4( const Params & params )
     : InitSenderLoggerV3( params,
-                          boost::shared_ptr< InitSenderCommon >
+                          std::shared_ptr< InitSenderCommon >
                           ( new InitSenderCommonV8( params.M_transport,
                                                     params.M_serializer,
                                                     params.M_stadium,
@@ -360,7 +360,7 @@ InitSenderLoggerV4::InitSenderLoggerV4( const Params & params )
 }
 
 InitSenderLoggerV4::InitSenderLoggerV4( const Params & params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderLoggerV3( params, common )
 {
 
@@ -426,7 +426,7 @@ InitSenderLoggerV4::sendTeam()
 
 InitSenderLoggerV5::InitSenderLoggerV5( const Params & params )
     : InitSenderLoggerV4( params,
-                          boost::shared_ptr< InitSenderCommon >
+                          std::shared_ptr< InitSenderCommon >
                           ( new InitSenderCommonV8( params.M_transport,
                                                     params.M_serializer,
                                                     params.M_stadium,
@@ -438,7 +438,7 @@ InitSenderLoggerV5::InitSenderLoggerV5( const Params & params )
 }
 
 InitSenderLoggerV5::InitSenderLoggerV5( const Params & params,
-                                        const boost::shared_ptr< InitSenderCommon > common )
+                                        const std::shared_ptr< InitSenderCommon > common )
     : InitSenderLoggerV4( params, common )
 {
 

@@ -26,8 +26,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
-
+#include <memory>
 #include <iostream>
 
 class Ball;
@@ -45,7 +44,7 @@ class Msg;
 
 class SerializerCommon {
 public:
-    typedef boost::shared_ptr< SerializerCommon > Ptr;
+    typedef std::shared_ptr< SerializerCommon > Ptr;
     typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -262,7 +261,7 @@ public:
 class SerializerPlayer
     : public Serializer {
 public:
-    typedef boost::shared_ptr< SerializerPlayer > Ptr;
+    typedef std::shared_ptr< SerializerPlayer > Ptr;
     typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -734,7 +733,7 @@ public:
 class SerializerCoach
     : public Serializer {
 public:
-    typedef boost::shared_ptr< SerializerCoach > Ptr;
+    typedef std::shared_ptr< SerializerCoach > Ptr;
     typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -873,7 +872,7 @@ public:
 class SerializerOnlineCoach
     : public Serializer {
 public:
-    typedef boost::shared_ptr< SerializerOnlineCoach > Ptr;
+    typedef std::shared_ptr< SerializerOnlineCoach > Ptr;
     typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -1065,7 +1064,7 @@ public:
 class SerializerMonitor
     : public Serializer {
 public:
-    typedef boost::shared_ptr< SerializerMonitor > Ptr;
+    typedef std::shared_ptr< SerializerMonitor > Ptr;
     typedef const Ptr (*Creator)();
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -1155,7 +1154,7 @@ public:
                                const Side,
                                const unsigned int,
                                const unsigned int,
-                               const XPMHolder * ) const
+                               const XPMHolder & ) const
       { }
 };
 

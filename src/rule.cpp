@@ -194,7 +194,7 @@ Rule::~Rule()
 }
 
 
-CondRule::CondRule( std::auto_ptr< Cond > cond )
+CondRule::CondRule( std::shared_ptr< Cond > cond )
     : M_cond( cond )
 {
 
@@ -205,29 +205,13 @@ CondRule::~CondRule()
 
 }
 
-const
-Cond *
-CondRule::getCond() const
-{
-    return M_cond.get();
-}
-
-std::auto_ptr< Cond >
-CondRule::detachCond()
-{
-    return M_cond;
-}
-
-
-
-
-SimpleRule::SimpleRule( std::auto_ptr< Cond > cond )
+SimpleRule::SimpleRule( std::shared_ptr< Cond > cond )
     : CondRule( cond )
 {
 
 }
 
-SimpleRule::SimpleRule( std::auto_ptr< Cond > cond,
+SimpleRule::SimpleRule( std::shared_ptr< Cond > cond,
                         const Storage & dirs )
     : CondRule( cond ),
       M_dirs( dirs )
@@ -237,12 +221,6 @@ SimpleRule::SimpleRule( std::auto_ptr< Cond > cond,
 
 SimpleRule::~SimpleRule()
 {
-	for ( Storage::iterator i = M_dirs.begin();
-          i != M_dirs.end();
-          ++i )
-    {
-	    delete *i;
-    }
 	M_dirs.clear();
 }
 
@@ -286,12 +264,12 @@ SimpleRule::printPretty( std::ostream & out,
           i != getDirs().end();
           ++i )
     {
-        out << (*i)->printPretty( out, lineheader + " -" );
+        (*i)->printPretty( out, lineheader + " -" );
     }
     return out;
 }
 
-std::auto_ptr< Rule >
+std::shared_ptr< Rule >
 SimpleRule::deepCopy() const
 {
 	Storage new_dirs;
@@ -299,9 +277,11 @@ SimpleRule::deepCopy() const
           i != getDirs().end();
           ++i )
     {
-	    new_dirs.push_back( (*i)->deepCopy().release() );
+	    new_dirs.push_back( (*i)->deepCopy() );
     }
-	return std::auto_ptr< Rule >( ( Rule* )new SimpleRule( getCond()->deepCopy(), new_dirs ) );
+
+	std::shared_ptr< Rule > rval( new SimpleRule( getCond()->deepCopy(), new_dirs ) );
+    return rval;
 }
 
 
@@ -314,13 +294,13 @@ SimpleRule::getDirs() const
 
 
 
-NestedRule::NestedRule( std::auto_ptr< Cond > cond )
+NestedRule::NestedRule( std::shared_ptr< Cond > cond )
     : CondRule( cond )
 {
 
 }
 
-NestedRule::NestedRule( std::auto_ptr< Cond > cond,
+NestedRule::NestedRule( std::shared_ptr< Cond > cond,
                         const Storage & rules )
     : CondRule( cond ),
       M_rules( rules )
@@ -330,12 +310,6 @@ NestedRule::NestedRule( std::auto_ptr< Cond > cond,
 
 NestedRule::~NestedRule()
 {
-	for ( Storage::iterator i = M_rules.begin();
-          i != M_rules.end();
-          ++i )
-    {
-	    delete *i;
-    }
 	M_rules.clear();
 }
 
@@ -380,12 +354,12 @@ NestedRule::printPretty( std::ostream & out,
           i != getRules().end();
           ++i )
     {
-        out << (*i)->printPretty( out, lineheader + " -" );
+        (*i)->printPretty( out, lineheader + " -" );
     }
     return out;
 }
 
-std::auto_ptr< Rule >
+std::shared_ptr< Rule >
 NestedRule::deepCopy() const
 {
 	Storage new_rules;
@@ -393,9 +367,11 @@ NestedRule::deepCopy() const
           i != getRules().end();
           ++i )
     {
-	    new_rules.push_back( (*i)->deepCopy().release() );
+	    new_rules.push_back( (*i)->deepCopy() );
     }
-	return std::auto_ptr< Rule >( ( Rule* )new NestedRule( getCond()->deepCopy(), new_rules ) );
+
+	std::shared_ptr< Rule > rval( new NestedRule( getCond()->deepCopy(), new_rules ) );
+    return rval;
 }
 
 
@@ -432,13 +408,14 @@ IDListRule::printPretty( std::ostream & out,
                          const std::string & lineheader ) const
 {
     out << lineheader << "IDList Rule:\n";
-    return out << M_rids.printPretty( out, lineheader + " -" );
+    return M_rids.printPretty( out, lineheader + " -" );
 }
 
-std::auto_ptr< Rule >
+std::shared_ptr< Rule >
 IDListRule::deepCopy() const
 {
-    return std::auto_ptr< Rule >( ( Rule* )new IDListRule( *this ) );
+    std::shared_ptr< Rule > rval( new IDListRule( *this ) );
+    return rval;
 }
 
 const

@@ -109,7 +109,7 @@ public:
     bool eval( const Context & context ) const = 0;
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const = 0;
+    std::shared_ptr< Cond > deepCopy() const = 0;
 };
 
 inline
@@ -157,10 +157,7 @@ public:
       }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
-      {
-          return std::auto_ptr< Cond >( new CondBool( *this ) );
-      }
+    std::shared_ptr< Cond > deepCopy() const;
 
 private:
 	bool M_state;
@@ -181,7 +178,7 @@ public:
                    const UNumSet & players,
                    const int & min_match,
                    const int & max_match,
-                   std::auto_ptr< Region > reg )
+                   std::shared_ptr< Region > reg )
         : Cond(),
           M_our_side( our_side ),
           M_min_match( min_match ),
@@ -195,7 +192,7 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const;
 
 
     virtual
@@ -252,14 +249,9 @@ public:
           M_max_match = x;
       }
 
-    void set( std::auto_ptr< Region > reg )
+    void set( std::shared_ptr< Region > reg )
       {
           M_reg = reg;
-      }
-
-    std::auto_ptr< Region > detachRegion()
-      {
-          return M_reg;
       }
 
     void setOurSide( const bool & our_side )
@@ -287,7 +279,7 @@ private:
     int M_min_match;
     int M_max_match;
 	UNumSet M_players;
-	std::auto_ptr< Region > M_reg;
+	std::shared_ptr< Region > M_reg;
 };
 
 class CondBallPos
@@ -298,7 +290,7 @@ private:
       { }
 
 public:
-    CondBallPos( std::auto_ptr< Region > reg )
+    CondBallPos( std::shared_ptr< Region > reg )
         : Cond(),
           M_reg( reg )
       { }
@@ -307,7 +299,7 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -327,13 +319,8 @@ public:
           return M_reg.get();
       }
 
-    std::auto_ptr< Region > detachRegion()
-      {
-          return M_reg;
-      }
-
 private:
-	std::auto_ptr< Region > M_reg;
+	std::shared_ptr< Region > M_reg;
 };
 
 class CondBallOwner
@@ -356,9 +343,9 @@ public:
       {}
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondBallOwner( *this ) );
+          return std::shared_ptr< Cond >( new CondBallOwner( *this ) );
       }
 
     virtual
@@ -443,9 +430,9 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondPlayMode( *this ) );
+          return std::shared_ptr< Cond >( new CondPlayMode( *this ) );
       }
 
     virtual
@@ -480,7 +467,7 @@ private:
 class CondAnd
     : public Cond {
 public:
-	typedef std::list< Cond * > Storage;
+	typedef std::list< std::shared_ptr< Cond > > Storage;
 
 private:
     CondAnd()
@@ -497,7 +484,7 @@ public:
     ~CondAnd();
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -523,7 +510,7 @@ private:
 class CondOr
     : public Cond {
 public:
- 	typedef std::list< Cond * > Storage;
+ 	typedef std::list< std::shared_ptr< Cond > > Storage;
 
 private:
     CondOr()
@@ -540,7 +527,7 @@ public:
     ~CondOr();
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -570,7 +557,7 @@ public:
         : Cond()
       { }
 
-    CondNot( std::auto_ptr< Cond > cond )
+    CondNot( std::shared_ptr< Cond > cond )
         : Cond(),
           M_cond( cond )
       { }
@@ -580,7 +567,7 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -592,18 +579,8 @@ public:
     virtual
     bool eval( const Context & context ) const;
 
-    const Cond * getCond() const
-      {
-          return M_cond.get();
-      }
-
-    std::auto_ptr< Cond > detachCond()
-      {
-          return M_cond;
-      }
-
 private:
-	std::auto_ptr< Cond > M_cond;
+	std::shared_ptr< Cond > M_cond;
 };
 
 
@@ -624,9 +601,9 @@ public:
       {}
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondNamed( *this ) );
+          return std::shared_ptr< Cond >( new CondNamed( *this ) );
       }
 
     virtual
@@ -713,9 +690,9 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondTime( *this ) );
+          return std::shared_ptr< Cond >( new CondTime( *this ) );
       }
 
     virtual
@@ -745,9 +722,9 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondOppGoal( *this ) );
+          return std::shared_ptr< Cond >( new CondOppGoal( *this ) );
       }
 
     virtual
@@ -776,9 +753,9 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondOurGoal( *this ) );
+          return std::shared_ptr< Cond >( new CondOurGoal( *this ) );
       }
 
     virtual
@@ -807,9 +784,9 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondGoalDiff( *this ) );
+          return std::shared_ptr< Cond >( new CondGoalDiff( *this ) );
       }
 
     virtual
@@ -854,9 +831,9 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const
       {
-          return std::auto_ptr< Cond >( new CondUNum( *this ) );
+          return std::shared_ptr< Cond >( new CondUNum( *this ) );
       }
 
     virtual

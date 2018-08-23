@@ -30,7 +30,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Stadium;
 
@@ -56,12 +56,12 @@ public:
     public:
         std::ostream & M_transport;
         const Player & M_self;
-        const boost::shared_ptr< SerializerPlayer > M_serializer;
+        const std::shared_ptr< SerializerPlayer > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const Player & self,
-                const boost::shared_ptr< SerializerPlayer > serializer,
+                const std::shared_ptr< SerializerPlayer > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -72,7 +72,7 @@ public:
 
 
 private:
-    const boost::shared_ptr< SerializerPlayer > M_serializer;
+    const std::shared_ptr< SerializerPlayer > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       Observer and Observer should have virtual functions for
@@ -83,7 +83,7 @@ private:
     int M_sendcnt;
 
 public:
-    typedef std::auto_ptr< VisualSenderPlayer > Ptr;
+    typedef std::shared_ptr< VisualSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const VisualSenderPlayer::Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -148,23 +148,14 @@ public:
     ObserverPlayer()
       { }
 
-    ObserverPlayer( VisualSenderPlayer & sender )
-        : BaseObserver< VisualSenderPlayer >( sender )
-      { }
-
-    ObserverPlayer( std::auto_ptr< VisualSenderPlayer > sender )
+    ObserverPlayer( std::shared_ptr< VisualSenderPlayer > sender )
         : BaseObserver< VisualSenderPlayer >( sender )
       { }
 
     ~ObserverPlayer()
       { }
 
-    void setVisualSender( VisualSenderPlayer & sender )
-      {
-          BaseObserver< VisualSenderPlayer >::setSender( sender );
-      }
-
-    void setVisualSender( std::auto_ptr< VisualSenderPlayer > sender )
+    void setVisualSender( std::shared_ptr< VisualSenderPlayer > sender )
       {
           BaseObserver< VisualSenderPlayer >::setSender( sender );
       }

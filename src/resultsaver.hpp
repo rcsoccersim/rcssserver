@@ -36,7 +36,7 @@ public:
         TEAM_RIGHT = 1
     };
 
-    typedef std::auto_ptr< ResultSaver > Ptr;
+    typedef std::shared_ptr< ResultSaver > Ptr;
     typedef Ptr (*Creator)();
     typedef rcss::Factory< Creator, std::string > FactoryHolder;
 

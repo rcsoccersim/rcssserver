@@ -30,8 +30,6 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
-
 #include <string>
 #include <map>
 #include <list>
@@ -68,7 +66,7 @@ class Msg;
 class AudioSender
     : protected Sender {
 public:
-    typedef std::auto_ptr< rcss::AudioSender > Ptr;
+    typedef std::shared_ptr< rcss::AudioSender > Ptr;
 
 protected:
     const Stadium& M_stadium;
@@ -149,23 +147,14 @@ public:
     Listener()
       { }
 
-    Listener( AudioSender & sender )
-        : BaseObserver< AudioSender >( sender )
-      { }
-
-    Listener( std::auto_ptr< AudioSender > sender )
+    Listener( std::shared_ptr< AudioSender > sender )
         : BaseObserver< AudioSender >( sender )
       { }
 
     ~Listener()
       { }
 
-    void setAudioSender( AudioSender & sender )
-      {
-          BaseObserver< AudioSender >::setSender( sender );
-      }
-
-    void setAudioSender( std::auto_ptr< AudioSender > sender )
+    void setAudioSender( std::shared_ptr< AudioSender > sender )
       {
           BaseObserver< AudioSender >::setSender( sender );
       }
@@ -222,19 +211,19 @@ class AudioSenderPlayer
     : public AudioSender {
 private:
     Player & M_listener;
-    const boost::shared_ptr< SerializerPlayer > M_serializer;
+    const std::shared_ptr< SerializerPlayer > M_serializer;
 
 public:
     class Params {
     public:
         std::ostream & M_transport;
         Player & M_listener;
-        const boost::shared_ptr< SerializerPlayer > M_serializer;
+        const std::shared_ptr< SerializerPlayer > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 Player & listener,
-                const boost::shared_ptr< SerializerPlayer > serializer,
+                const std::shared_ptr< SerializerPlayer > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_listener( listener ),
@@ -559,19 +548,19 @@ class AudioSenderCoach
     : public AudioSender {
 private:
     Coach & M_listener;
-    const boost::shared_ptr< SerializerCoach > M_serializer;
+    const std::shared_ptr< SerializerCoach > M_serializer;
 
 public:
     class Params {
     public:
         std::ostream & M_transport;
         Coach & M_listener;
-        const boost::shared_ptr< SerializerCoach > M_serializer;
+        const std::shared_ptr< SerializerCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 Coach & listener,
-                const boost::shared_ptr< SerializerCoach > serializer,
+                const std::shared_ptr< SerializerCoach > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_listener( listener ),
@@ -664,19 +653,19 @@ class AudioSenderOnlineCoach
     : public AudioSender {
 private:
     OnlineCoach & M_listener;
-    const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+    const std::shared_ptr< SerializerOnlineCoach > M_serializer;
 
 public:
     class Params {
     public:
         std::ostream & M_transport;
         OnlineCoach & M_listener;
-        const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+        const std::shared_ptr< SerializerOnlineCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 OnlineCoach & listener,
-                const boost::shared_ptr< SerializerOnlineCoach > serializer,
+                const std::shared_ptr< SerializerOnlineCoach > serializer,
                 const Stadium & stadium )
             : M_transport( transport ),
               M_listener( listener ),

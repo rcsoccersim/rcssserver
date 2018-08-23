@@ -52,7 +52,7 @@ InitSenderOnlineCoach::factory()
 
 
 InitSenderOnlineCoach::InitSenderOnlineCoach( const Params& params,
-                                              const boost::shared_ptr< InitSenderCommon > common )
+                                              const std::shared_ptr< InitSenderCommon > common )
     : InitSender( params.M_transport, common ),
       M_serializer( params.M_serializer ),
       M_self( params.M_self ),
@@ -94,7 +94,7 @@ InitSenderOnlineCoach::sendPlayerClangVer()
 
 InitSenderOnlineCoachV1::InitSenderOnlineCoachV1( const Params & params )
     : InitSenderOnlineCoach( params,
-                             boost::shared_ptr< rcss::InitSenderCommon >
+                             std::shared_ptr< rcss::InitSenderCommon >
                              ( new InitSenderCommonV1( params.M_transport,
                                                        params.M_serializer,
                                                        params.M_stadium,
@@ -102,7 +102,7 @@ InitSenderOnlineCoachV1::InitSenderOnlineCoachV1( const Params & params )
 {}
 
 InitSenderOnlineCoachV1::InitSenderOnlineCoachV1( const Params & params,
-                                                  const boost::shared_ptr< InitSenderCommon > common )
+                                                  const std::shared_ptr< InitSenderCommon > common )
     : InitSenderOnlineCoach( params, common )
 {}
 
@@ -148,7 +148,7 @@ InitSenderOnlineCoachV6::InitSenderOnlineCoachV6( const Params& params )
 }
 
 InitSenderOnlineCoachV6::InitSenderOnlineCoachV6( const Params& params,
-                                                  const boost::shared_ptr< InitSenderCommon > common )
+                                                  const std::shared_ptr< InitSenderCommon > common )
     : InitSenderOnlineCoachV1( params, common )
 {
 
@@ -180,7 +180,7 @@ InitSenderOnlineCoachV6::sendInit()
 
 InitSenderOnlineCoachV7::InitSenderOnlineCoachV7( const Params & params )
     : InitSenderOnlineCoachV6( params,
-                               boost::shared_ptr< rcss::InitSenderCommon >
+                               std::shared_ptr< rcss::InitSenderCommon >
                                ( new InitSenderCommonV7( params.M_transport,
                                                          params.M_serializer,
                                                          params.M_stadium,
@@ -190,7 +190,7 @@ InitSenderOnlineCoachV7::InitSenderOnlineCoachV7( const Params & params )
 }
 
 InitSenderOnlineCoachV7::InitSenderOnlineCoachV7( const Params & params,
-                                                  const boost::shared_ptr< InitSenderCommon > common )
+                                                  const std::shared_ptr< InitSenderCommon > common )
     : InitSenderOnlineCoachV6( params, common )
 {
 
@@ -241,7 +241,7 @@ InitSenderOnlineCoachV7::sendChangedPlayers()
 
 InitSenderOnlineCoachV8::InitSenderOnlineCoachV8( const Params & params )
     : InitSenderOnlineCoachV7( params,
-                               boost::shared_ptr< rcss::InitSenderCommon >
+                               std::shared_ptr< rcss::InitSenderCommon >
                                ( new InitSenderCommonV8( params.M_transport,
                                                          params.M_serializer,
                                                          params.M_stadium,
@@ -251,7 +251,7 @@ InitSenderOnlineCoachV8::InitSenderOnlineCoachV8( const Params & params )
 }
 
 InitSenderOnlineCoachV8::InitSenderOnlineCoachV8( const Params & params,
-                                                  const boost::shared_ptr< InitSenderCommon > common )
+                                                  const std::shared_ptr< InitSenderCommon > common )
     : InitSenderOnlineCoachV7( params, common )
 {
 

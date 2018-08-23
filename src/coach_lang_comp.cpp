@@ -94,25 +94,25 @@ DirComm::printPretty( std::ostream & out,
 void
 DirComm::clearActions()
 {
-    for ( Storage::iterator i = M_actions.begin();
-          i != M_actions.end();
-          ++i )
-    {
-        delete *i;
-    }
+    // for ( Storage::iterator i = M_actions.begin();
+    //       i != M_actions.end();
+    //       ++i )
+    // {
+    //     delete *i;
+    // }
     M_actions.clear();
 }
 
 
-DirComm::Storage
-DirComm::detachActions()
-{
-    Storage rval = M_actions;
-    M_actions.clear();
-    return rval;
-}
+// DirComm::Storage
+// DirComm::detachActions()
+// {
+//     Storage rval = M_actions;
+//     M_actions.clear();
+//     return rval;
+// }
 
-std::auto_ptr< Dir >
+std::shared_ptr< Dir >
 DirComm::deepCopy() const
 {
     Storage new_actions;
@@ -120,13 +120,14 @@ DirComm::deepCopy() const
           i != getActions().end();
           ++i )
     {
-        new_actions.push_back( (*i)->deepCopy().release() );
+        new_actions.push_back( (*i)->deepCopy() );
     }
 
-    return std::auto_ptr< Dir >( new DirComm( M_positive,
+    std::shared_ptr< Dir > rval( new DirComm( M_positive,
                                               M_our_side,
                                               M_players,
                                               new_actions ) );
+    return rval;
 }
 
 
@@ -166,13 +167,13 @@ std::ostream &
 TokRule::print( std::ostream & out ) const
 {
     out << "(" << getTTL() << " ";
-    if ( getCond() == NULL )
+    if ( ! M_cond )
     {
         out << "(null)";
     }
     else
     {
-        out << *getCond();
+        out << *M_cond;
     }
 
     for ( Storage::const_iterator iter = getDirs().begin();
@@ -196,13 +197,13 @@ TokRule::printPretty( std::ostream & out,
                       const std::string & line_header ) const
 {
     out << line_header << "for " << getTTL() << " cycles, if" << std::endl;
-    if ( getCond() == NULL )
+    if ( ! M_cond )
     {
         out << line_header << " +(null)";
     }
     else
     {
-        getCond()->printPretty( out, line_header + " +" );
+        M_cond->printPretty( out, line_header + " +" );
     }
 
     out << line_header << "then" << std::endl;
@@ -226,22 +227,16 @@ TokRule::printPretty( std::ostream & out,
 void
 TokRule::clearDirs()
 {
-    for ( Storage::iterator i = M_dirs.begin();
-          i != M_dirs.end();
-          ++i )
-    {
-        delete *i;
-    }
     M_dirs.clear();
 }
 
-std::auto_ptr< Token >
+std::shared_ptr< Token >
 TokRule::deepCopy() const
 {
-    std::auto_ptr< Cond > new_cond;
-    if ( getCond() )
+    std::shared_ptr< Cond > new_cond;
+    if ( M_cond )
     {
-        new_cond = getCond()->deepCopy();
+        new_cond = M_cond->deepCopy();
     }
 
     Storage new_dirs;
@@ -249,12 +244,13 @@ TokRule::deepCopy() const
           i != M_dirs.end();
           ++i )
     {
-        new_dirs.push_back( (*i)->deepCopy().release() );
+        new_dirs.push_back( (*i)->deepCopy() );
     }
 
-    return std::auto_ptr< Token >( new TokRule( M_ttl,
+    std::shared_ptr< Token > rval( new TokRule( M_ttl,
                                                 new_cond,
                                                 new_dirs ) );
+    return rval;
 }
 
 
@@ -356,7 +352,7 @@ std::ostream &
 DefAct::print( std::ostream & out ) const
 {
     out << "(definea \"" << M_name << "\" ";
-    if ( M_act.get() == NULL )
+    if ( ! M_act )
     {
         out << "(null)";
     }
@@ -372,7 +368,7 @@ DefAct::printPretty( std::ostream & out,
                      const std::string & line_header ) const
 {
     out << line_header << "Action \"" << M_name << "\"" << std::endl;
-    if ( M_act.get() == NULL )
+    if ( ! M_act.get() )
     {
         out << line_header << " (null)\n";
     }
@@ -398,13 +394,13 @@ DefRule::print( std::ostream & out ) const
         out << " direc ";
     }
 
-    if ( getRule() == NULL )
+    if ( ! M_rule )
     {
         out << "(null)";
     }
     else
     {
-        out << *getRule();
+        out << *M_rule;
     }
     return out << ")";
 }
@@ -423,32 +419,35 @@ DefRule::printPretty( std::ostream & out,
         out << "- directive\n";
     }
 
-    if ( getRule() == NULL )
+    if ( ! M_rule )
     {
         out << line_header << " (null)\n";
     }
     else
     {
-        getRule()->printPretty( out, line_header + " ");
+        M_rule->printPretty( out, line_header + " ");
     }
     return out;
 }
 
-std::auto_ptr< Def >
+std::shared_ptr< Def >
 DefRule::deepCopy() const
 {
-    if ( getRule() )
+    std::shared_ptr< Def > rval;
+    if ( M_rule )
     {
-        return std::auto_ptr< Def >( new DefRule( getName(),
-                                                  getRule()->deepCopy(),
-                                                  M_model ) );
+        rval = std::shared_ptr< Def >( new DefRule( getName(),
+                                                    M_rule->deepCopy(),
+                                                    M_model ) );
     }
     else
     {
-        return std::auto_ptr< Def >( new DefRule( getName(),
-                                                  std::auto_ptr< Rule >(),
-                                                  M_model ) );
+        rval = std::shared_ptr< Def >( new DefRule( getName(),
+                                                    std::shared_ptr< Rule >(),
+                                                    M_model ) );
     }
+
+    return rval;
 }
 
 }

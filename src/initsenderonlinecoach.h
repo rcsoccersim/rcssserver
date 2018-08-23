@@ -27,7 +27,7 @@
 
 #include <rcssbase/factory.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Stadium;
 class Player;
@@ -54,12 +54,12 @@ public:
     public:
         std::ostream & M_transport;
         const OnlineCoach & M_self;
-        const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+        const std::shared_ptr< SerializerOnlineCoach > M_serializer;
         const Stadium & M_stadium;
 
         Params( std::ostream & transport,
                 const OnlineCoach & self,
-                const boost::shared_ptr< SerializerOnlineCoach > serializer,
+                const std::shared_ptr< SerializerOnlineCoach > serializer,
                 const Stadium & stadium )
             : M_transport( transport )
             , M_self( self )
@@ -69,7 +69,7 @@ public:
     };
 
 public:
-    typedef std::auto_ptr< rcss::InitSenderOnlineCoach > Ptr;
+    typedef std::shared_ptr< rcss::InitSenderOnlineCoach > Ptr;
     typedef Ptr (*Creator)( const Params & );
     typedef rcss::Factory< Creator, int > FactoryHolder;
 
@@ -81,7 +81,7 @@ public:
 
 protected:
     InitSenderOnlineCoach( const Params & params,
-                           const boost::shared_ptr< InitSenderCommon > common );
+                           const std::shared_ptr< InitSenderCommon > common );
 
     const
     SerializerOnlineCoach & serializer() const
@@ -109,7 +109,7 @@ public:
     void sendPlayerClangVer( const Player & ) = 0;
 
 private:
-    const boost::shared_ptr< SerializerOnlineCoach > M_serializer;
+    const std::shared_ptr< SerializerOnlineCoach > M_serializer;
 
     /*:TODO: M_self needs to be replaced with a reference to a
       InitObserver and InitObserver should have virtual functions for
@@ -136,23 +136,14 @@ public:
     InitObserverOnlineCoach()
       { }
 
-    InitObserverOnlineCoach( InitSenderOnlineCoach & sender )
-        : BaseObserver< InitSenderOnlineCoach >( sender )
-      { }
-
-    InitObserverOnlineCoach( std::auto_ptr< InitSenderOnlineCoach > sender )
+    InitObserverOnlineCoach( std::shared_ptr< InitSenderOnlineCoach > sender )
         : BaseObserver< InitSenderOnlineCoach >( sender )
       { }
 
     ~InitObserverOnlineCoach()
       { }
 
-    void setInitSender( InitSenderOnlineCoach & sender )
-      {
-          BaseObserver< InitSenderOnlineCoach >::setSender( sender );
-      }
-
-    void setInitSender( std::auto_ptr< InitSenderOnlineCoach > sender )
+    void setInitSender( std::shared_ptr< InitSenderOnlineCoach > sender )
       {
           BaseObserver< InitSenderOnlineCoach >::setSender( sender );
       }
@@ -216,7 +207,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV1( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -254,7 +245,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV6( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -282,7 +273,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV7( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
@@ -309,7 +300,7 @@ public:
 
 protected:
     InitSenderOnlineCoachV8( const Params & params,
-                             const boost::shared_ptr< InitSenderCommon > common );
+                             const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual

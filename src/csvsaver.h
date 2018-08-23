@@ -23,11 +23,10 @@
 
 #include <rcssbase/conf/builder.hpp>
 
-#include <boost/shared_ptr.hpp>
-
 #include <ctime>
 #include <string>
 #include <fstream>
+#include <memory>
 
 
 namespace rcss {
@@ -67,7 +66,7 @@ private:
     void setDefaults();
     void addParams();
 
-    boost::shared_ptr< rcss::conf::Builder > M_builder;
+    std::shared_ptr< rcss::conf::Builder > M_builder;
 
     bool M_save;
     std::string M_filename;

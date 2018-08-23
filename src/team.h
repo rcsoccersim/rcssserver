@@ -36,7 +36,7 @@ class XPMHolder;
 class Team {
 public:
     typedef std::pair< unsigned int, unsigned int > GraphKey;
-    typedef std::map< GraphKey, XPMHolder * > GraphCont;
+    typedef std::map< GraphKey, std::shared_ptr< const XPMHolder > > GraphCont;
 
 private:
     Stadium * M_stadium;
@@ -226,14 +226,12 @@ public:
 
     void addTeamGraphic( const unsigned int x,
                          const unsigned int y,
-                         std::auto_ptr< XPMHolder > holder );
+                         std::shared_ptr< const XPMHolder > holder );
 
-    const
-    XPMHolder * teamGraphic( const unsigned int x,
-                             const unsigned int y ) const;
+    std::shared_ptr< const XPMHolder > teamGraphic( const unsigned int x,
+                                                    const unsigned int y ) const;
 
-    const
-    GraphCont & teamGraphics() const
+    const GraphCont & teamGraphics() const
       {
           return M_graphics;
       }

@@ -41,7 +41,7 @@ public:
     ~DelMsg();
 
     virtual
-    std::auto_ptr< Msg > deepCopy() const;
+    std::shared_ptr< Msg > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;

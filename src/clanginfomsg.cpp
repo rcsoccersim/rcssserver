@@ -45,16 +45,16 @@ InfoMsg::InfoMsg( const Storage & tokens )
 
 InfoMsg::~InfoMsg()
 {
-	for ( Storage::iterator i = M_tokens.begin();
-          i != M_tokens.end();
-          ++i )
-	{
-	    delete *i;
-	}
+	// for ( Storage::iterator i = M_tokens.begin();
+    //       i != M_tokens.end();
+    //       ++i )
+	// {
+	//     delete *i;
+	// }
 	M_tokens.clear();
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 InfoMsg::deepCopy() const
 {
 	Storage new_tokens;
@@ -62,9 +62,11 @@ InfoMsg::deepCopy() const
           i != M_tokens.end();
           ++i )
 	{
-	    new_tokens.push_back( (*i)->deepCopy().release() );
+	    new_tokens.push_back( (*i)->deepCopy() );
 	}
-	return std::auto_ptr< Msg >( new InfoMsg( new_tokens ) );
+
+	std::shared_ptr< Msg > ptr( new InfoMsg( new_tokens ) );
+    return ptr;
 }
 
 std::ostream &

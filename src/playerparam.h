@@ -36,8 +36,7 @@
 
 #include <rcssbase/conf/builder.hpp>
 
-#include <boost/shared_ptr.hpp>
-
+#include <memory>
 #include <string>
 #include <map>
 
@@ -75,7 +74,7 @@ protected:
     void addParams();
 
 private:
-    boost::shared_ptr< rcss::conf::Builder > M_builder;
+    std::shared_ptr< rcss::conf::Builder > M_builder;
     VerMap M_ver_map;
 
 public:

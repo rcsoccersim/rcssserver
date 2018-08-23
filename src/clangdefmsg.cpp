@@ -44,16 +44,10 @@ DefineMsg::DefineMsg( const Storage & defs )
 
 DefineMsg::~DefineMsg()
 {
-	for ( Storage::iterator i = M_defs.begin();
-          i != M_defs.end();
-          ++i )
-	{
-	    delete *i;
-	}
 	M_defs.clear();
 }
 
-std::auto_ptr< Msg >
+std::shared_ptr< Msg >
 DefineMsg::deepCopy() const
 {
 	Storage new_defs;
@@ -61,9 +55,11 @@ DefineMsg::deepCopy() const
           i != M_defs.end();
           ++i )
     {
-	    new_defs.push_back( (*i)->deepCopy().release() );
+	    new_defs.push_back( (*i)->deepCopy() );
     }
-	return std::auto_ptr< Msg >( new DefineMsg( new_defs ) );
+
+	std::shared_ptr< Msg > ptr( new DefineMsg( new_defs ) );
+    return ptr;
 }
 
 std::ostream &

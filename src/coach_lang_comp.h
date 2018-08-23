@@ -67,7 +67,7 @@ public:
                                 const std::string & line_header ) const = 0;
 
     virtual
-    std::auto_ptr< Dir > deepCopy() const = 0;
+    std::shared_ptr< Dir > deepCopy() const = 0;
 
 }; // end Dir
 
@@ -83,7 +83,7 @@ operator<<( std::ostream & os,
 class DirComm
     : public Dir {
 public:
-	typedef std::list< Action * > Storage;
+	typedef std::list< std::shared_ptr< Action > > Storage;
 
     DirComm()
         : Dir()
@@ -175,22 +175,20 @@ public:
           M_actions = actions;
       }
 
-    void add( std::auto_ptr< Action > action )
+    void add( std::shared_ptr< Action > action )
       {
-          M_actions.push_front( action.release() );
+          M_actions.push_front( action );
       }
 
-    Storage detachActions();
-
     virtual
-    std::auto_ptr< Dir > deepCopy() const;
+    std::shared_ptr< Dir > deepCopy() const;
 
 
 private:
 	bool M_positive;
 	bool M_our_side;
 	UNumSet M_players;
-	std::list< Action* > M_actions;
+	Storage M_actions;
 };
 
 class DirNamed
@@ -205,9 +203,9 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Dir > deepCopy() const
+    std::shared_ptr< Dir > deepCopy() const
       {
-          return std::auto_ptr< Dir >( new DirNamed( *this ) );
+          return std::shared_ptr< Dir >( new DirNamed( *this ) );
       }
 
     virtual
@@ -267,7 +265,7 @@ public:
                                 const std::string & line_header ) const = 0;
 
     virtual
-    std::auto_ptr< Token > deepCopy() const = 0;
+    std::shared_ptr< Token > deepCopy() const = 0;
 
 };
 
@@ -298,9 +296,9 @@ public:
                                 const std::string & line_header ) const;
 
     virtual
-    std::auto_ptr< Token > deepCopy() const
+    std::shared_ptr< Token > deepCopy() const
       {
-          return std::auto_ptr< Token >( new TokClear( *this ) );
+          return std::shared_ptr< Token >( new TokClear( *this ) );
       }
 };
 
@@ -308,7 +306,7 @@ public:
 class TokRule
 	: public Token {
 public:
-    typedef std::list< Dir * > Storage;
+    typedef std::list< std::shared_ptr< Dir > > Storage;
 
     TokRule( const int & ttl = 0 )
         : Token(),
@@ -316,7 +314,7 @@ public:
       { }
 
     TokRule( const int & ttl,
-             std::auto_ptr< Cond > & cond,
+             std::shared_ptr< Cond > & cond,
              const Storage & dirs )
         : Token(),
           M_ttl( ttl ),
@@ -331,7 +329,7 @@ public:
       }
 
     virtual
-    std::auto_ptr< Token > deepCopy() const;
+    std::shared_ptr< Token > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -346,30 +344,10 @@ public:
           return M_ttl;
       }
 
-//     void set( int ttl )
-//       {
-//           M_ttl = ttl;
-//       }
-
-//     Cond * getCond()
-//       {
-//           return M_cond.get();
-//       }
-
-    const Cond * getCond() const
-      {
-          return M_cond.get();
-      }
-
-    void set( std::auto_ptr< Cond > cond )
+    void setCond( std::shared_ptr< Cond > cond )
       {
           M_cond = cond;
       }
-
-//     std::auto_ptr< Cond > detachCond()
-//       {
-//           return M_cond;
-//       }
 
     const Storage & getDirs() const
       {
@@ -383,15 +361,9 @@ public:
 
  	void clearDirs();
 
-//     void set( const Storage & dirs )
-//       {
-//           clearDirs();
-//           M_dirs =  dirs;
-//       }
-
 private:
 	int M_ttl;
-	std::auto_ptr< Cond > M_cond;
+	std::shared_ptr< Cond > M_cond;
 	Storage M_dirs;
 };
 
@@ -433,7 +405,7 @@ public:
       }
 
     virtual
-    std::auto_ptr< Def > deepCopy() const = 0;
+    std::shared_ptr< Def > deepCopy() const = 0;
 
 protected:
     std::string M_name;
@@ -453,11 +425,11 @@ class DefCond
 public:
     DefCond()
         : Def(),
-          M_cond( (Cond*)NULL )
+          M_cond()
       { }
 
     DefCond( const std::string & name,
-             std::auto_ptr< Cond > cond )
+             std::shared_ptr< Cond > cond )
         : Def( name ),
           M_cond( cond )
       { }
@@ -473,15 +445,15 @@ public:
     DefCond & operator=( const DefCond & def )
       {
           setName( def.getName() );
-          std::auto_ptr< Cond > cond( def.M_cond->deepCopy() );
+          std::shared_ptr< Cond > cond( def.M_cond->deepCopy() );
           M_cond = cond;
           return *this;
       }
 
     virtual
-    std::auto_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const
       {
-          return std::auto_ptr< Def >( new DefCond( *this ) );
+          return std::shared_ptr< Def >( new DefCond( *this ) );
       }
 
     virtual
@@ -491,28 +463,8 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    Cond * getCond()
-      {
-          return M_cond.get();
-      }
-
-    const Cond * getCond() const
-      {
-          return M_cond.get();
-      }
-
-    void setCond( std::auto_ptr< Cond > & cond )
-      {
-          M_cond = cond;
-      }
-
-    std::auto_ptr< Cond > detachCond()
-      {
-          return M_cond;
-      }
-
 private:
-    std::auto_ptr< Cond > M_cond;
+    std::shared_ptr< Cond > M_cond;
 };
 
 
@@ -521,11 +473,11 @@ class DefDir
 public:
     DefDir()
         : Def(),
-          M_dir( (Dir*)NULL )
+          M_dir()
       { }
 
     DefDir( const std::string & name,
-            std::auto_ptr< Dir > dir )
+            std::shared_ptr< Dir > dir )
         : Def( name ),
           M_dir( dir )
       { }
@@ -541,15 +493,15 @@ public:
     DefDir & operator=( const DefDir & def )
       {
           setName( def.getName() );
-          std::auto_ptr< Dir > dir( def.M_dir->deepCopy() );
+          std::shared_ptr< Dir > dir( def.M_dir->deepCopy() );
           M_dir = dir;
           return *this;
       }
 
     virtual
-    std::auto_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const
       {
-          return std::auto_ptr< Def >( new DefDir( *this ) );
+          return std::shared_ptr< Def >( new DefDir( *this ) );
       }
 
     virtual
@@ -559,28 +511,8 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    Dir * getDir()
-      {
-          return M_dir.get();
-      }
-
-    const Dir * getDir() const
-      {
-          return M_dir.get();
-      }
-
-    void setDir( std::auto_ptr< Dir > & dir )
-      {
-          M_dir = dir;
-      }
-
-    std::auto_ptr< Dir > detachDir()
-      {
-          return M_dir;
-      }
-
 private:
-    std::auto_ptr< Dir > M_dir;
+    std::shared_ptr< Dir > M_dir;
 };
 
 
@@ -589,11 +521,11 @@ class DefReg
 public:
     DefReg()
         : Def(),
-          M_reg( (Region*)NULL )
+          M_reg()
       { }
 
     DefReg( const std::string & name,
-            std::auto_ptr< Region > reg )
+            std::shared_ptr< Region > reg )
         : Def( name ),
           M_reg( reg )
       { }
@@ -609,15 +541,15 @@ public:
     DefReg & operator=( const DefReg & def )
       {
           setName( def.getName() );
-          std::auto_ptr< Region > reg( def.M_reg->deepCopy() );
+          std::shared_ptr< Region > reg( def.M_reg->deepCopy() );
           M_reg = reg;
           return *this;
       }
 
     virtual
-    std::auto_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const
       {
-          return std::auto_ptr< Def >( new DefReg( *this ) );
+          return std::shared_ptr< Def >( new DefReg( *this ) );
       }
 
     virtual
@@ -627,28 +559,8 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    Region * getReg()
-      {
-          return M_reg.get();
-      }
-
-    const Region * getReg() const
-      {
-          return M_reg.get();
-      }
-
-    void setReg( std::auto_ptr< Region > & reg )
-      {
-          M_reg = reg;
-      }
-
-    std::auto_ptr< Region > detachReg()
-      {
-          return M_reg;
-      }
-
 private:
-    std::auto_ptr< Region > M_reg;
+    std::shared_ptr< Region > M_reg;
 };
 
 
@@ -657,11 +569,11 @@ class DefAct
 public:
     DefAct()
         : Def(),
-          M_act( (Action*)NULL )
+          M_act()
       { }
 
     DefAct( const std::string & name,
-            std::auto_ptr< Action > act )
+            std::shared_ptr< Action > act )
         : Def( name ),
           M_act( act )
       { }
@@ -677,15 +589,15 @@ public:
     DefAct & operator=( const DefAct & def )
       {
           setName( def.getName() );
-          std::auto_ptr< Action > act( def.M_act->deepCopy() );
+          std::shared_ptr< Action > act( def.M_act->deepCopy() );
           M_act = act;
           return *this;
       }
 
     virtual
-    std::auto_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const
       {
-          return std::auto_ptr< Def >( new DefAct( *this ) );
+          return std::shared_ptr< Def >( new DefAct( *this ) );
       }
 
     virtual
@@ -695,28 +607,8 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    Action * getAction()
-      {
-          return M_act.get();
-      }
-
-    const Action * getAction() const
-      {
-          return M_act.get();
-      }
-
-    void setAction( std::auto_ptr< Action > & act )
-      {
-          M_act = act;
-      }
-
-    std::auto_ptr< Action > detachAction()
-      {
-          return M_act;
-      }
-
 private:
-    std::auto_ptr< Action > M_act;
+    std::shared_ptr< Action > M_act;
 };
 
 }
@@ -736,7 +628,7 @@ public:
       { }
 
     DefRule( const std::string & name,
-             std::auto_ptr< Rule > rule,
+             std::shared_ptr< Rule > rule,
              bool model )
         : Def( name ),
           M_rule( rule ),
@@ -748,7 +640,7 @@ public:
       { }
 
     virtual
-    std::auto_ptr< Def > deepCopy() const;
+    std::shared_ptr< Def > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -757,28 +649,8 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const;
 
-    const Rule * getRule() const
-      {
-          return M_rule.get();
-      }
-
-    std::auto_ptr< Rule > detachRule()
-      {
-          return M_rule;
-      }
-
-    bool isModel() const
-      {
-          return M_model;
-      }
-
-    void setModel( bool model )
-      {
-          M_model = model;
-      }
-
 private:
-	std::auto_ptr< Rule > M_rule;
+	std::shared_ptr< Rule > M_rule;
     bool M_model;
 };
 

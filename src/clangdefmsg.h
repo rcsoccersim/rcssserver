@@ -31,7 +31,7 @@ namespace clang {
 class DefineMsg
     : public Msg {
 public:
-    typedef std::list< Def* > Storage;
+    typedef std::list< std::shared_ptr< Def > > Storage;
 
     DefineMsg();
 private:
@@ -42,7 +42,7 @@ public:
     ~DefineMsg();
 
     virtual
-    std::auto_ptr< Msg > deepCopy() const;
+    std::shared_ptr< Msg > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;

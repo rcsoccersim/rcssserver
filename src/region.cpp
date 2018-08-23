@@ -91,16 +91,16 @@ PointRel::printPretty( std::ostream & out,
     return out << ")" << std::endl;
 }
 
-std::auto_ptr< Point >
+std::shared_ptr< Point >
 PointRel::deepCopy() const
 {
     if ( getOrigin() )
     {
-        return std::auto_ptr< Point >( new PointRel( M_offset, M_origin->deepCopy() ) );
+        return std::shared_ptr< Point >( new PointRel( M_offset, M_origin->deepCopy() ) );
     }
     else
     {
-        return std::auto_ptr< Point >( new PointRel( M_offset, std::auto_ptr< Point >() ) );
+        return std::shared_ptr< Point >( new PointRel( M_offset, std::shared_ptr< Point >() ) );
     }
 }
 
@@ -155,8 +155,8 @@ PointPlayer::printPretty( std::ostream & out,
 // {
 // }
 
-PointArith::PointArith( std::auto_ptr< Point > pt1,
-                        std::auto_ptr< Point > pt2,
+PointArith::PointArith( std::shared_ptr< Point > pt1,
+                        std::shared_ptr< Point > pt2,
                         const util::ArithOp & arith_op )
     : Point(),
       M_arith_op( &arith_op ),
@@ -171,18 +171,18 @@ PointArith::PointArith( const PointArith & pt )
       M_arith_op( pt.M_arith_op ),
       M_idx( 0 )
 {
-    std::auto_ptr< Point > pt_copy1 = pt.M_points[ 0 ]->deepCopy();
+    std::shared_ptr< Point > pt_copy1 = pt.M_points[ 0 ]->deepCopy();
     M_points[ 0 ] = pt_copy1;
-    std::auto_ptr< Point > pt_copy2 = pt.M_points[ 1 ]->deepCopy();
+    std::shared_ptr< Point > pt_copy2 = pt.M_points[ 1 ]->deepCopy();
     M_points[ 1 ] = pt_copy2;
 }
 
 PointArith &
 PointArith::operator=( const PointArith & pt )
 {
-    std::auto_ptr< Point > pt_copy1 = pt.M_points[ 0 ]->deepCopy();
+    std::shared_ptr< Point > pt_copy1 = pt.M_points[ 0 ]->deepCopy();
     M_points[ 0 ] = pt_copy1;
-    std::auto_ptr< Point > pt_copy2 = pt.M_points[ 1 ]->deepCopy();
+    std::shared_ptr< Point > pt_copy2 = pt.M_points[ 1 ]->deepCopy();
     M_points[ 1 ] = pt_copy2;
     M_idx = pt.M_idx;
     return *this;
@@ -282,10 +282,10 @@ RegNull::printPretty( std::ostream & out,
 
 /*** RegQuad ***/
 
-RegQuad::RegQuad( std::auto_ptr< Point > pt0,
-                  std::auto_ptr< Point > pt1,
-                  std::auto_ptr< Point > pt2,
-                  std::auto_ptr< Point > pt3 )
+RegQuad::RegQuad( std::shared_ptr< Point > pt0,
+                  std::shared_ptr< Point > pt1,
+                  std::shared_ptr< Point > pt2,
+                  std::shared_ptr< Point > pt3 )
     : Region()
 {
 	M_points[ 0 ] = pt0;
@@ -333,10 +333,10 @@ RegQuad::printPretty( std::ostream & out,
     return out << std::endl;
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 RegQuad::deepCopy() const
 {
-    std::auto_ptr< Point > pts[ 4 ];
+    std::shared_ptr< Point > pts[ 4 ];
     for ( int i = 0; i < 4; ++i )
     {
         if ( M_points[ i ].get() )
@@ -344,7 +344,7 @@ RegQuad::deepCopy() const
             pts[ i ] = M_points[ i ]->deepCopy();
         }
     }
-    return std::auto_ptr< Region >( new RegQuad( pts[ 0 ],
+    return std::shared_ptr< Region >( new RegQuad( pts[ 0 ],
                                                  pts[ 1 ],
                                                  pts[ 2 ],
                                                  pts[ 3 ] ) );
@@ -362,7 +362,7 @@ RegArc::RegArc()
 
 }
 
-RegArc::RegArc( std::auto_ptr< Point > center,
+RegArc::RegArc( std::shared_ptr< Point > center,
                 const double & start_rad,
                 const double & end_rad,
                 const double & start_ang,
@@ -423,18 +423,18 @@ RegArc::printPretty( std::ostream & out,
                << std::endl;
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 RegArc::deepCopy() const
 {
     if ( M_center.get() )
     {
-        return std::auto_ptr< Region >( new RegArc( M_center->deepCopy(),
+        return std::shared_ptr< Region >( new RegArc( M_center->deepCopy(),
                                                     M_start_rad, M_end_rad,
                                                     M_start_ang, M_span_ang ) );
     }
     else
     {
-        return std::auto_ptr< Region >( new RegArc( std::auto_ptr< Point >(),
+        return std::shared_ptr< Region >( new RegArc( std::shared_ptr< Point >(),
                                                     M_start_rad, M_end_rad,
                                                     M_start_ang, M_span_ang ) );
     }
@@ -451,7 +451,7 @@ RegUnion::print( std::ostream & out ) const
           iter != M_regs.end();
           ++iter )
     {
-	    if ( *iter == NULL )
+	    if ( ! *iter )
         {
             out << " (null)";
         }
@@ -472,7 +472,7 @@ RegUnion::printPretty( std::ostream & out,
           iter != M_regs.end();
           ++iter )
     {
-        if ( *iter == NULL )
+        if ( ! *iter )
         {
             out << line_header << "o (null)";
         }
@@ -484,7 +484,7 @@ RegUnion::printPretty( std::ostream & out,
     return out;
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 RegUnion::deepCopy() const
 {
     Storage regs;
@@ -492,20 +492,16 @@ RegUnion::deepCopy() const
           i != M_regs.end();
           ++i )
     {
-        regs.push_front( (*i)->deepCopy().release() );
+        regs.push_front( (*i)->deepCopy() );
     }
-    return std::auto_ptr< Region >( new RegUnion( regs ) );
+
+    std::shared_ptr< Region > rval( new RegUnion( regs ) );
+    return rval;
 }
 
 void
 RegUnion::deleteAll()
 {
-    for ( Storage::iterator i = M_regs.begin();
-          i != M_regs.end();
-          ++i )
-    {
-        delete *i;
-    }
     M_regs.clear();
 }
 
@@ -537,7 +533,7 @@ RegNamed::printPretty( std::ostream & out,
 
 // }
 
-RegPoint::RegPoint( std::auto_ptr< Point > point )
+RegPoint::RegPoint( std::shared_ptr< Point > point )
     : Region(),
       M_point( point )
 {
@@ -559,7 +555,7 @@ RegPoint::~RegPoint()
 // RegPoint &
 // RegPoint::operator=( const RegPoint & point )
 // {
-//     std::auto_ptr< Point > pt_copy( point.M_point->deepCopy() );
+//     std::shared_ptr< Point > pt_copy( point.M_point->deepCopy() );
 //     M_point = pt_copy;
 //     return *this;
 // }
@@ -593,9 +589,9 @@ RegPoint::printPretty( std::ostream & out,
 }
 
 
-RegTri::RegTri( std::auto_ptr< Point > pt0,
-                std::auto_ptr< Point > pt1,
-                std::auto_ptr< Point > pt2 )
+RegTri::RegTri( std::shared_ptr< Point > pt0,
+                std::shared_ptr< Point > pt1,
+                std::shared_ptr< Point > pt2 )
     : Region()
 {
 	m_points[ 0 ] = pt0;
@@ -643,10 +639,10 @@ RegTri::printPretty( std::ostream & out,
     return out << std::endl;
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 RegTri::deepCopy() const
 {
-    std::auto_ptr< Point > pts[ 3 ];
+    std::shared_ptr< Point > pts[ 3 ];
     for ( int i = 0; i < 3; ++i )
     {
         if ( m_points[ i ].get() )
@@ -654,14 +650,14 @@ RegTri::deepCopy() const
             pts[ i ] = m_points[ i ]->deepCopy();
         }
     }
-    return std::auto_ptr< Region >( new RegTri( pts[ 0 ],
+    return std::shared_ptr< Region >( new RegTri( pts[ 0 ],
                                                 pts[ 1 ],
                                                 pts[ 2 ] ) );
 }
 
 
-RegRec::RegRec( std::auto_ptr< Point > pt0,
-                std::auto_ptr< Point > pt1 )
+RegRec::RegRec( std::shared_ptr< Point > pt0,
+                std::shared_ptr< Point > pt1 )
     : Region()
 {
 	M_points[ 0 ] = pt0;
@@ -707,10 +703,10 @@ RegRec::printPretty( std::ostream & out,
     return out << std::endl;
 }
 
-std::auto_ptr< Region >
+std::shared_ptr< Region >
 RegRec::deepCopy() const
 {
-    std::auto_ptr< Point > pts[ 2 ];
+    std::shared_ptr< Point > pts[ 2 ];
     for ( int i = 0; i < 2; ++i )
     {
         if ( M_points[ i ].get() )
@@ -718,7 +714,7 @@ RegRec::deepCopy() const
             pts[ i ] = M_points[ i ]->deepCopy();
         }
     }
-    return std::auto_ptr< Region >( new RegRec( pts[ 0 ], pts[ 1 ] ) );
+    return std::shared_ptr< Region >( new RegRec( pts[ 0 ], pts[ 1 ] ) );
 }
 
 }

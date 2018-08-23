@@ -288,7 +288,7 @@ public:
     ~Action();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const = 0;
+    std::shared_ptr< Action > deepCopy() const = 0;
 
     //       virtual
     //       void
@@ -311,11 +311,11 @@ class ActPos
     : public Action {
 public:
     ActPos();
-    ActPos( std::auto_ptr< Region > r );
+    ActPos( std::shared_ptr< Region > r );
     ~ActPos();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -327,7 +327,7 @@ public:
     const Region * getRegion() const;
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 };
 
 
@@ -335,11 +335,11 @@ class ActHome
     : public Action {
 public:
     ActHome();
-    ActHome( std::auto_ptr< Region > r );
+    ActHome( std::shared_ptr< Region > r );
     ~ActHome();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -351,7 +351,7 @@ public:
     const Region * getRegion() const;
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 };
 
 
@@ -360,12 +360,12 @@ class ActBallToReg
 
 public:
     ActBallToReg();
-    ActBallToReg( std::auto_ptr< Region > reg,
+    ActBallToReg( std::shared_ptr< Region > reg,
                   const BallMove & bmtset );
     ~ActBallToReg();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -381,7 +381,7 @@ public:
     void clearBMTSet();
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 	BallMove m_bmtset;
 };
 
@@ -393,7 +393,7 @@ public:
     ~ActBallToPlayer();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -421,7 +421,7 @@ public:
     ~ActMark();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -449,7 +449,7 @@ public:
     ~ActMarkLinePlayer();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -473,11 +473,11 @@ class ActMarkLineReg
 public:
 
     ActMarkLineReg();
-    ActMarkLineReg( std::auto_ptr< Region > reg );
+    ActMarkLineReg( std::shared_ptr< Region > reg );
     ~ActMarkLineReg();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -487,10 +487,10 @@ public:
                                 const std::string & line_header ) const;
 
     const Region * getRegion() const;
-    std::auto_ptr< Region > detachRegion();
+    std::shared_ptr< Region > detachRegion();
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 };
 
 
@@ -499,11 +499,11 @@ class ActOffsidesLine
 public:
 
     ActOffsidesLine();
-    ActOffsidesLine( std::auto_ptr< Region > r );
+    ActOffsidesLine( std::shared_ptr< Region > r );
     ~ActOffsidesLine();
 
 	virtual
-	std::auto_ptr< Action > deepCopy() const;
+	std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -513,10 +513,10 @@ public:
                                 const std::string & line_header ) const;
 
     const Region * getRegion() const;
-    std::auto_ptr< Region > detachRegion();
+    std::shared_ptr< Region > detachRegion();
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 };
 
 
@@ -529,7 +529,7 @@ public:
     ~ActHetType();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -554,7 +554,7 @@ public:
     ~ActNamed();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -577,11 +577,11 @@ class ActPassReg
     : public Action {
 public:
     ActPassReg();
-    ActPassReg( std::auto_ptr< Region > reg );
+    ActPassReg( std::shared_ptr< Region > reg );
     ~ActPassReg();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -591,10 +591,10 @@ public:
                                 const std::string & line_header ) const;
 
     const Region * getRegion() const;
-    std::auto_ptr< Region > detachRegion();
+    std::shared_ptr< Region > detachRegion();
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 };
 
 
@@ -606,7 +606,7 @@ public:
     ~ActPassUNum();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -630,11 +630,11 @@ class ActDribble
     : public Action {
 public:
     ActDribble();
-    ActDribble( std::auto_ptr< Region > reg );
+    ActDribble( std::shared_ptr< Region > reg );
     ~ActDribble();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -644,10 +644,10 @@ public:
                                 const std::string & line_header ) const;
 
     const Region * getRegion() const;
-    std::auto_ptr< Region > detachRegion();
+    std::shared_ptr< Region > detachRegion();
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 };
 
 
@@ -655,11 +655,11 @@ class ActClear
     : public Action {
 public:
     ActClear();
-    ActClear( std::auto_ptr< Region > reg );
+    ActClear( std::shared_ptr< Region > reg );
     ~ActClear();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -669,10 +669,10 @@ public:
                                 const std::string & line_header ) const;
 
     const Region * getRegion() const;
-    std::auto_ptr< Region > detachRegion();
+    std::shared_ptr< Region > detachRegion();
 
 private:
-	std::auto_ptr< Region > m_reg;
+	std::shared_ptr< Region > m_reg;
 };
 
 
@@ -683,7 +683,7 @@ public:
     ~ActShoot();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -701,7 +701,7 @@ public:
     ~ActHold();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -719,7 +719,7 @@ public:
     ~ActIntercept();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -738,7 +738,7 @@ public:
     ~ActTackle();
 
     virtual
-    std::auto_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;

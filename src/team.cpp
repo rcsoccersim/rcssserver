@@ -86,10 +86,6 @@ Team::Team( Stadium * stad, const Side s )
 
 Team::~Team()
 {
-    for ( GraphCont::iterator i = M_graphics.begin(); i != M_graphics.end(); ++i )
-    {
-        delete i->second;
-    }
 
 }
 
@@ -383,27 +379,20 @@ Team::changePlayerToGoalie( const Player * player )
 void
 Team::addTeamGraphic( const unsigned int x,
                       const unsigned int y,
-                      std::auto_ptr< XPMHolder > holder )
+                      std::shared_ptr< const XPMHolder > holder )
 {
     GraphKey key( x, y );
-    GraphCont::iterator i = M_graphics.find( key );
-    if ( i != M_graphics.end() )
-    {
-        delete i->second;
-    }
-
-    M_graphics[ key ] = holder.release();
+    M_graphics[ key ] = holder;
 }
 
-const
-XPMHolder *
+std::shared_ptr< const XPMHolder >
 Team::teamGraphic( const unsigned int x,
                    const unsigned int y ) const
 {
     GraphCont::const_iterator i = M_graphics.find( GraphKey( x, y ) );
     if ( i == M_graphics.end() )
     {
-        return static_cast< const XPMHolder * >( 0 );
+        return std::shared_ptr< const XPMHolder >();
     }
 
     return i->second;

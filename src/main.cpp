@@ -32,8 +32,7 @@
 #include "stdtimer.h"
 #include "synctimer.h"
 
-#include <boost/shared_ptr.hpp>
-
+#include <memory>
 #include <iostream>
 #include <locale>
 #include <cmath>
@@ -86,14 +85,14 @@ main( int argc, char *argv[] )
         return 1;
     }
 
-    boost::shared_ptr< Timer > timer;
+    std::shared_ptr< Timer > timer;
     if ( ServerParam::instance().synchMode() )
     {
-        timer = boost::shared_ptr< Timer >( new SyncTimer( Std ) );
+        timer = std::shared_ptr< Timer >( new SyncTimer( Std ) );
     }
     else
     {
-        timer = boost::shared_ptr< Timer >( new StandardTimer( Std ) );
+        timer = std::shared_ptr< Timer >( new StandardTimer( Std ) );
     }
 
     std::cout << "\nHit CTRL-C to exit\n";

@@ -37,7 +37,7 @@
 
 #include <rcssbase/net/addr.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <map>
 
 #include <cmath>
@@ -58,9 +58,9 @@ private:
     static bool S_in_init;
     static std::string S_program_name;
 
-    boost::shared_ptr< rcss::conf::Builder > M_builder;
-    boost::shared_ptr< rcss::conf::Parser > M_conf_parser;
-    boost::shared_ptr< rcss::conf::StreamStatusHandler > M_err_handler;
+    std::shared_ptr< rcss::conf::Builder > M_builder;
+    std::shared_ptr< rcss::conf::Parser > M_conf_parser;
+    std::shared_ptr< rcss::conf::StreamStatusHandler > M_err_handler;
 
     VerMap M_ver_map;
 

@@ -39,7 +39,7 @@ public:
     ~MetaToken();
 
     virtual
-    std::auto_ptr< MetaToken > deepCopy() const = 0;
+    std::shared_ptr< MetaToken > deepCopy() const = 0;
 
     virtual
     std::ostream & print( std::ostream & out ) const = 0;
@@ -60,7 +60,7 @@ public:
     ~MetaTokenVer();
 
     virtual
-    std::auto_ptr< MetaToken > deepCopy() const;
+    std::shared_ptr< MetaToken > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
@@ -83,7 +83,7 @@ private:
 class MetaMsg
     : public Msg {
 public:
-    typedef std::list< MetaToken * > Storage;
+    typedef std::list< std::shared_ptr< MetaToken > > Storage;
 
     MetaMsg();
 private:
@@ -93,7 +93,7 @@ public:
     ~MetaMsg();
 
     virtual
-    std::auto_ptr< Msg > deepCopy() const;
+    std::shared_ptr< Msg > deepCopy() const;
 
     virtual
     std::ostream & print( std::ostream & out ) const;
