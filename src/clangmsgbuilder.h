@@ -23,6 +23,9 @@
 #define CLANGMSGBUILDER_H
 
 #include "clangbuilder.h"
+
+#include <boost/any.hpp>
+
 #include <stack>
 #include <memory>
 #include <list>
@@ -100,30 +103,8 @@ protected:
 
         void clear();
 
-
-        struct Items
-        {
-            std::shared_ptr< MetaToken > m_meta_token;
-            std::shared_ptr< Action > m_action;
-            std::shared_ptr< Dir > m_dir;
-            std::shared_ptr< Cond > m_cond;
-            std::shared_ptr< CondList > m_cond_list;
-            std::shared_ptr< Token > m_token;
-            std::shared_ptr< Def > m_def;
-            std::shared_ptr< Region > m_region;
-            std::shared_ptr< Point > m_point;
-            std::shared_ptr< UNum > m_unum;
-            BallMoveToken m_bmt;
-            std::shared_ptr< UNumSet > m_unum_set;
-            std::shared_ptr< std::string > m_str;
-            std::shared_ptr< RuleIDList > m_rule_id_list;
-            std::shared_ptr< ActivateRules > m_activate;
-            std::shared_ptr< Rule > m_rule;
-            std::shared_ptr< RuleID > m_rid;
-        };
-
         Types m_type;
-        Items m_item;
+        boost::any m_item;
     };
 
     std::stack< ItemType > M_items;

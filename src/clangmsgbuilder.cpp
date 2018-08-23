@@ -81,83 +81,14 @@ traceAdding()
 void
 MsgBuilder::ItemType::clear()
 {
-    switch ( m_type ) {
-    case NONE:
-        break;
-    case META:
-        //delete m_item.m_meta_token;
-        m_item.m_meta_token.reset();
-        break;
-    case ACTION:
-        //delete m_item.m_action;
-        m_item.m_action.reset();
-        break;
-    case DIR:
-        //delete m_item.m_dir;
-        m_item.m_dir.reset();
-        break;
-    case COND:
-        //delete m_item.m_cond;
-        m_item.m_cond.reset();
-        break;
-    case CONDLIST:
-        //delete m_item.m_cond_list;
-        m_item.m_cond_list.reset();
-        break;
-    case TOKEN:
-        //delete m_item.m_token;
-        m_item.m_token.reset();
-        break;
-    case DEF:
-        //delete m_item.m_def;
-        m_item.m_def.reset();
-        break;
-    case REG:
-        //delete m_item.m_region;
-        m_item.m_region.reset();
-        break;
-    case POINT:
-        //delete m_item.m_point;
-        m_item.m_point.reset();
-        break;
-    case UNUM:
-        //delete m_item.m_unum;
-        m_item.m_unum.reset();
-        break;
-    case BMT:
-        break;
-    case UNUMSET:
-        //delete m_item.m_unum_set;
-        m_item.m_unum_set.reset();
-        break;
-    case STR:
-        //delete m_item.m_str;
-        m_item.m_str.reset();
-        break;
-    case RIDLIST:
-        //delete m_item.m_rule_id_list;
-        m_item.m_rule_id_list.reset();
-        break;
-    case ACTIVATE:
-        //delete m_item.m_activate;
-        m_item.m_activate.reset();
-        break;
-    case RULE:
-        //delete m_item.m_rule;
-        m_item.m_rule.reset();
-        break;
-    case RID:
-        m_item.m_rid.reset();
-        break;
-    }
+    m_item = boost::any();
 }
 
 std::shared_ptr< MetaToken >
 MsgBuilder::getMetaToken()
 {
     traceRemoving< MetaToken >();
-    std::shared_ptr< MetaToken > rval( M_items.top().m_item.m_meta_token );
-    //M_items.top().clear();
+    std::shared_ptr< MetaToken > rval = boost::any_cast< std::shared_ptr< MetaToken > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -167,8 +98,7 @@ std::shared_ptr< Action >
 MsgBuilder::getAction()
 {
     traceRemoving< Action >();
-    std::shared_ptr< Action > rval( M_items.top().m_item.m_action );
-    //M_items.top().clear();
+    std::shared_ptr< Action > rval = boost::any_cast< std::shared_ptr< Action > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -177,8 +107,7 @@ std::shared_ptr< Dir >
 MsgBuilder::getDir()
 {
     traceRemoving< Dir >();
-    std::shared_ptr< Dir > rval( M_items.top().m_item.m_dir );
-    //M_items.top().clear();
+    std::shared_ptr< Dir > rval = boost::any_cast< std::shared_ptr< Dir > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -188,8 +117,7 @@ std::shared_ptr< Cond >
 MsgBuilder::getCond()
 {
     traceRemoving< Cond >();
-    std::shared_ptr< Cond > rval( M_items.top().m_item.m_cond );
-    //M_items.top().clear();
+    std::shared_ptr< Cond > rval = boost::any_cast< std::shared_ptr< Cond > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -199,8 +127,7 @@ std::shared_ptr< MsgBuilder::CondList >
 MsgBuilder::getCondList()
 {
     traceRemoving< CondList >();
-    std::shared_ptr< CondList > rval( M_items.top().m_item.m_cond_list );
-    //M_items.top().clear();
+    std::shared_ptr< CondList > rval = boost::any_cast< std::shared_ptr< CondList > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -210,8 +137,7 @@ std::shared_ptr< Token >
 MsgBuilder::getToken()
 {
     traceRemoving< Token >();
-    std::shared_ptr< Token > rval( M_items.top().m_item.m_token );
-    //M_items.top().clear();
+    std::shared_ptr< Token > rval = boost::any_cast< std::shared_ptr< Token > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -221,8 +147,7 @@ std::shared_ptr< Def >
 MsgBuilder::getDef()
 {
     traceRemoving< Def >();
-    std::shared_ptr< Def > rval( M_items.top().m_item.m_def );
-    //M_items.top().clear();
+    std::shared_ptr< Def > rval = boost::any_cast< std::shared_ptr< Def > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -232,8 +157,7 @@ std::shared_ptr< Region >
 MsgBuilder::getRegion()
 {
     traceRemoving< Region >();
-    std::shared_ptr< Region > rval( M_items.top().m_item.m_region );
-    //M_items.top().clear();
+    std::shared_ptr< Region > rval = boost::any_cast< std::shared_ptr< Region > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -243,8 +167,7 @@ std::shared_ptr< Point >
 MsgBuilder::getPoint()
 {
     traceRemoving< Point >();
-    std::shared_ptr< Point > rval( M_items.top().m_item.m_point );
-    //M_items.top().clear();
+    std::shared_ptr< Point > rval = boost::any_cast< std::shared_ptr< Point > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -254,8 +177,7 @@ std::shared_ptr< UNum >
 MsgBuilder::getUNum()
 {
     traceRemoving< UNum >();
-    std::shared_ptr< UNum > rval( M_items.top().m_item.m_unum );
-    //M_items.top().clear();
+    std::shared_ptr< UNum > rval = boost::any_cast< std::shared_ptr< UNum > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -265,8 +187,7 @@ BallMoveToken
 MsgBuilder::getBMT()
 {
     traceRemoving< BallMoveToken >();
-    BallMoveToken rval( M_items.top().m_item.m_bmt );
-    //M_items.top().clear();
+    BallMoveToken rval = boost::any_cast< BallMoveToken >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -276,8 +197,7 @@ std::shared_ptr< UNumSet >
 MsgBuilder::getUNumSet()
 {
     traceRemoving< UNumSet >();
-    std::shared_ptr< UNumSet > rval( M_items.top().m_item.m_unum_set );
-    //M_items.top().clear();
+    std::shared_ptr< UNumSet > rval = boost::any_cast< std::shared_ptr< UNumSet > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -287,8 +207,7 @@ std::shared_ptr< std::string >
 MsgBuilder::getStr()
 {
     traceRemoving< std::string >();
-    std::shared_ptr< std::string > rval( M_items.top().m_item.m_str );
-    //M_items.top().clear();
+    std::shared_ptr< std::string > rval = boost::any_cast< std::shared_ptr< std::string > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -298,8 +217,7 @@ std::shared_ptr< RuleIDList >
 MsgBuilder::getRIDList()
 {
     traceRemoving< RuleIDList >();
-    std::shared_ptr< RuleIDList > rval( M_items.top().m_item.m_rule_id_list );
-    //M_items.top().clear();
+    std::shared_ptr< RuleIDList > rval = boost::any_cast< std::shared_ptr< RuleIDList > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -309,8 +227,7 @@ std::shared_ptr< ActivateRules >
 MsgBuilder::getActivateRules()
 {
     traceRemoving< ActivateRules >();
-    std::shared_ptr< ActivateRules > rval( M_items.top().m_item.m_activate );
-    //M_items.top().clear();
+    std::shared_ptr< ActivateRules > rval = boost::any_cast< std::shared_ptr< ActivateRules > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -320,8 +237,7 @@ std::shared_ptr< Rule >
 MsgBuilder::getRule()
 {
     traceRemoving< Rule >();
-    std::shared_ptr< Rule > rval( M_items.top().m_item.m_rule );
-    //M_items.top().clear();
+    std::shared_ptr< Rule > rval = boost::any_cast< std::shared_ptr< Rule > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -330,8 +246,7 @@ std::shared_ptr< RuleID >
 MsgBuilder::getRID()
 {
     traceRemoving< RuleID >();
-    std::shared_ptr< RuleID > rval( M_items.top().m_item.m_rid );
-    //M_items.top().clear();
+    std::shared_ptr< RuleID > rval = boost::any_cast< std::shared_ptr< RuleID > >( M_items.top().m_item );
     M_items.pop();
     return rval;
 }
@@ -571,7 +486,7 @@ MsgBuilder::add( std::shared_ptr< MetaToken > meta )
 {
     traceAdding< MetaToken >();
     ItemType tmp;
-    tmp.m_item.m_meta_token = meta;
+    tmp.m_item = meta;
     tmp.m_type = META;
     M_items.push( tmp );
 }
@@ -581,7 +496,7 @@ MsgBuilder::add( std::shared_ptr< Action > action )
 {
     traceAdding< Action >();
     ItemType tmp;
-    tmp.m_item.m_action = action;
+    tmp.m_item = action;
     tmp.m_type = ACTION;
     M_items.push( tmp );
 }
@@ -591,7 +506,7 @@ MsgBuilder::add( std::shared_ptr< Dir > dir )
 {
     traceAdding< Dir >();
     ItemType tmp;
-    tmp.m_item.m_dir = dir;
+    tmp.m_item = dir;
     tmp.m_type = DIR;
     M_items.push( tmp );
 }
@@ -601,7 +516,7 @@ MsgBuilder::add( std::shared_ptr< Cond > cond )
 {
     traceAdding< Cond >();
     ItemType tmp;
-    tmp.m_item.m_cond = cond;
+    tmp.m_item = cond;
     tmp.m_type = COND;
     M_items.push( tmp );
 }
@@ -611,7 +526,7 @@ MsgBuilder::add( std::shared_ptr< MsgBuilder::CondList > cond_list )
 {
     traceAdding< CondList >();
     ItemType tmp;
-    tmp.m_item.m_cond_list = cond_list;
+    tmp.m_item = cond_list;
     tmp.m_type = CONDLIST;
     M_items.push( tmp );
 }
@@ -621,7 +536,7 @@ MsgBuilder::add( std::shared_ptr< Token > token )
 {
     traceAdding< Token >();
     ItemType tmp;
-    tmp.m_item.m_token = token;
+    tmp.m_item = token;
     tmp.m_type = TOKEN;
     M_items.push( tmp );
 }
@@ -631,7 +546,7 @@ MsgBuilder::add( std::shared_ptr< Def > def )
 {
     traceAdding< Def >();
     ItemType tmp;
-    tmp.m_item.m_def = def;
+    tmp.m_item = def;
     tmp.m_type = DEF;
     M_items.push( tmp );
 }
@@ -641,7 +556,7 @@ MsgBuilder::add( std::shared_ptr< Region > region )
 {
     traceAdding< Region >();
     ItemType tmp;
-    tmp.m_item.m_region = region;
+    tmp.m_item = region;
     tmp.m_type = REG;
     M_items.push( tmp );
 }
@@ -651,7 +566,7 @@ MsgBuilder::add( std::shared_ptr< Point > point )
 {
     traceAdding< Point >();
     ItemType tmp;
-    tmp.m_item.m_point = point;
+    tmp.m_item = point;
     tmp.m_type = POINT;
     M_items.push( tmp );
 }
@@ -661,7 +576,7 @@ MsgBuilder::add( std::shared_ptr< UNum > unum )
 {
     traceAdding< UNum >();
     ItemType tmp;
-    tmp.m_item.m_unum = unum;
+    tmp.m_item = unum;
     tmp.m_type = UNUM;
     M_items.push( tmp );
 }
@@ -671,7 +586,7 @@ MsgBuilder::add( BallMoveToken bmt )
 {
     traceAdding< BallMoveToken >();
     ItemType tmp;
-    tmp.m_item.m_bmt = bmt;
+    tmp.m_item = bmt;
     tmp.m_type = BMT;
     M_items.push( tmp );
 }
@@ -681,7 +596,7 @@ MsgBuilder::add( std::shared_ptr< UNumSet > unum_set )
 {
     traceAdding< UNumSet >();
     ItemType tmp;
-    tmp.m_item.m_unum_set = unum_set;
+    tmp.m_item = unum_set;
     tmp.m_type = UNUMSET;
     M_items.push( tmp );
 }
@@ -691,7 +606,7 @@ MsgBuilder::add( std::shared_ptr< std::string > str )
 {
     traceAdding< std::string >();
     ItemType tmp;
-    tmp.m_item.m_str = str;
+    tmp.m_item = str;
     tmp.m_type = STR;
     M_items.push( tmp );
 }
@@ -701,7 +616,7 @@ MsgBuilder::add( std::shared_ptr< RuleIDList > rid_list )
 {
     traceAdding< RuleIDList >();
     ItemType tmp;
-    tmp.m_item.m_rule_id_list = rid_list;
+    tmp.m_item = rid_list;
     tmp.m_type = RIDLIST;
     M_items.push( tmp );
 }
@@ -711,7 +626,7 @@ MsgBuilder::add( std::shared_ptr< ActivateRules > act_rules )
 {
     traceAdding< ActivateRules >();
     ItemType tmp;
-    tmp.m_item.m_activate = act_rules;
+    tmp.m_item = act_rules;
     tmp.m_type = ACTIVATE;
     M_items.push( tmp );
 }
@@ -721,7 +636,7 @@ MsgBuilder::add( std::shared_ptr< Rule > rule )
 {
     traceAdding< Rule >();
     ItemType tmp;
-    tmp.m_item.m_rule = rule;
+    tmp.m_item = rule;
     tmp.m_type = RULE;
     M_items.push( tmp );
 }
@@ -731,7 +646,7 @@ MsgBuilder::add( RuleID rid )
 {
     traceAdding< BallMoveToken >();
     ItemType tmp;
-    tmp.m_item.m_rid = std::shared_ptr< RuleID >( new RuleID( rid ) );
+    tmp.m_item = std::shared_ptr< RuleID >( new RuleID( rid ) );
     tmp.m_type = RID;
     M_items.push( tmp );
 }
