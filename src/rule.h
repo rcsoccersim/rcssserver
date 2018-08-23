@@ -107,10 +107,13 @@ public:
 	virtual
 	~CondRule();
 
-	const Cond * getCond() const;
+	const std::shared_ptr< const Cond > & getCond() const
+      {
+          return M_cond;
+      }
 
 private:
-	std::shared_ptr< Cond > M_cond;
+	std::shared_ptr< const Cond > M_cond;
 };
 
 

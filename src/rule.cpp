@@ -205,14 +205,6 @@ CondRule::~CondRule()
 
 }
 
-const
-Cond *
-CondRule::getCond() const
-{
-    return M_cond.get();
-}
-
-
 SimpleRule::SimpleRule( std::shared_ptr< Cond > cond )
     : CondRule( cond )
 {
