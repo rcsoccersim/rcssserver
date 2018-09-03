@@ -1,3 +1,7 @@
+[15.5.0]
+  * Fix build problems on Ubuntu 18.04. Replace all auto_ptr variables
+    with unique_ptr or shared_ptr. Now, rcssserver requires c++14.
+
 [15.4.0]
   * Improvement of the referee. When two or more players kick/tackle
     the ball in the same cycle, the last kicker is the one that

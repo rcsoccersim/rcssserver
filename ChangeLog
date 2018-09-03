@@ -1,3 +1,9 @@
+2018-09-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- update a point version number. Official release 15.5.0
+
 2017-10-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* src/referee.cpp:
