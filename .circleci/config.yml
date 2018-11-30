@@ -1,0 +1,44 @@
+version: 2
+
+defaults: &defaults
+  working_directory: /home/circleci/rcssserver
+  docker:
+    - image: ubuntu:xenial
+
+jobs:
+  build:
+    <<: *defaults
+    parallelism: 1
+    steps:
+      - checkout
+      - run:
+          name: Update system
+          command: apt-get update
+      - run:
+          name: Install dependencies
+          command: apt-get install g++ build-essential libboost-all-dev bison flex -y
+      - run:
+          name: Install autotools libraries
+          command: apt-get install autoconf -y
+      - run:
+          name: Generate configure file
+          command: |
+            aclocal
+            autoreconf --install
+            automake --add-missing
+      - run:
+          name: Configure, run make and install
+          command: |
+            ./configure
+            make
+            make install
+            ldconfig
+      - run:
+          name: Check if rcssserver can run
+          command: RCSS_CONF_DIR=. timeout 3 rcssserver || echo Run successfully
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - build
