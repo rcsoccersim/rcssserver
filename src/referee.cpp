@@ -3312,7 +3312,7 @@ PenaltyRef::ballCaught( const Player & catcher )
                       << -M_cur_pen_taker
                       << std::endl;
             // taker team's goalie catches the ball
-            penalty_foul( (Side)( -M_cur_pen_taker ) );
+            penalty_foul( (Side)( M_cur_pen_taker ) );
         }
         else if ( ! inPenaltyArea( M_pen_side, M_stadium.ball().pos() ) )
         {
