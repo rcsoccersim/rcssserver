@@ -3460,6 +3460,16 @@ PenaltyRef::tackleTaken( const Player & tackler,
         return;
     }
 
+    const PlayMode pm = M_stadium.playmode();
+
+    if ( pm == PM_PenaltyMiss_Left
+         || pm == PM_PenaltyScore_Left
+         || pm == PM_PenaltyMiss_Right
+         || pm == PM_PenaltyScore_Right )
+    {
+	    return;
+    }
+
     bool detect_charge = false;
     bool detect_yellow = false;
     bool detect_red = false;
