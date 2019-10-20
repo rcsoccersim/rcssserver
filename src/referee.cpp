@@ -1426,6 +1426,195 @@ OffsideRef::checkPlayerAfterOffside()
     }
 }
 
+
+//**********
+// IllegalDefenseRef
+//**********
+
+void IllegalDefenseRef::kickTaken(const Player &kicker, const double accel_r)
+{
+    if ( ! ServerParam::instance().illegal_defense() )
+    {
+        return;
+    }
+
+    if ( isPenaltyShootOut( M_stadium.playmode() ) )
+    {
+        return;
+    }
+
+    if ( M_stadium.playmode() != PM_PlayOn )
+    {
+        M_last_kicker_side = NEUTRAL;
+        return;
+    }
+
+    if ( M_last_kick_time == M_stadium.time()
+         && (kicker.side() != M_last_kicker_side || M_last_kicker_side == NEUTRAL ) )
+    {
+        M_last_kicker_side = NEUTRAL;
+        return;
+    }
+
+    M_last_kick_time = M_stadium.time();
+    M_last_kicker_side = kicker.side();
+}
+
+void IllegalDefenseRef::tackleTaken(const Player &tackler, const double accel_r, const bool foul)
+{
+    kickTaken(tackler, accel_r);
+}
+
+void
+IllegalDefenseRef::analyse()
+{
+    if ( ! ServerParam::instance().illegal_defense() )
+    {
+        return;
+    }
+
+    if ( isPenaltyShootOut( M_stadium.playmode() ) )
+    {
+        return;
+    }
+
+    if ( M_stadium.playmode() != PM_PlayOn )
+    {
+        if ( !ServerParam::instance().illegal_defense_reset_after_freekick() )
+        {
+            M_left_illegal_cycle_number = 0;
+            M_right_illegal_cycle_number = 0;
+            M_left_average_ball_pos = PVector();
+            M_right_average_ball_pos = PVector();
+        }
+        return;
+    }
+
+    int left_player_illegal = 0;
+    int right_player_illegal = 0;
+
+    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
+    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+          p != end;
+          ++p )
+    {
+        if ( ! (*p)->isEnabled() ) continue;
+        if ( M_stadium.ball().pos().x < 0 && M_last_kicker_side == RIGHT)
+        {
+            if ( (*p)->side() == LEFT )
+            {
+                if ( (*p)->pos().x < -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegal_defense_distance() )
+                {
+                    left_player_illegal += 1;
+                }
+            }
+        }
+        else if ( M_stadium.ball().pos().x > 0 && M_last_kicker_side == LEFT)
+        {
+            if ( (*p)->side() == RIGHT )
+            {
+                if ( (*p)->pos().x > ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegal_defense_distance() )
+                {
+                    right_player_illegal += 1;
+                }
+            }
+        }
+    }
+
+    if ( left_player_illegal > ServerParam::instance().illegal_defense_number() )
+    {
+        M_left_illegal_cycle_number += 1;
+        M_left_average_ball_pos += M_stadium.ball().pos();
+        std::cout<<"stadium cycle:"<<M_stadium.time()<<" "<<"left illegal cycle is "<<M_left_illegal_cycle_number<<std::endl;
+    }
+    else if ( !ServerParam::instance().illegal_defense_reset_after_freekick() )
+    {
+        M_left_illegal_cycle_number = 0;
+        M_left_average_ball_pos = PVector();
+    }
+
+    if ( right_player_illegal > ServerParam::instance().illegal_defense_number() )
+    {
+        M_right_illegal_cycle_number += 1;
+        M_right_average_ball_pos += M_stadium.ball().pos();
+        std::cout<<"stadium cycle:"<<M_stadium.time()<<" "<<"right illegal cycle is "<<M_right_illegal_cycle_number<<std::endl;
+    }
+    else if ( !ServerParam::instance().illegal_defense_reset_after_freekick() )
+    {
+        M_right_illegal_cycle_number = 0;
+        M_right_average_ball_pos = PVector();
+    }
+
+    if ( M_left_illegal_cycle_number > ServerParam::instance().illegal_defense_duration() )
+    {
+        M_left_average_ball_pos /= static_cast<double>(ServerParam::instance().illegal_defense_duration());
+        PVector free_kick_ball_pos = calculateFreeKickPositon(LEFT);
+        M_stadium.placeBall(PM_FreeKick_Right, RIGHT, free_kick_ball_pos);
+        M_left_illegal_cycle_number = 0;
+        M_left_average_ball_pos = PVector(0, 0);
+    }
+
+    if ( M_right_illegal_cycle_number > ServerParam::instance().illegal_defense_duration() )
+    {
+        M_right_average_ball_pos /= static_cast<double>(ServerParam::instance().illegal_defense_duration());
+        PVector free_kick_ball_pos = calculateFreeKickPositon(RIGHT);
+        M_stadium.placeBall(PM_FreeKick_Left, LEFT, free_kick_ball_pos);
+        M_right_illegal_cycle_number = 0;
+        M_right_average_ball_pos = PVector(0, 0);
+    }
+
+}
+
+PVector IllegalDefenseRef::calculateFreeKickPositon(Side side)
+{
+    PVector free_kick_ball_pos;
+    if ( side == LEFT)
+    {
+        free_kick_ball_pos = M_left_average_ball_pos;
+        if ( free_kick_ball_pos.x > -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegal_defense_distance() )
+        {
+            free_kick_ball_pos.x = -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegal_defense_distance();
+        }
+        else
+        {
+            if ( free_kick_ball_pos.y > 0 )
+            {
+                free_kick_ball_pos.x = -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::PENALTY_AREA_LENGTH / 2.0;
+                free_kick_ball_pos.y = ServerParam::PENALTY_AREA_WIDTH / 4.0;
+            }
+            else
+            {
+                free_kick_ball_pos.x = -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::PENALTY_AREA_LENGTH / 2.0;
+                free_kick_ball_pos.y = -ServerParam::PENALTY_AREA_WIDTH / 4.0;
+            }
+        }
+    }
+    else
+    {
+        free_kick_ball_pos = M_right_average_ball_pos;
+        if ( free_kick_ball_pos.x < ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegal_defense_distance() )
+        {
+            free_kick_ball_pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegal_defense_distance();
+        }
+        else
+        {
+            if ( free_kick_ball_pos.y > 0 )
+            {
+                free_kick_ball_pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::PENALTY_AREA_LENGTH / 2.0;
+                free_kick_ball_pos.y = ServerParam::PENALTY_AREA_WIDTH / 4.0;
+            }
+            else
+            {
+                free_kick_ball_pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::PENALTY_AREA_LENGTH / 2.0;
+                free_kick_ball_pos.y = -ServerParam::PENALTY_AREA_WIDTH / 4.0;
+            }
+        }
+    }
+
+    return free_kick_ball_pos;
+
+}
+
 //**********
 // FreeKickRef
 //**********
