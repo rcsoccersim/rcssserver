@@ -112,6 +112,7 @@ Stadium::Stadium()
     // TODO: fix dependencies among referees.
     M_referees.push_back( new TimeRef( *this ) );
     M_referees.push_back( new BallStuckRef( *this ) );
+    M_referees.push_back( new IllegalDefenseRef( *this ) );
     M_referees.push_back( new OffsideRef( *this ) );
     M_referees.push_back( new FreeKickRef( *this ) );
     M_referees.push_back( new TouchRef( *this ) );
