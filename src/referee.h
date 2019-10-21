@@ -459,8 +459,6 @@ private:
 
     int M_left_illegal_cycle_number;
     int M_right_illegal_cycle_number;
-    PVector M_left_average_ball_pos;
-    PVector M_right_average_ball_pos;
     Side M_last_kicker_side;
     int M_last_kick_time;
 
@@ -469,9 +467,7 @@ public:
     IllegalDefenseRef( Stadium & stadium )
         : Referee( stadium ),
           M_left_illegal_cycle_number( 0 ),
-          M_right_illegal_cycle_number( 0 ),
-          M_left_average_ball_pos( PVector(0, 0) ),
-          M_right_average_ball_pos( PVector(0, 0) )
+          M_right_illegal_cycle_number( 0 )
       { }
 
     void kickTaken( const Player & kicker,

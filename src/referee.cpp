@@ -1484,8 +1484,6 @@ IllegalDefenseRef::analyse()
         {
             M_left_illegal_cycle_number = 0;
             M_right_illegal_cycle_number = 0;
-            M_left_average_ball_pos = PVector();
-            M_right_average_ball_pos = PVector();
         }
         return;
     }
@@ -1524,94 +1522,52 @@ IllegalDefenseRef::analyse()
     if ( left_player_illegal > ServerParam::instance().illegal_defense_number() )
     {
         M_left_illegal_cycle_number += 1;
-        M_left_average_ball_pos += M_stadium.ball().pos();
         std::cout<<"stadium cycle:"<<M_stadium.time()<<" "<<"left illegal cycle is "<<M_left_illegal_cycle_number<<std::endl;
     }
     else if ( !ServerParam::instance().illegal_defense_reset_after_freekick() )
     {
         M_left_illegal_cycle_number = 0;
-        M_left_average_ball_pos = PVector();
     }
 
     if ( right_player_illegal > ServerParam::instance().illegal_defense_number() )
     {
         M_right_illegal_cycle_number += 1;
-        M_right_average_ball_pos += M_stadium.ball().pos();
         std::cout<<"stadium cycle:"<<M_stadium.time()<<" "<<"right illegal cycle is "<<M_right_illegal_cycle_number<<std::endl;
     }
     else if ( !ServerParam::instance().illegal_defense_reset_after_freekick() )
     {
         M_right_illegal_cycle_number = 0;
-        M_right_average_ball_pos = PVector();
     }
 
     if ( M_left_illegal_cycle_number > ServerParam::instance().illegal_defense_duration() )
     {
-        M_left_average_ball_pos /= static_cast<double>(ServerParam::instance().illegal_defense_duration());
         PVector free_kick_ball_pos = calculateFreeKickPositon(LEFT);
         M_stadium.placeBall(PM_FreeKick_Right, RIGHT, free_kick_ball_pos);
         M_left_illegal_cycle_number = 0;
-        M_left_average_ball_pos = PVector(0, 0);
     }
 
     if ( M_right_illegal_cycle_number > ServerParam::instance().illegal_defense_duration() )
     {
-        M_right_average_ball_pos /= static_cast<double>(ServerParam::instance().illegal_defense_duration());
         PVector free_kick_ball_pos = calculateFreeKickPositon(RIGHT);
         M_stadium.placeBall(PM_FreeKick_Left, LEFT, free_kick_ball_pos);
         M_right_illegal_cycle_number = 0;
-        M_right_average_ball_pos = PVector(0, 0);
     }
 
 }
 
 PVector IllegalDefenseRef::calculateFreeKickPositon(Side side)
 {
-    PVector free_kick_ball_pos;
-    if ( side == LEFT)
-    {
-        free_kick_ball_pos = M_left_average_ball_pos;
-        if ( free_kick_ball_pos.x > -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegal_defense_distance() )
-        {
-            free_kick_ball_pos.x = -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegal_defense_distance();
-        }
-        else
-        {
-            if ( free_kick_ball_pos.y > 0 )
-            {
-                free_kick_ball_pos.x = -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::PENALTY_AREA_LENGTH / 2.0;
-                free_kick_ball_pos.y = ServerParam::PENALTY_AREA_WIDTH / 4.0;
-            }
-            else
-            {
-                free_kick_ball_pos.x = -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::PENALTY_AREA_LENGTH / 2.0;
-                free_kick_ball_pos.y = -ServerParam::PENALTY_AREA_WIDTH / 4.0;
-            }
-        }
-    }
-    else
-    {
-        free_kick_ball_pos = M_right_average_ball_pos;
-        if ( free_kick_ball_pos.x < ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegal_defense_distance() )
-        {
-            free_kick_ball_pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegal_defense_distance();
-        }
-        else
-        {
-            if ( free_kick_ball_pos.y > 0 )
-            {
-                free_kick_ball_pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::PENALTY_AREA_LENGTH / 2.0;
-                free_kick_ball_pos.y = ServerParam::PENALTY_AREA_WIDTH / 4.0;
-            }
-            else
-            {
-                free_kick_ball_pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::PENALTY_AREA_LENGTH / 2.0;
-                free_kick_ball_pos.y = -ServerParam::PENALTY_AREA_WIDTH / 4.0;
-            }
-        }
-    }
+    PVector pos;
+    pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::PENALTY_AREA_LENGTH / 2.0;
+    pos.y = ServerParam::PENALTY_AREA_WIDTH / 4.0;
 
-    return free_kick_ball_pos;
+    if ( side == LEFT)
+        pos.x *= (-1.0);
+
+    if ( M_stadium.ball().pos().y < 0 )
+        pos.y *= (-1.0);
+
+    return pos;
 
 }
 
