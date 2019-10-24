@@ -1433,7 +1433,7 @@ OffsideRef::checkPlayerAfterOffside()
 
 void IllegalDefenseRef::kickTaken(const Player &kicker, const double accel_r)
 {
-    if ( ! ServerParam::instance().illegal_defense() )
+    if ( ! ServerParam::instance().useIllegalDefense())
     {
         return;
     }
@@ -1468,7 +1468,7 @@ void IllegalDefenseRef::tackleTaken(const Player &tackler, const double accel_r,
 void
 IllegalDefenseRef::analyse()
 {
-    if ( ! ServerParam::instance().illegal_defense() )
+    if ( ! ServerParam::instance().useIllegalDefense() )
     {
         return;
     }
@@ -1501,7 +1501,7 @@ IllegalDefenseRef::analyse()
         {
             if ( (*p)->side() == LEFT )
             {
-                if ( (*p)->pos().x < -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegal_defense_distance() )
+                if ( (*p)->pos().x < -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegalDefenseDistX() )
                 {
                     left_player_illegal += 1;
                 }
@@ -1511,7 +1511,7 @@ IllegalDefenseRef::analyse()
         {
             if ( (*p)->side() == RIGHT )
             {
-                if ( (*p)->pos().x > ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegal_defense_distance() )
+                if ( (*p)->pos().x > ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegalDefenseDistX() )
                 {
                     right_player_illegal += 1;
                 }
@@ -1519,7 +1519,7 @@ IllegalDefenseRef::analyse()
         }
     }
 
-    if ( left_player_illegal > ServerParam::instance().illegal_defense_number() )
+    if ( left_player_illegal > ServerParam::instance().illegalDefenseNumber() )
     {
         M_left_illegal_cycle_number += 1;
         std::cout<<"stadium cycle:"<<M_stadium.time()<<" "<<"left illegal cycle is "<<M_left_illegal_cycle_number<<std::endl;
@@ -1529,7 +1529,7 @@ IllegalDefenseRef::analyse()
         M_left_illegal_cycle_number = 0;
     }
 
-    if ( right_player_illegal > ServerParam::instance().illegal_defense_number() )
+    if ( right_player_illegal > ServerParam::instance().illegalDefenseNumber() )
     {
         M_right_illegal_cycle_number += 1;
         std::cout<<"stadium cycle:"<<M_stadium.time()<<" "<<"right illegal cycle is "<<M_right_illegal_cycle_number<<std::endl;
@@ -1539,14 +1539,14 @@ IllegalDefenseRef::analyse()
         M_right_illegal_cycle_number = 0;
     }
 
-    if ( M_left_illegal_cycle_number > ServerParam::instance().illegal_defense_duration() )
+    if ( M_left_illegal_cycle_number > ServerParam::instance().illegalDefenseDuration() )
     {
         PVector free_kick_ball_pos = calculateFreeKickPositon(LEFT);
         M_stadium.placeBall(PM_FreeKick_Right, RIGHT, free_kick_ball_pos);
         M_left_illegal_cycle_number = 0;
     }
 
-    if ( M_right_illegal_cycle_number > ServerParam::instance().illegal_defense_duration() )
+    if ( M_right_illegal_cycle_number > ServerParam::instance().illegalDefenseDuration() )
     {
         PVector free_kick_ball_pos = calculateFreeKickPositon(RIGHT);
         M_stadium.placeBall(PM_FreeKick_Left, LEFT, free_kick_ball_pos);
@@ -1557,15 +1557,10 @@ IllegalDefenseRef::analyse()
 
 PVector IllegalDefenseRef::calculateFreeKickPositon(Side side)
 {
-    PVector pos;
-    pos.x = ServerParam::PITCH_LENGTH / 2.0 - ServerParam::PENALTY_AREA_LENGTH / 2.0;
-    pos.y = ServerParam::PENALTY_AREA_WIDTH / 4.0;
+    PVector pos(-41.5, 0.0);
 
     if ( side == LEFT)
         pos.x *= (-1.0);
-
-    if ( M_stadium.ball().pos().y < 0 )
-        pos.y *= (-1.0);
 
     return pos;
 
