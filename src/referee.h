@@ -456,32 +456,35 @@ private:
 class IllegalDefenseRef
     : public Referee {
 private:
+    static const int AFTER_ILLEGAL_DEFENSE_WAIT;
 
-    int M_left_illegal_cycle_number;
-    int M_right_illegal_cycle_number;
+    int M_left_illegal_counter;
+    int M_right_illegal_counter;
     Side M_last_kicker_side;
     int M_last_kick_time;
+    int M_after_illegal_defense_time;
 
 public:
     explicit
     IllegalDefenseRef( Stadium & stadium )
         : Referee( stadium ),
-          M_left_illegal_cycle_number( 0 ),
-          M_right_illegal_cycle_number( 0 )
+          M_left_illegal_counter( 0 ),
+          M_right_illegal_counter( 0 ),
+          M_after_illegal_defense_time( 0 )
       { }
 
     void kickTaken( const Player & kicker,
-                    const double accel_r );
+                    const double accel_r);
 
     void failedKickTaken( const Player & kicker )
       { }
 
     void tackleTaken( const Player & tackler,
                       const double accel_r,
-                      const bool foul );
+                      const bool foul);
 
     void failedTackleTaken( const Player & kicker,
-                            const bool )
+                            const bool foul)
       { }
 
     void ballCaught( const Player & )
@@ -490,13 +493,12 @@ public:
     void ballPunched( const Player & )
       { }
 
-    void ballTouched( const Player & player )
+    void ballTouched( const Player & )
       { }
 
     void analyse();
 
-    void playModeChange( PlayMode pm )
-      { }
+    void playModeChange( PlayMode pm );
 
 private:
 

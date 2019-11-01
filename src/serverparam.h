@@ -344,7 +344,6 @@ private:
     static const int ILLEGAL_DEFENSE_DURATION;
     static const int ILLEGAL_DEFENSE_NUMBER;
     static const double ILLEGAL_DEFENSE_DIST_X;
-    static const bool ILLEGAL_DEFENSE_RESET_AFTER_FREEKICK;
 
     double M_goal_width; /* goal width */
     double M_inertia_moment; /* intertia moment for turn */
@@ -619,7 +618,7 @@ private:
     int M_illegal_defense_duration;
     int M_illegal_defense_number;
     double M_illegal_defense_dist_x;
-    bool M_illegal_defense_reset_after_freekick;
+
 private:
 
     // setters & getters
@@ -967,8 +966,6 @@ public:
     int illegalDefenseDuration() const { return M_illegal_defense_duration; }
     int illegalDefenseNumber() const { return M_illegal_defense_number; }
     double illegalDefenseDistX() const { return M_illegal_defense_dist_x; }
-    bool illegal_defense_reset_after_freekick() const { return M_illegal_defense_reset_after_freekick; }
-
 
 };
 

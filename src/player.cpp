@@ -1129,6 +1129,8 @@ Player::kick( double power,
          M_stadium.playmode() == PM_AfterGoal_Right ||
          M_stadium.playmode() == PM_OffSide_Left ||
          M_stadium.playmode() == PM_OffSide_Right ||
+         M_stadium.playmode() == PM_Illegal_Defense_Left ||
+         M_stadium.playmode() == PM_Illegal_Defense_Right ||
          M_stadium.playmode() == PM_Foul_Charge_Left ||
          M_stadium.playmode() == PM_Foul_Charge_Right ||
          M_stadium.playmode() == PM_Foul_Push_Left ||
@@ -1260,6 +1262,8 @@ Player::doLongKick()
          M_stadium.playmode() == PM_AfterGoal_Right ||
          M_stadium.playmode() == PM_OffSide_Left ||
          M_stadium.playmode() == PM_OffSide_Right ||
+         M_stadium.playmode() == PM_Illegal_Defense_Left ||
+         M_stadium.playmode() == PM_Illegal_Defense_Right ||
          M_stadium.playmode() == PM_Foul_Charge_Left ||
          M_stadium.playmode() == PM_Foul_Charge_Right ||
          M_stadium.playmode() == PM_Foul_Push_Left ||
@@ -1927,6 +1931,8 @@ Player::tackle( double power_or_angle,
                  M_stadium.playmode() == PM_AfterGoal_Right  ||
                  M_stadium.playmode() == PM_OffSide_Left ||
                  M_stadium.playmode() == PM_OffSide_Right ||
+                 M_stadium.playmode() == PM_Illegal_Defense_Left ||
+                 M_stadium.playmode() == PM_Illegal_Defense_Right ||
                  M_stadium.playmode() == PM_Foul_Charge_Left ||
                  M_stadium.playmode() == PM_Foul_Charge_Right ||
                  M_stadium.playmode() == PM_Foul_Push_Left ||

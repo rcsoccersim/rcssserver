@@ -356,7 +356,7 @@ const bool ServerParam::USE_ILLEGAL_DEFENSE = true;
 const int ServerParam::ILLEGAL_DEFENSE_DURATION = 100;
 const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 7;
 const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 25.0;
-const bool ServerParam::ILLEGAL_DEFENSE_RESET_AFTER_FREEKICK = true;
+
 ServerParam &
 ServerParam::instance()
 {
@@ -922,7 +922,6 @@ ServerParam::addParams()
     addParam( "illegal_defense_duration", M_illegal_defense_duration, "", 16);
     addParam( "illegal_defense_number", M_illegal_defense_number, "", 16);
     addParam( "illegal_defense_dist_x", M_illegal_defense_dist_x, "", 16);
-    addParam( "illegal_defense_reset_after_freekick", M_illegal_defense_reset_after_freekick, "", 16);
 
 }
 
@@ -1389,7 +1388,6 @@ ServerParam::setDefaults()
     M_illegal_defense_duration = ILLEGAL_DEFENSE_DURATION;
     M_illegal_defense_number = ILLEGAL_DEFENSE_NUMBER;
     M_illegal_defense_dist_x = ILLEGAL_DEFENSE_DIST_X;
-    M_illegal_defense_reset_after_freekick = ILLEGAL_DEFENSE_RESET_AFTER_FREEKICK;
 
     setHalfTime( HALF_TIME );
     setExtraHalfTime( EXTRA_HALF_TIME );

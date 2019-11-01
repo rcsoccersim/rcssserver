@@ -112,12 +112,12 @@ Stadium::Stadium()
     // TODO: fix dependencies among referees.
     M_referees.push_back( new TimeRef( *this ) );
     M_referees.push_back( new BallStuckRef( *this ) );
-    M_referees.push_back( new IllegalDefenseRef( *this ) );
     M_referees.push_back( new OffsideRef( *this ) );
     M_referees.push_back( new FreeKickRef( *this ) );
     M_referees.push_back( new TouchRef( *this ) );
     M_referees.push_back( new CatchRef( *this ) );
     M_referees.push_back( new FoulRef( *this ) );
+    M_referees.push_back( new IllegalDefenseRef( *this ) );
     M_referees.push_back( new KeepawayRef( *this ) );
     M_referees.push_back( new PenaltyRef( *this ) );
 
@@ -858,6 +858,8 @@ Stadium::step()
               || playmode() == PM_AfterGoal_Left
               || playmode() == PM_OffSide_Right
               || playmode() == PM_OffSide_Left
+              || playmode() == PM_Illegal_Defense_Left
+              || playmode() == PM_Illegal_Defense_Right
               || playmode() == PM_Foul_Charge_Right
               || playmode() == PM_Foul_Charge_Left
               || playmode() == PM_Foul_Push_Right
@@ -1502,7 +1504,8 @@ Stadium::changePlayMode( const PlayMode pm )
          || pm == PM_FreeKick_Left
          || pm == PM_IndFreeKick_Left
          || pm == PM_CornerKick_Left
-         || pm == PM_GoalKick_Left )
+         || pm == PM_GoalKick_Left
+         || pm == PM_Illegal_Defense_Right )
     {
         M_kick_off_side = LEFT;
     }
@@ -1511,7 +1514,8 @@ Stadium::changePlayMode( const PlayMode pm )
               || pm == PM_FreeKick_Right
               || pm == PM_IndFreeKick_Right
               || pm == PM_CornerKick_Right
-              || pm == PM_GoalKick_Right )
+              || pm == PM_GoalKick_Right
+              || pm == PM_Illegal_Defense_Left )
     {
         M_kick_off_side = RIGHT;
     }
