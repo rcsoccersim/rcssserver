@@ -1,3 +1,15 @@
+2019-11-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
+
+	* NEWS:
+	* configure.ac:
+	- update a point version number. Official release 15.6.0
+
+	* Makefile.am:
+	- add README.md to the distribution target.
+
+	* src/serverparam.cpp:
+	- change the default value of server::dash_angle_step from 45.0 to 1.0.
+
 2018-09-03  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:
