@@ -3312,7 +3312,7 @@ PenaltyRef::ballCaught( const Player & catcher )
                       << -M_cur_pen_taker
                       << std::endl;
             // taker team's goalie catches the ball
-            penalty_foul( (Side)( -M_cur_pen_taker ) );
+            penalty_foul( (Side)( M_cur_pen_taker ) );
         }
         else if ( ! inPenaltyArea( M_pen_side, M_stadium.ball().pos() ) )
         {
@@ -3458,6 +3458,16 @@ PenaltyRef::tackleTaken( const Player & tackler,
     if ( ! isPenaltyShootOut( M_stadium.playmode() ) )
     {
         return;
+    }
+
+    const PlayMode pm = M_stadium.playmode();
+
+    if ( pm == PM_PenaltyMiss_Left
+         || pm == PM_PenaltyScore_Left
+         || pm == PM_PenaltyMiss_Right
+         || pm == PM_PenaltyScore_Right )
+    {
+	    return;
     }
 
     bool detect_charge = false;
