@@ -1546,7 +1546,7 @@ IllegalDefenseRef::analyse()
         }
     }
 
-    if ( left_player_illegal > ServerParam::instance().illegalDefenseNumber() )
+    if ( left_player_illegal >= ServerParam::instance().illegalDefenseNumber() )
     {
         M_left_illegal_counter += 1;
     }
@@ -1555,7 +1555,7 @@ IllegalDefenseRef::analyse()
 //        M_left_illegal_counter = 0;
 //    }
 
-    if ( right_player_illegal > ServerParam::instance().illegalDefenseNumber() )
+    if ( right_player_illegal >= ServerParam::instance().illegalDefenseNumber() )
     {
         M_right_illegal_counter += 1;
     }

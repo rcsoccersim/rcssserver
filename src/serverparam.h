@@ -614,7 +614,6 @@ private:
     int M_long_kick_delay;
 
     // 16.0.0
-    bool M_use_illegal_defense;
     int M_illegal_defense_duration;
     int M_illegal_defense_number;
     double M_illegal_defense_dist_x;
@@ -962,7 +961,7 @@ public:
     int longKickDelay() const { return M_long_kick_delay; }
 
     // v16
-    bool useIllegalDefense() const { return M_use_illegal_defense; }
+    bool useIllegalDefense() const { return M_illegal_defense_number != 0; }
     int illegalDefenseDuration() const { return M_illegal_defense_duration; }
     int illegalDefenseNumber() const { return M_illegal_defense_number; }
     double illegalDefenseDistX() const { return M_illegal_defense_dist_x; }

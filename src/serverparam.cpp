@@ -352,9 +352,8 @@ const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
 
 // 16.0.0
-const bool ServerParam::USE_ILLEGAL_DEFENSE = true;
 const int ServerParam::ILLEGAL_DEFENSE_DURATION = 100;
-const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 7;
+const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 8;
 const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 25.0;
 
 ServerParam &
@@ -918,9 +917,8 @@ ServerParam::addParams()
     // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
 
     // v16
-    addParam( "use_illegal_defense", M_use_illegal_defense, "", 16);
     addParam( "illegal_defense_duration", M_illegal_defense_duration, "", 16);
-    addParam( "illegal_defense_number", M_illegal_defense_number, "", 16);
+    addParam( "illegal_defense_number", M_illegal_defense_number, "if be 0, illegal defense rule will be disable", 16);
     addParam( "illegal_defense_dist_x", M_illegal_defense_dist_x, "", 16);
 
 }
@@ -1384,7 +1382,6 @@ ServerParam::setDefaults()
     M_long_kick_delay = LONG_KICK_DELAY;
 
     // 16.0.0
-    M_use_illegal_defense = USE_ILLEGAL_DEFENSE;
     M_illegal_defense_duration = ILLEGAL_DEFENSE_DURATION;
     M_illegal_defense_number = ILLEGAL_DEFENSE_NUMBER;
     M_illegal_defense_dist_x = ILLEGAL_DEFENSE_DIST_X;
