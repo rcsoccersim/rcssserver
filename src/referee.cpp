@@ -1564,7 +1564,7 @@ IllegalDefenseRef::analyse()
         M_right_illegal_counter = 0;
     }
 
-    if ( M_left_illegal_counter > ServerParam::instance().illegalDefenseDuration() )
+    if ( M_left_illegal_counter >= ServerParam::instance().illegalDefenseDuration() )
     {
         PVector free_kick_ball_pos = calculateFreeKickPositon(LEFT);
         M_stadium.clearBallCatcher();
@@ -1573,7 +1573,7 @@ IllegalDefenseRef::analyse()
         M_after_illegal_defense_time = 0;
     }
 
-    if ( M_right_illegal_counter > ServerParam::instance().illegalDefenseDuration() )
+    if ( M_right_illegal_counter >= ServerParam::instance().illegalDefenseDuration() )
     {
         PVector free_kick_ball_pos = calculateFreeKickPositon(RIGHT);
         M_stadium.clearBallCatcher();
