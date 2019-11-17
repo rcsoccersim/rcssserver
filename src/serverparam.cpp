@@ -352,7 +352,7 @@ const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
 
 // 16.0.0
-const int ServerParam::ILLEGAL_DEFENSE_DURATION = 100;
+const int ServerParam::ILLEGAL_DEFENSE_DURATION = 20;
 const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 8;
 const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 25.0;
 

@@ -1550,19 +1550,19 @@ IllegalDefenseRef::analyse()
     {
         M_left_illegal_counter += 1;
     }
-//    else
-//    {
-//        M_left_illegal_counter = 0;
-//    }
+    else
+    {
+        M_left_illegal_counter = 0;
+    }
 
     if ( right_player_illegal >= ServerParam::instance().illegalDefenseNumber() )
     {
         M_right_illegal_counter += 1;
     }
-//    else
-//    {
-//        M_right_illegal_counter = 0;
-//    }
+    else
+    {
+        M_right_illegal_counter = 0;
+    }
 
     if ( M_left_illegal_counter > ServerParam::instance().illegalDefenseDuration() )
     {
