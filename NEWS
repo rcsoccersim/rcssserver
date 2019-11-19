@@ -1,3 +1,7 @@
+[15.6.0]
+  * Change the default value of server::dash_angle_step from 45.0 to
+    1.0. This change means players can dash to almost any direction.
+
 [15.5.0]
   * Fix build problems on Ubuntu 18.04. Replace all auto_ptr variables
     with unique_ptr or shared_ptr. Now, rcssserver requires c++14.
