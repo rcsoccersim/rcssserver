@@ -6,7 +6,7 @@
  Copyright (C) 1996-2000 Electrotechnical Laboratory.
  Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
  Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
- Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
+ Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda, Oliver Obst,
  Mikhail Prokopenko, Jan Wendler
  Copyright (C) 2002- RoboCup Soccer Simulator Maintainance Group.
 
@@ -135,6 +135,7 @@ public:
     static const double GOAL_AREA_WIDTH;
     static const double GOAL_WIDTH;
     static const double GOAL_DEPTH;
+    static const double GOAL_HEIGHT;
     static const double PENALTY_SPOT_DIST;
     static const double CORNER_ARC_R;
     static const double KICK_OFF_CLEAR_DISTANCE;
@@ -157,6 +158,9 @@ private:
     static const double PLAYER_SIZE;
     static const double	PLAYER_WIDGET_SIZE;
     static const double PLAYER_DECAY;
+    // oo 16.x
+    static const double PLAYER_HEIGHT;
+
     static const double PLAYER_RAND;
     static const double PLAYER_WEIGHT;
     static const double PLAYER_SPEED_MAX;
@@ -182,9 +186,14 @@ private:
     static const double KICK_RAND_FACTOR_L;
     static const double KICK_RAND_FACTOR_R;
 
+    static const double GRAVITY;
+    static const bool USE_BALL_3D;
+
     static const double GOALIE_CATCHABLE_POSSIBILITY;
     static const double GOALIE_CATCHABLE_AREA_LENGTH;
     static const double GOALIE_CATCHABLE_AREA_WIDTH;
+    static const double GOALIE_CATCHABLE_AREA_HEIGHT;
+
     static const int GOALIE_CATCH_BAN_CYCLE;
     static const int GOALIE_MAX_MOVES;
 
@@ -341,8 +350,12 @@ private:
     static const int LONG_KICK_DELAY;
 
     double M_goal_width; /* goal width */
+    // oo for 2.5d simulation
+    double M_goal_height; /* goal height */
     double M_inertia_moment; /* intertia moment for turn */
     double M_player_size; /* player size */
+    // oo for 2.5d simulation
+    double M_player_height; /* player height */
     double M_player_decay; /* player decay */
     double M_player_rand; /* player rand */
     double M_player_weight; /* player weight */
@@ -401,11 +414,14 @@ private:
     double M_wind_rand; /* wind force for force */
     bool M_wind_none; /* wind factor is none */
     bool M_wind_random; /* wind factor is random */
-
     double M_kickable_area; /* kickable_area */
+    // oo for 2.5d simulation
+    double M_gravity; /* gravity in ms^-2 */
+    bool M_use_ball_3d; /* if false force 2d ball */
 
     double M_catchable_area_l; /* goalie catchable area length */
     double M_catchable_area_w; /* goalie catchable area width */
+    double M_catchable_area_h; /* goalie catchable area height */
     double M_catch_probability; /* goalie catchable possibility */
     int M_goalie_max_moves; /* goalie max moves after a catch */
     bool M_keepaway; /* keepaway mode on/off */
@@ -674,9 +690,11 @@ public:
     // access methods
 
     double goalWidth() const { return M_goal_width; }
+    double goalHeight() const { return M_goal_height; }
     double inertiaMoment() const { return M_inertia_moment; }
     double playerSize() const { return M_player_size; }
     double playerDecay() const { return M_player_decay; }
+    double playerHeight() const { return M_player_height; }
     double playerRand() const { return M_player_rand; }
     double playerWeight() const { return M_player_weight; }
     double playerSpeedMax() const { return M_player_speed_max; }
@@ -733,6 +751,9 @@ public:
     bool windRandom() const { return M_wind_random; }
 
     double kickableArea() const { return M_kickable_area; }
+
+    double gravity() const { return M_gravity; }
+    bool useBall3d() const { return M_use_ball_3d; }
 
     double catchAreaLength() const { return M_catchable_area_l; }
     double catchAreaWidth() const { return M_catchable_area_w; }

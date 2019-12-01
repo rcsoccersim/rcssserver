@@ -6,7 +6,7 @@
  Copyright (C) 1996-2000 Electrotechnical Laboratory.
  Itsuki Noda, Yasuo Kuniyoshi and Hitoshi Matsubara.
  Copyright (C) 2000, 2001 RoboCup Soccer Server Maintainance Group.
- Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda,
+ Patrick Riley, Tom Howard, Daniel Polani, Itsuki Noda, Oliver Obst,
  Mikhail Prokopenko, Jan Wendler
  Copyright (C) 2002- RoboCup Soccer Simulator Maintainance Group.
 
@@ -119,6 +119,8 @@ const double ServerParam::GOAL_AREA_LENGTH = 5.5;
 const double ServerParam::GOAL_AREA_WIDTH = 18.32;
 const double ServerParam::GOAL_WIDTH = 14.02;
 const double ServerParam::GOAL_DEPTH = 2.44;
+// oo: the lower edge of the crossbar must be 2.44 metres (8 ft) above the ground
+const double ServerParam::GOAL_HEIGHT = 2.44;
 const double ServerParam::PENALTY_SPOT_DIST = 11.0;
 const double ServerParam::CORNER_ARC_R = 1.0;
 const double ServerParam::KICK_OFF_CLEAR_DISTANCE = CENTER_CIRCLE_R;
@@ -139,6 +141,7 @@ const double ServerParam::BALL_ACCEL_MAX = 2.7;
 const double ServerParam::PLAYER_SIZE = 0.3;
 const double ServerParam::PLAYER_WIDGET_SIZE = 1.0;
 const double ServerParam::PLAYER_DECAY = 0.4;
+const double ServerParam::PLAYER_HEIGHT = 1.75; // oo 5'9 in american
 const double ServerParam::PLAYER_RAND = 0.1;
 const double ServerParam::PLAYER_WEIGHT = 60.0;
 const double ServerParam::PLAYER_SPEED_MAX = 1.05; // [13.0.0] 1.2 -> 1.05
@@ -164,10 +167,13 @@ const double ServerParam::PRAND_FACTOR_R = 1.0;
 const double ServerParam::KICK_RAND_FACTOR_L = 1.0;
 const double ServerParam::KICK_RAND_FACTOR_R = 1.0;
 
+const double ServerParam::GRAVITY = 9.81; // unit: ms^-2
+const bool ServerParam::USE_BALL_3D = true;
 
 const double ServerParam::GOALIE_CATCHABLE_POSSIBILITY = 1.0;
 const double ServerParam::GOALIE_CATCHABLE_AREA_LENGTH = 1.2; // [12.0.0] 2.0 -> 1.2
 const double ServerParam::GOALIE_CATCHABLE_AREA_WIDTH = 1.0;
+const double ServerParam::GOALIE_CATCHABLE_AREA_HEIGHT = 2.44; // default goal height is 2.44m
 const int ServerParam::GOALIE_CATCH_BAN_CYCLE = 5;
 const int ServerParam::GOALIE_MAX_MOVES = 2;
 
@@ -907,6 +913,13 @@ ServerParam::addParams()
               rcss::conf::makeGetter( M_red_card_probability ),
               "", 15 );
 
+    // v16
+    addParam( "gravity", M_gravity, "", 16 );
+    addParam( "use_ball_3d", M_use_ball_3d, "", 16 );
+    addParam( "goal_height", M_goal_height, "", 16 );
+    addParam( "player_height", M_player_height, "", 16 );
+    addParam( "catchable_area_h", M_catchable_area_h, "", 16 );
+
     // XXX
     // addParam( "random_seed", M_random_seed, "", 999 );
     // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
@@ -1108,10 +1121,12 @@ ServerParam::setDefaults()
 {
     /* set default parameter */
     M_goal_width = GOAL_WIDTH;
+    M_goal_height = GOAL_HEIGHT;
 
     M_inertia_moment = IMPARAM;
     M_player_size = PLAYER_SIZE;
     M_player_decay = PLAYER_DECAY;
+    M_player_height = PLAYER_HEIGHT;
     M_player_rand = PLAYER_RAND;
     M_player_weight = PLAYER_WEIGHT;
     M_player_speed_max = PLAYER_SPEED_MAX;
@@ -1136,6 +1151,9 @@ ServerParam::setDefaults()
     M_player_rand_factor_r = PRAND_FACTOR_R;
     M_kick_rand_factor_l = KICK_RAND_FACTOR_L;
     M_kick_rand_factor_r = KICK_RAND_FACTOR_R;
+
+    M_gravity = GRAVITY;
+    M_use_ball_3d = USE_BALL_3D;
 
     M_ball_size = BALL_SIZE;
     M_ball_decay = BALL_DECAY;
@@ -1169,6 +1187,7 @@ ServerParam::setDefaults()
 
     M_catchable_area_l = GOALIE_CATCHABLE_AREA_LENGTH;
     M_catchable_area_w = GOALIE_CATCHABLE_AREA_WIDTH;
+    M_catchable_area_h = GOALIE_CATCHABLE_AREA_HEIGHT;
     M_catch_probability = GOALIE_CATCHABLE_POSSIBILITY;
     M_goalie_max_moves = GOALIE_MAX_MOVES;
 
