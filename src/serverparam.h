@@ -604,6 +604,10 @@ private:
     // 15.0.0
     double M_red_card_probability;
 
+    // 16.0.0
+    std::string M_fixed_teamname_l;
+    std::string M_fixed_teamname_r;
+
     // XXX
     double M_long_kick_power_factor;
     int M_long_kick_delay;
@@ -945,6 +949,10 @@ public:
 
     // v15
     double redCardProbability() const { return M_red_card_probability; }
+
+    // v16
+    const std::string & fixedTeamNameLeft() const { return M_fixed_teamname_l; }
+    const std::string & fixedTeamNameRight() const { return M_fixed_teamname_r; }
 
     // XXX
     double longKickPowerFactor() const { return M_long_kick_power_factor; }

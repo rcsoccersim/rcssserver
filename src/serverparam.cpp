@@ -907,6 +907,10 @@ ServerParam::addParams()
               rcss::conf::makeGetter( M_red_card_probability ),
               "", 15 );
 
+    // v16
+    addParam( "fixed_teamname_l", M_fixed_teamname_l, "", 16 );
+    addParam( "fixed_teamname_r", M_fixed_teamname_r, "", 16 );
+
     // XXX
     // addParam( "random_seed", M_random_seed, "", 999 );
     // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
@@ -1366,6 +1370,10 @@ ServerParam::setDefaults()
 
     // 15.0.0
     M_red_card_probability = RED_CARD_PROBABILITY;
+
+    // 16.0.0
+    M_fixed_teamname_l = "";
+    M_fixed_teamname_r = "";
 
     // XXX
     M_long_kick_power_factor = LONG_KICK_POWER_FACTOR;
