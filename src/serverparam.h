@@ -649,6 +649,9 @@ private:
     void setFoulDetectProbability( double value );
     void setRedCardProbability( double value );
 
+    void setFixedTeamNameLeft( std::string name );
+    void setFixedTeamNameRight( std::string name );
+
     void setSlowDownFactor();
 
 public:

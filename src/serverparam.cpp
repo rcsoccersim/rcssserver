@@ -89,6 +89,24 @@ lcm( int a,
     return tmp;
 }
 
+
+std::string
+check_teamname_format( std::string name )
+{
+    if ( name.empty() ) return name;
+
+    const std::string available_chars = "+-_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    if ( name.find_first_not_of( available_chars ) != std::string::npos )
+    {
+        return std::string( "" );
+    }
+
+    if ( name.length() > 15 ) name.resize( 15 );
+
+    return name;
+}
+
 }
 
 
@@ -908,8 +926,14 @@ ServerParam::addParams()
               "", 15 );
 
     // v16
-    addParam( "fixed_teamname_l", M_fixed_teamname_l, "", 16 );
-    addParam( "fixed_teamname_r", M_fixed_teamname_r, "", 16 );
+    addParam( "fixed_teamname_l",
+              rcss::conf::makeSetter( this, &ServerParam::setFixedTeamNameLeft ),
+              rcss::conf::makeGetter( M_fixed_teamname_l ),
+              "", 16 );
+    addParam( "fixed_teamname_r",
+              rcss::conf::makeSetter( this, &ServerParam::setFixedTeamNameRight ),
+              rcss::conf::makeGetter( M_fixed_teamname_r ),
+              "", 16 );
 
     // XXX
     // addParam( "random_seed", M_random_seed, "", 999 );
@@ -1098,6 +1122,39 @@ void
 ServerParam::setRedCardProbability( double value )
 {
     M_red_card_probability = std::max( 0.0, std::min( value, 1.0 ) );
+}
+
+
+void
+ServerParam::setFixedTeamNameLeft( std::string name )
+{
+    name = check_teamname_format( name );
+
+    if ( ! M_fixed_teamname_r.empty()
+         && name == M_fixed_teamname_r )
+    {
+        std::cerr << "Could not set server::fixed_teamname_l='" << name
+                  << "'. The same name is already set to server::fixed_teamname_r." << std::endl;
+        return;
+    }
+
+    M_fixed_teamname_l = name;
+}
+
+void
+ServerParam::setFixedTeamNameRight( std::string name )
+{
+    name = check_teamname_format( name );
+
+    if ( ! M_fixed_teamname_l.empty()
+         && name == M_fixed_teamname_l )
+    {
+        std::cerr << "Could not set server::fixed_teamname_r='" << name
+                  << "'. The same name is already assigned to server::fixed_teamname_r." << std::endl;
+        return;
+    }
+
+    M_fixed_teamname_r = name;
 }
 
 void
