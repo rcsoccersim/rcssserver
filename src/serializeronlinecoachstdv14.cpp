@@ -62,7 +62,7 @@ SerializerOnlineCoachStdv14::create()
 namespace {
 RegHolder v14 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv14::create, 14 );
 RegHolder v15 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv14::create, 15 );
-//RegHolder v16 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv14::create, 16 );
+RegHolder v16 = SerializerOnlineCoach::factory().autoReg( &SerializerOnlineCoachStdv14::create, 16 );
 }
 
 }
