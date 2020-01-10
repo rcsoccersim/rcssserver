@@ -223,6 +223,8 @@ protected:
           return obj.name();
       }
 
+    virtual
+    const std::string & calcPlayerName( const Player & obj ) const;
 };
 
 /*!
@@ -258,6 +260,9 @@ protected:
       {
           return obj.shortName();
       }
+
+    virtual
+    const std::string & calcPlayerName( const Player & obj ) const;
 };
 
 /*!

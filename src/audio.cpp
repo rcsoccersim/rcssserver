@@ -935,7 +935,7 @@ AudioSenderOnlineCoachv1::sendPlayerAudio( const Player & player,
     {
         serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
-                                           player.name(),
+                                           ( listener().side() == player.side() ? player.name() : player.fixedName() ),
                                            msg );
         transport() << std::ends << std::flush;
     }
@@ -949,7 +949,7 @@ AudioSenderOnlineCoachv7::sendPlayerAudio( const Player & player,
     {
         serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
-                                           player.shortName(),
+                                           ( listener().side() == player.side() ? player.shortName() : player.fixedShortName() ),
                                            msg );
         transport() << std::ends << std::flush;
     }

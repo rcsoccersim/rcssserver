@@ -395,7 +395,7 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
             else
             {
                 serializer().serializeVisualObject( transport(),
-                                                    calcName( player ),
+                                                    calcPlayerName( player ),
                                                     calcDegDir( ang ) );
             }
         }
@@ -454,7 +454,7 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
                          un_quant_dist, quant_dist,
                          dist_chg, dir_chg );
                 serializePlayer( player,
-                                 calcName( player ),
+                                 calcPlayerName( player ),
                                  quant_dist,
                                  calcDegDir( ang ),
                                  dist_chg,

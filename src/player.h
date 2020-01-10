@@ -78,6 +78,11 @@ private:
     std::string M_short_name_far;
     std::string M_short_name_toofar;
 
+    std::string M_fixed_name;
+    std::string M_fixed_name_far;
+    std::string M_fixed_short_name;
+    std::string M_fixed_short_name_far;
+
     double M_unum_far_length;
     double M_unum_too_far_length;
     double M_team_far_length;
@@ -238,6 +243,11 @@ public:
     const std::string & nameTooFar() const { return M_name_toofar; }
     const std::string & shortNameFar() const { return M_short_name_far; }
     const std::string & shortNameTooFar() const { return M_short_name_toofar; }
+
+    const std::string & fixedName() const { return M_fixed_name; }
+    const std::string & fixedNameFar() const { return M_fixed_name_far; }
+    const std::string & fixedShortName() const { return M_fixed_short_name; }
+    const std::string & fixedShortNameFar() const { return M_fixed_short_name_far; }
 
     const double & unumFarLength() const { return M_unum_far_length; }
     const double & unumTooFarLength() const { return M_unum_too_far_length; }

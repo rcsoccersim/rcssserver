@@ -607,6 +607,13 @@ Stadium::initPlayer( const char * teamname,
 {
     Team * team = static_cast< Team * >( 0 );
 
+    if ( ServerParam::instance().fixedTeamNameLeft() == teamname
+         || ServerParam::instance().fixedTeamNameRight() == teamname )
+    {
+        sendToPlayer( "(error conflict_with_fixed_teamname)", addr );
+        return static_cast< Player * >( 0 );
+    }
+
     if ( M_team_l->name().empty() )
     {
         team = M_team_l;

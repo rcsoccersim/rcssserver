@@ -99,6 +99,7 @@ public:
       {
           return M_name;
       }
+    std::string fixedName() const;
 
     bool enabled() const
       {
