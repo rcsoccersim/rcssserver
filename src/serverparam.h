@@ -344,6 +344,7 @@ private:
     static const int ILLEGAL_DEFENSE_DURATION;
     static const int ILLEGAL_DEFENSE_NUMBER;
     static const double ILLEGAL_DEFENSE_DIST_X;
+    static const double ILLEGAL_DEFENSE_WIDTH;
 
     double M_goal_width; /* goal width */
     double M_inertia_moment; /* intertia moment for turn */
@@ -617,6 +618,7 @@ private:
     int M_illegal_defense_duration;
     int M_illegal_defense_number;
     double M_illegal_defense_dist_x;
+    double M_illegal_defense_width;
 
 private:
 
@@ -965,6 +967,7 @@ public:
     int illegalDefenseDuration() const { return M_illegal_defense_duration; }
     int illegalDefenseNumber() const { return M_illegal_defense_number; }
     double illegalDefenseDistX() const { return M_illegal_defense_dist_x; }
+    double illegalDefenseWidth() const { return M_illegal_defense_width; }
 
 };
 

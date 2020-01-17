@@ -1528,7 +1528,8 @@ IllegalDefenseRef::analyse()
         {
             if ( (*p)->side() == LEFT )
             {
-                if ( (*p)->pos().x < -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegalDefenseDistX() )
+                if ( (*p)->pos().x < -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegalDefenseDistX()
+                     && std::fabs((*p)->pos().y) < ServerParam::instance().illegalDefenseWidth() / 2.0 )
                 {
                     left_player_illegal += 1;
                 }
@@ -1538,7 +1539,8 @@ IllegalDefenseRef::analyse()
         {
             if ( (*p)->side() == RIGHT )
             {
-                if ( (*p)->pos().x > ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegalDefenseDistX() )
+                if ( (*p)->pos().x > ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegalDefenseDistX()
+                     && std::fabs((*p)->pos().y) < ServerParam::instance().illegalDefenseWidth() / 2.0 )
                 {
                     right_player_illegal += 1;
                 }
