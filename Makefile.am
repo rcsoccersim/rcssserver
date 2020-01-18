@@ -9,7 +9,8 @@ SUBDIRS = \
 	src \
 	.
 
-EXTRA_DIST = 
+EXTRA_DIST = \
+	README.md
 
 CLEANFILES = \
 	*~ \
