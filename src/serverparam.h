@@ -340,7 +340,6 @@ private:
     static const double LONG_KICK_POWER_FACTOR;
     static const int LONG_KICK_DELAY;
     // 16.0.0
-    static const bool USE_ILLEGAL_DEFENSE;
     static const int ILLEGAL_DEFENSE_DURATION;
     static const int ILLEGAL_DEFENSE_NUMBER;
     static const double ILLEGAL_DEFENSE_DIST_X;
