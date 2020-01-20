@@ -354,8 +354,8 @@ const int ServerParam::LONG_KICK_DELAY = 2;
 // 16.0.0
 const int ServerParam::ILLEGAL_DEFENSE_DURATION = 20;
 const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 0;
-const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 25.0;
-const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 64.0;
+const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 16.5;
+const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 40.32;
 
 ServerParam &
 ServerParam::instance()
