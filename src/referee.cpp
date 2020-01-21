@@ -1518,33 +1518,31 @@ IllegalDefenseRef::analyse()
     int left_player_illegal = 0;
     int right_player_illegal = 0;
 
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
+    const double left_x  = -ServerParam::PITCH_LENGTH * 0.5 + ServerParam::instance().illegalDefenseDistX();
+    const double right_x = +ServerParam::PITCH_LENGTH * 0.5 - ServerParam::instance().illegalDefenseDistX();
+    const double half_width = ServerParam::instance().illegalDefenseWidth() * 0.5;
+
+    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
           p != end;
           ++p )
     {
         if ( ! (*p)->isEnabled() ) continue;
-        if ( M_stadium.ball().pos().x < 0 && M_last_kicker_side == RIGHT)
+
+        if ( (*p)->side() == LEFT
+             && M_last_kicker_side == RIGHT
+             && M_stadium.ball().pos().x < 0.0
+             && (*p)->pos().x < left_x
+             && std::fabs( (*p)->pos().y ) < half_width )
         {
-            if ( (*p)->side() == LEFT )
-            {
-                if ( (*p)->pos().x < -ServerParam::PITCH_LENGTH / 2.0 + ServerParam::instance().illegalDefenseDistX()
-                     && std::fabs((*p)->pos().y) < ServerParam::instance().illegalDefenseWidth() / 2.0 )
-                {
-                    left_player_illegal += 1;
-                }
-            }
+            left_player_illegal += 1;
         }
-        else if ( M_stadium.ball().pos().x > 0 && M_last_kicker_side == LEFT)
+        else if ( (*p)->side() == RIGHT
+                  && M_last_kicker_side == LEFT
+                  && M_stadium.ball().pos().x > 0.0
+                  && (*p)->pos().x > right_x
+                  && std::fabs( (*p)->pos().y ) < half_width )
         {
-            if ( (*p)->side() == RIGHT )
-            {
-                if ( (*p)->pos().x > ServerParam::PITCH_LENGTH / 2.0 - ServerParam::instance().illegalDefenseDistX()
-                     && std::fabs((*p)->pos().y) < ServerParam::instance().illegalDefenseWidth() / 2.0 )
-                {
-                    right_player_illegal += 1;
-                }
-            }
+            right_player_illegal += 1;
         }
     }
 
@@ -1599,7 +1597,7 @@ PVector IllegalDefenseRef::calculateFreeKickPositon(Side side)
 {
     PVector pos(-41.5, 0.0);
 
-    if ( side == RIGHT)
+    if ( side == RIGHT )
         pos.x *= (-1.0);
 
     return pos;

@@ -476,15 +476,15 @@ public:
     void kickTaken( const Player & kicker,
                     const double accel_r);
 
-    void failedKickTaken( const Player & kicker )
+    void failedKickTaken( const Player & )
       { }
 
     void tackleTaken( const Player & tackler,
                       const double accel_r,
                       const bool foul);
 
-    void failedTackleTaken( const Player & kicker,
-                            const bool foul)
+    void failedTackleTaken( const Player & ,
+                            const bool )
       { }
 
     void ballCaught( const Player & )
