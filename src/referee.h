@@ -451,6 +451,61 @@ private:
 
 };
 
+/*--------------------------------------------------------*/
+
+class IllegalDefenseRef
+    : public Referee {
+private:
+    static const int AFTER_ILLEGAL_DEFENSE_WAIT;
+
+    int M_left_illegal_counter;
+    int M_right_illegal_counter;
+    Side M_last_kicker_side;
+    int M_last_kick_time;
+    int M_after_illegal_defense_time;
+
+public:
+    explicit
+    IllegalDefenseRef( Stadium & stadium )
+        : Referee( stadium ),
+          M_left_illegal_counter( 0 ),
+          M_right_illegal_counter( 0 ),
+          M_after_illegal_defense_time( 0 )
+      { }
+
+    void kickTaken( const Player & kicker,
+                    const double accel_r);
+
+    void failedKickTaken( const Player & )
+      { }
+
+    void tackleTaken( const Player & tackler,
+                      const double accel_r,
+                      const bool foul);
+
+    void failedTackleTaken( const Player & ,
+                            const bool )
+      { }
+
+    void ballCaught( const Player & )
+      { }
+
+    void ballPunched( const Player & )
+      { }
+
+    void ballTouched( const Player & )
+      { }
+
+    void analyse();
+
+    void playModeChange( PlayMode pm );
+
+private:
+
+    PVector calculateFreeKickPositon(Side side);
+
+};
+
 
 /*--------------------------------------------------------*/
 

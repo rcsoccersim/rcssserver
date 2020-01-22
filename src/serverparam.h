@@ -339,6 +339,11 @@ private:
     // XXX
     static const double LONG_KICK_POWER_FACTOR;
     static const int LONG_KICK_DELAY;
+    // 16.0.0
+    static const int ILLEGAL_DEFENSE_DURATION;
+    static const int ILLEGAL_DEFENSE_NUMBER;
+    static const double ILLEGAL_DEFENSE_DIST_X;
+    static const double ILLEGAL_DEFENSE_WIDTH;
 
     double M_goal_width; /* goal width */
     double M_inertia_moment; /* intertia moment for turn */
@@ -611,6 +616,12 @@ private:
     // XXX
     double M_long_kick_power_factor;
     int M_long_kick_delay;
+
+    // 16.0.0
+    int M_illegal_defense_duration;
+    int M_illegal_defense_number;
+    double M_illegal_defense_dist_x;
+    double M_illegal_defense_width;
 
 private:
 
@@ -960,6 +971,13 @@ public:
     // XXX
     double longKickPowerFactor() const { return M_long_kick_power_factor; }
     int longKickDelay() const { return M_long_kick_delay; }
+
+    // v16
+    bool useIllegalDefense() const { return M_illegal_defense_number != 0; }
+    int illegalDefenseDuration() const { return M_illegal_defense_duration; }
+    int illegalDefenseNumber() const { return M_illegal_defense_number; }
+    double illegalDefenseDistX() const { return M_illegal_defense_dist_x; }
+    double illegalDefenseWidth() const { return M_illegal_defense_width; }
 
 };
 
