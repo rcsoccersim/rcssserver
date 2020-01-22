@@ -351,6 +351,11 @@ const double ServerParam::RED_CARD_PROBABILITY = 0.0;
 const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
 
+// 16.0.0
+const int ServerParam::ILLEGAL_DEFENSE_DURATION = 20;
+const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 0;
+const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 16.5;
+const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 40.32;
 
 ServerParam &
 ServerParam::instance()
@@ -911,6 +916,13 @@ ServerParam::addParams()
     // addParam( "random_seed", M_random_seed, "", 999 );
     // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
     // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
+
+    // v16
+    addParam( "illegal_defense_duration", M_illegal_defense_duration, "", 16);
+    addParam( "illegal_defense_number", M_illegal_defense_number, "if be 0, illegal defense rule will be disable", 16);
+    addParam( "illegal_defense_dist_x", M_illegal_defense_dist_x, "", 16);
+    addParam( "illegal_defense_width", M_illegal_defense_width, "", 16);
+
 }
 
 void
@@ -1370,6 +1382,12 @@ ServerParam::setDefaults()
     // XXX
     M_long_kick_power_factor = LONG_KICK_POWER_FACTOR;
     M_long_kick_delay = LONG_KICK_DELAY;
+
+    // 16.0.0
+    M_illegal_defense_duration = ILLEGAL_DEFENSE_DURATION;
+    M_illegal_defense_number = ILLEGAL_DEFENSE_NUMBER;
+    M_illegal_defense_dist_x = ILLEGAL_DEFENSE_DIST_X;
+    M_illegal_defense_width = ILLEGAL_DEFENSE_WIDTH;
 
     setHalfTime( HALF_TIME );
     setExtraHalfTime( EXTRA_HALF_TIME );

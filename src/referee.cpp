@@ -489,6 +489,8 @@ TimeRef::analyse()
          || pm == PM_AfterGoal_Left
          || pm == PM_OffSide_Right
          || pm == PM_OffSide_Left
+         || pm == PM_Illegal_Defense_Left
+         || pm == PM_Illegal_Defense_Right
          || pm == PM_Foul_Charge_Right
          || pm == PM_Foul_Charge_Left
          || pm == PM_Foul_Push_Right
@@ -679,7 +681,9 @@ Referee::clearPlayersFromBall( const Side side )
 
     const PlayMode pm = M_stadium.playmode();
 
-    const double clear_dist = ( ( pm == PM_Back_Pass_Left
+    const double clear_dist = ( ( pm == PM_Illegal_Defense_Left
+                                  || pm == PM_Illegal_Defense_Right
+                                  || pm == PM_Back_Pass_Left
                                   || pm == PM_Back_Pass_Right
                                   || ( ( pm == PM_Foul_Charge_Left
                                          || pm == PM_Foul_Push_Left )
@@ -1426,6 +1430,180 @@ OffsideRef::checkPlayerAfterOffside()
     }
 }
 
+
+//**********
+// IllegalDefenseRef
+//**********
+
+const int IllegalDefenseRef::AFTER_ILLEGAL_DEFENSE_WAIT = 30;
+
+void IllegalDefenseRef::kickTaken(const Player &kicker, const double)
+{
+    if ( ! ServerParam::instance().useIllegalDefense())
+    {
+        return;
+    }
+
+    if ( M_last_kick_time == M_stadium.time()
+         && (kicker.side() != M_last_kicker_side || M_last_kicker_side == NEUTRAL ) )
+    {
+        M_last_kicker_side = NEUTRAL;
+        return;
+    }
+
+    M_last_kick_time = M_stadium.time();
+    M_last_kicker_side = kicker.side();
+}
+
+void IllegalDefenseRef::tackleTaken(const Player &tackler, const double accel_r, const bool )
+{
+    kickTaken(tackler, accel_r);
+}
+
+void
+IllegalDefenseRef::analyse()
+{
+    if ( ! ServerParam::instance().useIllegalDefense() )
+    {
+        return;
+    }
+
+    const PlayMode pm = M_stadium.playmode();
+
+    if ( isPenaltyShootOut( pm ) )
+    {
+        return;
+    }
+
+    if ( pm != PM_PlayOn
+         && pm != PM_Illegal_Defense_Left
+         && pm != PM_Illegal_Defense_Right )
+    {
+        return;
+    }
+
+    if ( pm == PM_Illegal_Defense_Left )
+    {
+        ++M_after_illegal_defense_time;
+
+        if ( M_after_illegal_defense_time > AFTER_ILLEGAL_DEFENSE_WAIT - CLEAR_PLAYER_TIME )
+        {
+            clearPlayersFromBall( LEFT );
+        }
+
+        if ( M_after_illegal_defense_time > AFTER_ILLEGAL_DEFENSE_WAIT )
+        {
+            M_stadium.changePlayMode( PM_FreeKick_Right );
+        }
+
+        return;
+    }
+    else if ( pm == PM_Illegal_Defense_Right )
+    {
+        ++M_after_illegal_defense_time;
+
+        if ( M_after_illegal_defense_time > AFTER_ILLEGAL_DEFENSE_WAIT - CLEAR_PLAYER_TIME )
+        {
+            clearPlayersFromBall( RIGHT );
+        }
+
+        if ( M_after_illegal_defense_time > AFTER_ILLEGAL_DEFENSE_WAIT )
+        {
+            M_stadium.changePlayMode( PM_FreeKick_Left );
+        }
+
+        return;
+    }
+
+    int left_player_illegal = 0;
+    int right_player_illegal = 0;
+
+    const double left_x  = -ServerParam::PITCH_LENGTH * 0.5 + ServerParam::instance().illegalDefenseDistX();
+    const double right_x = +ServerParam::PITCH_LENGTH * 0.5 - ServerParam::instance().illegalDefenseDistX();
+    const double half_width = ServerParam::instance().illegalDefenseWidth() * 0.5;
+
+    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
+          p != end;
+          ++p )
+    {
+        if ( ! (*p)->isEnabled() ) continue;
+
+        if ( (*p)->side() == LEFT
+             && M_last_kicker_side == RIGHT
+             && M_stadium.ball().pos().x < 0.0
+             && (*p)->pos().x < left_x
+             && std::fabs( (*p)->pos().y ) < half_width )
+        {
+            left_player_illegal += 1;
+        }
+        else if ( (*p)->side() == RIGHT
+                  && M_last_kicker_side == LEFT
+                  && M_stadium.ball().pos().x > 0.0
+                  && (*p)->pos().x > right_x
+                  && std::fabs( (*p)->pos().y ) < half_width )
+        {
+            right_player_illegal += 1;
+        }
+    }
+
+    if ( left_player_illegal >= ServerParam::instance().illegalDefenseNumber() )
+    {
+        M_left_illegal_counter += 1;
+    }
+    else
+    {
+        M_left_illegal_counter = 0;
+    }
+
+    if ( right_player_illegal >= ServerParam::instance().illegalDefenseNumber() )
+    {
+        M_right_illegal_counter += 1;
+    }
+    else
+    {
+        M_right_illegal_counter = 0;
+    }
+
+    if ( M_left_illegal_counter >= ServerParam::instance().illegalDefenseDuration() )
+    {
+        PVector free_kick_ball_pos = calculateFreeKickPositon(LEFT);
+        M_stadium.clearBallCatcher();
+        M_stadium.placeBall(PM_Illegal_Defense_Left, RIGHT, free_kick_ball_pos);
+        M_left_illegal_counter = 0;
+        M_after_illegal_defense_time = 0;
+    }
+
+    if ( M_right_illegal_counter >= ServerParam::instance().illegalDefenseDuration() )
+    {
+        PVector free_kick_ball_pos = calculateFreeKickPositon(RIGHT);
+        M_stadium.clearBallCatcher();
+        M_stadium.placeBall(PM_Illegal_Defense_Right, LEFT, free_kick_ball_pos);
+        M_right_illegal_counter = 0;
+        M_after_illegal_defense_time = 0;
+    }
+
+}
+
+void IllegalDefenseRef::playModeChange(PlayMode pm)
+{
+    if ( pm == PM_Illegal_Defense_Left
+         || pm == PM_Illegal_Defense_Right )
+    {
+        M_after_illegal_defense_time = 0;
+    }
+}
+
+PVector IllegalDefenseRef::calculateFreeKickPositon(Side side)
+{
+    PVector pos(-41.5, 0.0);
+
+    if ( side == RIGHT )
+        pos.x *= (-1.0);
+
+    return pos;
+
+}
+
 //**********
 // FreeKickRef
 //**********
@@ -1680,6 +1858,8 @@ FreeKickRef::analyse()
          && pm != PM_AfterGoal_Left
          && pm != PM_OffSide_Right
          && pm != PM_OffSide_Left
+         && pm != PM_Illegal_Defense_Left
+         && pm != PM_Illegal_Defense_Right
          && pm != PM_Foul_Charge_Right
          && pm != PM_Foul_Charge_Left
          && pm != PM_Foul_Push_Right
@@ -1706,6 +1886,8 @@ FreeKickRef::analyse()
          && pm != PM_GoalKick_Right
          && pm != PM_OffSide_Left
          && pm != PM_OffSide_Right
+         && pm != PM_Illegal_Defense_Left
+         && pm != PM_Illegal_Defense_Right
          && pm != PM_Foul_Charge_Left
          && pm != PM_Foul_Charge_Right
          && pm != PM_Foul_Push_Right
