@@ -278,12 +278,19 @@ Player::init( const double ver,
     M_goalie_catch_ban = 0;
     M_goalie_moves_since_catch = 0;
 
+    const std::string fixed_teamname = team()->fixedName();
     {
         char lname[128], sname[128];
         snprintf( lname, 128, PLAYER_NAME_FORMAT, team()->name().c_str(), unum() );
         snprintf( sname, 128, PLAYER_NAME_FORMAT_SHORT, team()->name().c_str(), unum(),
                   isGoalie() ? GOALIE_VISUAL_STRING : "" );
         setName( lname, sname );
+
+        snprintf( lname, 128, PLAYER_NAME_FORMAT, fixed_teamname.c_str(), unum() );
+        snprintf( sname, 128, PLAYER_NAME_FORMAT_SHORT, fixed_teamname.c_str(), unum(),
+                  isGoalie() ? GOALIE_VISUAL_STRING : "" );
+        M_fixed_name = lname;
+        M_fixed_short_name = sname;
     }
 
     char buf[128];
@@ -296,6 +303,13 @@ Player::init( const double ver,
     M_short_name_far = buf;
     snprintf( buf, 128, PLAYER_NAME_TOOFAR_FORMAT_SHORT );
     M_short_name_toofar = buf;
+
+
+    snprintf( buf, 128, PLAYER_NAME_FAR_FORMAT, fixed_teamname.c_str() );
+    M_fixed_name_far = buf;
+    snprintf( buf, 128, PLAYER_NAME_FAR_FORMAT_SHORT, fixed_teamname.c_str() );
+    M_fixed_short_name_far = buf;
+
 
     M_angle_body_committed = SideDirection( side() );
 

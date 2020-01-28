@@ -259,6 +259,23 @@ Team::assignPlayerTypes()
 //     std::cout << std::endl;
 }
 
+std::string
+Team::fixedName() const
+{
+    if ( side() == LEFT
+         && ! ServerParam::instance().fixedTeamNameLeft().empty() )
+    {
+        return ServerParam::instance().fixedTeamNameLeft();
+    }
+    else if ( side() == RIGHT
+              && ! ServerParam::instance().fixedTeamNameRight().empty() )
+    {
+        return ServerParam::instance().fixedTeamNameRight();
+    }
+
+    return M_name;
+}
+
 int
 Team::ptypeCount( const int player_type ) const
 {

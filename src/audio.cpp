@@ -935,7 +935,7 @@ AudioSenderOnlineCoachv1::sendPlayerAudio( const Player & player,
     {
         serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
-                                           player.name(),
+                                           ( listener().side() == player.side() ? player.name() : player.fixedName() ),
                                            msg );
         transport() << std::ends << std::flush;
     }
@@ -949,7 +949,7 @@ AudioSenderOnlineCoachv7::sendPlayerAudio( const Player & player,
     {
         serializer().serializePlayerAudio( transport(),
                                            M_stadium.time(),
-                                           player.shortName(),
+                                           ( listener().side() == player.side() ? player.shortName() : player.fixedShortName() ),
                                            msg );
         transport() << std::ends << std::flush;
     }
@@ -979,7 +979,7 @@ RegHolder vp12 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlaye
 RegHolder vp13 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 13 );
 RegHolder vp14 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 14 );
 RegHolder vp15 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 15 );
-//RegHolder vp16 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 16 );
+RegHolder vp16 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 16 );
 
 template< typename Sender >
 AudioSender::Ptr
@@ -1003,7 +1003,7 @@ RegHolder vc12 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv
 RegHolder vc13 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 13 );
 RegHolder vc14 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 14 );
 RegHolder vc15 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 15 );
-//RegHolder vc16 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 16 );
+RegHolder vc16 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 16 );
 
 template< typename Sender >
 AudioSender::Ptr
@@ -1027,6 +1027,6 @@ RegHolder voc12 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSende
 RegHolder voc13 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 13 );
 RegHolder voc14 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 14 );
 RegHolder voc15 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 15 );
-//RegHolder voc16 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 16 );
+RegHolder voc16 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 16 );
 }
 }

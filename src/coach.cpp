@@ -689,12 +689,20 @@ Coach::team_names()
 
     if ( ! M_stadium.teamLeft().name().empty() )
     {
-        ost << " (team l " << M_stadium.teamLeft().name() << ")";
+        ost << " (team l "
+            << ( side() == RIGHT
+                 ? M_stadium.teamLeft().fixedName()
+                 : M_stadium.teamLeft().name() )
+            << ")";
     }
 
     if ( ! M_stadium.teamRight().name().empty() )
     {
-        ost << " (team r " << M_stadium.teamRight().name() << ")";
+        ost << " (team r "
+            << ( side() == LEFT
+                 ? M_stadium.teamRight().fixedName()
+                 : M_stadium.teamRight().name() )
+            << ")";
     }
 
     ost << ")" << std::endl;

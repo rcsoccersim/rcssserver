@@ -355,6 +355,14 @@ protected:
       }
 
     virtual
+    const std::string & calcPlayerName( const Player & obj ) const
+      {
+          return self().side() == obj.side()
+              ? obj.name()
+              : obj.fixedName();
+      }
+
+    virtual
     const
     std::string & calcTFarName( const Player & obj ) const
       {
@@ -365,7 +373,9 @@ protected:
     const
     std::string & calcUFarName( const Player & obj ) const
       {
-          return obj.nameFar();
+          return self().side() == obj.side()
+              ? obj.nameFar()
+              : obj.fixedNameFar();
       }
 
 private:
@@ -491,10 +501,20 @@ public:
       }
 
     virtual
+    const std::string & calcPlayerName( const Player & obj ) const
+      {
+          return self().side() == obj.side()
+              ? obj.shortName()
+              : obj.fixedShortName();
+      }
+
+    virtual
     const
     std::string & calcUFarName( const Player & obj ) const
       {
-          return obj.shortNameFar();
+          return self().side() == obj.side()
+              ? obj.shortNameFar()
+              : obj.fixedShortNameFar();
       }
 
     virtual

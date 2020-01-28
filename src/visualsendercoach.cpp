@@ -169,7 +169,7 @@ void
 VisualSenderCoachV1::serializePlayer( const Player & player )
 {
     serializer().serializeVisualObject( transport(),
-                                        calcName( player ),
+                                        calcPlayerName( player ),
                                         player.pos(),
                                         player.vel(),
                                         rad2Deg( player.angleBodyCommitted() ),
@@ -180,6 +180,15 @@ void
 VisualSenderCoachV1::serializePlayerLook( const Player & player )
 {
     serializePlayer( player );
+}
+
+const std::string &
+VisualSenderCoachV1::calcPlayerName( const Player & obj ) const
+{
+    return self().side() == obj.side()
+        || self().side() == NEUTRAL
+        ? obj.name()
+        : obj.fixedName();
 }
 
 /*!
@@ -201,6 +210,15 @@ VisualSenderCoachV7::VisualSenderCoachV7( const Params & params )
 VisualSenderCoachV7::~VisualSenderCoachV7()
 {
 
+}
+
+const std::string &
+VisualSenderCoachV7::calcPlayerName( const Player & obj ) const
+{
+    return self().side() == obj.side()
+        || self().side() == NEUTRAL
+        ? obj.shortName()
+        : obj.fixedShortName();
 }
 
 /*!
@@ -248,7 +266,7 @@ VisualSenderCoachV8::serializePlayer( const Player & player )
     if ( player.arm().isPointing() )
     {
         serializer().serializeVisualObject( transport(),
-                                            calcName( player ),
+                                            calcPlayerName( player ),
                                             player.pos(),
                                             player.vel(),
                                             rad2Deg( player.angleBodyCommitted() ),
@@ -259,7 +277,7 @@ VisualSenderCoachV8::serializePlayer( const Player & player )
     else
     {
         serializer().serializeVisualObject( transport(),
-                                            calcName( player ),
+                                            calcPlayerName( player ),
                                             player.pos(),
                                             player.vel(),
                                             rad2Deg( player.angleBodyCommitted() ),
@@ -303,7 +321,7 @@ VisualSenderCoachV13::serializePlayer( const Player & player )
     {
         serializer().serializeVisualPlayer( transport(),
                                             player,
-                                            calcName( player ),
+                                            calcPlayerName( player ),
                                             player.pos(),
                                             player.vel(),
                                             rad2Deg( player.angleBodyCommitted() ),
@@ -314,7 +332,7 @@ VisualSenderCoachV13::serializePlayer( const Player & player )
     {
         serializer().serializeVisualPlayer( transport(),
                                             player,
-                                            calcName( player ),
+                                            calcPlayerName( player ),
                                             player.pos(),
                                             player.vel(),
                                             rad2Deg( player.angleBodyCommitted() ),
@@ -359,7 +377,7 @@ RegHolder vc12 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoac
 RegHolder vc13 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 13 );
 RegHolder vc14 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 14 );
 RegHolder vc15 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 15 );
-//RegHolder vc16 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 16 );
+RegHolder vc16 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 16 );
 }
 
 }

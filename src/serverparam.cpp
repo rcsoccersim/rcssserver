@@ -89,6 +89,24 @@ lcm( int a,
     return tmp;
 }
 
+
+std::string
+check_teamname_format( std::string name )
+{
+    if ( name.empty() ) return name;
+
+    const std::string available_chars = "+-_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    if ( name.find_first_not_of( available_chars ) != std::string::npos )
+    {
+        return std::string( "" );
+    }
+
+    if ( name.length() > 15 ) name.resize( 15 );
+
+    return name;
+}
+
 }
 
 
@@ -347,15 +365,15 @@ const bool ServerParam::GOLDEN_GOAL = false; // [15.0.0] true -> false
 // 15.0.0
 const double ServerParam::RED_CARD_PROBABILITY = 0.0;
 
-// XXX
-const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
-const int ServerParam::LONG_KICK_DELAY = 2;
-
 // 16.0.0
 const int ServerParam::ILLEGAL_DEFENSE_DURATION = 20;
 const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 0;
 const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 16.5;
 const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 40.32;
+
+// XXX
+const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
+const int ServerParam::LONG_KICK_DELAY = 2;
 
 ServerParam &
 ServerParam::instance()
@@ -912,16 +930,25 @@ ServerParam::addParams()
               rcss::conf::makeGetter( M_red_card_probability ),
               "", 15 );
 
-    // XXX
-    // addParam( "random_seed", M_random_seed, "", 999 );
-    // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
-    // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
-
     // v16
     addParam( "illegal_defense_duration", M_illegal_defense_duration, "", 16);
     addParam( "illegal_defense_number", M_illegal_defense_number, "if be 0, illegal defense rule will be disable", 16);
     addParam( "illegal_defense_dist_x", M_illegal_defense_dist_x, "", 16);
     addParam( "illegal_defense_width", M_illegal_defense_width, "", 16);
+    addParam( "fixed_teamname_l",
+              rcss::conf::makeSetter( this, &ServerParam::setFixedTeamNameLeft ),
+              rcss::conf::makeGetter( M_fixed_teamname_l ),
+              "", 16 );
+    addParam( "fixed_teamname_r",
+              rcss::conf::makeSetter( this, &ServerParam::setFixedTeamNameRight ),
+              rcss::conf::makeGetter( M_fixed_teamname_r ),
+              "", 16 );
+
+    // XXX
+    // addParam( "random_seed", M_random_seed, "", 999 );
+    // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
+    // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
+
 
 }
 
@@ -1106,6 +1133,39 @@ void
 ServerParam::setRedCardProbability( double value )
 {
     M_red_card_probability = std::max( 0.0, std::min( value, 1.0 ) );
+}
+
+
+void
+ServerParam::setFixedTeamNameLeft( std::string name )
+{
+    name = check_teamname_format( name );
+
+    if ( ! M_fixed_teamname_r.empty()
+         && name == M_fixed_teamname_r )
+    {
+        std::cerr << "Could not set server::fixed_teamname_l='" << name
+                  << "'. The same name is already set to server::fixed_teamname_r." << std::endl;
+        return;
+    }
+
+    M_fixed_teamname_l = name;
+}
+
+void
+ServerParam::setFixedTeamNameRight( std::string name )
+{
+    name = check_teamname_format( name );
+
+    if ( ! M_fixed_teamname_l.empty()
+         && name == M_fixed_teamname_l )
+    {
+        std::cerr << "Could not set server::fixed_teamname_r='" << name
+                  << "'. The same name is already assigned to server::fixed_teamname_r." << std::endl;
+        return;
+    }
+
+    M_fixed_teamname_r = name;
 }
 
 void
@@ -1379,15 +1439,17 @@ ServerParam::setDefaults()
     // 15.0.0
     M_red_card_probability = RED_CARD_PROBABILITY;
 
-    // XXX
-    M_long_kick_power_factor = LONG_KICK_POWER_FACTOR;
-    M_long_kick_delay = LONG_KICK_DELAY;
-
     // 16.0.0
     M_illegal_defense_duration = ILLEGAL_DEFENSE_DURATION;
     M_illegal_defense_number = ILLEGAL_DEFENSE_NUMBER;
     M_illegal_defense_dist_x = ILLEGAL_DEFENSE_DIST_X;
     M_illegal_defense_width = ILLEGAL_DEFENSE_WIDTH;
+    M_fixed_teamname_l = "";
+    M_fixed_teamname_r = "";
+
+    // XXX
+    M_long_kick_power_factor = LONG_KICK_POWER_FACTOR;
+    M_long_kick_delay = LONG_KICK_DELAY;
 
     setHalfTime( HALF_TIME );
     setExtraHalfTime( EXTRA_HALF_TIME );
