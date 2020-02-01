@@ -302,6 +302,7 @@ public:
     //
     Int32 state() const { return M_state; }
     void addState( const Int32 state ) { M_state |= state; }
+    void removeState( const Int32 state ) { M_state &= ~state; }
     void resetState();
 
     //

@@ -1522,7 +1522,7 @@ IllegalDefenseRef::analyse()
     const double right_x = +ServerParam::PITCH_LENGTH * 0.5 - ServerParam::instance().illegalDefenseDistX();
     const double half_width = ServerParam::instance().illegalDefenseWidth() * 0.5;
 
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
+    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
           p != end;
           ++p )
     {
@@ -1535,6 +1535,7 @@ IllegalDefenseRef::analyse()
              && std::fabs( (*p)->pos().y ) < half_width )
         {
             left_player_illegal += 1;
+            (*p)->addState( ILLEGAL_DEFENSE );
         }
         else if ( (*p)->side() == RIGHT
                   && M_last_kicker_side == LEFT
@@ -1543,6 +1544,7 @@ IllegalDefenseRef::analyse()
                   && std::fabs( (*p)->pos().y ) < half_width )
         {
             right_player_illegal += 1;
+            (*p)->addState( ILLEGAL_DEFENSE );
         }
     }
 
@@ -1553,6 +1555,13 @@ IllegalDefenseRef::analyse()
     else
     {
         M_left_illegal_counter = 0;
+
+        for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
+          p != end;
+          ++p )
+        {
+            if ( (*p)->side() == LEFT ) (*p)->removeState( ILLEGAL_DEFENSE );
+        }
     }
 
     if ( right_player_illegal >= ServerParam::instance().illegalDefenseNumber() )
@@ -1562,6 +1571,13 @@ IllegalDefenseRef::analyse()
     else
     {
         M_right_illegal_counter = 0;
+
+        for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
+          p != end;
+          ++p )
+        {
+            if ( (*p)->side() == RIGHT ) (*p)->removeState( ILLEGAL_DEFENSE );
+        }
     }
 
     if ( M_left_illegal_counter >= ServerParam::instance().illegalDefenseDuration() )
