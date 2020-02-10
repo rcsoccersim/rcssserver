@@ -1,3 +1,10 @@
+2020-02-03  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+	* NEWS:
+	* configure.ac:
+	- update a major version number. Official release 16.0.0
+	- add new features, automatic illegal defense detection and anonymous games.
+
 2019-11-10  Hidehisa Akiyama  <akky@users.sourceforge.jp>
 
 	* NEWS:

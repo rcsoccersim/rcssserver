@@ -1,6 +1,50 @@
+[16.0.0]
+  * New parameters:
+    - server::illegal_defense_duration (default value: 20)
+    - server::illegal_defense_number (default value: 0)
+    - server::illegal_defense_dist_x (default value: 16.5)
+    - server::illegal_defense_width (default value: 40.32)
+    - server::fixed_teamname_l (default value: '')
+    - server::fixed_teamname_r (default value: '')
+
+  * Introduce an automatic illegal defense detection rule. This rule
+    is disabled if the value of illegal_defense_number is 0 (default
+    in this version).
+
+    The illegal defense area is defined by two parameters,
+    illegal_defense_dist_x and illegal_defense_width. The area
+    defined by default values is same as the penalty area for each
+    side. Please note that these values may be changed in the future
+    version.
+
+    If a player in the defensive side team (not a ball owner team)
+    exists whthin the illegal defense area for that team, the referee
+    marks that player is a candidate of illegal defense state. Then,
+    if the number of marked players is more than or equal to
+    illegal_defense_number, the referee judges that the team behaves
+    illegal defense at that cycle. Finally, if the illegal defense behavior
+    for a team continues for more than or equal to illegal_defense_duration,
+    'illegal_defense_[lr]' playmode is called and a free kick is
+    awarded to the other team. The free kick position is currently
+    fixed at (+-41.5, 0.0).
+
+  * Introduce a fixed team name feature. If fixed_teamname_[lr] are
+    given, the players and online coaches receive the given string as
+    their opponent team name, while receiving their own team name as
+    it is. This feature can be used for an anonymous game where both
+    teams do not know their opponent team name during a game.
+
+  * Define a new player state flag for the monitor protocol to
+    represent an illegal defense state. This flag can be used to
+    visualize the state of illegal defense behavior on the
+    monitor/logplayer.
+
 [15.6.0]
   * Change the default value of server::dash_angle_step from 45.0 to
     1.0. This change means players can dash to almost any direction.
+
+  * Fix the problem of foul assignment during penalty
+    shootouts. Thanks go to Ruggero Rossi for providing the patch.
 
 [15.5.0]
   * Fix build problems on Ubuntu 18.04. Replace all auto_ptr variables
@@ -34,7 +78,7 @@
     called. Thanks go to Fernando Almeida for reporting the problem
     and providing the patch.
 
-  * Changed the defalut value of server::log_date_format from
+  * Changed the default value of server::log_date_format from
     "%Y%m%d%H%M-" to "%Y%m%d%H%M%S-".
 
   * Fixed a defect of boost detection.
