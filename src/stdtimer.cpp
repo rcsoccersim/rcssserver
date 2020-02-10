@@ -223,7 +223,13 @@ StandardTimer::run()
             printf( "WaitForSingleObject failed (%d)\n", GetLastError() );
 #else
         if ( ! gotsig )
-            sigpause( SIGUSR1 );
+        {
+            //sigpause( SIGUSR1 );
+            sigset_t mask;
+            sigemptyset( &mask );
+            sigaddset( &mask, SIGUSR1 );
+            sigsuspend( &mask );
+        }
 #endif
         gotsig = false;
 
