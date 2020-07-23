@@ -163,7 +163,10 @@ target_link_libraries(RCSSClient
     ZLIB::ZLIB
 )
 
-configure_file(rcsoccersim.in rcsoccersim.sh)
+set(prefix ${CMAKE_INSTALL_PREFIX})
+set(exec_prefix ${CMAKE_INSTALL_PREFIX})
+set(libdir ${CMAKE_INSTALL_FULL_LIBDIR})
+configure_file(rcsoccersim.in rcsoccersim.sh @ONLY)
 
 install(TARGETS RCSSServer DESTINATION bin)
 install(TARGETS RCSSClient DESTINATION bin)
