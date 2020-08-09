@@ -30,3 +30,6 @@ target_link_libraries(RCSSBase
     Boost::filesystem
 )
 
+install(TARGETS RCSSBase
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)

@@ -24,3 +24,6 @@ set_target_properties(RCSSConfParser
     VERSION "3.0.0"
 )
 
+install(TARGETS RCSSConfParser
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)

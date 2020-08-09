@@ -25,3 +25,6 @@ target_link_libraries(RCSSGZ
     ZLIB::ZLIB
 )
 
+install(TARGETS RCSSGZ
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)

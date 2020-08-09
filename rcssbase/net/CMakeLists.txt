@@ -27,3 +27,6 @@ set_target_properties(RCSSNet
     VERSION "1.1.0"
 )
 
+install(TARGETS RCSSNet
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
