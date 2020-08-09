@@ -4,6 +4,17 @@ add_library(RCSSGZ SHARED
 )
 add_library(RCSS::GZ ALIAS RCSSGZ)
 
+target_compile_definitions(RCSSGZ
+  PUBLIC
+    HAVE_CONFIG_H
+)
+
+target_include_directories(RCSSGZ
+  PUBLIC
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_BINARY_DIR}
+)
+
 set_target_properties(RCSSGZ
   PROPERTIES
     VERSION "1.0.0"

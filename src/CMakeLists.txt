@@ -46,6 +46,17 @@ add_library(RCSSCLangParser SHARED
 )
 add_library(RCSS::CLangParser ALIAS RCSSCLangParser)
 
+target_compile_definitions(RCSSCLangParser
+  PUBLIC
+    HAVE_CONFIG_H
+)
+
+target_include_directories(RCSSCLangParser
+  PUBLIC
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_BINARY_DIR}
+)
+
 set_target_properties(RCSSCLangParser
   PROPERTIES
     VERSION "3.0.1"

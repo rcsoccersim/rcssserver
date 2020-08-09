@@ -8,6 +8,17 @@ add_library(RCSSConfParser SHARED
 )
 add_library(RCSS::ConfParser ALIAS RCSSConfParser)
 
+target_compile_definitions(RCSSConfParser
+  PUBLIC
+    HAVE_CONFIG_H
+)
+
+target_include_directories(RCSSConfParser
+  PUBLIC
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_BINARY_DIR}
+)
+
 set_target_properties(RCSSConfParser
   PROPERTIES
     VERSION "3.0.0"

@@ -28,8 +28,6 @@ check_include_file_cxx("pwd.h" HAVE_PWD_H)
 check_include_file_cxx("sstream" HAVE_SSTREAM)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h)
-add_compile_definitions(HAVE_CONFIG_H)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(rcssbase)
 add_subdirectory(src)
