@@ -161,6 +161,11 @@ target_link_libraries(RCSSServer
     ZLIB::ZLIB
 )
 
+set_target_properties(RCSSServer
+  PROPERTIES
+    RUNTIME_OUTPUT_NAME "rcssserver"
+)
+
 
 add_executable(RCSSClient
     client.cpp
@@ -173,6 +178,11 @@ target_link_libraries(RCSSClient
     Boost::filesystem
     Boost::system
     ZLIB::ZLIB
+)
+
+set_target_properties(RCSSClient
+  PROPERTIES
+    RUNTIME_OUTPUT_NAME "rcssclient"
 )
 
 set(prefix ${CMAKE_INSTALL_PREFIX})
