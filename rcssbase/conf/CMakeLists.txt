@@ -23,6 +23,7 @@ set_target_properties(RCSSConfParser
   PROPERTIES
     SOVERSION 3
     VERSION 3.0.0
+    LIBRARY_OUTPUT_NAME "rcssconfparser"
 )
 
 install(TARGETS RCSSConfParser

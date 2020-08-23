@@ -61,6 +61,7 @@ set_target_properties(RCSSCLangParser
   PROPERTIES
     SOVERSION 3
     VERSION 3.0.1
+    LIBRARY_OUTPUT_NAME "rcssclangparser"
 )
 
 

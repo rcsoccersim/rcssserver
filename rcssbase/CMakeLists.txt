@@ -22,6 +22,7 @@ target_include_directories(RCSSBase
 set_target_properties(RCSSBase
   PROPERTIES
     LINKER_LANGUAGE CXX
+    LIBRARY_OUTPUT_NAME "rcssbase"
 )
 
 target_link_libraries(RCSSBase

@@ -19,6 +19,7 @@ set_target_properties(RCSSGZ
   PROPERTIES
     SOVERSION 1
     VERSION 1.0.0
+    LIBRARY_OUTPUT_NAME "rcssgz"
 )
 
 target_link_libraries(RCSSGZ

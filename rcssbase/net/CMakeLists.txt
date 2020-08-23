@@ -26,6 +26,7 @@ set_target_properties(RCSSNet
   PROPERTIES
     SOVERSION 1
     VERSION 1.1.0
+    LIBRARY_OUTPUT_NAME "rcssnet"
 )
 
 install(TARGETS RCSSNet
