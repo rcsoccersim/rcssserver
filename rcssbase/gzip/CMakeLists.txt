@@ -17,7 +17,8 @@ target_include_directories(RCSSGZ
 
 set_target_properties(RCSSGZ
   PROPERTIES
-    VERSION "1.0.0"
+    SOVERSION 1
+    VERSION 1.0.0
 )
 
 target_link_libraries(RCSSGZ

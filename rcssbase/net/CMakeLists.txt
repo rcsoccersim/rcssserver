@@ -24,7 +24,8 @@ target_include_directories(RCSSNet
 
 set_target_properties(RCSSNet
   PROPERTIES
-    VERSION "1.1.0"
+    SOVERSION 1
+    VERSION 1.1.0
 )
 
 install(TARGETS RCSSNet

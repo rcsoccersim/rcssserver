@@ -21,7 +21,8 @@ target_include_directories(RCSSConfParser
 
 set_target_properties(RCSSConfParser
   PROPERTIES
-    VERSION "3.0.0"
+    SOVERSION 3
+    VERSION 3.0.0
 )
 
 install(TARGETS RCSSConfParser

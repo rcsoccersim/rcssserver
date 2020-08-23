@@ -59,7 +59,8 @@ target_include_directories(RCSSCLangParser
 
 set_target_properties(RCSSCLangParser
   PROPERTIES
-    VERSION "3.0.1"
+    SOVERSION 3
+    VERSION 3.0.1
 )
 
 
