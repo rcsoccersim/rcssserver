@@ -178,10 +178,10 @@ target_link_libraries(RCSSClient
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
 set(libdir ${CMAKE_INSTALL_FULL_LIBDIR})
-configure_file(rcsoccersim.in rcsoccersim.sh @ONLY)
+configure_file(rcsoccersim.in rcsoccersim @ONLY)
 
 install(TARGETS RCSSServer RCSSClient RCSSCLangParser
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcsoccersim.sh DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rcsoccersim DESTINATION ${CMAKE_INSTALL_BINDIR})
