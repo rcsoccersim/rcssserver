@@ -16,9 +16,10 @@ target_include_directories(RCSSBase
     ${PROJECT_BINARY_DIR}
 )
 
-set_target_properties(RCSSBase
-  PROPERTIES
-    PUBLIC_HEADER "factory.hpp;parser.h"
+set_property(TARGET RCSSBase PROPERTY
+  PUBLIC_HEADER
+    factory.hpp
+    parser.h
 )
 
 target_link_libraries(RCSSBase
