@@ -2,35 +2,31 @@ add_subdirectory(net)
 add_subdirectory(conf)
 add_subdirectory(gzip)
 
-add_library(RCSSBase SHARED
-    factory.hpp
-    parser.h
-)
+add_library(RCSSBase INTERFACE)
 add_library(RCSS::Base ALIAS RCSSBase)
 
 target_compile_definitions(RCSSBase
-  PUBLIC
+  INTERFACE
     HAVE_CONFIG_H
 )
 
 target_include_directories(RCSSBase
-  PUBLIC
+  INTERFACE
     ${PROJECT_SOURCE_DIR}
     ${PROJECT_BINARY_DIR}
 )
 
 set_target_properties(RCSSBase
   PROPERTIES
-    LINKER_LANGUAGE CXX
-    LIBRARY_OUTPUT_NAME "rcssbase"
+    PUBLIC_HEADER "factory.hpp;parser.h"
 )
 
 target_link_libraries(RCSSBase
-  PRIVATE
+  INTERFACE
     Boost::system
     Boost::filesystem
 )
 
 install(TARGETS RCSSBase
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
