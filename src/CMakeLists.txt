@@ -64,6 +64,35 @@ set_target_properties(RCSSCLangParser
     LIBRARY_OUTPUT_NAME "rcssclangparser"
 )
 
+set_property(TARGET RCSSCLangParser PROPERTY
+  PUBLIC_HEADER
+    clangparser.h
+    coach_lang_tok.h
+    clangbuilder.h
+    clangmsgbuilder.h
+    clangmsg.h
+    clangmetamsg.h
+    clangfreeformmsg.h
+    clangunsuppmsg.h
+    clangrulemsg.h
+    clangdelmsg.h
+    clanginfomsg.h
+    clangadvicemsg.h
+    clangdefmsg.h
+    clangaction.h
+    clangutil.h
+    coach_lang_comp.h
+    ${CMAKE_CURRENT_BINARY_DIR}/coach_lang_parser.hpp
+    ${CMAKE_CURRENT_BINARY_DIR}/player_command_parser.hpp
+    arithop.h
+    compop.h
+    cond.h
+    region.h
+    rule.h
+    vector.h
+    rcssexceptions.h
+)
+
 
 bison_target(player_command_parser
     player_command_parser.ypp
@@ -194,5 +223,6 @@ configure_file(rcsoccersim.in rcsoccersim @ONLY)
 install(TARGETS RCSSServer RCSSClient RCSSCLangParser
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssserver
 )
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/rcsoccersim DESTINATION ${CMAKE_INSTALL_BINDIR})

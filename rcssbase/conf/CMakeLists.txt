@@ -26,6 +26,17 @@ set_target_properties(RCSSConfParser
     LIBRARY_OUTPUT_NAME "rcssconfparser"
 )
 
+set_property(TARGET RCSSConfParser PROPERTY
+  PUBLIC_HEADER
+    builder.hpp
+    parser.hpp
+    paramgetter.hpp
+    paramsetter.hpp
+    statushandler.hpp
+    streamstatushandler.hpp
+)
+
 install(TARGETS RCSSConfParser
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase/conf
 )

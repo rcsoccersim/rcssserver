@@ -22,6 +22,12 @@ set_target_properties(RCSSGZ
     LIBRARY_OUTPUT_NAME "rcssgz"
 )
 
+set_property(TARGET RCSSGZ PROPERTY
+  PUBLIC_HEADER
+    gzstream.hpp
+    gzfstream.hpp
+)
+
 target_link_libraries(RCSSGZ
   PRIVATE
     ZLIB::ZLIB
@@ -29,4 +35,5 @@ target_link_libraries(RCSSGZ
 
 install(TARGETS RCSSGZ
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase/gzip
 )

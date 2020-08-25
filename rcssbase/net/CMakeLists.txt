@@ -29,6 +29,19 @@ set_target_properties(RCSSNet
     LIBRARY_OUTPUT_NAME "rcssnet"
 )
 
+set_property(TARGET RCSSNet PROPERTY
+  PUBLIC_HEADER
+    addr.hpp
+    socket.hpp
+    udpsocket.hpp
+    tcpsocket.hpp
+    socketstreambuf.hpp
+    isocketstream.hpp
+    osocketstream.hpp
+    iosocketstream.hpp
+)
+
 install(TARGETS RCSSNet
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase/net
 )
