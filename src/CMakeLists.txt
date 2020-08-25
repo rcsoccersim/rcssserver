@@ -59,8 +59,8 @@ target_include_directories(RCSSCLangParser
 
 set_target_properties(RCSSCLangParser
   PROPERTIES
-    SOVERSION 3
-    VERSION 3.0.1
+    SOVERSION 2
+    VERSION 2.1.0
     LIBRARY_OUTPUT_NAME "rcssclangparser"
 )
 

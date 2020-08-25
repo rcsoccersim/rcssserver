@@ -25,7 +25,7 @@ target_include_directories(RCSSNet
 set_target_properties(RCSSNet
   PROPERTIES
     SOVERSION 1
-    VERSION 1.1.0
+    VERSION 1.0.1
     LIBRARY_OUTPUT_NAME "rcssnet"
 )
 
