@@ -186,6 +186,7 @@ target_link_libraries(RCSSServer
     RCSS::ConfParser
     RCSS::Net
     RCSS::GZ
+    Boost::boost
     Boost::filesystem
     Boost::system
     ZLIB::ZLIB
@@ -205,6 +206,7 @@ target_link_libraries(RCSSClient
   PRIVATE
     RCSS::Net
     RCSS::GZ
+    Boost::boost
     Boost::filesystem
     Boost::system
     ZLIB::ZLIB
