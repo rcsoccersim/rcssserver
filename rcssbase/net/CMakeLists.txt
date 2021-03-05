@@ -11,6 +11,11 @@ add_library(RCSSNet SHARED
 )
 add_library(RCSS::Net ALIAS RCSSNet)
 
+target_link_libraries(RCSSNet
+  PUBLIC
+    Boost::boost
+)
+
 target_compile_definitions(RCSSNet
   PUBLIC
     HAVE_CONFIG_H

@@ -8,6 +8,11 @@ add_library(RCSSConfParser SHARED
 )
 add_library(RCSS::ConfParser ALIAS RCSSConfParser)
 
+target_link_libraries(RCSSConfParser
+  PUBLIC
+    Boost::boost
+)
+
 target_compile_definitions(RCSSConfParser
   PUBLIC
     HAVE_CONFIG_H

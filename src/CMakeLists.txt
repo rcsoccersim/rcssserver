@@ -46,6 +46,11 @@ add_library(RCSSCLangParser SHARED
 )
 add_library(RCSS::CLangParser ALIAS RCSSCLangParser)
 
+target_link_libraries(RCSSCLangParser
+  PUBLIC
+    Boost::boost
+)
+
 target_compile_definitions(RCSSCLangParser
   PUBLIC
     HAVE_CONFIG_H
