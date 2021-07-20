@@ -1,3 +1,6 @@
+[16.0.1]
+  * Fix a bug of the length of half time caused by slow_down_factor.
+
 [16.0.0]
   * New parameters:
     - server::illegal_defense_duration (default value: 20)
