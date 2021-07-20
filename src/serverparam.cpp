@@ -552,9 +552,6 @@ ServerParam::setSlowDownFactor()
 {
     M_slow_down_factor = std::max( 1, M_slow_down_factor );
 
-    M_half_time = static_cast< int >( M_raw_half_time * getHalfTimeScaler() + 0.5 );
-    M_extra_half_time = static_cast< int >( M_raw_extra_half_time * getHalfTimeScaler() + 0.5 );
-
     M_simulator_step *= M_slow_down_factor;
     M_sense_body_step *= M_slow_down_factor;
     M_send_vi_step *= M_slow_down_factor;
@@ -569,6 +566,9 @@ ServerParam::setSlowDownFactor()
                                      lcm( M_send_vi_step,
                                           lcm( std::max( M_synch_see_offset, 1 ),
                                                ( M_synch_mode ? M_synch_offset : 1 ) ) ) ) ) ) );
+
+    M_half_time = static_cast< int >( M_raw_half_time * getHalfTimeScaler() + 0.5 );
+    M_extra_half_time = static_cast< int >( M_raw_extra_half_time * getHalfTimeScaler() + 0.5 );
 }
 
 ServerParam::ServerParam( const std::string & progname )
