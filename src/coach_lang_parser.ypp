@@ -99,7 +99,8 @@ namespace
 %}
 
 /* BISON DECLARATIONS */
-%pure-parser
+/*%pure-parser*/
+%define api.pure
 
 %parse-param {rcss::clang::Parser::Param &param}
 %lex-param {rcss::clang::Parser::Param &param}
@@ -985,6 +986,7 @@ void yyerror (rcss::clang::Parser::Param & /*param*/, const char*)
 
 int yyerror (rcss::clang::Parser::Param &param, char* s)
 {
+
 	yyerror ( param, (const char*)s );
 	return 0;
 }
