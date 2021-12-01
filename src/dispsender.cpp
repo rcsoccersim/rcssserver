@@ -229,7 +229,7 @@ DispSenderMonitorV1::sendMsg( const BoardType board,
     dispinfo_t minfo;
     minfo.mode = htons( MSG_MODE );
     minfo.body.msg.board = htons( board );
-    std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+    std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display - 1 );
 
     transport().write( reinterpret_cast< const char * >( &minfo ),
                        sizeof( dispinfo_t ) );
@@ -411,7 +411,7 @@ DispSenderMonitorV2::sendMsg( const BoardType board,
     dispinfo_t2 minfo;
     minfo.mode = htons( MSG_MODE );
     minfo.body.msg.board = htons( board );
-    std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display );
+    std::strncpy( minfo.body.msg.message, msg, max_message_length_for_display - 1 );
 
     transport().write( reinterpret_cast< char * >( &minfo ),
                        sizeof( dispinfo_t2 ) );
