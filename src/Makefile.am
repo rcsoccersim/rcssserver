@@ -228,7 +228,7 @@ rcssserver_LDFLAGS = \
 	-L$(top_builddir)/rcssbase/gzip
 
 rcssserver_LDADD = \
-	-lrcssclangparser \
+	librcssclangparser.la \
 	-lrcssconfparser \
 	-lrcssnet \
 	-lrcssgz \

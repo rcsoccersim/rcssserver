@@ -56,7 +56,8 @@ namespace
 %}
 
 /* BISON DECLARATIONS */
-%pure-parser
+/*%pure-parser*/
+%define api.pure
 
 %parse-param {rcss::pcom::Parser::Param& param}
 %lex-param {rcss::pcom::Parser::Param& param}
@@ -412,7 +413,7 @@ floating_point_number : RCSS_PCOM_INT
 %%
 
 
-void yyerror (rcss::pcom::Parser::Param& param, const char* s)
+void yyerror (rcss::pcom::Parser::Param& /*param*/, const char* s)
 {
   std::cerr << s << std::endl;
   //do nothing

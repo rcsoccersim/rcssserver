@@ -714,10 +714,10 @@ Monitor::coach_check_ball()
 bool
 Monitor::coach_change_player_type( const char * command )
 {
-    char teamname[128];
+    char teamname[16];
     int unum, player_type;
     if ( std::sscanf( command,
-                      " ( change_player_type %127s %d %d ) ",
+                      " ( change_player_type %15s %d %d ) ",
                       teamname, &unum, &player_type ) != 3 )
     {
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );
@@ -766,8 +766,8 @@ Monitor::coach_change_player_type( const char * command )
 
     M_stadium.substitute( player, player_type );
 
-    char buf[64];
-    snprintf( buf, 64,
+    char buf[128];
+    snprintf( buf, 127,
               "(ok change_player_type %s %d %d)",
               teamname, unum, player_type );
 
