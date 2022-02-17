@@ -23,11 +23,7 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 
 #include "clangbuilder.h"
 
@@ -38,16 +34,9 @@ BuilderErr::BuilderErr( const char * file,
                         const int & line,
                         const char * msg ) throw()
 {
-#ifdef HAVE_SSTREAM
     std::ostringstream tmp;
     tmp << file << ": " << line << ": " << msg;
     M_msg = tmp.str();
-#else
-    std::ostrstream tmp;
-    tmp << file << ": " << line << ": " << msg << std::ends;
-    M_msg = tmp.str();
-    tmp.freeze( false );
-#endif
 }
 
 }

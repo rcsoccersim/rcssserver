@@ -23,11 +23,7 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>;
-#endif
 
 #include "pcomparser.h"
 
@@ -44,11 +40,8 @@ Parser::Parser( Builder & builder )
 int
 Parser::parse( const char * msg )
 {
-#ifdef HAVE_SSTREAM
     std::istringstream strm( msg );
-#else
-    std::istrstream strm( msg );
-#endif
+
     return ( rcss::Parser::parse( strm ) ? 0 : 1 );
 }
 

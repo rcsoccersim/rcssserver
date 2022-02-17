@@ -5,7 +5,7 @@
                     Class for saving results to a mysql database
                              -------------------
     begin                : 09-MAY-2003
-    copyright            : (C) 2003 by The RoboCup Soccer Simulator 
+    copyright            : (C) 2003 by The RoboCup Soccer Simulator
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
  ***************************************************************************/
@@ -34,12 +34,7 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
-
 
 #if defined(_WIN32) || defined(__WIN32__) || defined (WIN32) || defined (__CYGWIN__)
 #  ifndef WIN32
@@ -69,18 +64,18 @@ public:
             m_pen_taken[ i ] = 0;
             m_pen_scored[ i ] = 0;
         }
-         
+
         addParams();
-        
+
 #ifdef WIN32
         std::string user_dir = tildeExpand( "~\\.rcssserver\\" );
 #else
         std::string user_dir = tildeExpand( "~/.rcssserver/" );
-#endif        
+#endif
         std::string user_conf_name = user_dir + getModuleName() + ".conf";
         m_conf_parser.parseCreateConf( user_conf_name );
         m_conf_parser.parse( argc, argv );
-        
+
         if( m_save )
         {
             m_mysql = mysql_init( NULL );
@@ -91,21 +86,21 @@ public:
             else
             {
                 if( mysql_real_connect( m_mysql,
-                                        ( m_host.empty() 
-                                          ? NULL 
+                                        ( m_host.empty()
+                                          ? NULL
                                           : m_host.c_str() ),
-                                        ( m_user.empty() 
-                                          ? NULL 
+                                        ( m_user.empty()
+                                          ? NULL
                                           : m_user.c_str() ),
-                                        m_pass.c_str(), 
+                                        m_pass.c_str(),
                                         m_db.c_str(),
-                                        m_port, 
-                                        ( m_unix_socket.empty() 
-                                          ? NULL 
+                                        m_port,
+                                        ( m_unix_socket.empty()
+                                          ? NULL
                                           : m_host.c_str() ),
-                                        ( ( m_compress 
-                                            ? CLIENT_COMPRESS : 0 ) 
-                                          | ( m_ssl 
+                                        ( ( m_compress
+                                            ? CLIENT_COMPRESS : 0 )
+                                          | ( m_ssl
                                               ? CLIENT_SSL : 0 ) ) )
                     == NULL )
                 {
@@ -118,12 +113,12 @@ public:
                 {
                     std::cout << "Connected to database\n";
                     createTables();
-                    determineRoundID();    
+                    determineRoundID();
                 }
             }
         }
     }
-        
+
     virtual
     ~MySQLSaver()
     {
@@ -151,7 +146,7 @@ private:
         addParam( "event_id", m_event_id, "The ID of the event this game is part of.  This vaule is used to try to distinguish between two rounds of the same names in different events if the round_id is less than  zero (default: -1) and the round_name is specfied" );
         addParam( "event_name", m_event_name, "The name of the event this game is part of.  This value is used to try to distinguish between two rounds of the same name in different events is the round_id is less than zero, the round_name is specified and the event_id is zero(default)" );
     }
-    
+
     void
     createTables()
     {
@@ -252,7 +247,7 @@ protected:
         query += "`LEFT_FROM_TYPE` ENUM( 'WINNER', 'LOOSER' ) DEFAULT NULL ,";
         query += "`RIGHT_FROM_TYPE` ENUM( 'WINNER', 'LOOSER' ) DEFAULT NULL ,";
         query += "PRIMARY KEY ( `ID` ) ,";
-        query += "INDEX ( `ROUND_ID` , `DATETIME` , `LEFT` , `RIGHT` )"; 
+        query += "INDEX ( `ROUND_ID` , `DATETIME` , `LEFT` , `RIGHT` )";
         query += ")";
         if( mysql_query( m_mysql, query.c_str() ) != 0 )
         {
@@ -269,7 +264,7 @@ protected:
     doCreateTables()
     {
         return createEvents()
-            && createRounds() 
+            && createRounds()
             && createGames();
     }
 
@@ -277,115 +272,68 @@ protected:
     addRound()
     {
         std::cout << "Adding round: " << m_round_name << std::endl;
-#ifdef HAVE_SSTREAM
         std::ostringstream add_round;
-#else
-        std::ostrstream add_round;
-#endif
+
         add_round << "INSERT INTO `ROUNDS` (`NAME`, `EVENT_ID`) VALUES ('" << m_event_name << "', ";
         if( m_event_id < 0 )
             add_round << "null";
         else
             add_round << m_event_id;
         add_round << " )";
-#ifndef HAVE_SSTREAM
-        add_round << std::ends;
-#endif
         if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                          add_round.str().c_str()
-#else
-                         add_round.str()
-#endif
                 ) != 0 )
         {
             std::cerr << "Error: Could not add round to database: "
                       << mysql_error( m_mysql ) << std::endl;
-#ifndef HAVE_SSTREAM
-            add_round.freeze( false );
-#endif
         }
         else
         {
-#ifndef HAVE_SSTREAM
-            add_round.freeze( false );
-#endif
             std::cout << "Round '" << m_round_name << "' added\n";
         }
     }
-    
+
     void
     addEvent()
     {
         std::cout << "Adding event: " << m_event_name << std::endl;
-#ifdef HAVE_SSTREAM
         std::ostringstream add_event;
-#else
-        std::ostrstream add_event;
-#endif
+
         add_event << "INSERT INTO `EVENTS` (`NAME`) VALUES ('" << m_event_name << "')";
-#ifndef HAVE_SSTREAM
-        add_event << std::ends;
-#endif
+
         if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                          add_event.str().c_str()
-#else
-                         add_event.str()
-#endif
                 ) != 0 )
         {
             std::cerr << "Error: Could not add event to database: "
                       << mysql_error( m_mysql ) << std::endl;
-#ifndef HAVE_SSTREAM
-            add_event.freeze( false );
-#endif
         }
         else
         {
-#ifndef HAVE_SSTREAM
-            add_event.freeze( false );
-#endif
             std::cout << "Event '" << m_event_name << "' added\n";
         }
     }
-    
+
     void
     getRoundByName()
     {
-#ifdef HAVE_SSTREAM
         std::ostringstream query;
-#else
-        std::ostrstream query;
-#endif
+
         query << "SELECT `ID` FROM `ROUNDS` WHERE `NAME` = '" << m_round_name << "'";
 
         if( m_event_id >= 0 )
             query << " AND EVENT_ID = " << m_event_id;
 
-#ifndef HAVE_SSTREAM
-        query << std::ends;
-#endif
         if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                          query.str().c_str()
-#else
-                         query.str()
-#endif
                 ) != 0 )
         {
             std::cerr << "Error: Could not select round from database: "
                       << mysql_error( m_mysql ) << std::endl;
             std::cerr << "Query was:\n" << query.str() << std::endl;
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
         }
         else
         {
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
             MYSQL_RES* results = mysql_store_result( m_mysql );
             if( results == NULL )
             {
@@ -415,12 +363,7 @@ protected:
                     }
                     else
                     {
-#ifdef HAVE_SSTREAM
                         std::istringstream id( row[ 0 ] );
-#else
-                        std::istrstream id( row[ 0 ] );
-#endif
-
                         id >> m_round_id;
                     }
                 }
@@ -431,35 +374,19 @@ protected:
     void
     getEventByName()
     {
-#ifdef HAVE_SSTREAM
         std::ostringstream query;
-#else
-        std::ostrstream query;
-#endif
         query << "SELECT `ID` FROM `EVENTS` WHERE `NAME` = '" << m_event_name << "'";
-#ifndef HAVE_SSTREAM
-        query << std::ends;
-#endif
+
         if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                          query.str().c_str()
-#else
-                         query.str()
-#endif
-                ) != 0 )
+                         ) != 0 )
         {
             std::cerr << "Error: Could not select event from database: "
                       << mysql_error( m_mysql ) << std::endl;
             std::cerr << "Query was:\n" << query.str() << std::endl;
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
         }
         else
         {
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
             MYSQL_RES* results = mysql_store_result( m_mysql );
             if( results == NULL )
             {
@@ -489,11 +416,7 @@ protected:
                     }
                     else
                     {
-#ifdef HAVE_SSTREAM
                         std::istringstream id( row[ 0 ] );
-#else
-                        std::istrstream id( row[ 0 ] );
-#endif
                         id >> m_event_id;
                     }
                 }
@@ -504,36 +427,19 @@ protected:
     void
     getRoundByID()
     {
-#ifdef HAVE_SSTREAM
         std::ostringstream query;
-#else
-        std::ostrstream query;
-#endif
         query << "SELECT `NAME` FROM `ROUNDS` WHERE `ID` = " << m_round_id;
 
-#ifndef HAVE_SSTREAM
-        query << std::ends;
-#endif
         if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                          query.str().c_str()
-#else
-                         query.str()
-#endif
-                ) != 0 )
+                         ) != 0 )
         {
             std::cerr << "Error: Could not select round from database: "
                       << mysql_error( m_mysql ) << std::endl;
             std::cerr << "Query was:\n" << query.str() << std::endl;
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
         }
         else
         {
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
             MYSQL_RES* results = mysql_store_result( m_mysql );
             if( results == NULL )
             {
@@ -575,35 +481,19 @@ protected:
     void
     getEventByID()
     {
-#ifdef HAVE_SSTREAM
         std::ostringstream query;
-#else
-        std::ostrstream query;
-#endif
         query << "SELECT `NAME` FROM `EVENTS` WHERE `ID` = " << m_event_id;
-#ifndef HAVE_SSTREAM
-        query << std::ends;
-#endif
+
         if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                          query.str().c_str()
-#else
-                         query.str()
-#endif
-                ) != 0 )
+                         ) != 0 )
         {
             std::cerr << "Error: Could not select event from database: "
                       << mysql_error( m_mysql ) << std::endl;
             std::cerr << "Query was:\n" << query.str() << std::endl;
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
         }
         else
         {
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
             MYSQL_RES* results = mysql_store_result( m_mysql );
             if( results == NULL )
             {
@@ -640,7 +530,7 @@ protected:
             }
         }
     }
-    
+
     virtual
     void
     doDetermineEventID()
@@ -660,13 +550,13 @@ protected:
         if( m_event_id >= 0 )
             std::cout << "Event: " << m_event_id << ", '" << m_event_name << "'" << std::endl;
     }
-    
+
     virtual
     void
     doDetermineRoundID()
     {
         determineEventID();
-      
+
         if( m_round_id < 0 )
         {
             if( !m_round_name.empty() )
@@ -679,14 +569,14 @@ protected:
             std::cout << "Using round id specifed\n";
             getRoundByID();
         }
-        
+
         if( m_round_id > -1 )
             std::cout << "Round: " << m_round_id << ", '" << m_round_name << "'" << std::endl;
     }
 
-    
-private:   
-    
+
+private:
+
     virtual
     bool
     doEnabled() const
@@ -696,49 +586,49 @@ private:
     void
     doSaveStart()
     {}
-    
+
     virtual
     void
     doSaveTime( const tm& time )
     {
         m_time = time;
     }
-    
+
     virtual
     void
     doSaveTeamName( team_id id, const std::string& name )
     {
         m_team_name[ id ] = name;
     }
-    
+
     virtual
     void
     doSaveCoachName( team_id id, const std::string& name )
     {
         m_coach_name[ id ] = name;
     }
-    
+
     virtual
     void
     doSaveScore( team_id id, unsigned int score )
     {
         m_score[ id ] = score;
     }
-    
+
     virtual
     void
     doSavePenTaken( team_id id, unsigned int taken )
     {
         m_pen_taken[ id ] = taken;
     }
-    
+
     virtual
     void
     doSavePenScored( team_id id, unsigned int scored )
     {
         m_pen_scored[ id ] = scored;
     }
-    
+
     virtual
     void
     doSaveCoinTossWinner( team_id id )
@@ -759,7 +649,7 @@ private:
                 break;
         }
     }
-    
+
     virtual
     bool
     doSaveComplete()
@@ -775,11 +665,8 @@ private:
 
             char time_str[256];
             strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &m_time );
-#ifdef HAVE_SSTREAM
-            std::ostringstream query;
-#else
-            std::ostrstream query;
-#endif
+
+            std::ostringstream query;`
             query << "INSERT INTO `GAMES` ( `DATETIME` , `ROUND_ID` ,\n"
                   << "`LEFT` , `RIGHT` , `COACH_L` , `COACH_R` , `SCORE_L` ,\n"
                   << "`SCORE_R` , `PEN_TAKEN_L` , `PEN_TAKEN_R` , `PEN_SCORED_L` ,\n"
@@ -800,16 +687,16 @@ private:
             else
                 query << "'" << m_coach_name[ TEAM_RIGHT ] << "', \n";
 
-            
 
-            query << "'" << m_score[ TEAM_LEFT ] << "', '" 
+
+            query << "'" << m_score[ TEAM_LEFT ] << "', '"
                   << m_score[ TEAM_RIGHT ] << "', \n";
 
             if( m_pen_taken[ TEAM_LEFT ] || m_pen_taken[ TEAM_RIGHT ] )
             {
-                query << "'" << m_pen_taken[ TEAM_LEFT ] 
+                query << "'" << m_pen_taken[ TEAM_LEFT ]
                       << "', '" << m_pen_taken[ TEAM_RIGHT ] << "', \n";
-                query << "'" << m_pen_scored[ TEAM_LEFT ] << "', '" 
+                query << "'" << m_pen_scored[ TEAM_LEFT ] << "', '"
                       << m_pen_scored[ TEAM_RIGHT ] << "', \n";
             }
             else
@@ -817,7 +704,7 @@ private:
                 query << "NULL, NULL, \n";
                 query << "NULL, NULL, \n";
             }
-            
+
             if( m_left_coin )
             {
                 query << "'LEFT'";
@@ -832,29 +719,15 @@ private:
             }
             query << ")\n";
 
-#ifndef HAVE_SSREAM
-            query << std::ends;
-#endif
-
             if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                              query.str().c_str()
-#else
-                             query.str()
-#endif
-                    ) != 0 )
+                             ) != 0 )
             {
                 std::cerr << "Error: Could not save results to database: "
                           << mysql_error( m_mysql ) << std::endl;
                 std::cerr << "Query was:\n" << query.str() << std::endl;
-#ifndef HAVE_SSTREAM
-                query.freeze( false );
-#endif
                 return false;
             }
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
             getGameID();
         }
         else
@@ -869,11 +742,8 @@ private:
     {
         char time_str[256];
         strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &m_time );
-#ifdef HAVE_SSTREAM
+
         std::ostringstream query;
-#else
-        std::ostrstream query;
-#endif
         query << "SELECT `ID` FROM `GAMES` WHERE\n"
               << "`DATETIME` = '" << time_str << "'\n";
         if( m_round_id > 0 )
@@ -883,29 +753,15 @@ private:
         query << "AND `SCORE_L` = " << m_score[ TEAM_LEFT ] << "\n";
         query << "AND `SCORE_R` = " << m_score[ TEAM_RIGHT ] << "\n";
 
-#ifndef HAVE_SSREAM
-        query << std::ends;
-#endif
-        
         if( mysql_query( m_mysql,
-#ifdef HAVE_SSTREAM
                          query.str().c_str()
-#else
-                         query.str()
-#endif
-                ) != 0 )
+                         ) != 0 )
         {
             std::cerr << "Error: Could not get game id from database: "
                       << mysql_error( m_mysql ) << std::endl;
             std::cerr << "Query was:\n" << query.str() << std::endl;
-#ifndef HAVE_SSTREAM
-            query.freeze( false );
-#endif
             return;
         }
-#ifndef HAVE_SSTREAM
-        query.freeze( false );
-#endif
 
         MYSQL_RES* results = mysql_store_result( m_mysql );
         if( results == NULL )
@@ -958,7 +814,7 @@ private:
     bool m_left_coin;
     bool m_right_coin;
 
-    
+
     bool m_save;
     std::string m_host;
     std::string m_user;
@@ -988,13 +844,13 @@ public:
                                     argv,
                                     module_name ),
                     &destroy,
-                    rcss::lib::Loader::loadFromCache( "libmysqlsaver" ) ); 
+                    rcss::lib::Loader::loadFromCache( "libmysqlsaver" ) );
     }
 };
 
 
 RCSSLIB_INIT( libmysqlsaver )
-{ 
+{
     MySQLSaver::factory().reg( &MySQLSaver::create, "MySQLSaver" );
     return true;
 }
@@ -1002,6 +858,4 @@ RCSSLIB_INIT( libmysqlsaver )
 RCSSLIB_FIN( libmysqlsaver )
 {
     MySQLSaver::factory().dereg( "MySQLSaver" );
-}  
-
-
+}
