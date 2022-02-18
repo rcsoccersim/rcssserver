@@ -44,12 +44,7 @@
 #include "utility.h"
 #include "xpmholder.h"
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
-
 #include <vector>
 #include <string>
 #include <iostream>

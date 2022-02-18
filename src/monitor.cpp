@@ -36,11 +36,7 @@
 #include "types.h"
 #include "xpmholder.h"
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 
 // #ifdef HAVE_NETINET_IN_H
 // #include <netinet/in.h>
@@ -538,16 +534,9 @@ Monitor::compression( const char * command )
         return false;
     }
 
-#ifdef HAVE_SSTREAM
     std::ostringstream reply;
     reply << "(ok compression " << level << ")";
     sendMsg( MSG_BOARD, reply.str().c_str() );
-#else
-    std::ostrstream reply;
-    reply << "(ok compression " << level << ")" << std::ends;
-    sendMsg( MSG_BOARD, reply.str() );
-    reply.freeze( false );
-#endif
     setCompressionLevel( level );
     return true;
 #else
@@ -685,11 +674,7 @@ Monitor::coach_recover()
 bool
 Monitor::coach_check_ball()
 {
-#ifdef HAVE_SSTREAM
     std::ostringstream ost;
-#else
-    std::ostrstream ost;
-#endif
 
     static const char * s_ball_pos_info_str[] = BALL_POS_INFO_STRINGS;
     BallPosInfo info = M_stadium.ballPosInfo();
@@ -700,13 +685,7 @@ Monitor::coach_check_ball()
 
     ost << std::ends;
 
-#ifdef HAVE_SSTREAM
     sendMsg( MSG_BOARD, ost.str().c_str() );
-#else
-    ost << std::ends;
-    sendMsg( MSG_BOARD, ost.str() );
-    ost.freeze( false );
-#endif
 
     return true;
 }

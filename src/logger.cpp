@@ -1220,25 +1220,13 @@ Logger::writeTeamGraphic( const Side side,
 //         return;
 //     }
 
-// #ifdef HAVE_SSTREAM
 //     std::ostringstream data;
-// #else
-//     std::ostrstream data;
-// #endif
 //     data << "(team_graphic_"
 //          << ( side == LEFT ? "l" : "r" )
 //          << " (" << x << " " << y << " "
 //          << *xpm << ")";
 
-// #ifndef HAVE_SSTREAM
-//     data << std::ends;
-// #endif
-
 //     std::string msg = data.str();
-
-// #ifndef HAVE_SSTREAM
-//     data.freeze( false );
-// #endif
 
 //     writeMsgToGameLog( MSG_BOARD, msg.c_str(), true );
 }

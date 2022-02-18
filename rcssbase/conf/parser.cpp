@@ -27,14 +27,8 @@
 
 #include "builder.hpp"
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
-
 #include <iterator>
-
 #include <cerrno>
 #include <climits>
 
@@ -186,11 +180,8 @@ bool
 Parser::parse( int argc,
                const char * const * argv )
 {
-#ifdef HAVE_SSTREAM
     std::stringstream strm;
-#else
-    std::strstream strm;
-#endif
+
     if ( argc > 1 )
     {
         std::string arg( argv[1] );
@@ -218,15 +209,10 @@ Parser::parse( int argc,
             strm << ' ' << arg;
         }
     }
-#ifndef HAVE_SSTREAM
-    strm << std::ends;
-#else
+
     strm << std::flush;
-#endif
+
     bool res = rcss::Parser::parse( strm, "cmd line args" );
-#ifndef HAVE_SSTREAM
-    strm.freeze( false );
-#endif
     return res;
 }
 

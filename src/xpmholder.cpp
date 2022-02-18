@@ -25,12 +25,7 @@
 
 #include "xpmholder.h"
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
-
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
