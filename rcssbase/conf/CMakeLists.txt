@@ -1,7 +1,7 @@
 add_library(RCSSConfParser SHARED
-    parser.cpp 
-    builder.cpp 
-    statushandler.cpp 
+    parser.cpp
+    builder.cpp
+    statushandler.cpp
     streamstatushandler.cpp
     paramgetter.hpp
     paramsetter.hpp
@@ -42,6 +42,8 @@ set_property(TARGET RCSSConfParser PROPERTY
 )
 
 install(TARGETS RCSSConfParser
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase/conf
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT Libraries
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase/conf
 )

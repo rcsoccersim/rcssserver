@@ -1,14 +1,22 @@
 cmake_minimum_required(VERSION 3.5.1)
 
-project(RCSSServer VERSION 16.0.0)
+project(RCSSServer VERSION 16.0.1)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+endif()
+set(CMAKE_CXX_FLAGS "-W -Wall")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
 find_package(ZLIB REQUIRED)
+if(ZLIB_FOUND)
+  set(HAVE_LIBZ TRUE)
+endif()
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
@@ -25,10 +33,8 @@ check_include_file_cxx("netdb.h" HAVE_NETDB_H)
 check_include_file_cxx("unistd.h" HAVE_UNISTD_H)
 check_include_file_cxx("poll.h" HAVE_POLL_H)
 check_include_file_cxx("pwd.h" HAVE_PWD_H)
-check_include_file_cxx("sstream" HAVE_SSTREAM)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h)
 
 add_subdirectory(rcssbase)
 add_subdirectory(src)
-

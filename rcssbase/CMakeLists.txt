@@ -16,11 +16,11 @@ target_include_directories(RCSSBase
     ${PROJECT_BINARY_DIR}
 )
 
-set_property(TARGET RCSSBase PROPERTY
-  PUBLIC_HEADER
-    factory.hpp
-    parser.h
-)
+#set_property(TARGET RCSSBase PROPERTY
+#  PUBLIC_HEADER
+#    factory.hpp
+#    parser.h
+#)
 
 target_link_libraries(RCSSBase
   INTERFACE
@@ -29,6 +29,12 @@ target_link_libraries(RCSSBase
     Boost::filesystem
 )
 
-install(TARGETS RCSSBase
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase
+#install(TARGETS RCSSBase
+#    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase
+#)
+
+install(FILES
+  factory.hpp
+  parser.h
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase
 )
