@@ -29,11 +29,7 @@
 #include <rcssbase/net/udpsocket.hpp>
 #include <rcssbase/gzip/gzstream.hpp>
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 #include <iostream>
 #include <cerrno>
 #include <csignal>

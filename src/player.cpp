@@ -45,12 +45,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
-
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 
 namespace {
 
@@ -1740,16 +1735,9 @@ Player::compression( int level )
         return;
     }
 
-#ifdef HAVE_SSTREAM
     std::ostringstream reply;
     reply << "(ok compression " << level << ")";
     send( reply.str().c_str() );
-#else
-    std::ostrstream reply;
-    reply << "(ok compression " << level << ")" << std::ends;
-    send( reply.str() );
-    reply.freeze( false );
-#endif
 
     setCompressionLevel( level );
 #else

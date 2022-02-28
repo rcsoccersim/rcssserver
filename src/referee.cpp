@@ -32,12 +32,7 @@
 
 #include <ctime>
 #include <limits>
-
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 
 namespace {
 const int CLEAR_PLAYER_TIME = 5;
@@ -2434,16 +2429,9 @@ TouchRef::checkGoal()
 void
 TouchRef::announceGoal( const Team & team )
 {
-#ifdef HAVE_SSTREAM
     std::ostringstream msg;
     msg << "goal_" << SideStr( team.side() ) << "_" << team.point();
     M_stadium.sendRefereeAudio( msg.str().c_str() );
-#else
-    std::ostrstream msg;
-    msg << "goal_" << SideStr( team.side() ) << "_" << team.point() << std::ends;
-    M_stadium.say( msg.str() );
-    msg.freeze( false );
-#endif
 }
 
 

@@ -40,13 +40,6 @@ AC_CHECK_LIB([z], [deflate],
                         [Define to 1 if you have the `z' library (-lz).])
               GZ_LIBS="-lz"])
 
-AC_ARG_WITH(sstream,
-        AS_HELP_STRING(--with-sstream,use sstream instead of strstream (default=yes)),
-                       use_sstream=$withval, use_sstream=yes)
-if test "$use_sstream" = "yes"; then
-   AC_CXX_HAVE_SSTREAM
-fi
-
 ##################################################
 # Checks for header files.
 ##################################################

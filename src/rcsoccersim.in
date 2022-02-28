@@ -14,6 +14,19 @@ if [ x"$LIBPATH" != x ] ; then
 fi
 
 #--------------------------------------------------
+# usage
+#
+usage()
+{
+    (echo "Usage: $0 [options]"
+     echo "Available options:"
+     echo "  -help                 print this message"
+     echo "  -rcssmonitor          use rcssmonitor"
+     echo "  -monitor MONITOR      specify the monitor command"
+    ) 1>&2
+}
+
+#--------------------------------------------------
 # option
 #
 
@@ -26,7 +39,8 @@ fi
 
 if test $# -eq 0; then
     if test "$RCSSMONITOR"; then
-        MON=`which "$RCSSMONITOR" 2> /dev/null`
+        MON="$RCSSMONITOR"
+        which ${MON%% *} > /dev/null 2>&1
         if test $? -eq 1; then
             echo "Error: cannot find the monitor specified by RCSSMONITOR: $RCSSMONITOR"
             echo ""
@@ -35,57 +49,49 @@ if test $# -eq 0; then
     else
         MON=`which rcssmonitor 2> /dev/null`
         if test $? -eq 1; then
-            MON=`which rcssmonitor_frameview 2> /dev/null`
-            if test $? -eq 1; then
-              MON=`which rcssmonitor_classic 2> /dev/null`
-              if test $? -eq 1; then
-                echo "Error: No monitors can be found in your PATH and the"
-                echo "       RCSSMONITOR environment variable is not set. Please"
-                echo "       add rcssmonitor or rcssmonitor_classic to you PATH,"
-                echo "       or set the RCSSMONITOR environment variable to the"
-                echo "       executable you wish to use."
-                echo ""
-                exit 1
-              fi
-            fi
+            echo "Error: No monitors can be found in your PATH and the"
+            echo "       RCSSMONITOR environment variable is not set. Please"
+            echo "       add rcssmonitor or a third party monitor to you PATH,"
+            echo "       or set the RCSSMONITOR environment variable to the"
+            echo "       executable you wish to use."
+            echo ""
+            exit 1
         fi
     fi
 else
     while [ $# -gt 0 ]
     do
         case $1 in
+            -help)
+                usage
+                exit 0
+                ;;
+
             -rcssmonitor)
-            MON=`which rcssmonitor 2> /dev/null`
-            if test $? -eq 1; then
-                echo "Error: rcssmonitor cannot be found in your PATH"
-                echo ""
-                exit 1
-            fi
-            ;;
+                MON=`which rcssmonitor 2> /dev/null`
+                if test $? -eq 1; then
+                    echo "Error: rcssmonitor cannot be found in your PATH"
+                    echo ""
+                    exit 1
+                fi
+                ;;
 
-            -frameview)
-            MON=`which rcssmonitor_frameview 2> /dev/null`
-            if test $? -eq 1; then
-                echo "Error: rcssmonitor_frameview cannot be found in your PATH"
-                echo ""
-                exit 1
-            fi
-            ;;
-
-            -classic)
-            MON=`which rcssmonitor_classic 2> /dev/null`
-            if test $? -eq 1; then
-                echo "Error: rcssmonitor_classic cannot be found in your PATH"
-                echo ""
-                exit 1
-            fi
-            ;;
+            -monitor)
+                MON="${2}"
+                which ${MON%% *} > /dev/null 2>&1
+                if test $? -eq 1; then
+                    echo "Error: ${MON%% *} cannot be found in your PATH"
+                    echo ""
+                    exit 1
+                fi
+                shift 1
+                ;;
 
             *)
-            echo "Error: unsupported option"
-            echo "Usage: $0 [(-frameview)|(-classic)]"
-            echo ""
-            ;;
+                echo "Error: unsupported option ${1}"
+                usage
+                exit 1
+                ;;
         esac
 
         shift 1

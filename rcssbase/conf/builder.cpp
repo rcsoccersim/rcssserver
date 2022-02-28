@@ -27,12 +27,7 @@
 
 #include "statushandler.hpp"
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
-
 #include <iostream>
 #include <iomanip>
 
