@@ -59,7 +59,7 @@ namespace net {
 const Addr::HostType Addr::BROADCAST = INADDR_BROADCAST;
 const Addr::HostType Addr::ANY = INADDR_ANY;
 
-class AddrImpl {
+class Addr::Impl {
 private:
     void setAddr( Addr::PortType port,
                   Addr::HostType host )
@@ -83,12 +83,12 @@ private:
           return true;
       }
 public:
-    AddrImpl( const Addr::AddrType & addr )
+    Impl( const Addr::AddrType & addr )
         : m_addr( addr )
       { }
 
-    AddrImpl( Addr::PortType port,
-              Addr::HostType host )
+    Impl( Addr::PortType port,
+          Addr::HostType host )
       {
           setAddr( htons( port ), htonl( host ) );
       }
@@ -207,15 +207,21 @@ private:
     int m_errno;
 };
 
+
 Addr::Addr( PortType port,
             HostType host )
-    : M_impl( new AddrImpl( port, host ) )
+    : M_impl( new Impl( port, host ) )
 {
 
 }
 
 Addr::Addr( const AddrType & addr )
-    : M_impl( new AddrImpl( addr ) )
+    : M_impl( new Impl( addr ) )
+{
+
+}
+
+Addr::~Addr()
 {
 
 }

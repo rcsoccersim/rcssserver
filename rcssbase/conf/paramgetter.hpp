@@ -22,7 +22,7 @@
 #ifndef PARAMGETTER_HPP
 #define PARAMGETTER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace rcss {
 namespace conf {
@@ -121,7 +121,7 @@ public:
       }
 
 private:
-    boost::shared_ptr< rcss::conf::priv::GetterBase< RVal > > m_getter;
+    std::shared_ptr< rcss::conf::priv::GetterBase< RVal > > m_getter;
 };
 
 template< typename RVal >

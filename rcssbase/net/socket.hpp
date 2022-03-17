@@ -21,7 +21,7 @@
 #ifndef RCSS_NET_SOCKET_HPP
 #define RCSS_NET_SOCKET_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <rcssbase/net/addr.hpp>
 
@@ -124,7 +124,7 @@ protected:
     bool doOpen( SocketDesc& fd ) = 0;
 
 private:
-    boost::shared_ptr< SocketDesc > M_handle;
+    std::shared_ptr< SocketDesc > M_handle;
 };
 
 }

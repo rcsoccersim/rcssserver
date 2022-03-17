@@ -21,9 +21,8 @@
 #ifndef RCSS_NET_ADDR_HPP
 #define RCSS_NET_ADDR_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <boost/cstdint.hpp>
-
+#include <memory>
+#include <cstdint>
 #include <string>
 
 struct sockaddr_in;
@@ -31,12 +30,14 @@ struct sockaddr_in;
 namespace rcss {
 namespace net {
 
-class AddrImpl;
-
 class Addr {
+private:
+    class Impl;
+
+    std::shared_ptr< Impl > M_impl;
 public:
-    typedef boost::uint16_t PortType;
-    typedef boost::uint32_t HostType;
+    typedef std::uint16_t PortType;
+    typedef std::uint32_t HostType;
     typedef struct sockaddr_in AddrType;
 
     enum Error { S_ADDR_OK, S_SERV_NOT_FOUND, S_HOST_NOT_FOUND };
@@ -49,6 +50,8 @@ public:
           HostType host = Addr::ANY );
 
     Addr( const AddrType & addr );
+
+    ~Addr();
 
     bool setPort( PortType port = 0 );
 
@@ -70,8 +73,6 @@ public:
 
     std::string getPortStr( const std::string & proto = "" ) const;
 
-private:
-    boost::shared_ptr< AddrImpl > M_impl;
 };
 
 
