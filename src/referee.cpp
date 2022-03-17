@@ -814,15 +814,11 @@ Referee::checkFoul( const Player & tackler,
     bool yellow_card = false;
     bool red_card = false;
 
-    boost::bernoulli_distribution<> rng( tackler.foulDetectProbability() );
-    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
-        dst( rcss::random::DefaultRNG::instance(), rng );
+    std::bernoulli_distribution dst( tackler.foulDetectProbability() );
 
     // 2011-05-14 akiyama
     // added red card probability
-    boost::bernoulli_distribution<> red_rng( ServerParam::instance().redCardProbability() );
-    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
-        red_dst( rcss::random::DefaultRNG::instance(), red_rng );
+    std::bernoulli_distribution red_dst( ServerParam::instance().redCardProbability() );
 
     const double ball_dist2 = tackler.pos().distance2( M_stadium.ball().pos() );
     const double ball_angle = ( M_stadium.ball().pos() - tackler.pos() ).th();
@@ -847,7 +843,7 @@ Referee::checkFoul( const Player & tackler,
             (*p)->setFoulCharged();
 
             //std::cerr << "---->" << (*p)->unum() << " intentional foul. prob=" << rng.p() << std::endl;
-            if ( dst() )
+            if ( dst( DefaultRNG::instance().engine() ) )
             {
                 //std::cerr << "----> " << (*p)->unum() << " detected intentional foul." << std::endl;
                 pre_check = true;
@@ -895,7 +891,7 @@ Referee::checkFoul( const Player & tackler,
             {
                 //std::cerr << "----> " << (*p)->unum() << " detected yellow_card." << std::endl;
                 yellow_card = true;
-                if ( red_dst() )
+                if ( red_dst( DefaultRNG::instance().engine() ) )
                 {
                     yellow_card = false;
                     red_card = true;
@@ -904,11 +900,11 @@ Referee::checkFoul( const Player & tackler,
         }
         else
         {
-            if ( dst() )
+            if ( dst( DefaultRNG::instance().engine() ) )
             {
                 //std::cerr << "----> " << (*p)->unum() << " detected foul. prob=" << rng.p() << std::endl;
                 foul_charge = true;
-                if ( red_dst() )
+                if ( red_dst( DefaultRNG::instance().engine() ) )
                 {
                     yellow_card = true;
                 }

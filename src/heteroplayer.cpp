@@ -41,15 +41,11 @@
 
 #include <random>
 
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h> /* needed for htonl, htons, ... */
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h> /* needed for htonl, htons, ... */
 #endif
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h> /* needed for htonl, htons, ... */
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
 #endif
 
 HeteroPlayer::HeteroPlayer()

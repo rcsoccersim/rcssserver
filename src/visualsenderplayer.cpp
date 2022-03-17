@@ -894,12 +894,8 @@ VisualSenderPlayerV8::calcPointDir( const Player & player )
         //sigma is now in a range of 2.5 to 180 degrees, dependant on
         //the distance of the player.  95% of the returned random values
         //will be within +- 2*sigma of dir
-        boost::normal_distribution<> rng( dir, sigma );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::normal_distribution<> >
-            gen( rcss::random::DefaultRNG::instance(), rng );
-
-        return rad2Deg( normalize_angle( gen() ) );
+        std::normal_distribution<> dst( dir, sigma );
+        return rad2Deg( normalize_angle( dst( DefaultRNG::instance().engine() ) ) );
     }
     else
     {

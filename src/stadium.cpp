@@ -214,7 +214,7 @@ Stadium::init()
         std::cout << "Using given Simulator Random Seed: " << seed << std::endl;
         srand( seed );
         srandom( seed );
-        rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( seed ) );
+        DefaultRNG::instance( seed );
     }
     else
     {
@@ -223,7 +223,7 @@ Stadium::init()
         ServerParam::instance().setRandomSeed( seed );
         srand( seed );
         srandom( seed );
-        rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( seed ) );
+        DefaultRNG::instance( seed );
     }
 
     //std::cout << "Simulator Random Seed: " << ServerParam::instance().randomSeed() << std::endl;
@@ -935,9 +935,8 @@ Stadium::step()
 void
 Stadium::turnMovableObjects()
 {
-    std::random_shuffle( M_movable_objects.begin(),
-                         M_movable_objects.end(),
-                         irand );
+    std::shuffle( M_movable_objects.begin(), M_movable_objects.end(),
+                  DefaultRNG::instance().engine() );
     const MPObjectCont::iterator end = M_movable_objects.end();
     for ( MPObjectCont::iterator it = M_movable_objects.begin();
           it != end;
@@ -950,9 +949,8 @@ Stadium::turnMovableObjects()
 void
 Stadium::incMovableObjects()
 {
-    std::random_shuffle( M_movable_objects.begin(),
-                         M_movable_objects.end(),
-                         irand );
+    std::shuffle( M_movable_objects.begin(), M_movable_objects.end(),
+                  DefaultRNG::instance().engine() );
     const MPObjectCont::iterator end = M_movable_objects.end();
     for ( MPObjectCont::iterator it = M_movable_objects.begin();
           it != end;
@@ -2070,8 +2068,8 @@ Stadium::removeDisconnectedClients()
 void
 Stadium::sendRefereeAudio( const char * msg )
 {
-    std::random_shuffle( M_listeners.begin(), M_listeners.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( M_listeners.begin(), M_listeners.end(),
+                  DefaultRNG::instance().engine() );
 
     // the following should work, but I haven't tested it yet
     //      std::for_each( M_listeners.begin(), M_listeners.end(),
@@ -2110,8 +2108,8 @@ void
 Stadium::sendPlayerAudio( const Player & player,
                           const char * msg )
 {
-    std::random_shuffle( M_listeners.begin(), M_listeners.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( M_listeners.begin(), M_listeners.end(),
+                  DefaultRNG::instance().engine() );
 
     const ListenerCont::iterator end = M_listeners.end();
     for ( ListenerCont::iterator it = M_listeners.begin();
@@ -2146,8 +2144,8 @@ void
 Stadium::sendCoachAudio( const Coach & coach,
                          const char * msg )
 {
-    std::random_shuffle( M_listeners.begin(), M_listeners.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( M_listeners.begin(), M_listeners.end(),
+                  DefaultRNG::instance().engine() );
 
     const ListenerCont::iterator end = M_listeners.end();
     for ( ListenerCont::iterator it = M_listeners.begin();
@@ -2187,8 +2185,8 @@ void
 Stadium::sendCoachStdAudio( const OnlineCoach & coach,
                             const rcss::clang::Msg & msg )
 {
-    std::random_shuffle( M_listeners.begin(), M_listeners.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( M_listeners.begin(), M_listeners.end(),
+                  DefaultRNG::instance().engine() );
 
     const ListenerCont::iterator end = M_listeners.end();
     for ( ListenerCont::iterator it = M_listeners.begin();
@@ -2245,7 +2243,8 @@ Stadium::doRecvFromClients()
         s_time = M_time;
         s_stoppage_time = M_stoppage_time;
 
-        std::random_shuffle( M_shuffle_players.begin(), M_shuffle_players.end(), irand );
+        std::shuffle( M_shuffle_players.begin(), M_shuffle_players.end(),
+                      DefaultRNG::instance().engine() );
         for ( PlayerCont::iterator p = M_shuffle_players.begin(),
                   p_end = M_shuffle_players.end();
               p != p_end;
@@ -2297,8 +2296,8 @@ Stadium::doSendSenseBody()
 {
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
-    std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( M_remote_players.begin(), M_remote_players.end(),
+                  DefaultRNG::instance().engine() );
 
     //
     // send sense_body & fullstate
@@ -2344,8 +2343,8 @@ Stadium::doSendVisuals()
 {
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
-    std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( M_remote_players.begin(), M_remote_players.end(),
+                  DefaultRNG::instance().engine() );
 
     const PlayerCont::iterator end = M_remote_players.end();
     for ( PlayerCont::iterator it = M_remote_players.begin();
@@ -2368,8 +2367,8 @@ Stadium::doSendSynchVisuals()
 {
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
-    std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( M_remote_players.begin(), M_remote_players.end(),
+                  DefaultRNG::instance().engine() );
 
     const PlayerCont::iterator end = M_remote_players.end();
     for ( PlayerCont::iterator it = M_remote_players.begin();
@@ -2609,8 +2608,8 @@ template < class T >
 void
 recv_from_clients( std::vector< T > & clients )
 {
-    std::random_shuffle( clients.begin(), clients.end(),
-                         irand ); //rcss::random::UniformRNG::instance() );
+    std::shuffle( clients.begin(), clients.end(),
+                  DefaultRNG::instance().engine() );
 
     for ( typename std::vector< T >::iterator i = clients.begin();
           i != clients.end(); )

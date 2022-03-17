@@ -316,7 +316,7 @@ private:
       {
           if ( prob >= 1.0 ) return true;
           if ( prob <= 0.0 ) return false;
-          return boost::bernoulli_distribution<>( prob )( random::DefaultRNG::instance() );
+          return std::bernoulli_distribution( prob )( DefaultRNG::instance().engine() );
       }
 
 protected:
