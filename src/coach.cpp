@@ -39,8 +39,6 @@
 #include "initsenderonlinecoach.h"
 #include "visualsendercoach.h"
 
-#include <boost/lexical_cast.hpp>
-
 #include <iostream>
 #include <sstream>
 #include <cstdio>
@@ -410,7 +408,7 @@ Coach::sendExternalMsg()
     }
 
     std::string msg = "(include ";
-    msg += boost::lexical_cast< std::string >( buf.size() );
+    msg += std::to_string( buf.size() );
     msg += ' ';
     msg.append( buf.begin(), buf.end() );
     msg += ')';

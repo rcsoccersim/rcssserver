@@ -1447,11 +1447,8 @@ Player::goalieCatch( double dir )
     if ( min_catchable.inArea( rotated_pos ) )
     {
         //success = ( drand( 0, 1 ) <= SP.catchProb() );
-        boost::bernoulli_distribution<> rng( SP.catchProbability() );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::bernoulli_distribution<> >
-            dst( rcss::random::DefaultRNG::instance(), rng );
-        success = dst();
+        std::bernoulli_distribution dst( SP.catchProbability() );
+        success = dst( DefaultRNG::instance().engine() );
         //std::cerr << M_stadium.time()
         //          << ": goalieCatch min_catchable ok" << std::endl;
     }
@@ -1464,11 +1461,8 @@ Player::goalieCatch( double dir )
         catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
 
         //success = ( drand( 0, 1 ) <= catch_prob );
-        boost::bernoulli_distribution<> rng( catch_prob );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::bernoulli_distribution<> >
-            dst( rcss::random::DefaultRNG::instance(), rng );
-        success = dst();
+        std::bernoulli_distribution dst( catch_prob );
+        success = dst( DefaultRNG::instance().engine() );
         //std::cerr << M_stadium.time()
         //          << ": goalieCatch "
         //          << " dir=" << Rad2Deg( normalize_angle( angleBodyCommitted() + NormalizeMoment( dir ) ) )
@@ -1919,12 +1913,9 @@ Player::tackle( double power_or_angle,
 
     if ( prob < 1.0 )
     {
-        boost::bernoulli_distribution<> rng( 1 - prob );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::bernoulli_distribution<> >
-            dst( rcss::random::DefaultRNG::instance(), rng );
+        std::bernoulli_distribution dst( 1 - prob );
 
-        if ( dst() )
+        if ( dst( DefaultRNG::instance().engine() ) )
         {
             M_state |= TACKLE;
 

@@ -25,12 +25,10 @@
 
 #include "types.h"
 
-#include <rcssbase/gzip/gzfstream.hpp>
-
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include <chrono>
 
 class Player;
 class Coach;
@@ -169,11 +167,11 @@ public:
     void writeCoachStdAudio( const OnlineCoach & coach,
                              const rcss::clang::Msg & msg );
 
-    void writeTimes( const timeval &,
-                     const timeval & );
-    void writeProfile( const timeval &,
-                       const timeval &,
-                       const char * );
+    void writeTimes( const std::chrono::system_clock::time_point & old_time,
+                     const std::chrono::system_clock::time_point & new_time );
+    void writeProfile( const std::chrono::system_clock::time_point & start_time,
+                       const std::chrono::system_clock::time_point & end_time,
+                       const std::string & str );
 };
 
 

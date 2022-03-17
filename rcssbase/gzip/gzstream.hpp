@@ -23,8 +23,7 @@
 #define GZSTREAM_H
 
 
-#include <boost/shared_ptr.hpp>
-
+#include <memory>
 #include <iostream>
 
 namespace rcss {
@@ -83,7 +82,7 @@ private:
     int M_remained;               // number of bytes remaining in M_output_buffer
     char_type M_remaining_char;
 
-    boost::shared_ptr< gzstreambuf_impl > m_streams;
+    std::shared_ptr< gzstreambuf_impl > m_streams;
     int M_level;                  // current level of compression/decompression
     // a level of -1 indicates that data is read
     // and written without modification.

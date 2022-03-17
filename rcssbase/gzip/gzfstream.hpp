@@ -25,8 +25,7 @@
 
 #include <iostream>
 #include <string>
-
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 
 namespace rcss {
@@ -83,7 +82,7 @@ public:
 private:
 
     //! Pimpl ideom. the instance of a file buffer.
-    boost::scoped_ptr< gzfilebuf_impl > M_impl;
+    std::unique_ptr< gzfilebuf_impl > M_impl;
 
     //! buffer size (default: 8192)
     std::size_t M_buf_size;
@@ -105,7 +104,7 @@ public:
     /*!
       \brief default constructor.
 
-      Default constructor creates an internal file buffer using boost::scoped_ptr.
+      Default constructor creates an internal file buffer using std::unique_ptr.
       This buffer is deleted automatically.
      */
     gzfilebuf();

@@ -22,7 +22,7 @@
 #ifndef PARAMSETTER_HPP
 #define PARAMSETTER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace rcss {
 namespace conf {
@@ -124,7 +124,7 @@ public:
       }
 
 private:
-    boost::shared_ptr< rcss::conf::priv::SetterBase< Arg > > m_setter;
+    std::shared_ptr< rcss::conf::priv::SetterBase< Arg > > m_setter;
 };
 
 template< typename Arg >

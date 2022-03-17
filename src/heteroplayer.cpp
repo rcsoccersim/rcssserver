@@ -39,21 +39,13 @@
 #include "playerparam.h"
 #include "utility.h"
 
-#include <boost/random.hpp>
+#include <random>
 
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h> /* needed for htonl, htons, ... */
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h> /* needed for htonl, htons, ... */
 #endif
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h> /* needed for htonl, htons, ... */
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h> // gettimeofday
 #endif
 
 HeteroPlayer::HeteroPlayer()
@@ -168,7 +160,7 @@ HeteroPlayer::delta( const double & min,
                      const double & max )
 {
     static bool s_seeded = false;
-    static boost::mt19937 s_engine;
+    static std::mt19937 s_engine;
 
     if ( ! s_seeded )
     {
@@ -187,10 +179,9 @@ HeteroPlayer::delta( const double & min,
         }
         else
         {
-            timeval now;
-            gettimeofday ( &now, NULL );
+            std::random_device seed_gen;
+            const int seed = seed_gen();
 
-            int seed = static_cast< int >( now.tv_usec );
             PlayerParam::instance().setRandomSeed( seed );
             std::cout << "Hetero Player Seed: " << seed << std::endl;
             s_engine.seed( PlayerParam::instance().randomSeed() );
@@ -211,9 +202,8 @@ HeteroPlayer::delta( const double & min,
         std::swap( minv, maxv );
     }
 
-    boost::uniform_real< double > rng( minv, maxv );
-    boost::variate_generator< boost::mt19937&, boost::uniform_real<> > gen( s_engine, rng );
-    return gen();
+    std::uniform_real_distribution< double > rng( minv, maxv );
+    return rng( s_engine );
 }
 
 void

@@ -27,6 +27,7 @@
 
 #include "builder.hpp"
 
+#include <functional>
 #include <sstream>
 #include <iterator>
 #include <cerrno>
@@ -45,8 +46,6 @@
 #  include <boost/spirit.hpp>
 #endif
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 
 namespace {
 
@@ -531,6 +530,7 @@ bool
 Parser::boostParse()
 {
     using namespace rcss::conf;
+    using namespace std::placeholders;
 
     sc::assertion< Errors > expect_assign( ASSIGN_EXPECTED );
     sc::assertion< Errors > expect_delim( DELIM_EXPECTED );
@@ -552,8 +552,8 @@ Parser::boostParse()
 
     sc::rule<> junk_p
         = ( ws_p
-            | comment_p[ boost::bind( &Parser::countNewLines, this, _1, _2 ) ]
-            | newline_p[ boost::bind( &Parser::countNewLines, this, _1, _2 ) ]
+            | comment_p[ std::bind( &Parser::countNewLines, this, _1, _2 ) ]
+            | newline_p[ std::bind( &Parser::countNewLines, this, _1, _2 ) ]
             );
 
     sc::rule<> ignore_p = *junk_p;
@@ -594,40 +594,28 @@ Parser::boostParse()
             >> ignore_p
             >> expect_assign( assign_p )
             >> ignore_p
-            >> expect_string( string_p[ boost::bind( &Parser::include,
-                                                     this,
-                                                     _1, _2 ) ] )
+            >> expect_string( string_p[ std::bind( &Parser::include, this, _1, _2 ) ] )
             );
 
     sc::rule<> delim_p = sc::str_p( "::" );
 
     sc::rule<> param_name_p
-        = ( (simple_str_p - flag_p)[ boost::bind( &Parser::setParamName,
-                                                  this,
-                                                  _1, _2 ) ]
+        = ( (simple_str_p - flag_p)[ std::bind( &Parser::setParamName, this, _1, _2 ) ]
             >> ( expect_delim( delim_p )
                  >> ( simple_str_p - sc::as_lower_d[ "help" ]
-                      )[ boost::bind( &Parser::appendParamName,
-                                      this,
-                                      _1, _2 ) ]
+                      )[ std::bind( &Parser::appendParamName, this, _1, _2 ) ]
                  )
             >> *( delim_p
                   >> ( simple_str_p - sc::as_lower_d[ "help" ]
-                       )[ boost::bind( &Parser::appendParamName,
-                                       this,
-                                       _1, _2 ) ]
+                       )[ std::bind( &Parser::appendParamName, this, _1, _2 ) ]
                   )
             );
 
     sc::rule<> module_name_p
-        = ( ( simple_str_p - flag_p )[ boost::bind( &Parser::setParamName,
-                                                    this,
-                                                    _1, _2 ) ]
+        = ( ( simple_str_p - flag_p )[ std::bind( &Parser::setParamName, this, _1, _2 ) ]
             >> *( delim_p
                   >> ( simple_str_p - sc::as_lower_d[ "help" ]
-                       )[ boost::bind( &Parser::appendParamName,
-                                       this,
-                                       _1, _2 ) ]
+                       )[ std::bind( &Parser::appendParamName, this, _1, _2 ) ]
                   )
             );
 
@@ -644,32 +632,20 @@ Parser::boostParse()
             >> ignore_p
             >> expect_assign( assign_p )
             >> ignore_p
-            >> expect_value( true_p[ boost::bind( &Parser::buildBool,
-                                                  this,
-                                                  true ) ]
-                             | false_p[ boost::bind( &Parser::buildBool,
-                                                     this,
-                                                     false ) ]
-                             | sc::strict_real_p[ boost::bind( &Parser::buildReal,
-                                                               this,
-                                                               _1 ) ]
-                             | sc::int_p[ boost::bind( &Parser::buildInt,
-                                                       this,
-                                                       _1 ) ]
-                             | string_p[ boost::bind( &Parser::buildString,
-                                                      this,
-                                                      _1, _2 ) ]
+            >> expect_value( true_p[ std::bind( &Parser::buildBool, this, true ) ]
+                             | false_p[ std::bind( &Parser::buildBool, this, false ) ]
+                             | sc::strict_real_p[ std::bind( &Parser::buildReal, this, _1 ) ]
+                             | sc::int_p[ std::bind( &Parser::buildInt, this, _1 ) ]
+                             | string_p[ std::bind( &Parser::buildString, this, _1, _2 ) ]
                              )
             );
 
     sc::rule<> data_p
-        = ( sc::as_lower_d[ "help" ][ boost::bind( &Parser::requestGenericHelp,
-                                                   this ) ]
+        = ( sc::as_lower_d[ "help" ][ std::bind( &Parser::requestGenericHelp, this ) ]
             | ( module_name_p
                 >> delim_p
                 >> sc::as_lower_d[ "help" ]
-                )[ boost::bind( &Parser::requestDetailedHelp,
-                                this ) ]
+                )[ std::bind( &Parser::requestDetailedHelp, this ) ]
             | param_p
             | includerule_p
             );
@@ -680,9 +656,7 @@ Parser::boostParse()
                               >> data_p )
                           );
     sc::rule<> input_p
-        = conf_guard( *item_p )[ boost::bind( &ParseErrorHandler::parseError,
-                                              this,
-                                              _1, _2 ) ];
+        = conf_guard( *item_p )[ std::bind( &ParseErrorHandler::parseError, this, _1, _2 ) ];
 
     //      BOOST_SPIRIT_DEBUG_RULE(ws_p);
     //      BOOST_SPIRIT_DEBUG_RULE(newline_p);

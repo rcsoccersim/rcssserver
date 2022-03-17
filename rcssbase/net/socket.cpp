@@ -85,8 +85,8 @@ Socket::Socket()
 
 Socket::Socket( SocketDesc s )
 {
-    M_handle = boost::shared_ptr< SocketDesc >( new SocketDesc( s ),
-                                                Socket::closeFD );
+    M_handle = std::shared_ptr< SocketDesc >( new SocketDesc( s ),
+                                              Socket::closeFD );
 }
 
 
@@ -104,8 +104,8 @@ Socket::open()
         return false;
     }
 
-    M_handle = boost::shared_ptr< SocketDesc >( new SocketDesc( s ),
-                                                Socket::closeFD );
+    M_handle = std::shared_ptr< SocketDesc >( new SocketDesc( s ),
+                                              Socket::closeFD );
 #ifndef RCSS_WIN
     int err = setCloseOnExec();
     if ( err < 0 )
