@@ -44,7 +44,6 @@
 
 #include <rcssbase/gzip/gzfstream.hpp>
 
-#include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
 
@@ -524,11 +523,11 @@ Logger::renameLogs()
             team_name_score += M_stadium.teamLeft().olcoach()->name();
             team_name_score += "_";
         }
-        team_name_score += boost::lexical_cast< std::string >( M_stadium.teamLeft().point() );
+        team_name_score += std::to_string( M_stadium.teamLeft().point() );
         if ( bAddPenaltyScore )
         {
             team_name_score += "_";
-            team_name_score += boost::lexical_cast< std::string >( M_stadium.teamLeft().penaltyPoint() );
+            team_name_score += std::to_string( M_stadium.teamLeft().penaltyPoint() );
             team_name_score += ( M_stadium.teamLeft().penaltyWon() ? "w" : "" );
         }
     }
@@ -547,11 +546,11 @@ Logger::renameLogs()
             team_name_score += M_stadium.teamRight().olcoach()->name();
             team_name_score += "_";
         }
-        team_name_score += boost::lexical_cast< std::string >( M_stadium.teamRight().point() );
+        team_name_score += std::to_string( M_stadium.teamRight().point() );
         if ( bAddPenaltyScore )
         {
             team_name_score += "_";
-            team_name_score += boost::lexical_cast< std::string >( M_stadium.teamRight().penaltyPoint() );
+            team_name_score += std::to_string( M_stadium.teamRight().penaltyPoint() );
             team_name_score += ( M_stadium.teamRight().penaltyWon() ? "w" : "" );
         }
     }
