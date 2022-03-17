@@ -49,6 +49,8 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <chrono>
+#include <thread>
 
 #include <cmath>
 #include <cstdio>
@@ -56,13 +58,6 @@
 #include <csignal>
 #include <cctype>
 #include <cerrno>
-
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h> // gettimeofday
-#endif
-#ifdef HAVE_UNI_STD_H
-#include <unistd.h>
-#endif
 
 
 Stadium::Stadium()
@@ -986,13 +981,7 @@ Stadium::incMovableObjects()
 void
 Stadium::sendDisp()
 {
-    timeval tv_start, tv_end;
-
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_start, NULL );
-    }
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     // send to displays
     for ( MonitorCont::iterator i = M_monitors.begin();
@@ -1006,13 +995,8 @@ Stadium::sendDisp()
     M_logger.writeGameLog();
     M_logger.flush();
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "DISP" );
-    }
-
+    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    M_logger.writeProfile( start_time, end_time, "DISP" );
 }
 
 
@@ -2250,13 +2234,7 @@ Stadium::doRecvFromClients()
     static int s_time = 0;
     static int s_stoppage_time = 0;
 
-    timeval tv_start, tv_end;
-
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_start, NULL );
-    }
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     //
     // delayed effects
@@ -2286,38 +2264,22 @@ Stadium::doRecvFromClients()
 
     removeDisconnectedClients();
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "RECV" );
-    }
+    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    M_logger.writeProfile( start_time, end_time, "RECV" );
 }
 
 void
 Stadium::doNewSimulatorStep()
 {
-    static timeval tp_old;
-    timeval tp_new, tv_start, tv_end;
+    static std::chrono::system_clock::time_point prev_time = std::chrono::system_clock::now();
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     // th 6.3.00
-    if ( M_logger.isTextLogOpen() )
-    {
-        if ( ServerParam::instance().logTimes() )
-        {
-            //  tp_old = tp_new;
-            //  write_times displays nonsense at first call, since tp_old is never
-            //  initialized. Don't want to handle special exception for first call.
-            gettimeofday( &tp_new, NULL );
-            M_logger.writeTimes( tp_old, tp_new );
-            gettimeofday( &tp_old, NULL );
-        }
-
-        if ( ServerParam::instance().profile() )
-        {
-            gettimeofday( &tv_start, NULL );
-        }
-    }
+    //  tp_old = tp_new;
+    //  write_times displays nonsense at first call, since tp_old is never
+    //  initialized. Don't want to handle special exception for first call.
+    M_logger.writeTimes( prev_time, start_time );
+    prev_time = start_time;
 
     //
     // step
@@ -2326,23 +2288,14 @@ Stadium::doNewSimulatorStep()
     startTeams();
     checkAutoMode();
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "SIM" );
-    }
+    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    M_logger.writeProfile( start_time, end_time, "SIM" );
 }
 
 void
 Stadium::doSendSenseBody()
 {
-    struct timeval tv_start, tv_end;
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_start, NULL );
-    }
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
                          irand ); //rcss::random::UniformRNG::instance() );
@@ -2382,24 +2335,14 @@ Stadium::doSendSenseBody()
     //
     // write profile
     //
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "SB" );
-    }
+    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    M_logger.writeProfile( start_time, end_time, "SB" );
 }
 
 void
 Stadium::doSendVisuals()
 {
-    struct timeval tv_start, tv_end;
-
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_start, NULL );
-    }
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
                          irand ); //rcss::random::UniformRNG::instance() );
@@ -2416,24 +2359,14 @@ Stadium::doSendVisuals()
         }
     }
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "VIS" );
-    }
+    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    M_logger.writeProfile( start_time, end_time, "VIS" );
 }
 
 void
 Stadium::doSendSynchVisuals()
 {
-    struct timeval tv_start, tv_end;
-    //    std::cerr << "sendSynchVisuals time=" << time() << std::endl;
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_start, NULL );
-    }
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::random_shuffle( M_remote_players.begin(), M_remote_players.end(),
                          irand ); //rcss::random::UniformRNG::instance() );
@@ -2450,23 +2383,14 @@ Stadium::doSendSynchVisuals()
         }
     }
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "VIS_S" );
-    }
+    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    M_logger.writeProfile( start_time, end_time, "VIS_S" );
 }
 
 void
 Stadium::doSendCoachMessages()
 {
-    struct timeval tv_start, tv_end;
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_start, NULL );
-    }
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     if ( M_coach->assigned()
          && M_coach->isEyeOn() )
@@ -2482,12 +2406,8 @@ Stadium::doSendCoachMessages()
         }
     }
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().profile() )
-    {
-        gettimeofday( &tv_end, NULL );
-        M_logger.writeProfile( tv_start, tv_end, "COACH" );
-    }
+    const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    M_logger.writeProfile( start_time, end_time, "COACH" );
 
 #if 0
     // At each cycle we flush to logs otherwise the buffers
@@ -2527,12 +2447,13 @@ Stadium::doSendThink()
     static int cycles_missed = 0; //number of cycles where someone missed
 
     bool shutdown = false;
-    timeval tv_start, tv_now;
 
     if ( time() <= 0 )
     {
         //still waiting for players to connect, so let's run a little more slowly
-        usleep( 50 * 1000 );
+        std::chrono::microseconds sleep_count( 50 * 1000 );
+        std::this_thread::sleep_for( sleep_count );
+        //usleep( 50 * 1000 );
     }
     else if ( ! monitors().empty() )
     {
@@ -2540,7 +2461,9 @@ Stadium::doSendThink()
         if ( ++monitor_wait_count >= 32 )
         {
             monitor_wait_count = 0;
-            usleep( 20 * 1000 );
+            std::chrono::microseconds sleep_count( 20 * 1000 );
+            std::this_thread::sleep_for( sleep_count );
+            //usleep( 20 * 1000 );
         }
     }
 
@@ -2592,14 +2515,16 @@ Stadium::doSendThink()
 
     int num_sleeps = 0;
 
-    gettimeofday( &tv_start, NULL );
+    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     do
     {
         done = DS_TRUE;
         ++num_sleeps;
 
-        usleep( ServerParam::instance().synchMicroSleep() );
+        std::chrono::microseconds sleep_count( ServerParam::instance().synchMicroSleep() );
+        std::this_thread::sleep_for( sleep_count );
+        //usleep( ServerParam::instance().synchMicroSleep() );
 
         doRecvFromClients();
 
@@ -2636,13 +2561,8 @@ Stadium::doSendThink()
 
         // get time differnce with start of loop, first get time difference in
         // seconds, then multiply with 1000 to get msec.
-        gettimeofday( &tv_now, NULL );
-        double time_diff
-            = ( static_cast< double >( tv_now.tv_sec )
-                + static_cast< double >( tv_now.tv_usec ) / 1000000 )
-            - ( static_cast< double >( tv_start.tv_sec )
-                + static_cast< double >( tv_start.tv_usec ) / 1000000 );
-        time_diff *= 1000;
+        const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - start_time );
+        const double time_diff = nano_diff.count() * 0.001 * 0.001;
 
         if ( time_diff > max_msec_waited )
         {

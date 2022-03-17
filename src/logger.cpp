@@ -42,15 +42,17 @@
 
 #include "serializercommonstdv8.h"
 
+#include <rcssbase/gzip/gzfstream.hpp>
+
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
 
 #include <sstream>
 
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
+// #ifdef HAVE_SYS_TIME_H
+// #include <sys/time.h>
+// #endif
 // #ifdef HAVE_NETINET_IN_H
 // #include <netinet/in.h>
 // #endif
@@ -1436,14 +1438,14 @@ Logger::writeCoachStdAudio( const OnlineCoach & coach,
 
 
 void
-Logger::writeTimes( const timeval & old_time,
-                    const timeval & new_time )
+Logger::writeTimes( const std::chrono::system_clock::time_point & old_time,
+                    const std::chrono::system_clock::time_point & new_time )
 {
     if ( isTextLogOpen()
          && ServerParam::instance().logTimes() )
     {
-        double diff = (new_time.tv_sec - old_time.tv_sec) * 1000
-            + (double)(new_time.tv_usec - old_time.tv_usec) / 1000;
+        const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( new_time - old_time );
+        const double diff = nano_diff.count() * 0.001 * 0.001;
 
         *M_text_log << M_stadium.time()
                     << ',' << M_stadium.stoppageTime()
@@ -1452,15 +1454,15 @@ Logger::writeTimes( const timeval & old_time,
 }
 
 void
-Logger::writeProfile( const timeval & start_time,
-                      const timeval & end_time,
-                      const char * str )
+Logger::writeProfile( const std::chrono::system_clock::time_point & start_time,
+                      const std::chrono::system_clock::time_point & end_time,
+                      const std::string & str )
 {
     if ( isTextLogOpen()
          && ServerParam::instance().profile() )
     {
-        double diff = (end_time.tv_sec - start_time.tv_sec) * 1000
-            + (double)(end_time.tv_usec - start_time.tv_usec) / 1000;
+        const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( end_time - start_time );
+        const double diff = nano_diff.count() * 0.001 * 0.001;
 
         *M_text_log << M_stadium.time()
                     << ',' << M_stadium.stoppageTime()
