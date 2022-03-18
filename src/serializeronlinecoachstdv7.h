@@ -34,7 +34,7 @@ protected:
 
 public:
     virtual
-    ~SerializerOnlineCoachStdv7();
+    ~SerializerOnlineCoachStdv7() override;
 
     static
     const
@@ -44,18 +44,18 @@ public:
     void serializeRefereeAudio( std::ostream & strm,
                                 const int time,
                                 const std::string & name,
-                                const char * msg ) const;
+                                const char * msg ) const override;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
                                const int time,
                                const std::string & name,
-                               const char * msg ) const;
+                               const char * msg ) const override;
 
     virtual
     void serializeChangedPlayer( std::ostream &,
                                  const int unum,
-                                 const int type = -1 ) const;
+                                 const int type = -1 ) const override;
 };
 
 }

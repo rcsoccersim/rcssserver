@@ -39,17 +39,17 @@ class Team;
 class Referee {
 private:
     // not used
-    Referee();
-    const Referee & operator=( const Referee & );
+    Referee() = delete;
+    const Referee & operator=( const Referee & ) = delete;
 
 protected:
     Stadium & M_stadium;
 
-public:
     explicit
     Referee( Stadium & stadium )
         : M_stadium( stadium )
       { }
+public:
 
     virtual
     ~Referee()
@@ -341,33 +341,33 @@ public:
       { }
 
     void kickTaken( const Player &,
-                    const double )
+                    const double ) override
       { }
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player &,
                       const double,
-                      const bool )
+                      const bool ) override
       { }
 
     void failedTackleTaken( const Player &,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & )
+    void ballCaught( const Player & ) override
       { }
 
-    void ballPunched( const Player & )
+    void ballPunched( const Player & ) override
       { }
 
-    void ballTouched( const Player & )
+    void ballTouched( const Player & ) override
       { }
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode )
+    void playModeChange( PlayMode ) override
       { }
 };
 
@@ -416,28 +416,28 @@ public:
       { }
 
     void kickTaken( const Player & kicker,
-                    const double accel_r );
+                    const double accel_r ) override;
 
-    void failedKickTaken( const Player & kicker );
+    void failedKickTaken( const Player & kicker ) override;
 
     void tackleTaken( const Player & tackler,
                       const double accel_r,
-                      const bool foul );
+                      const bool foul ) override;
 
     void failedTackleTaken( const Player & kicker,
-                            const bool );
+                            const bool ) override;
 
-    void ballCaught( const Player & )
+    void ballCaught( const Player & ) override
       { }
 
-    void ballPunched( const Player & )
+    void ballPunched( const Player & ) override
       { }
 
-    void ballTouched( const Player & player );
+    void ballTouched( const Player & player ) override;
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm ) override;
 
 private:
 
@@ -474,31 +474,31 @@ public:
       { }
 
     void kickTaken( const Player & kicker,
-                    const double accel_r);
+                    const double accel_r) override;
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player & tackler,
                       const double accel_r,
-                      const bool foul);
+                      const bool foul) override;
 
     void failedTackleTaken( const Player & ,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & )
+    void ballCaught( const Player & ) override
       { }
 
-    void ballPunched( const Player & )
+    void ballPunched( const Player & ) override
       { }
 
-    void ballTouched( const Player & )
+    void ballTouched( const Player & ) override
       { }
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm ) override;
 
 private:
 
@@ -534,34 +534,34 @@ public:
       {}
 
     virtual
-    ~FreeKickRef()
+    ~FreeKickRef() override
       { }
 
     void kickTaken( const Player & kicker,
-                    const double accel_r );
+                    const double accel_r ) override;
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player & kicker,
                       const double accel_r,
-                      const bool foul );
+                      const bool foul ) override;
 
     void failedTackleTaken( const Player &,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & )
+    void ballCaught( const Player & ) override
       { }
 
-    void ballPunched( const Player & )
+    void ballPunched( const Player & ) override
       { }
 
-    void ballTouched( const Player & player );
+    void ballTouched( const Player & player ) override;
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm ) override;
 
 private:
 
@@ -616,30 +616,30 @@ public:
       {}
 
     void kickTaken( const Player & kicker,
-                    const double accel_r );
+                    const double accel_r ) override;
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player & kicker,
                       const double accel_r,
-                      const bool foul );
+                      const bool foul ) override;
 
     void failedTackleTaken( const Player &,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & )
+    void ballCaught( const Player & ) override
       { }
 
-    void ballPunched( const Player & )
+    void ballPunched( const Player & ) override
       { }
 
-    void ballTouched( const Player & player );
+    void ballTouched( const Player & player ) override;
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm ) override;
 
 private:
 
@@ -704,28 +704,28 @@ public:
       { }
 
     void kickTaken( const Player & kicker,
-                    const double accel_r );
+                    const double accel_r ) override;
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player & kicker,
                       const double accel_r,
-                      const bool foul );
+                      const bool foul ) override;
 
     void failedTackleTaken( const Player &,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & catcher );
+    void ballCaught( const Player & catcher ) override;
 
-    void ballPunched( const Player & catcher );
+    void ballPunched( const Player & catcher ) override;
 
-    void ballTouched( const Player & player );
+    void ballTouched( const Player & player ) override;
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pmode );
+    void playModeChange( PlayMode pmode ) override;
 
 private:
 
@@ -754,36 +754,36 @@ public:
       { }
 
     virtual
-    ~FoulRef()
+    ~FoulRef() override
       { }
 
     void kickTaken( const Player &,
-                    const double )
+                    const double ) override
       { }
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player & tackler,
                       const double accel_r,
-                      const bool foul );
+                      const bool foul ) override;
 
     void failedTackleTaken( const Player &,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & )
+    void ballCaught( const Player & ) override
       { }
 
-    void ballPunched( const Player & )
+    void ballPunched( const Player & ) override
       { }
 
-    void ballTouched( const Player & )
+    void ballTouched( const Player & ) override
       { }
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm ) override;
 
 private:
 
@@ -808,37 +808,37 @@ public:
     KeepawayRef( Stadium & stadium );
 
     virtual
-    ~KeepawayRef()
+    ~KeepawayRef() override
       { }
 
     void kickTaken( const Player &,
-                    const double )
+                    const double ) override
       { }
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player &,
                       const double,
-                      const bool )
+                      const bool ) override
       { }
 
     void failedTackleTaken( const Player &,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & )
+    void ballCaught( const Player & ) override
       { }
 
-    void ballPunched( const Player & )
+    void ballPunched( const Player & ) override
       { }
 
-    void ballTouched( const Player & )
+    void ballTouched( const Player & ) override
       { }
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm ) override;
 
 private:
     bool ballInKeepawayArea();
@@ -872,33 +872,33 @@ public:
     PenaltyRef( Stadium& stadium );
 
     virtual
-    ~PenaltyRef()
+    ~PenaltyRef() override
       { }
 
     void kickTaken( const Player & kicker,
-                    const double accel_r );
+                    const double accel_r ) override;
 
-    void failedKickTaken( const Player & )
+    void failedKickTaken( const Player & ) override
       { }
 
     void tackleTaken( const Player & tackler,
                       const double accel_r,
-                      const bool foul );
+                      const bool foul ) override;
 
     void failedTackleTaken( const Player &,
-                            const bool )
+                            const bool ) override
       { }
 
-    void ballCaught( const Player & catcher );
+    void ballCaught( const Player & catcher ) override;
 
-    void ballPunched( const Player & catcher );
+    void ballPunched( const Player & catcher ) override;
 
-    void ballTouched( const Player & )
+    void ballTouched( const Player & ) override
       { }
 
-    void analyse();
+    void analyse() override;
 
-    void playModeChange( PlayMode pm );
+    void playModeChange( PlayMode pm ) override;
 
 private:
 

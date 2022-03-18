@@ -312,17 +312,17 @@ class ActPos
 public:
     ActPos();
     ActPos( std::shared_ptr< Region > r );
-    ~ActPos();
+    ~ActPos() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
 
@@ -336,17 +336,17 @@ class ActHome
 public:
     ActHome();
     ActHome( std::shared_ptr< Region > r );
-    ~ActHome();
+    ~ActHome() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
 
@@ -362,17 +362,17 @@ public:
     ActBallToReg();
     ActBallToReg( std::shared_ptr< Region > reg,
                   const BallMove & bmtset );
-    ~ActBallToReg();
+    ~ActBallToReg() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
     BallMove getBallMove() const;
@@ -390,17 +390,17 @@ class ActBallToPlayer
 public:
     ActBallToPlayer();
     ActBallToPlayer( const UNumSet & players );
-    ~ActBallToPlayer();
+    ~ActBallToPlayer() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     UNumSet & getPlayers();
     const UNumSet & getPlayers() const;
@@ -418,17 +418,17 @@ class ActMark
 public:
     ActMark();
     ActMark( const UNumSet & players );
-    ~ActMark();
+    ~ActMark() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     UNumSet & getPlayers();
     const UNumSet & getPlayers() const;
@@ -446,16 +446,16 @@ class ActMarkLinePlayer
 public:
     ActMarkLinePlayer();
     ActMarkLinePlayer( const UNumSet & players );
-    ~ActMarkLinePlayer();
+    ~ActMarkLinePlayer() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     UNumSet & getPlayers();
     const UNumSet & getPlayers() const;
@@ -474,17 +474,17 @@ public:
 
     ActMarkLineReg();
     ActMarkLineReg( std::shared_ptr< Region > reg );
-    ~ActMarkLineReg();
+    ~ActMarkLineReg() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
     std::shared_ptr< Region > detachRegion();
@@ -500,17 +500,17 @@ public:
 
     ActOffsidesLine();
     ActOffsidesLine( std::shared_ptr< Region > r );
-    ~ActOffsidesLine();
+    ~ActOffsidesLine() override;
 
 	virtual
-	std::shared_ptr< Action > deepCopy() const;
+	std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
     std::shared_ptr< Region > detachRegion();
@@ -526,17 +526,17 @@ public:
 
     ActHetType();
     ActHetType( const int & player_type );
-    ~ActHetType();
+    ~ActHetType() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     /* class specific stuff */
     int getPlayerType() const;
@@ -551,17 +551,17 @@ class ActNamed
     : public Action {
 public:
     ActNamed( const std::string & name = "" );
-    ~ActNamed();
+    ~ActNamed() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     /* class specific */
     std::string & getName();
@@ -578,17 +578,17 @@ class ActPassReg
 public:
     ActPassReg();
     ActPassReg( std::shared_ptr< Region > reg );
-    ~ActPassReg();
+    ~ActPassReg() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
     std::shared_ptr< Region > detachRegion();
@@ -603,17 +603,17 @@ class ActPassUNum
 public:
     ActPassUNum();
     ActPassUNum( const UNumSet & players );
-    ~ActPassUNum();
+    ~ActPassUNum() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     /* class specific stuff */
     UNumSet & getPlayers();
@@ -631,17 +631,17 @@ class ActDribble
 public:
     ActDribble();
     ActDribble( std::shared_ptr< Region > reg );
-    ~ActDribble();
+    ~ActDribble() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
     std::shared_ptr< Region > detachRegion();
@@ -656,17 +656,17 @@ class ActClear
 public:
     ActClear();
     ActClear( std::shared_ptr< Region > reg );
-    ~ActClear();
+    ~ActClear() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Region * getRegion() const;
     std::shared_ptr< Region > detachRegion();
@@ -680,17 +680,17 @@ class ActShoot
     : public Action {
 public:
     ActShoot();
-    ~ActShoot();
+    ~ActShoot() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
 };
 
@@ -698,17 +698,17 @@ class ActHold
     : public Action {
 public:
     ActHold();
-    ~ActHold();
+    ~ActHold() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 };
 
 
@@ -716,17 +716,17 @@ class ActIntercept
     : public Action {
 public:
     ActIntercept();
-    ~ActIntercept();
+    ~ActIntercept() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 };
 
 
@@ -735,17 +735,17 @@ class ActTackle
 public:
     ActTackle();
     ActTackle( const UNumSet & players );
-    ~ActTackle();
+    ~ActTackle() override;
 
     virtual
-    std::shared_ptr< Action > deepCopy() const;
+    std::shared_ptr< Action > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     /* class specific stuff */
     UNumSet & getPlayers();

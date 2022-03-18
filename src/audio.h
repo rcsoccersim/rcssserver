@@ -71,13 +71,13 @@ public:
 protected:
     const Stadium& M_stadium;
 
-public:
     AudioSender( const Stadium & stadium,
                  std::ostream & transport )
         : Sender( transport )
         , M_stadium( stadium )
       { }
 
+public:
     virtual
     ~AudioSender()
       { }
@@ -150,6 +150,7 @@ public:
         : BaseObserver< AudioSender >( sender )
       { }
 
+    virtual
     ~Listener()
       { }
 
@@ -307,31 +308,31 @@ public:
       { }
 
     virtual
-    ~AudioSenderPlayerv1()
+    ~AudioSenderPlayerv1() override
       { }
 
     virtual
-    void sendRefereeAudio( const char * msg );
+    void sendRefereeAudio( const char * msg ) override;
 
     virtual
     void sendCoachAudio( const Coach & coach,
-                         const char * msg );
+                         const char * msg ) override;
 
     virtual
-    void sendCoachStdAudio( const clang::Msg & msg );
+    void sendCoachStdAudio( const clang::Msg & msg ) override;
 
     virtual
-    void sendSelfAudio( const char * msg );
+    void sendSelfAudio( const char * msg ) override;
 
     virtual
     void sendNonSelfPlayerAudio( const Player & player,
-                                 const char * msg );
+                                 const char * msg ) override;
 
     virtual
-    void sendOKClang();
+    void sendOKClang() override;
 
     virtual
-    void sendErrorNoTeamName( const std::string & team_name );
+    void sendErrorNoTeamName( const std::string & team_name ) override;
 
 };
 
@@ -346,16 +347,16 @@ public:
       { }
 
     virtual
-    ~AudioSenderPlayerv7()
+    ~AudioSenderPlayerv7() override
       { }
 
     virtual
     void sendCoachAudio( const Coach & coach,
-                         const char * msg );
+                         const char * msg ) override;
 
     virtual
     void sendNonSelfPlayerAudio( const Player & player,
-                                 const char * msg );
+                                 const char * msg ) override;
 };
 
 
@@ -478,37 +479,36 @@ public:
       {}
 
     virtual
-    ~AudioSenderPlayerv8();
+    ~AudioSenderPlayerv8() override;
 
     virtual
     void sendCoachAudio( const Coach & coach,
-                         const char * msg );
+                         const char * msg ) override;
 
     virtual
-    void sendSelfAudio( const char * msg );
+    void sendSelfAudio( const char * msg ) override;
 
     virtual
     void sendNonSelfPlayerAudio( const Player & player,
-                                 const char * msg );
+                                 const char * msg ) override;
 
     virtual
-    void newCycle();
+    void newCycle() override;
 
     virtual
-    void focusOn( const Player & player );
+    void focusOn( const Player & player ) override;
 
     virtual
-    void focusOff();
+    void focusOff() override;
 
     virtual
-    const
-    Player * getFocusTarget() const
+    const Player * getFocusTarget() const override
       {
           return M_state_p->getFocusTarget();
       }
 
     virtual
-    unsigned int getFocusCount() const
+    unsigned int getFocusCount() const override
       {
           return M_focus_count;
       }
@@ -517,7 +517,7 @@ public:
     void setEar( bool on,
                  Side side,
                  bool complete,
-                 bool partial );
+                 bool partial ) override;
 
 protected:
     virtual
@@ -575,9 +575,12 @@ public:
     FactoryHolder & factory();
 
 
+protected:
     AudioSenderCoach( const Params & params );
 
-    ~AudioSenderCoach();
+public:
+    virtual
+    ~AudioSenderCoach() override;
 
 protected:
 
@@ -607,22 +610,22 @@ public:
       { }
 
     virtual
-    ~AudioSenderCoachv1()
+    ~AudioSenderCoachv1() override
       { }
 
     virtual
-    void sendRefereeAudio( const char * msg );
+    void sendRefereeAudio( const char * msg ) override;
 
     virtual
     void sendCoachAudio( const Coach & coach,
-                         const char * msg );
+                         const char * msg ) override;
 
     virtual
-    void sendCoachStdAudio( const clang::Msg & msg );
+    void sendCoachStdAudio( const clang::Msg & msg ) override;
 
     virtual
     void sendPlayerAudio( const Player & player,
-                          const char * msg );
+                          const char * msg ) override;
 };
 
 
@@ -636,12 +639,12 @@ public:
       { }
 
     virtual
-    ~AudioSenderCoachv7()
+    ~AudioSenderCoachv7() override
       { }
 
     virtual
     void sendPlayerAudio( const Player & player,
-                          const char * msg );
+                          const char * msg ) override;
 };
 
 
@@ -679,9 +682,12 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     AudioSenderOnlineCoach( const Params & params );
 
-    ~AudioSenderOnlineCoach();
+public:
+    virtual
+    ~AudioSenderOnlineCoach() override;
 
 protected:
 

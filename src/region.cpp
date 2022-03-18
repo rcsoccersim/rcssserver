@@ -353,14 +353,14 @@ RegQuad::deepCopy() const
 
 /*** RegArc ***/
 
-RegArc::RegArc()
-    : M_start_rad( 0.0 ),
-      M_end_rad( 0.0 ),
-      M_start_ang( 0.0 ),
-      M_span_ang( 0.0 )
-{
+// RegArc::RegArc()
+//     : M_start_rad( 0.0 ),
+//       M_end_rad( 0.0 ),
+//       M_start_ang( 0.0 ),
+//       M_span_ang( 0.0 )
+// {
 
-}
+// }
 
 RegArc::RegArc( std::shared_ptr< Point > center,
                 const double & start_rad,

@@ -33,9 +33,9 @@ private:
     int M_height;
     int M_colors;
 
-    XPMHolder(); // not used
-    XPMHolder( const XPMHolder & ); // not used
-    const XPMHolder & operator=( const XPMHolder & ); // not used
+    XPMHolder() = delete; // not used
+    XPMHolder( const XPMHolder & ) = delete; // not used
+    const XPMHolder & operator=( const XPMHolder & ) = delete; // not used
 public:
 
     explicit

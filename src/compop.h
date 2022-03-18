@@ -56,10 +56,10 @@ private:
 
     CompOp( const comp_t & comp );
 
-    CompOp( const CompOp & comp_op ); // not used
+    CompOp( const CompOp & comp_op ) = default;
 
 
-    CompOp& operator=( const CompOp & comp_op ); // not used
+    CompOp& operator=( const CompOp & comp_op ) = delete; // not used
 public:
     template< typename A, typename B >
     bool compare( const A & a,

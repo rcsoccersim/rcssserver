@@ -90,8 +90,11 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     VisualSenderPlayer( const Params & params );
 
+public:
+    virtual
     ~VisualSenderPlayer();
 
 protected:
@@ -193,11 +196,10 @@ public:
     VisualSenderPlayerV1( const Params & params );
 
     virtual
-    ~VisualSenderPlayerV1();
+    ~VisualSenderPlayerV1() override;
 
     virtual
-    void
-    sendVisual();
+    void sendVisual() override;
 
 
 private:
@@ -406,7 +408,7 @@ public:
     VisualSenderPlayerV4( const Params & params );
 
     virtual
-    ~VisualSenderPlayerV4();
+    ~VisualSenderPlayerV4() override;
 
 protected:
     virtual
@@ -415,7 +417,7 @@ protected:
                           const double & dist,
                           const int dir,
                           const double & dist_chg,
-                          const double & dir_chg );
+                          const double & dir_chg ) override;
 
 
     int calcBodyDir( const Player & player ) const
@@ -444,7 +446,7 @@ public:
     VisualSenderPlayerV5( const Params & params );
 
     virtual
-    ~VisualSenderPlayerV5();
+    ~VisualSenderPlayerV5() override;
 
 protected:
     virtual
@@ -453,7 +455,7 @@ protected:
                           const double & dist,
                           const int dir,
                           const double & dist_chg,
-                          const double & dir_chg );
+                          const double & dir_chg ) override;
 
     int calcHeadDir( const Player & player ) const
       {
@@ -484,24 +486,24 @@ public:
     VisualSenderPlayerV6( const Params & params );
 
     virtual
-    ~VisualSenderPlayerV6();
+    ~VisualSenderPlayerV6() override;
 
     virtual
     const
-    std::string & calcName( const PObject & obj ) const
+    std::string & calcName( const PObject & obj ) const override
       {
           return obj.shortName();
       }
 
     virtual
     const
-    std::string & calcCloseName( const PObject & obj ) const
+    std::string & calcCloseName( const PObject & obj ) const override
       {
           return obj.shortCloseName();
       }
 
     virtual
-    const std::string & calcPlayerName( const Player & obj ) const
+    const std::string & calcPlayerName( const Player & obj ) const override
       {
           return self().side() == obj.side()
               ? obj.shortName()
@@ -510,7 +512,7 @@ public:
 
     virtual
     const
-    std::string & calcUFarName( const Player & obj ) const
+    std::string & calcUFarName( const Player & obj ) const override
       {
           return self().side() == obj.side()
               ? obj.shortNameFar()
@@ -519,7 +521,7 @@ public:
 
     virtual
     const
-    std::string & calcTFarName( const Player & obj ) const
+    std::string & calcTFarName( const Player & obj ) const override
       {
           return obj.shortNameTooFar();
       }
@@ -551,7 +553,7 @@ public:
 
 protected:
     virtual
-    int rad2Deg( const double & rad ) const
+    int rad2Deg( const double & rad ) const override
       {
           return Rad2IDegRound( rad );
       }
@@ -588,13 +590,13 @@ protected:
                           const double & dist,
                           const int dir,
                           const double & dist_chg,
-                          const double & dir_chg );
+                          const double & dir_chg ) override;
 
     virtual
     void serializePlayer( const Player & player,
                           const std::string & name,
                           const double & dist,
-                          const int dir );
+                          const int dir ) override;
 };
 
 

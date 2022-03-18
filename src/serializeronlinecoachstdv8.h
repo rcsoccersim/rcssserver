@@ -34,17 +34,16 @@ protected:
 
 public:
     virtual
-    ~SerializerOnlineCoachStdv8();
+    ~SerializerOnlineCoachStdv8() override;
 
     static
-    const
-    Ptr create();
+    const Ptr create();
 
     virtual
     void serializePlayerClangVer( std::ostream & strm,
                                   const std::string & name,
                                   const unsigned int min,
-                                  const unsigned int max ) const;
+                                  const unsigned int max ) const override;
 };
 
 }

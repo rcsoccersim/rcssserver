@@ -74,8 +74,8 @@ private:
 
 
     // not used
-    Team();
-    const Team & operator=( const Team & );
+    Team() = delete;
+    const Team & operator=( const Team & ) = delete;
 
 public:
 

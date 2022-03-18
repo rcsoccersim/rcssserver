@@ -35,7 +35,7 @@ protected:
 
 public:
     virtual
-    ~SerializerCoachStdv8();
+    ~SerializerCoachStdv8() override;
 
     static
     const
@@ -48,7 +48,7 @@ public:
                                 const PVector &,
                                 const int,
                                 const int,
-                                const bool ) const;
+                                const bool ) const override;
 
     virtual
     void serializeVisualObject( std::ostream &,
@@ -58,7 +58,7 @@ public:
                                 const int,
                                 const int,
                                 const int,
-                                const bool ) const;
+                                const bool ) const override;
 
 
     virtual
@@ -68,7 +68,7 @@ public:
                                 const PVector & pos,
                                 const PVector & vel,
                                 const int body,
-                                const int neck ) const;
+                                const int neck ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -78,7 +78,7 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 };
 
 }

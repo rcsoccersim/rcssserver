@@ -177,282 +177,282 @@ public:
     MsgBuilder();
 
     virtual
-    ~MsgBuilder();
+    ~MsgBuilder() override;
 
     std::shared_ptr< Msg > getMsg();
     void resetMsg();
 
     virtual
     void setVer( const unsigned int & min,
-                 const unsigned int & max );
+                 const unsigned int & max ) override;
 
     virtual
-    void setStrVarSize( const unsigned int len ) { M_str_var_size = len; }
+    void setStrVarSize( const unsigned int len ) override { M_str_var_size = len; }
 
     virtual
-    unsigned int strVarSize() const { return M_str_var_size; }
+    unsigned int strVarSize() const override { return M_str_var_size; }
 
     virtual
-    void setFreeformMsgSize( const unsigned int len ) { M_freeform_msg_size = len; }
+    void setFreeformMsgSize( const unsigned int len ) override { M_freeform_msg_size = len; }
 
     virtual
-    unsigned int freeformMsgSize() const { return M_freeform_msg_size; }
+    unsigned int freeformMsgSize() const override { return M_freeform_msg_size; }
 
     virtual
-    void setTime( const int & time );
+    void setTime( const int & time ) override;
 
     virtual
-    void setSide( const int & side );
+    void setSide( const int & side ) override;
 
     virtual
-    void setTimeRecv( const int & time );
+    void setTimeRecv( const int & time ) override;
 
     virtual
-    void buildMetaMsg();
+    void buildMetaMsg() override;
 
     virtual
-    void buildMetaTokenVer( const double & ver );
+    void buildMetaTokenVer( const double & ver ) override;
 
     virtual
-    void buildDefineMsg();
+    void buildDefineMsg() override;
 
     virtual
-    void buildDefineCond( const std::string & name );
+    void buildDefineCond( const std::string & name ) override;
 
     virtual
-    void buildDefineDir( const std::string & name );
+    void buildDefineDir( const std::string & name ) override;
 
     virtual
-    void buildDefineReg( const std::string & name );
+    void buildDefineReg( const std::string & name ) override;
 
     virtual
-    void buildDefineAct( const std::string & name );
+    void buildDefineAct( const std::string & name ) override;
 
     virtual
-    void buildFreeformMsg( const std::string & str );
+    void buildFreeformMsg( const std::string & str ) override;
 
     virtual
-    void buildUnsuppMsg();
+    void buildUnsuppMsg() override;
 
     virtual
-    void buildInfoMsg();
+    void buildInfoMsg() override;
 
     virtual
-    void buildAdviceMsg();
+    void buildAdviceMsg() override;
 
     virtual
-    void buildTokenRule( const int & ttl );
+    void buildTokenRule( const int & ttl ) override;
 
     virtual
-    void buildTokenClear();
+    void buildTokenClear() override;
 
     virtual
-    void buildActPos();
+    void buildActPos() override;
 
     virtual
-    void buildActHome();
+    void buildActHome() override;
 
     virtual
-    void buildActBallToReg();
+    void buildActBallToReg() override;
 
     virtual
-    void buildActBallToPlayer();
+    void buildActBallToPlayer() override;
 
     virtual
-    void buildActMark();
+    void buildActMark() override;
 
     virtual
-    void buildActMarkLinePlayer();
+    void buildActMarkLinePlayer() override;
 
     virtual
-    void buildActMarkLineReg();
+    void buildActMarkLineReg() override;
 
     virtual
-    void buildActOffsideLine();
+    void buildActOffsideLine() override;
 
     virtual
-    void buildActHetType( const int & type );
+    void buildActHetType( const int & type ) override;
 
     virtual
-    void buildActNamed( const std::string & name );
+    void buildActNamed( const std::string & name ) override;
 
     virtual
-    void buildActPassReg();
+    void buildActPassReg() override;
 
     virtual
-    void buildActPassUNum();
+    void buildActPassUNum() override;
 
     virtual
-    void buildActDribble();
+    void buildActDribble() override;
 
     virtual
-    void buildActClear();
+    void buildActClear() override;
 
     virtual
-    void buildActShoot();
+    void buildActShoot() override;
 
     virtual
-    void buildActHold();
+    void buildActHold() override;
 
     virtual
-    void buildActIntercept();
+    void buildActIntercept() override;
 
     virtual
-    void buildActTackle();
+    void buildActTackle() override;
 
     virtual
     void buildDirComm( const bool & do_dont,
-                       const bool & our_side );
+                       const bool & our_side ) override;
 
     virtual
-    void buildDirNamed( const std::string& name );
+    void buildDirNamed( const std::string& name ) override;
 
     virtual
-    void buildCondTrue();
+    void buildCondTrue() override;
 
     virtual
-    void buildCondFalse();
+    void buildCondFalse() override;
 
     virtual
     void buildCondPlayerPos( const bool & our_side,
                              const int & min,
-                             const int & max );
+                             const int & max ) override;
 
     virtual
-    void buildCondBallPos();
+    void buildCondBallPos() override;
 
     virtual
-    void buildCondBallOwner( const bool & our_side );
+    void buildCondBallOwner( const bool & our_side ) override;
 
     virtual
-    void buildCondPlayMode( const PlayMode & play_mode );
+    void buildCondPlayMode( const PlayMode & play_mode ) override;
 
     virtual
-    void buildCondAnd();
+    void buildCondAnd() override;
 
     virtual
-    void buildCondOr();
+    void buildCondOr() override;
 
     virtual
-    void buildCondNot();
+    void buildCondNot() override;
 
     virtual
-    void buildCondNamed( const std::string & name );
+    void buildCondNamed( const std::string & name ) override;
 
     virtual
     void buildCondTime( const int & time,
-                        const util::CompOp & comp );
+                        const util::CompOp & comp ) override;
 
     virtual
     void buildCondOppGoal( const int & goals,
-                           const util::CompOp & comp );
+                           const util::CompOp & comp ) override;
 
     virtual
     void buildCondOurGoal( const int & goals,
-                           const util::CompOp & comp );
+                           const util::CompOp & comp ) override;
 
     virtual
     void buildCondGoalDiff( const int & goals,
-                            const util::CompOp & comp );
+                            const util::CompOp & comp ) override;
 
     virtual
-    void buildCondUNum( const rcss::clang::UNum & unum );
+    void buildCondUNum( const rcss::clang::UNum & unum ) override;
 
     virtual
-    void buildAddToCondList();
+    void buildAddToCondList() override;
 
     virtual
-    void buildCreateCondList();
+    void buildCreateCondList() override;
 
     virtual
-    void buildRegNull();
+    void buildRegNull() override;
 
     virtual
-    void buildRegQuad();
+    void buildRegQuad() override;
 
     virtual
     void buildRegArc( const double & start_rad,
                       const double & end_rad,
                       const double & start_ang,
-                      const double & span_ang );
+                      const double & span_ang ) override;
 
     virtual
-    void buildRegUnion();
+    void buildRegUnion() override;
 
     virtual
-    void buildRegNamed( const std::string & name );
+    void buildRegNamed( const std::string & name ) override;
 
     virtual
-    void buildRegPoint();
+    void buildRegPoint() override;
 
     virtual
-    void buildRegTri();
+    void buildRegTri() override;
 
     virtual
-    void buildRegRec();
+    void buildRegRec() override;
 
     virtual
     void buildPointSimple( const double & x,
-                           const double & y );
+                           const double & y ) override;
 
     virtual
     void buildPointRel( const double & x,
-                        const double & y );
+                        const double & y ) override;
 
     virtual
-    void buildPointBall();
+    void buildPointBall() override;
 
     virtual
     void buildPointPlayer( const bool & our_side,
-                           const UNum & unum );
+                           const UNum & unum ) override;
 
     virtual
-    void buildPointArith( const rcss::util::ArithOp & arith_op );
+    void buildPointArith( const rcss::util::ArithOp & arith_op ) override;
 
     virtual
-    void buildUNum( const UNum & unum );
+    void buildUNum( const UNum & unum ) override;
 
     virtual
-    void buildUNumSet();
+    void buildUNumSet() override;
 
     virtual
-    void buildBallMoveToken( const BallMoveToken & bmt );
+    void buildBallMoveToken( const BallMoveToken & bmt ) override;
 
     virtual
-    void buildRuleMsg();
+    void buildRuleMsg() override;
 
     virtual
-    void buildActivateAllRules( const bool & on );
+    void buildActivateAllRules( const bool & on ) override;
 
     virtual
-    void buildActivateRules( const bool & on );
+    void buildActivateRules( const bool & on ) override;
 
     virtual
-    void buildRuleID( const std::string & id );
+    void buildRuleID( const std::string & id ) override;
 
     virtual
-    void buildRuleIDList();
+    void buildRuleIDList() override;
 
     virtual
-    void buildRuleIDListALL();
+    void buildRuleIDListALL() override;
 
     virtual
-    void buildDelMsg();
+    void buildDelMsg() override;
 
     virtual
-    void buildDefineModelRule( const std::string & id );
+    void buildDefineModelRule( const std::string & id ) override;
 
     virtual
-    void buildDefineDirectiveRule( const std::string & id );
+    void buildDefineDirectiveRule( const std::string & id ) override;
 
     virtual
-    void buildSimpleRule();
+    void buildSimpleRule() override;
 
     virtual
-    void buildNestedRule();
+    void buildNestedRule() override;
 
     virtual
-    void buildIDRule();
+    void buildIDRule() override;
 };
 
 }

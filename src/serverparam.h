@@ -66,9 +66,9 @@ private:
 
 private:
 
-    ServerParam(); // not used
-    ServerParam( const ServerParam & ); // not used
-    ServerParam & operator=( const ServerParam & ); // not used
+    ServerParam() = delete; // not used
+    ServerParam( const ServerParam & ) = delete; // not used
+    ServerParam & operator=( const ServerParam & ) = delete; // not used
 
 protected:
 

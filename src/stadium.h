@@ -79,14 +79,14 @@ public:
     typedef std::vector< MPObject * > MPObjectCont;
 protected:
     // definitions of different timeable methods
-    void doRecvFromClients( );
-    void doNewSimulatorStep();
-    void doSendSenseBody();
-    void doSendVisuals();
-    void doSendSynchVisuals();
-    void doSendCoachMessages();
-    bool doSendThink();
-    void doQuit();
+    void doRecvFromClients( ) override;
+    void doNewSimulatorStep() override;
+    void doSendSenseBody() override;
+    void doSendVisuals() override;
+    void doSendSynchVisuals() override;
+    void doSendCoachMessages() override;
+    bool doSendThink() override;
+    void doQuit() override;
 
 protected:
     bool M_alive;
@@ -149,14 +149,14 @@ public:
     Stadium();
 
     virtual
-    ~Stadium();
+    ~Stadium() override;
 
     bool init();
 
     void finalize( const std::string & msg );
 
     virtual
-    bool isAlive()
+    bool isAlive() override
       {
           return M_alive;
       }

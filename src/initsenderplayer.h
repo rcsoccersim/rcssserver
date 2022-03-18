@@ -75,7 +75,7 @@ public:
     FactoryHolder & factory();
 
     virtual
-    ~InitSenderPlayer();
+    ~InitSenderPlayer() override;
 
 protected:
     InitSenderPlayer( const Params & params,
@@ -202,19 +202,19 @@ protected:
 
 public:
     virtual
-    ~InitSenderPlayerV1();
+    ~InitSenderPlayerV1() override;
 
     virtual
-    void sendInit();
+    void sendInit() override;
 
     virtual
-    void sendReconnect();
+    void sendReconnect() override;
 
     virtual
-    void sendScore();
+    void sendScore() override;
 
     virtual
-    void sendChangedPlayers();
+    void sendChangedPlayers() override;
 };
 
 /*!
@@ -238,10 +238,10 @@ protected:
 
 public:
     virtual
-    ~InitSenderPlayerV7();
+    ~InitSenderPlayerV7() override;
 
     virtual
-    void sendChangedPlayers();
+    void sendChangedPlayers() override;
 };
 
 /*!
@@ -265,7 +265,7 @@ protected:
 
 public:
     virtual
-    ~InitSenderPlayerV8();
+    ~InitSenderPlayerV8() override;
 };
 
 }

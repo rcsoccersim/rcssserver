@@ -53,7 +53,7 @@ public:
         : M_sender( sender )
       { }
 
-
+    virtual
     ~BaseObserver()
       { }
 
@@ -84,8 +84,8 @@ public:
 
 private:
 
-    BaseObserver( const BaseObserver & ); // not used;
-    BaseObserver & operator=( const BaseObserver & ); // not used;
+    BaseObserver( const BaseObserver & ) = delete; // not used;
+    BaseObserver & operator=( const BaseObserver & ) = delete; // not used;
 };
 
 }

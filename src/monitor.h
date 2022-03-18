@@ -62,7 +62,7 @@ protected:
 public:
     Monitor( Stadium & stadium,
              const double & version );
-    ~Monitor();
+    ~Monitor() override;
 
     void disable()
       {
@@ -70,7 +70,7 @@ public:
       }
 
     void parseMsg( char * msg,
-                   const size_t & len );
+                   const size_t & len ) override;
     bool parseCommand( const char * message );
 
     bool setSenders();

@@ -34,7 +34,7 @@ protected:
 
 public:
     virtual
-    ~SerializerCoachStdv13();
+    ~SerializerCoachStdv13() override;
 
     static
     const
@@ -47,7 +47,7 @@ public:
                                 const PVector & pos,
                                 const PVector & vel,
                                 const int body,
-                                const int neck ) const;
+                                const int neck ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -57,7 +57,7 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 };
 
 }

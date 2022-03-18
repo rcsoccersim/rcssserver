@@ -46,10 +46,10 @@ private:
 
     ArithOp( const arith_t & arith );
 
-    ArithOp( const ArithOp & arith_op ); // not used
+    ArithOp( const ArithOp & arith_op ) = default;
 
 
-    ArithOp& operator=( const ArithOp& arith_op ); // not used
+    ArithOp& operator=( const ArithOp& arith_op ) = delete; // not used
 
 public:
     template< typename A, typename B >

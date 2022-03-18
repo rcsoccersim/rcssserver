@@ -34,38 +34,37 @@ protected:
 
 public:
     virtual
-    ~SerializerOnlineCoachStdv1();
+    ~SerializerOnlineCoachStdv1() override;
 
     static
-    const
-    Ptr create();
+    const Ptr create();
 
     virtual
     void serializeRefereeAudio( std::ostream & strm,
                                 const int time,
                                 const std::string & name,
-                                const char * msg ) const;
+                                const char * msg ) const override;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
                                const int time,
                                const std::string & name,
-                               const char * msg ) const;
+                               const char * msg ) const override;
 
     virtual
     void serializePlayerClangVer( std::ostream & strm,
                                   const std::string & name,
                                   const unsigned int min,
-                                  const unsigned int max ) const;
+                                  const unsigned int max ) const override;
 
     virtual
     void serializeInit( std::ostream &,
-                        const int side = 0 ) const;
+                        const int side = 0 ) const override;
 
     virtual
     void serializeChangedPlayer( std::ostream &,
                                  const int unum,
-                                 const int type = -1 ) const;
+                                 const int type = -1 ) const override;
 
 };
 

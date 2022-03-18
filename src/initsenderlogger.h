@@ -74,7 +74,7 @@ public:
     FactoryHolder & factory();
 
     virtual
-    ~InitSenderLogger();
+    ~InitSenderLogger() override;
 
 protected:
 
@@ -182,25 +182,25 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV1();
+    ~InitSenderLoggerV1() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 
     virtual
-    void sendTeam();
+    void sendTeam() override;
 
 };
 
@@ -215,25 +215,25 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV2();
+    ~InitSenderLoggerV2() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 
     virtual
-    void sendTeam();
+    void sendTeam() override;
 
 };
 
@@ -248,25 +248,25 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV3();
+    ~InitSenderLoggerV3() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 
     virtual
-    void sendTeam();
+    void sendTeam() override;
 
 };
 
@@ -282,25 +282,25 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV4();
+    ~InitSenderLoggerV4() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 
     virtual
-    void sendTeam();
+    void sendTeam() override;
 
 };
 
@@ -316,10 +316,10 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV5();
+    ~InitSenderLoggerV5() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
 };
 

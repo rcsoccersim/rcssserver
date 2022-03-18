@@ -49,11 +49,8 @@
 #include "types.h"
 #include "utility.h"
 
-#include <vector>
 #include <string>
-#include <algorithm>
 #include <memory>
-#include <map>
 #include <iostream>
 #include <cmath>
 
@@ -249,7 +246,7 @@ private:
     double M_bottom;
 
     // not used
-    RArea();
+    RArea() = delete;
 public:
     RArea( const double & l,
            const double & r,
@@ -308,7 +305,7 @@ private:
     double M_radius;
 
     // not used
-    CArea();
+    CArea() = delete;
 public:
     CArea( const PVector & center,
            const double & radius )
@@ -393,8 +390,8 @@ protected:
 private:
 
     // not used
-    PObject();
-    const PObject & operator=( const PObject & );
+    PObject() = delete;
+    const PObject & operator=( const PObject & ) = delete;
 
 public:
 
@@ -505,8 +502,8 @@ private:
 private:
 
     // not used
-    MPObject();
-    const MPObject & operator=( const MPObject & );
+    MPObject() = delete;
+    const MPObject & operator=( const MPObject & ) = delete;
 
 public:
 
@@ -633,25 +630,25 @@ public:
     Ball( Stadium & stadium );
 
     virtual
-    void turnImpl()
+    void turnImpl() override
       { }
 
     virtual
-    void updateAngle()
+    void updateAngle() override
       { }
 
     virtual
-    void collidedWithPost()
+    void collidedWithPost() override
       { }
 
     virtual
-    double maxAccel() const
+    double maxAccel() const override
       {
           return M_max_accel;
       }
 
     virtual
-    double maxSpeed() const
+    double maxSpeed() const override
       {
           return M_max_speed;
       }
