@@ -232,7 +232,7 @@ rcssserver_LDADD = \
 	-lrcssconfparser \
 	-lrcssnet \
 	-lrcssgz \
-	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) @GZ_LIBS@
+	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
 
 BUILT_SOURCES = \
@@ -276,7 +276,7 @@ rcssclient_LDFLAGS = \
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
 	-lrcssnet \
 	-lrcssgz \
-	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) @GZ_LIBS@
+	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
 
 AM_CPPFLAGS = -I$(top_srcdir)

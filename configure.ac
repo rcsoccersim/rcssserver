@@ -34,11 +34,13 @@ AC_PROG_MAKE_SET
 AC_CHECK_LIB([m], [cos])
 dnl AC_CHECK_LIB(expat, XML_Parse)
 #AC_CHECK_LIB([z], [deflate])
-AC_SUBST(GZ_LIBS)
-AC_CHECK_LIB([z], [deflate],
-             [AC_DEFINE([HAVE_LIBZ], [1],
-                        [Define to 1 if you have the `z' library (-lz).])
-              GZ_LIBS="-lz"])
+#AC_SUBST(GZ_LIBS)
+#AC_CHECK_LIB([z], [deflate],
+#             [AC_DEFINE([HAVE_LIBZ], [1],
+#                        [Define to 1 if you have the `z' library (-lz).])
+#              GZ_LIBS="-lz"])
+AX_CHECK_ZLIB([],
+              [AC_MSG_NOTICE(Zlib not found.)])
 
 ##################################################
 # Checks for header files.

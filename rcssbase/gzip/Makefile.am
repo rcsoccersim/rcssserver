@@ -27,7 +27,7 @@ librcssgz_la_LDFLAGS = -version-info 1:0:0
 #    6. If any interfaces have been removed since the last public release,
 #       then set AGE to 0.
 
-librcssgz_la_LIBADD = @GZ_LIBS@
+librcssgz_la_LIBADD =
 
 rcssbase_gzipdir = $(includedir)/rcssbase/gzip
 
