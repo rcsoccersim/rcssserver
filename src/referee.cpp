@@ -834,7 +834,7 @@ Referee::checkFoul( const Player & tackler,
             p->setFoulCharged();
 
             //std::cerr << "---->" << p->unum() << " intentional foul. prob=" << rng.p() << std::endl;
-            if ( dst( DefaultRNG::instance().engine() ) )
+            if ( dst( DefaultRNG::instance() ) )
             {
                 //std::cerr << "----> " << p->unum() << " detected intentional foul." << std::endl;
                 pre_check = true;
@@ -882,7 +882,7 @@ Referee::checkFoul( const Player & tackler,
             {
                 //std::cerr << "----> " << p->unum() << " detected yellow_card." << std::endl;
                 yellow_card = true;
-                if ( red_dst( DefaultRNG::instance().engine() ) )
+                if ( red_dst( DefaultRNG::instance() ) )
                 {
                     yellow_card = false;
                     red_card = true;
@@ -891,11 +891,11 @@ Referee::checkFoul( const Player & tackler,
         }
         else
         {
-            if ( dst( DefaultRNG::instance().engine() ) )
+            if ( dst( DefaultRNG::instance() ) )
             {
                 //std::cerr << "----> " << p->unum() << " detected foul. prob=" << rng.p() << std::endl;
                 foul_charge = true;
-                if ( red_dst( DefaultRNG::instance().engine() ) )
+                if ( red_dst( DefaultRNG::instance() ) )
                 {
                     yellow_card = true;
                 }

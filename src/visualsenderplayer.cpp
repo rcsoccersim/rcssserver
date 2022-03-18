@@ -889,7 +889,7 @@ VisualSenderPlayerV8::calcPointDir( const Player & player )
         //the distance of the player.  95% of the returned random values
         //will be within +- 2*sigma of dir
         std::normal_distribution<> dst( dir, sigma );
-        return rad2Deg( normalize_angle( dst( DefaultRNG::instance().engine() ) ) );
+        return rad2Deg( normalize_angle( dst( DefaultRNG::instance() ) ) );
     }
     else
     {

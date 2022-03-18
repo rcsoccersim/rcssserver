@@ -195,7 +195,7 @@ Stadium::init()
         std::cout << "Using given Simulator Random Seed: " << seed << std::endl;
         srand( seed );
         srandom( seed );
-        DefaultRNG::instance( seed );
+        DefaultRNG::seed( seed );
     }
     else
     {
@@ -204,7 +204,7 @@ Stadium::init()
         ServerParam::instance().setRandomSeed( seed );
         srand( seed );
         srandom( seed );
-        DefaultRNG::instance( seed );
+        DefaultRNG::seed( seed );
     }
 
     //std::cout << "Simulator Random Seed: " << ServerParam::instance().randomSeed() << std::endl;
@@ -909,7 +909,7 @@ void
 Stadium::turnMovableObjects()
 {
     std::shuffle( M_movable_objects.begin(), M_movable_objects.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
     for ( MPObjectCont::reference o : M_movable_objects )
     {
         o->_turn();
@@ -920,7 +920,7 @@ void
 Stadium::incMovableObjects()
 {
     std::shuffle( M_movable_objects.begin(), M_movable_objects.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
     for ( MPObjectCont::reference o : M_movable_objects )
     {
         if ( o->isEnabled() )
@@ -2057,7 +2057,7 @@ void
 Stadium::sendRefereeAudio( const char * msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     // the following should work, but I haven't tested it yet
     //      std::for_each( M_listeners.begin(), M_listeners.end(),
@@ -2092,7 +2092,7 @@ Stadium::sendPlayerAudio( const Player & player,
                           const char * msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     for ( ListenerCont::reference l : M_listeners )
     {
@@ -2123,7 +2123,7 @@ Stadium::sendCoachAudio( const Coach & coach,
                          const char * msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     for ( ListenerCont::reference l : M_listeners )
     {
@@ -2159,7 +2159,7 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
                             const rcss::clang::Msg & msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     for ( ListenerCont::reference l : M_listeners )
     {
@@ -2212,7 +2212,7 @@ Stadium::doRecvFromClients()
         s_stoppage_time = M_stoppage_time;
 
         std::shuffle( M_shuffle_players.begin(), M_shuffle_players.end(),
-                      DefaultRNG::instance().engine() );
+                      DefaultRNG::instance() );
         for ( PlayerCont::reference p : M_shuffle_players )
         {
             p->doLongKick();
@@ -2262,7 +2262,7 @@ Stadium::doSendSenseBody()
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::shuffle( M_remote_players.begin(), M_remote_players.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     //
     // send sense_body & fullstate
@@ -2310,7 +2310,7 @@ Stadium::doSendVisuals()
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::shuffle( M_remote_players.begin(), M_remote_players.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     for ( PlayerCont::reference p : M_remote_players )
     {
@@ -2331,7 +2331,7 @@ Stadium::doSendSynchVisuals()
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::shuffle( M_remote_players.begin(), M_remote_players.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     for ( PlayerCont::reference p : M_remote_players )
     {
@@ -2569,7 +2569,7 @@ void
 recv_from_clients( std::vector< T > & clients )
 {
     std::shuffle( clients.begin(), clients.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     for ( typename std::vector< T >::iterator i = clients.begin();
           i != clients.end(); )

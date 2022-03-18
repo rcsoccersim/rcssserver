@@ -29,24 +29,28 @@
 #include <cstdlib>
 
 class DefaultRNG {
+public:
+    typedef std::mt19937 Engine;
 private:
 
-    std::mt19937 M_engine;
+    Engine M_engine;
 
     DefaultRNG() = default;
 
 public:
     static
-    DefaultRNG & instance()
+    //DefaultRNG & instance()
+    Engine & instance()
       {
           static DefaultRNG the_instance;
-          return the_instance;
+          return the_instance.M_engine;
       }
 
     static
-    DefaultRNG & instance( const std::mt19937::result_type & value )
+    //DefaultRNG & instance( const std::mt19937::result_type & value )
+    Engine & seed( const Engine::result_type & value )
       {
-          instance().engine().seed( value );
+          instance().seed( value );
           return instance();
       }
 
@@ -61,10 +65,6 @@ public:
     //       return instance();
     //   }
 
-    std::mt19937 & engine()
-    {
-        return M_engine;
-    }
 };
 
 // old random code
@@ -81,7 +81,7 @@ irand( int x )
     if ( x <= 1 ) return 0;
 
     std::uniform_int_distribution<> dst( 0, x - 1 );
-    return dst( DefaultRNG::instance().engine() );
+    return dst( DefaultRNG::instance() );
 }
 
 inline
@@ -92,7 +92,7 @@ drand( double low, double high )
     if ( high - low < 1.0e-10 ) return (low + high) * 0.5;
 
     std::uniform_real_distribution<> rng( low, high );
-    return rng( DefaultRNG::instance().engine() );
+    return rng( DefaultRNG::instance() );
 }
 
 #endif
