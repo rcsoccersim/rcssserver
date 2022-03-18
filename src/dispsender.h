@@ -49,7 +49,7 @@ public:
     DispSender( std::ostream & transport );
 
     virtual
-    ~DispSender();
+    ~DispSender() override;
 
     virtual
     void sendShow() = 0;
@@ -112,9 +112,12 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     DispSenderMonitor( const Params & params );
 
-    ~DispSenderMonitor();
+public:
+    virtual
+    ~DispSenderMonitor() override;
 
 protected:
 
@@ -192,19 +195,19 @@ public:
     DispSenderMonitorV1( const Params & params );
 
     virtual
-    ~DispSenderMonitorV1();
+    ~DispSenderMonitorV1() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     virtual
     void sendTeamGraphic( const Side side,
                           const unsigned int x,
-                          const unsigned int y );
+                          const unsigned int y ) override;
 };
 
 
@@ -219,14 +222,14 @@ public:
     DispSenderMonitorV2( const Params & params );
 
     virtual
-    ~DispSenderMonitorV2();
+    ~DispSenderMonitorV2() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     //virtual
     //void sendTeamGraphic( const Side side,
@@ -245,14 +248,14 @@ public:
     DispSenderMonitorV3( const Params & params );
 
     virtual
-    ~DispSenderMonitorV3();
+    ~DispSenderMonitorV3() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     //virtual
     //void sendTeamGraphic( const Side side,
@@ -331,9 +334,11 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     DispSenderLogger( const Params & params );
 
-    ~DispSenderLogger();
+public:
+    ~DispSenderLogger() override;
 
 protected:
 
@@ -411,19 +416,19 @@ public:
     DispSenderLoggerV1( const Params & params );
 
     virtual
-    ~DispSenderLoggerV1();
+    ~DispSenderLoggerV1() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     virtual
     void sendTeamGraphic( const Side side,
                           const unsigned int x,
-                          const unsigned int y );
+                          const unsigned int y ) override;
 
 };
 
@@ -439,14 +444,14 @@ public:
     DispSenderLoggerV2( const Params & params );
 
     virtual
-    ~DispSenderLoggerV2();
+    ~DispSenderLoggerV2() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
 };
 
@@ -462,10 +467,10 @@ public:
     DispSenderLoggerV3( const Params & params );
 
     virtual
-    ~DispSenderLoggerV3();
+    ~DispSenderLoggerV3() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     //virtual
     //void sendMsg( const BoardType board,
@@ -484,14 +489,14 @@ public:
     DispSenderLoggerV4( const Params & params );
 
     virtual
-    ~DispSenderLoggerV4();
+    ~DispSenderLoggerV4() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
 };
 

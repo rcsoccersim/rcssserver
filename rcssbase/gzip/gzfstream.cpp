@@ -52,7 +52,7 @@ struct gzfilebuf_impl {
     gzfilebuf_impl()
         : open_mode_( static_cast< std::ios_base::openmode >( 0 ) )
 #ifdef HAVE_LIBZ
-        , file_( NULL )
+        , file_( nullptr )
 #endif
       { }
 };
@@ -66,7 +66,7 @@ struct gzfilebuf_impl {
 gzfilebuf::gzfilebuf()
     : M_impl( new gzfilebuf_impl )
     , M_buf_size( 8192 )
-    , M_buf( NULL )
+    , M_buf( nullptr )
     , M_remained_size( 0 )
 {
 
@@ -98,7 +98,7 @@ gzfilebuf::is_open()
 {
 #ifdef HAVE_LIBZ
     if ( M_impl
-         && M_impl->file_ != NULL  )
+         && M_impl->file_ != nullptr  )
     {
         return true;
     }
@@ -116,7 +116,7 @@ gzfilebuf::open( const char * path,
                  int level,
                  int strategy )
 {
-    gzfilebuf * ret = NULL;
+    gzfilebuf * ret = nullptr;
 #ifdef HAVE_LIBZ
     if ( ! M_impl )
     {
@@ -143,7 +143,7 @@ gzfilebuf::open( const char * path,
 
         M_impl->file_ = gzopen( path, mode_str.c_str() );
 
-        if ( M_impl->file_ == NULL )
+        if ( M_impl->file_ == nullptr )
         {
             return ret;
         }
@@ -191,21 +191,21 @@ gzfilebuf::close() throw()
 
         if ( ! M_impl )
         {
-            return NULL;
+            return nullptr;
         }
 
-        if ( M_impl->file_ == NULL )
+        if ( M_impl->file_ == nullptr )
         {
-            return NULL;
+            return nullptr;
         }
 
         // TODO: checking close status...
         gzclose( M_impl->file_ );
-        M_impl->file_ = NULL;
+        M_impl->file_ = nullptr;
         M_impl->open_mode_ = static_cast< std::ios_base::openmode >( 0 );
     }
 #endif
-    return NULL;
+    return nullptr;
 }
 
 /*-------------------------------------------------------------------*/
@@ -329,10 +329,10 @@ gzfilebuf::destroyInternalBuffer() throw()
     if ( M_buf )
     {
         delete [] M_buf;
-        M_buf = NULL;
+        M_buf = nullptr;
         M_remained_size = 0;
-        this->setg( NULL, NULL, NULL );
-        this->setp( NULL, NULL );
+        this->setg( nullptr, nullptr, nullptr );
+        this->setp( nullptr, nullptr );
     }
 }
 

@@ -219,7 +219,7 @@ std::ostream &
 ActPos::print( std::ostream & out ) const
 {
     out << "(pos ";
-    if ( m_reg.get() == NULL )
+    if ( ! m_reg )
     {
         out << "(null)";
     }
@@ -235,7 +235,7 @@ ActPos::printPretty( std::ostream & out,
                      const std::string & line_header ) const
 {
     out << line_header << "position self at: " << std::endl;
-    if ( m_reg.get() == NULL )
+    if ( ! m_reg )
     {
         out << line_header << " (null)\n";
     }
@@ -297,7 +297,7 @@ std::ostream &
 ActHome::print( std::ostream & out ) const
 {
     out << "(home ";
-    if ( m_reg.get() == NULL )
+    if ( ! m_reg )
     {
         out << "(null)";
     }
@@ -313,7 +313,7 @@ ActHome::printPretty( std::ostream & out,
                       const std::string & line_header ) const
 {
     out << line_header << "home position at: " << std::endl;
-    if ( m_reg.get() == NULL )
+    if ( ! m_reg )
     {
         out << line_header << " (null)\n";
     }
@@ -356,7 +356,7 @@ std::shared_ptr< Action >
 ActBallToReg::deepCopy() const
 {
 	std::shared_ptr< Region > new_reg;
-    if ( m_reg.get() != NULL )
+    if ( m_reg )
     {
 	    new_reg = m_reg->deepCopy();
     }
@@ -377,7 +377,7 @@ std::ostream &
 ActBallToReg::print( std::ostream & out ) const
 {
     out << "(bto ";
-    if ( m_reg.get() == NULL )
+    if ( ! m_reg )
     {
         out << "(null)";
     }
@@ -394,7 +394,7 @@ ActBallToReg::printPretty( std::ostream & out,
 {
     out << line_header << "ball to: use "
         << m_bmtset << " to go to:" << std::endl;
-    if ( m_reg.get() == NULL )
+    if ( ! m_reg )
     {
         out << line_header << " (null)\n";
     }
@@ -693,7 +693,7 @@ std::ostream &
 ActMarkLineReg::print( std::ostream & out ) const
 {
     out << "(markl ";
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << "(null)";
     }
@@ -709,7 +709,7 @@ ActMarkLineReg::printPretty( std::ostream & out,
                              const std::string & line_header ) const
 {
     out << line_header << "mark line to region:" << std::endl;
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << line_header << " (null)\n";
     }
@@ -973,7 +973,7 @@ std::ostream &
 ActPassReg::print( std::ostream & out ) const
 {
     out << "(pass ";
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << "(null)";
     }
@@ -989,7 +989,7 @@ ActPassReg::printPretty( std::ostream & out,
                          const std::string & line_header ) const
 {
     out << line_header << "pass to region:" << std::endl;
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << line_header << " (null)\n";
     }
@@ -1118,7 +1118,7 @@ std::ostream &
 ActDribble::print( std::ostream & out ) const
 {
     out << "(dribble ";
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << "(null)";
     }
@@ -1134,7 +1134,7 @@ ActDribble::printPretty( std::ostream & out,
                          const std::string & line_header ) const
 {
     out << line_header << "dribble to region:" << std::endl;
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << line_header << " (null)\n";
     }
@@ -1197,7 +1197,7 @@ std::ostream &
 ActClear::print( std::ostream & out ) const
 {
     out << "(clear ";
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << "(null)";
     }
@@ -1213,7 +1213,7 @@ ActClear::printPretty( std::ostream & out,
                        const std::string & line_header ) const
 {
     out << line_header << "clear to region:" << std::endl;
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << line_header << " (null)\n";
     }

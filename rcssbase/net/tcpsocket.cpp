@@ -70,7 +70,7 @@ TCPSocket::TCPSocket( const Addr & addr,
 bool
 TCPSocket::accept( TCPSocket & sock )
 {
-    SocketDesc fd = ::accept( getFD(), NULL, 0 );
+    SocketDesc fd = ::accept( getFD(), nullptr, 0 );
     if ( fd == INVALIDSOCKET )
     {
         return false;

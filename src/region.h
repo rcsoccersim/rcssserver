@@ -43,8 +43,8 @@ namespace clang {
 
 class Point {
 protected:
-    Point()
-      { }
+    Point() = default;
+
 public:
     virtual
     ~Point()
@@ -73,7 +73,7 @@ operator<<( std::ostream & os,
 class PointSimple
     : public Point {
 private:
-    PointSimple(); // not used
+    PointSimple() = delete; // not used
 
 public:
     PointSimple( const double & x,
@@ -87,18 +87,18 @@ public:
           M_vec( vec )
       { }
 
-    ~PointSimple()
+    ~PointSimple() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const override
       {
           return std::shared_ptr< Point >( new PointSimple( *this ) );
       }
@@ -115,9 +115,9 @@ private:
 class PointRel
     : public Point {
 private:
-    PointRel(); // not used
-    PointRel( const PointRel & ); // not used
-    PointRel & operator=( const PointRel & ); // not used
+    PointRel() = delete; // not used
+    PointRel( const PointRel & ) = delete; // not used
+    PointRel & operator=( const PointRel & ) = delete; // not used
 public:
 
     PointRel( const double & x,
@@ -135,18 +135,18 @@ public:
           M_offset( offset )
       { }
 
-    ~PointRel()
+    ~PointRel() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Point > deepCopy() const;
+    std::shared_ptr< Point > deepCopy() const override;
 
 
     PointSimple getOffset() const
@@ -172,18 +172,18 @@ public:
         : Point()
       { }
 
-    ~PointBall()
+    ~PointBall() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const override
       {
           return std::shared_ptr< Point >( new PointBall( *this ) );
       }
@@ -202,18 +202,18 @@ public:
           M_unum( unum )
       { }
 
-    ~PointPlayer()
+    ~PointPlayer() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const override
       {
           return std::shared_ptr< Point >( new PointPlayer( *this ) );
       }
@@ -228,27 +228,27 @@ private:
 class PointArith
     : public Point {
 private:
-    PointArith(); // not used
+    PointArith() = delete; // not used
 public:
     PointArith( std::shared_ptr< Point > pt1,
                 std::shared_ptr< Point > pt2,
                 const util::ArithOp & arith_op );
     PointArith( const PointArith & pt );
 
-    ~PointArith()
+    ~PointArith() override
       { }
 
     PointArith & operator=( const PointArith & pt );
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Point > deepCopy() const
+    std::shared_ptr< Point > deepCopy() const override
       {
           return std::shared_ptr< Point >( new PointArith( *this ) );
       }
@@ -261,8 +261,8 @@ private:
 
 class Region {
 protected:
-    Region()
-      { }
+    Region() = default;
+
 public:
     virtual
     ~Region()
@@ -291,22 +291,20 @@ operator<<( std::ostream & os,
 class RegNull
     : public Region {
 public:
-    RegNull()
-        : Region()
-      { }
+    RegNull() = default;
 
-    ~RegNull()
+    ~RegNull() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Region > deepCopy() const
+    std::shared_ptr< Region > deepCopy() const override
       {
           return std::shared_ptr< Region >( new RegNull( *this ) );
       }
@@ -315,26 +313,26 @@ public:
 class RegQuad
     : public Region {
 private:
-	RegQuad(); // not used
-    RegQuad( const RegQuad & ); // not used
-    RegQuad & operator=( const RegQuad & ); // not used
+	RegQuad() = delete; // not used
+    RegQuad( const RegQuad & ) = delete; // not used
+    RegQuad & operator=( const RegQuad & ) = delete; // not used
 public:
 	RegQuad( std::shared_ptr< Point > pt0,
              std::shared_ptr< Point > pt1,
              std::shared_ptr< Point > pt2,
              std::shared_ptr< Point > pt3 );
-	~RegQuad()
+	~RegQuad() override
       { }
 
     virtual
-	std::ostream & print( std::ostream & out ) const;
+	std::ostream & print( std::ostream & out ) const override;
 
     virtual
 	std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const override;
 
 private:
 	std::shared_ptr< Point > M_points[ 4 ];
@@ -344,25 +342,25 @@ private:
 class RegArc
     : public Region {
 private:
-	RegArc(); // not used
+	RegArc() = delete;
 public:
     RegArc( std::shared_ptr< Point > center,
             const double & start_rad,
             const double & end_rad,
             const double & start_ang,
             const double & span_ang );
-    ~RegArc()
+    ~RegArc() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const override;
 
 private:
     /* start rad <= end_rad */
@@ -392,14 +390,14 @@ public:
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const override;
 
     Storage & getRegions()
       {
@@ -416,22 +414,22 @@ private:
 class RegNamed
     : public Region {
 private:
-    RegNamed(); // not used
+    RegNamed() = delete; // not used
 public:
     RegNamed( const std::string & name )
         : Region(),
           M_name( name )
       { }
 
-    ~RegNamed()
+    ~RegNamed() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
     std::shared_ptr< Region > deepCopy() const
@@ -447,23 +445,23 @@ private:
 class RegPoint
     : public Region {
 private:
-    RegPoint(); // not used
-    RegPoint( const RegPoint & point ) ;
-    RegPoint & operator=( const RegPoint & point ); // not used
+    RegPoint() = delete; // not used
+    RegPoint( const RegPoint & point );
+    RegPoint & operator=( const RegPoint & point ) = delete; // not used
 public:
 
     RegPoint( std::shared_ptr< Point > point );
-    ~RegPoint();
+    ~RegPoint() override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Region > deepCopy() const
+    std::shared_ptr< Region > deepCopy() const override
       {
           return std::shared_ptr< Region >( new RegPoint( *this ) );
       }
@@ -476,24 +474,24 @@ private:
 class RegTri
     : public Region {
 private:
-    RegTri(); // not used
+    RegTri() = delete; // not used
 public:
     RegTri( std::shared_ptr< Point > pt0,
             std::shared_ptr< Point > pt1,
             std::shared_ptr< Point > pt2 );
 
-    ~RegTri()
+    ~RegTri() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
 	virtual
-    std::shared_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const override;
 
 private:
 	std::shared_ptr< Point > m_points[ 3 ];
@@ -504,7 +502,7 @@ private:
 class RegRec
     : public Region {
 private:
-    RegRec(); // not used
+    RegRec() = delete; // not used
 
 public:
     RegRec( std::shared_ptr< Point > pt0,
@@ -514,14 +512,14 @@ public:
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Region > deepCopy() const;
+    std::shared_ptr< Region > deepCopy() const override;
 
 private:
 	std::shared_ptr< Point > M_points[ 2 ];

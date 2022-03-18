@@ -66,18 +66,15 @@ RuleIDList::print( std::ostream & o ) const
     else
     {
         bool space = false;
-        //for ( const_iterator i = begin(); i != end(); ++i )
-        for ( std::list< RuleID >::const_iterator i = M_list.begin();
-              i != M_list.end();
-              ++i )
+        for ( const RuleID & i : M_list )
         {
             if ( space )
             {
-                o << " " << *i;
+                o << " " << i;
             }
             else
             {
-                o << "(" << *i;
+                o << "(" << i;
                 space = true;
             }
         }
@@ -228,7 +225,7 @@ std::ostream &
 SimpleRule::print( std::ostream & out ) const
 {
     out << "(";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << "(null)";
     }
@@ -237,11 +234,9 @@ SimpleRule::print( std::ostream & out ) const
         out << *getCond();
     }
 
-    for ( Storage::const_iterator i = getDirs().begin();
-          i != getDirs().end();
-          ++i )
+    for ( Storage::const_reference d : getDirs() )
     {
-        out << " " << **i;
+        out << " " << *d;
     }
     return out << ")";
 }
@@ -251,7 +246,7 @@ SimpleRule::printPretty( std::ostream & out,
                          const std::string & lineheader ) const
 {
     out << lineheader << "Simple Rule:\n";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << lineheader << " if:(null)\n";
     }
@@ -260,11 +255,9 @@ SimpleRule::printPretty( std::ostream & out,
         getCond()->printPretty( out, lineheader + " if: " );
     }
 
-    for ( Storage::const_iterator i = getDirs().begin();
-          i != getDirs().end();
-          ++i )
+    for ( Storage::const_reference dir : getDirs() )
     {
-        (*i)->printPretty( out, lineheader + " -" );
+        dir->printPretty( out, lineheader + " -" );
     }
     return out;
 }
@@ -273,11 +266,9 @@ std::shared_ptr< Rule >
 SimpleRule::deepCopy() const
 {
 	Storage new_dirs;
-	for ( Storage::const_iterator i = getDirs().begin();
-          i != getDirs().end();
-          ++i )
+	for ( Storage::const_reference dir : getDirs() )
     {
-	    new_dirs.push_back( (*i)->deepCopy() );
+	    new_dirs.push_back( dir->deepCopy() );
     }
 
 	std::shared_ptr< Rule > rval( new SimpleRule( getCond()->deepCopy(), new_dirs ) );
@@ -318,7 +309,7 @@ std::ostream &
 NestedRule::print( std::ostream & out ) const
 {
     out << "(";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << "(null)";
     }
@@ -327,11 +318,9 @@ NestedRule::print( std::ostream & out ) const
         out << *getCond();
     }
 
-    for ( Storage::const_iterator i = getRules().begin();
-          i != getRules().end();
-          ++i )
+    for ( Storage::const_reference rule : getRules() )
     {
-        out << " " << **i;
+        out << " " << *rule;
     }
     return out << ")";
 }
@@ -341,7 +330,7 @@ NestedRule::printPretty( std::ostream & out,
                          const std::string & lineheader ) const
 {
     out << lineheader << "Nested Rule:\n";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << lineheader << " if:(null)\n";
     }
@@ -350,11 +339,9 @@ NestedRule::printPretty( std::ostream & out,
         getCond()->printPretty( out, lineheader + " if: " );
     }
 
-    for ( Storage::const_iterator i = getRules().begin();
-          i != getRules().end();
-          ++i )
+    for ( Storage::const_reference rule : getRules() )
     {
-        (*i)->printPretty( out, lineheader + " -" );
+        rule->printPretty( out, lineheader + " -" );
     }
     return out;
 }
@@ -363,11 +350,9 @@ std::shared_ptr< Rule >
 NestedRule::deepCopy() const
 {
 	Storage new_rules;
-	for ( Storage::const_iterator i = getRules().begin();
-          i != getRules().end();
-          ++i )
+	for ( Storage::const_reference rule : getRules() )
     {
-	    new_rules.push_back( (*i)->deepCopy() );
+	    new_rules.push_back( rule->deepCopy() );
     }
 
 	std::shared_ptr< Rule > rval( new NestedRule( getCond()->deepCopy(), new_rules ) );

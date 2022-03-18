@@ -479,18 +479,15 @@ DispSenderMonitorV3::sendShow()
     serializer().serializeBall( ostr,
                                 stadium().ball() );
 
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        serializer().serializePlayerBegin( ostr, **p );
-        serializer().serializePlayerPos( ostr, **p );
-        serializer().serializePlayerArm( ostr, **p );
-        serializer().serializePlayerViewMode( ostr, **p );
-        serializer().serializePlayerStamina( ostr, **p );
-        serializer().serializePlayerFocus( ostr, **p );
-        serializer().serializePlayerCounts( ostr, **p );
+        serializer().serializePlayerBegin( ostr, *p );
+        serializer().serializePlayerPos( ostr, *p );
+        serializer().serializePlayerArm( ostr, *p );
+        serializer().serializePlayerViewMode( ostr, *p );
+        serializer().serializePlayerStamina( ostr, *p );
+        serializer().serializePlayerFocus( ostr, *p );
+        serializer().serializePlayerCounts( ostr, *p );
         serializer().serializePlayerEnd( ostr );
     }
 
@@ -923,18 +920,15 @@ DispSenderLoggerV4::sendShow()
     serializer().serializeBall( transport(),
                                 stadium().ball() );
 
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        serializer().serializePlayerBegin( transport(), **p );
-        serializer().serializePlayerPos( transport(), **p );
-        serializer().serializePlayerArm( transport(), **p );
-        serializer().serializePlayerViewMode( transport(), **p );
-        serializer().serializePlayerStamina( transport(), **p );
-        serializer().serializePlayerFocus( transport(), **p );
-        serializer().serializePlayerCounts( transport(), **p );
+        serializer().serializePlayerBegin( transport(), *p );
+        serializer().serializePlayerPos( transport(), *p );
+        serializer().serializePlayerArm( transport(), *p );
+        serializer().serializePlayerViewMode( transport(), *p );
+        serializer().serializePlayerStamina( transport(), *p );
+        serializer().serializePlayerFocus( transport(), *p );
+        serializer().serializePlayerCounts( transport(), *p );
         serializer().serializePlayerEnd( transport() );
     }
 

@@ -34,7 +34,7 @@ protected:
 
 public:
     virtual
-    ~SerializerCoachStdv7();
+    ~SerializerCoachStdv7() override;
 
     static
     const
@@ -44,23 +44,23 @@ public:
     void serializeCoachAudio( std::ostream & strm,
                               const int time,
                               const std::string & name,
-                              const char * msg ) const;
+                              const char * msg ) const override;
 
     virtual
     void serializeCoachStdAudio( std::ostream & strm,
                                  const int time,
                                  const std::string & name,
-                                 const rcss::clang::Msg & msg ) const;
+                                 const rcss::clang::Msg & msg ) const override;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
                                const int time,
                                const std::string & name,
-                               const char * msg ) const;
+                               const char * msg ) const override;
 
     virtual
     void serializeVisualBegin( std::ostream & strm,
-                               const int time ) const;
+                               const int time ) const override;
 
     virtual
     void serializeVisualObject( std::ostream & strm,
@@ -68,7 +68,7 @@ public:
                                 const PVector & pos,
                                 const PVector & vel,
                                 const int body,
-                                const int neck ) const;
+                                const int neck ) const override;
 
 
     virtual
@@ -78,7 +78,7 @@ public:
                                 const PVector & pos,
                                 const PVector & vel,
                                 const int body,
-                                const int neck ) const;
+                                const int neck ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -88,7 +88,7 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 
 };
 

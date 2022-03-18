@@ -141,7 +141,7 @@ PlayerParam &
 PlayerParam::instance( rcss::conf::Builder * parent )
 {
     static bool parent_set = false;
-    if ( parent != NULL || parent_set )
+    if ( parent || parent_set )
     {
         static PlayerParam rval( parent );
         parent_set = true;
@@ -149,14 +149,14 @@ PlayerParam::instance( rcss::conf::Builder * parent )
     }
     // hack to allow link testing to call instance without crashing
     // do not used the return value in these situations
-    PlayerParam * rval = NULL;
+    PlayerParam * rval = nullptr;
     return *rval;
 }
 
 PlayerParam &
 PlayerParam::instance()
 {
-    return PlayerParam::instance( NULL );
+    return PlayerParam::instance( nullptr );
 }
 
 bool

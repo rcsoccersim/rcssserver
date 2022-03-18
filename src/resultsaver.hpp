@@ -26,8 +26,7 @@
 
 #include <string>
 #include <memory>
-
-struct tm;
+#include <ctime>
 
 class ResultSaver {
 public:
@@ -62,7 +61,7 @@ public:
           doSaveStart();
       }
 
-    void saveTime( const tm & time )
+    void saveTime( const std::time_t time )
       {
           doSaveTime( time );
       }
@@ -125,7 +124,7 @@ protected:
       { }
 
     virtual
-    void doSaveTime( const tm & )
+    void doSaveTime( const std::time_t )
       { }
 
     virtual

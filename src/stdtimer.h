@@ -40,9 +40,10 @@ private:
     StandardTimer( const StandardTimer& t ) = delete;
 public:
 
+    explicit
     StandardTimer( Timeable &timeable );
 
-    void run();
+    void run() override;
 
 };
 

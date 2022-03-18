@@ -399,7 +399,7 @@ ServerParam::init( const int & argc,
     }
 
 //         DIR* config_dir = opendir( config_dir_name.c_str() );
-//         if ( config_dir == NULL )
+//         if ( ! config_dir )
 //         {
 //             int err = mkdir( config_dir_name.c_str(), 0777 );
 //             if ( err != 0 )

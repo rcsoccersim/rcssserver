@@ -39,9 +39,9 @@ class Builder;
 class CSVSaverParam {
 private:
 
-    CSVSaverParam(); // not used
-    CSVSaverParam( const CSVSaverParam & ); // not used
-    CSVSaverParam & operator=( const CSVSaverParam & ); // not used
+    CSVSaverParam() = delete; // not used
+    CSVSaverParam( const CSVSaverParam & ) = delete; // not used
+    CSVSaverParam & operator=( const CSVSaverParam & ) = delete; // not used
 
 protected:
 
@@ -101,7 +101,7 @@ private:
 
 public:
     virtual
-    ~CSVSaver();
+    ~CSVSaver() override;
 
     static
     ResultSaver::Ptr create();
@@ -111,44 +111,44 @@ private:
     void openResultsFile();
 
     virtual
-    bool doEnabled() const;
+    bool doEnabled() const override;
 
     virtual
-    void doSaveStart();
+    void doSaveStart() override;
 
     virtual
-    void doSaveTime( const tm & time );
+    void doSaveTime( const std::time_t time ) override;
 
     virtual
     void doSaveTeamName( team_id id,
-                         const std::string & name );
+                         const std::string & name ) override;
 
     virtual
     void doSaveCoachName( team_id id,
-                          const std::string & name );
+                          const std::string & name ) override;
 
     virtual
     void doSaveScore( team_id id,
-                      unsigned int score );
+                      unsigned int score ) override;
 
     virtual
     void doSavePenTaken( team_id id,
-                         unsigned int taken );
+                         unsigned int taken ) override;
 
     virtual
     void doSavePenScored( team_id id,
-                          unsigned int scored );
+                          unsigned int scored ) override;
 
     virtual
-    void doSaveCoinTossWinner( team_id id );
+    void doSaveCoinTossWinner( team_id id ) override;
 
     virtual
-    bool doSaveComplete();
+    bool doSaveComplete() override;
 
     virtual
-    const char * doGetName() const;
+    const char * doGetName() const override;
 
-    tm M_time;
+    std::time_t M_time;
     std::string M_team_name[ 2 ];
     std::string M_coach_name[ 2 ];
     unsigned int M_score[ 2 ];

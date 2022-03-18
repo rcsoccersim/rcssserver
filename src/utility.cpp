@@ -148,7 +148,7 @@ tildeExpand( const std::string & path_name )
          || new_path[1] == '/' )
     {
         char szpath[MAX_PATH];
-        if ( SHGetSpecialFolderPath( NULL, szpath, CSIDL_PERSONAL, TRUE ) )
+        if ( SHGetSpecialFolderPath( nullptr, szpath, CSIDL_PERSONAL, TRUE ) )
         {
             std::string userdir = szpath;
             std::replace( userdir.begin(), userdir.end(), '\\', '/' );
@@ -172,7 +172,7 @@ tildeExpand( const std::string & path_name )
          || path_name[1] == '\\' )
     {
         char szpath[MAX_PATH];
-        if ( SHGetSpecialFolderPath( NULL, szpath, CSIDL_PERSONAL, TRUE ) )
+        if ( SHGetSpecialFolderPath( nullptr, szpath, CSIDL_PERSONAL, TRUE ) )
         {
             return szpath + path_name.substr( 1 );
         }
@@ -198,11 +198,11 @@ tildeExpand( const std::string & path_name )
     {
         // Get the current user.
         const char * err = std::getenv( "USER" );
-        if ( err == NULL )
+        if ( ! err )
         {
             // On Windows USERNAME is used instead
             err = std::getenv( "USERNAME" );
-            if ( err == NULL )
+            if ( ! err )
             {
                 return path_name;
             }
@@ -229,7 +229,7 @@ tildeExpand( const std::string & path_name )
     // Get the passwd file entry for the user and place their home
     // directory path at the start of newPath.
     struct passwd * pwd_entry = getpwnam( username.c_str() );
-    if ( pwd_entry == NULL )
+    if ( ! pwd_entry )
     {
         return path_name;
     }

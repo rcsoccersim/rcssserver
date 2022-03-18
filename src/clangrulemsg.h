@@ -41,17 +41,17 @@ private:
     RuleMsg( const Storage & list );
 public:
     virtual
-    ~RuleMsg();
+    ~RuleMsg() override;
 
     virtual
-    std::shared_ptr< Msg > deepCopy() const;
+    std::shared_ptr< Msg > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     const Storage & getList() const
       {

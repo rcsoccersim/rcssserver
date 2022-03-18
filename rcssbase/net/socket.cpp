@@ -344,7 +344,7 @@ Socket::getFD() const
 bool
 Socket::isOpen() const
 {
-    return M_handle.get() != NULL;
+    return M_handle.get() != nullptr;
 }
 
 bool

@@ -53,8 +53,8 @@ public:
 
 private:
 
-    SerializerCommon( const SerializerCommon & ); // not used
-    SerializerCommon & operator=( const SerializerCommon & ); // not used
+    SerializerCommon( const SerializerCommon & ) = delete; // not used
+    SerializerCommon & operator=( const SerializerCommon & ) = delete; // not used
 
 protected:
     SerializerCommon();
@@ -145,9 +145,9 @@ private:
 
     const SerializerCommon::Ptr M_common;
 
-    Serializer(); // not used
-    Serializer( const Serializer & ); // not used
-    Serializer & operator=( const Serializer & ); // not used
+    Serializer() = delete; // not used
+    Serializer( const Serializer & ) = delete; // not used
+    Serializer & operator=( const Serializer & ) = delete; // not used
 
 protected:
     explicit
@@ -272,9 +272,9 @@ protected:
     explicit
     SerializerPlayer( const SerializerCommon::Ptr common );
 
-    virtual
-    ~SerializerPlayer();
 public:
+    virtual
+    ~SerializerPlayer() override;
 
     virtual
     void serializeRefereeAudio( std::ostream & strm,
@@ -890,11 +890,10 @@ protected:
     SerializerOnlineCoach( const SerializerCommon::Ptr common,
                            const SerializerCoach::Ptr cosch );
 
+public:
     virtual
     ~SerializerOnlineCoach();
 
-
-public:
     const
     SerializerCoach::Ptr coachSerializerPtr() const
       {

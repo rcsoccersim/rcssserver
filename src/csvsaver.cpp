@@ -48,7 +48,7 @@ const std::string CSVSaver::NAME = "CSVSaver";
 CSVSaverParam &
 CSVSaverParam::instance()
 {
-    return CSVSaverParam::instance( NULL );
+    return CSVSaverParam::instance( nullptr );
 }
 
 
@@ -56,7 +56,7 @@ CSVSaverParam &
 CSVSaverParam::instance( rcss::conf::Builder * parent )
 {
     static bool parent_set = false;
-    if ( parent != NULL || parent_set )
+    if ( parent || parent_set )
     {
         static CSVSaverParam rval( parent );
         parent_set = true;
@@ -64,7 +64,7 @@ CSVSaverParam::instance( rcss::conf::Builder * parent )
     }
     // hack to allow link testing to call instance without crashing
     // do not used the return value in these situations
-    CSVSaverParam * rval = NULL;
+    CSVSaverParam * rval = nullptr;
     return *rval;
 }
 
@@ -262,7 +262,7 @@ CSVSaver::doSaveStart()
 }
 
 void
-CSVSaver::doSaveTime( const tm & time )
+CSVSaver::doSaveTime( const std::time_t time )
 {
     M_time = time;
 }
@@ -328,7 +328,8 @@ CSVSaver::doSaveComplete()
     {
         M_file.seekp( std::ofstream::end );
         char time_str[256];
-        std::strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &M_time );
+        const struct tm * lt = std::localtime( &M_time );
+        std::strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", lt );
         M_file << time_str << ", ";
 
         if ( M_team_name[ TEAM_LEFT ].empty() )

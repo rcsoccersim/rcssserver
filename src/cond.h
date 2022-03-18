@@ -91,9 +91,11 @@ public:
         bool lookup( const CondUNum & cond ) const = 0;
     }; // end Context
 
+protected:
     Cond()
       { }
 
+public:
     virtual
     ~Cond()
       { }
@@ -135,18 +137,18 @@ public:
           M_state( state )
       { }
 
-    ~CondBool()
+    ~CondBool() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & ) const
+    bool eval( const Context & ) const override
       {
           return M_state;
       }
@@ -157,7 +159,7 @@ public:
       }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const override;
 
 private:
 	bool M_state;
@@ -172,7 +174,7 @@ private:
           M_our_side( false ),
           M_min_match( 1 ),
           M_max_match( 11 )
-      {}
+      { }
 public:
     CondPlayerPos( const bool & our_side,
                    const UNumSet & players,
@@ -185,25 +187,25 @@ public:
           M_max_match( max_match ),
           M_players( players ),
           M_reg( reg )
-      {}
-
-    virtual
-    ~CondPlayerPos()
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const;
+    ~CondPlayerPos() override
+      { }
+
+    virtual
+    std::shared_ptr< Cond > deepCopy() const override;
 
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -216,7 +218,7 @@ public:
 
     bool isTheirSide() const
       {
-          return !M_our_side;
+          return ! M_our_side;
       }
 
     int getMinMatch() const
@@ -295,21 +297,21 @@ public:
           M_reg( reg )
       { }
 
-    ~CondBallPos()
+    ~CondBallPos() override
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -329,7 +331,7 @@ private:
     CondBallOwner()
         : Cond(),
           M_our_side( false )
-      {}
+      { }
 
 public:
     CondBallOwner( const bool & our_side,
@@ -337,26 +339,26 @@ public:
         : Cond(),
           M_our_side( our_side ),
           M_players( players )
-      {}
+      { }
 
-    ~CondBallOwner()
-      {}
+    ~CondBallOwner() override
+      { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const override
       {
           return std::shared_ptr< Cond >( new CondBallOwner( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -426,24 +428,24 @@ public:
           M_pm( pm )
       { }
 
-    ~CondPlayMode()
+    ~CondPlayMode() override
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const override
       {
           return std::shared_ptr< Cond >( new CondPlayMode( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -481,20 +483,20 @@ public:
       { }
 
     virtual
-    ~CondAnd();
+    ~CondAnd() override;
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const;
+    bool eval( const Context & context ) const override;
 
     const Storage & getConds() const
       {
@@ -524,20 +526,20 @@ public:
       { }
 
     virtual
-    ~CondOr();
+    ~CondOr() override;
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const;
+    bool eval( const Context & context ) const override;
 
     const Storage & getConds() const
       {
@@ -563,21 +565,21 @@ public:
       { }
 
     virtual
-    ~CondNot()
+    ~CondNot() override
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const;
+    std::shared_ptr< Cond > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const;
+    bool eval( const Context & context ) const override;
 
 private:
 	std::shared_ptr< Cond > M_cond;
@@ -607,14 +609,14 @@ public:
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup ( *this );
       }
@@ -686,7 +688,7 @@ public:
         : CondComp< int >( value, comp )
       { }
 
-    ~CondTime()
+    ~CondTime() override
       { }
 
     virtual
@@ -696,14 +698,14 @@ public:
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -718,24 +720,24 @@ public:
         : CondComp< int >( value, comp )
       { }
 
-    ~CondOppGoal()
+    ~CondOppGoal() override
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const override
       {
           return std::shared_ptr< Cond >( new CondOppGoal( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -749,24 +751,24 @@ public:
         : CondComp< int >( value, comp )
       { }
 
-    ~CondOurGoal()
+    ~CondOurGoal() override
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const override
       {
           return std::shared_ptr< Cond >( new CondOurGoal( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -780,24 +782,24 @@ public:
         : CondComp< int >( value, comp )
       { }
 
-    ~CondGoalDiff()
+    ~CondGoalDiff() override
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const override
       {
           return std::shared_ptr< Cond >( new CondGoalDiff( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }
@@ -827,24 +829,24 @@ public:
           M_set( players )
       { }
 
-    ~CondUNum()
+    ~CondUNum() override
       { }
 
     virtual
-    std::shared_ptr< Cond > deepCopy() const
+    std::shared_ptr< Cond > deepCopy() const override
       {
           return std::shared_ptr< Cond >( new CondUNum( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    bool eval( const Context & context ) const
+    bool eval( const Context & context ) const override
       {
           return context.lookup( *this );
       }

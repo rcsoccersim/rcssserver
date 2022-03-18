@@ -45,7 +45,7 @@ protected:
 
 public:
     virtual
-    ~VisualSender()
+    ~VisualSender() override
       { }
 
     virtual

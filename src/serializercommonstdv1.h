@@ -34,49 +34,49 @@ protected:
 
 public:
     virtual
-    ~SerializerCommonStdv1();
+    ~SerializerCommonStdv1() override;
 
     static
     const
     Ptr create();
 
     virtual
-    void serializeServerParamBegin( std::ostream & strm ) const;
+    void serializeServerParamBegin( std::ostream & strm ) const override;
 
     virtual
-    void serializeServerParamEnd( std::ostream & strm ) const;
+    void serializeServerParamEnd( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerParamBegin( std::ostream & strm ) const;
+    void serializePlayerParamBegin( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerParamEnd( std::ostream & strm ) const;
+    void serializePlayerParamEnd( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerTypeBegin( std::ostream & strm ) const;
+    void serializePlayerTypeBegin( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerTypeEnd( std::ostream & strm ) const;
-
-    virtual
-    void serializeParam( std::ostream & strm,
-                         const int param ) const;
+    void serializePlayerTypeEnd( std::ostream & strm ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,
-                         const unsigned int param ) const;
+                         const int param ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,
-                         const bool param ) const;
+                         const unsigned int param ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,
-                         const double & param ) const;
+                         const bool param ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,
-                         const std::string & param ) const;
+                         const double & param ) const override;
+
+    virtual
+    void serializeParam( std::ostream & strm,
+                         const std::string & param ) const override;
 };
 
 }

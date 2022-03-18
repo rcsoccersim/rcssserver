@@ -107,7 +107,7 @@ CondPlayerPos::print( std::ostream & out ) const
         << " " << M_min_match
         << " " << M_max_match
         << " ";
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << "(null)";
     }
@@ -129,7 +129,7 @@ CondPlayerPos::printPretty( std::ostream & out,
         << (M_our_side ? "our team" : "opponent") << " "
         << M_players << " "
         << "in:" << std::endl;
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << line_header << " (null)\n";
     }
@@ -145,7 +145,7 @@ std::ostream &
 CondBallPos::print( std::ostream & out ) const
 {
     out << "(bpos ";
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << "(null)";
     }
@@ -161,7 +161,7 @@ CondBallPos::printPretty( std::ostream & out,
                           const std::string & line_header ) const
 {
     out << line_header << "is ball position at: " << std::endl;
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << line_header << " (null)\n";
     }
@@ -235,11 +235,9 @@ std::shared_ptr< Cond >
 CondAnd::deepCopy() const
 {
     Storage new_conds;
-    for ( Storage::const_iterator i = M_conds.begin();
-          i != M_conds.end();
-          ++i )
+    for ( Storage::const_reference c : M_conds )
     {
-        new_conds.push_back( (*i)->deepCopy() );
+        new_conds.push_back( c->deepCopy() );
     }
 
     std::shared_ptr< Cond > rval( new CondAnd( new_conds ) );
@@ -250,13 +248,11 @@ std::ostream &
 CondAnd::print( std::ostream & out ) const
 {
     out << "(and";
-    for ( Storage::const_iterator iter = getConds().begin();
-          iter != getConds().end();
-          ++iter )
+    for ( Storage::const_reference c : getConds() )
     {
-        if ( *iter )
+        if ( c )
         {
-            out << " " << **iter;
+            out << " " << *c;
         }
         else
         {
@@ -271,13 +267,11 @@ CondAnd::printPretty( std::ostream & out,
                       const std::string & line_header ) const
 {
     out << line_header << "and" << std::endl;
-    for ( Storage::const_iterator iter = getConds().begin();
-          iter != getConds().end();
-          ++iter )
+    for ( Storage::const_reference c : getConds() )
     {
-        if ( *iter )
+        if ( c )
         {
-            (*iter)->printPretty( out, line_header + " +" );
+            c->printPretty( out, line_header + " +" );
         }
         else
         {
@@ -290,17 +284,15 @@ CondAnd::printPretty( std::ostream & out,
 bool
 CondAnd::eval( const Context & context ) const
 {
-    for ( Storage::const_iterator iter = getConds().begin();
-          iter != getConds().end();
-          ++iter )
+    for ( Storage::const_reference c : getConds() )
     {
-        if ( ! *iter )
+        if ( ! c )
         {
             throw util::NullErr( __FILE__, __LINE__,
                                  "Null condition in CondAnd\n" );
         }
 
-        if ( !(*iter)->eval( context ) )
+        if ( ! c->eval( context ) )
         {
             return false;
         }
@@ -318,11 +310,9 @@ std::shared_ptr< Cond >
 CondOr::deepCopy() const
 {
     Storage new_conds;
-    for ( Storage::const_iterator i = M_conds.begin();
-          i != M_conds.end();
-          ++i )
+    for ( Storage::const_reference c : M_conds )
     {
-        new_conds.push_back( (*i)->deepCopy() );
+        new_conds.push_back( c->deepCopy() );
     }
 
     std::shared_ptr< Cond > ptr( new CondOr( new_conds ) );
@@ -333,12 +323,11 @@ std::ostream &
 CondOr::print( std::ostream & out ) const
 {
     out << "(or";
-    for( Storage::const_iterator iter = getConds().begin();
-         iter != getConds().end(); ++iter)
+    for( Storage::const_reference c : getConds() )
     {
-        if ( *iter )
+        if ( c )
         {
-            out << " " << **iter;
+            out << " " << *c;
         }
         else
         {
@@ -353,12 +342,11 @@ CondOr::printPretty( std::ostream& out,
                      const std::string& line_header ) const
 {
     out << line_header << "or" << std::endl;
-    for( Storage::const_iterator iter = getConds().begin();
-         iter != getConds().end(); ++iter )
+    for( Storage::const_reference c : getConds() )
     {
-        if ( *iter )
+        if ( c )
         {
-            (*iter)->printPretty( out, line_header + " +" );
+            c->printPretty( out, line_header + " +" );
         }
         else
         {
@@ -372,17 +360,15 @@ CondOr::printPretty( std::ostream& out,
 bool
 CondOr::eval( const Context & context ) const
 {
-    for ( Storage::const_iterator iter = getConds().begin();
-          iter != getConds().end();
-          ++iter )
+    for ( Storage::const_reference c : getConds() )
     {
-        if ( ! *iter )
+        if ( ! c )
         {
             throw util::NullErr( __FILE__, __LINE__,
                                  "Null condition in CondOr\n" );
         }
 
-        if ( (*iter)->eval( context ) )
+        if ( c->eval( context ) )
         {
             return true;
         }

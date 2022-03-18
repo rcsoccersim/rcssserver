@@ -129,7 +129,7 @@ protected:
 
 public:
     virtual
-    ~InitSender();
+    ~InitSender() override;
 
     InitSenderCommon & commonSender()
       {
@@ -192,19 +192,19 @@ public:
       { }
 
     virtual
-    ~InitSenderCommonV1()
+    ~InitSenderCommonV1() override
       { }
 
     virtual
-    void sendServerParams()
+    void sendServerParams() override
       { }
 
     virtual
-    void sendPlayerParams()
+    void sendPlayerParams() override
       { }
 
     virtual
-    void sendPlayerTypes()
+    void sendPlayerTypes() override
       { }
 };
 
@@ -235,17 +235,17 @@ public:
       { }
 
     virtual
-    ~InitSenderCommonV7()
+    ~InitSenderCommonV7() override
       { }
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
 protected:
     virtual
@@ -280,34 +280,34 @@ public:
       { }
 
     virtual
-    ~InitSenderCommonV8()
+    ~InitSenderCommonV8() override
       { }
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     void sendServerParam( ServerParam::VerMap::value_type param )
       {
           doSendServerParam( param );
       }
 
-    void sendPlayerParam( PlayerParam::VerMap::value_type param )
+    void sendPlayerParam( const PlayerParam::VerMap::value_type & param )
       {
           doSendPlayerParam( param );
       }
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
 protected:
     virtual
-    void doSendServerParam( ServerParam::VerMap::value_type param );
+    void doSendServerParam( const ServerParam::VerMap::value_type & param );
 
     virtual
-    void doSendPlayerParam( PlayerParam::VerMap::value_type param );
+    void doSendPlayerParam( const PlayerParam::VerMap::value_type & param );
 
     virtual
     void serializePlayerType( const int id,

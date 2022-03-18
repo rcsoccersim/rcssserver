@@ -74,8 +74,8 @@ private:
 
 
     // not used
-    Team();
-    const Team & operator=( const Team & );
+    Team() = delete;
+    const Team & operator=( const Team & ) = delete;
 
 public:
 
@@ -119,7 +119,7 @@ public:
     const
     Player * player( const int i ) const
       {
-          if ( i < 0 || M_size <= i ) return NULL;
+          if ( i < 0 || M_size <= i ) return nullptr;
           return M_players[i];
       }
 

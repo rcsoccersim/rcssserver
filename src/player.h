@@ -190,8 +190,8 @@ private:
 
 private:
     // not used
-    Player();
-    const Player & operator=( const Player & );
+    Player() = delete;
+    const Player & operator=( const Player & ) = delete;
 
 public:
     Player( Stadium & stadium,
@@ -213,7 +213,7 @@ public:
     // receive message
     //
     void parseMsg( char * msg,
-                   const size_t & len );
+                   const size_t & len ) override;
 
     //
     // send messages
@@ -418,46 +418,46 @@ public:
 protected:
 
     virtual
-    void turnImpl();
+    void turnImpl() override;
     virtual
-    void updateAngle();
+    void updateAngle() override;
     virtual
-    void collidedWithPost();
+    void collidedWithPost() override;
     virtual
-    double maxAccel() const;
+    double maxAccel() const override;
     virtual
-    double maxSpeed() const;
+    double maxSpeed() const override;
 
 private:
     bool parseCommand( const char * command );
     int parseEar( const char * command );
 
     /** PlayerCommands */
-    void dash( double power );
-    void dash( double power, double dir );
-    void turn( double moment );
-    void turn_neck( double moment );
-    void kick( double power, double dir );
-    void long_kick( double power, double dir );
-    void goalieCatch( double dir );
-    void say( std::string message );
+    void dash( double power ) override;
+    void dash( double power, double dir ) override;
+    void turn( double moment ) override;
+    void turn_neck( double moment ) override;
+    void kick( double power, double dir ) override;
+    void long_kick( double power, double dir ) override;
+    void goalieCatch( double dir ) override;
+    void say( std::string message ) override;
     /*! This function is called in the begin of each cycle
       and in case a player sends a sense_body command. */
-    void sense_body();
-    void score();
-    void move( double x, double y );
-    void change_view( rcss::pcom::VIEW_WIDTH viewWidth, rcss::pcom::VIEW_QUALITY viewQuality );
-    void change_view( rcss::pcom::VIEW_WIDTH viewWidth );
-    void compression( int level );
-    void bye();
-    void done();
-    void pointto( bool on, double dist, double head );
-    void attentionto( bool on, rcss::pcom::TEAM team_side, std::string team_name, int at_unum );
-    void tackle( double power_or_angle );
-    void tackle( double power_or_angle, bool foul );
-    void clang( int min, int max);
-    void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode );
-    void synch_see();
+    void sense_body() override;
+    void score() override;
+    void move( double x, double y ) override;
+    void change_view( rcss::pcom::VIEW_WIDTH viewWidth, rcss::pcom::VIEW_QUALITY viewQuality ) override;
+    void change_view( rcss::pcom::VIEW_WIDTH viewWidth ) override;
+    void compression( int level ) override;
+    void bye() override;
+    void done() override;
+    void pointto( bool on, double dist, double head ) override;
+    void attentionto( bool on, rcss::pcom::TEAM team_side, std::string team_name, int at_unum ) override;
+    void tackle( double power_or_angle ) override;
+    void tackle( double power_or_angle, bool foul ) override;
+    void clang( int min, int max) override;
+    void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode ) override;
+    void synch_see() override;
 
 };
 

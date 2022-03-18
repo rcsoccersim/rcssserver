@@ -115,9 +115,9 @@ public:
           struct servent * serv_ent
               = (struct servent*)getservbyname( port.c_str(),
                                                 ( proto.empty()
-                                                  ? NULL
+                                                  ? nullptr
                                                   : proto.c_str() ) );
-          if ( serv_ent == NULL )
+          if ( ! serv_ent )
           {
               return false;
           }
@@ -142,9 +142,10 @@ public:
 #endif
               return false;
           }
-          struct hostent * host_ent
-              = (struct hostent*)gethostbyname( host.c_str() );
-          if ( host_ent == NULL )
+
+          struct hostent * host_ent = (struct hostent*)gethostbyname( host.c_str() );
+
+          if ( ! host_ent )
           {
 #ifdef RCSS_WIN
               return false;
@@ -188,9 +189,9 @@ public:
           {
               struct servent * serv_ent = getservbyport( m_addr.sin_port,
                                                          ( proto.empty()
-                                                           ? NULL
+                                                           ? nullptr
                                                            : proto.c_str() ) );
-              if( serv_ent == NULL )
+              if( ! serv_ent )
               {
                   return m_port_name;
               }

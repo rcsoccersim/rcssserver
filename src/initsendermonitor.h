@@ -78,7 +78,7 @@ public:
     FactoryHolder & factory();
 
    virtual
-    ~InitSenderMonitor();
+    ~InitSenderMonitor() override;
 
 protected:
 
@@ -188,25 +188,25 @@ public:
     ~InitSenderMonitorV1();
 
     virtual
-    void sendInit();
+    void sendInit() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendChangedPlayers();
+    void sendChangedPlayers() override;
 
     virtual
-    void sendScore();
+    void sendScore() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 };
 
 
@@ -225,16 +225,16 @@ protected:
 
 public:
     virtual
-    ~InitSenderMonitorV2();
+    ~InitSenderMonitorV2() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 };
 
 
@@ -255,22 +255,22 @@ protected:
 
 public:
     virtual
-    ~InitSenderMonitorV3();
+    ~InitSenderMonitorV3() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendScore();
+    void sendScore() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 };
 
 }

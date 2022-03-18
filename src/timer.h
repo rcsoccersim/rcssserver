@@ -29,6 +29,11 @@ class Timeable;
     the 'run' method. In this 'run' method the timeable methods from the
     timeable instance are called. */
 class Timer {
+private:
+    Timer() = delete;
+    Timer( const Timer & ) = delete;
+    Timer & operator=( const Timer & ) = delete;
+
 public:
 
     virtual
@@ -40,6 +45,7 @@ public:
 
 protected:
 
+    explicit
     Timer( Timeable & timeable )
         : M_timeable ( timeable )
       { }

@@ -281,7 +281,7 @@ SerializerMonitorStdv3::serializePlayerFocus( std::ostream & os,
                                               const Player & player ) const
 {
     if ( player.isEnabled()
-         && player.getFocusTarget() != NULL )
+         && player.getFocusTarget() )
     {
         os << " (f "
            << SideStr( player.getFocusTarget()->side() ) << ' '

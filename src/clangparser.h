@@ -74,7 +74,7 @@ private:
     ParserFunc M_parser;
 
     virtual
-    bool doParse( std::istream & strm )
+    bool doParse( std::istream & strm ) override
       {
           M_param.getLexer().switch_streams( &strm, &std::cerr );
           return M_parser( M_param ) == 0;

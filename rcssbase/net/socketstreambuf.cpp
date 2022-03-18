@@ -36,8 +36,8 @@ SocketStreamBuf::SocketStreamBuf( Socket & socket,
     : M_socket( socket ),
       M_end_point( dest ),
       M_bufsize( bufsize ),
-      M_inbuf( NULL ),
-      M_outbuf( NULL ),
+      M_inbuf( nullptr ),
+      M_outbuf( nullptr ),
       M_remained( 0 ),
       M_connect( conn )
 {
@@ -52,8 +52,8 @@ SocketStreamBuf::SocketStreamBuf( Socket & socket,
                                   std::streamsize bufsize )
     : M_socket( socket ),
       M_bufsize( bufsize ),
-      M_inbuf( NULL ),
-      M_outbuf( NULL ),
+      M_inbuf( nullptr ),
+      M_outbuf( nullptr ),
       M_remained( 0 ),
       M_connect( conn )
 {
@@ -144,7 +144,7 @@ SocketStreamBuf::underflow()
 
     // if the buffer was not already allocated nor set by user,
     // do it just now
-    if ( gptr() == NULL )
+    if ( gptr() == nullptr )
     {
         M_inbuf = new char_type[M_bufsize];
     }

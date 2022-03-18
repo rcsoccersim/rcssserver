@@ -33,7 +33,7 @@ protected:
 
 public:
     virtual
-    ~SerializerPlayerStdv14();
+    ~SerializerPlayerStdv14() override;
 
     static
     const
@@ -42,7 +42,7 @@ public:
 
     virtual
     void serializeFoul( std::ostream &,
-                        const Player & ) const;
+                        const Player & ) const override;
 
     virtual
     void serializeFSPlayerBegin( std::ostream &,
@@ -55,10 +55,10 @@ public:
                                  const double &,
                                  const double &,
                                  const double &,
-                                 const double & ) const;
+                                 const double & ) const override;
     virtual
     void serializeFSPlayerState( std::ostream &,
-                                 const Player & ) const;
+                                 const Player & ) const override;
 };
 
 }

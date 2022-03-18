@@ -51,10 +51,10 @@ class DirComm;
 class DirNamed;
 
 class Dir {
-public:
-    Dir()
-      { }
+protected:
+    Dir() = default;
 
+public:
     virtual
     ~Dir()
       { }
@@ -100,17 +100,17 @@ public:
           M_actions( actions )
       { }
 
-    ~DirComm()
+    ~DirComm() override
       {
           clearActions();
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     bool isPositive() const
       {
@@ -181,7 +181,7 @@ public:
       }
 
     virtual
-    std::shared_ptr< Dir > deepCopy() const;
+    std::shared_ptr< Dir > deepCopy() const override;
 
 
 private:
@@ -199,7 +199,7 @@ public:
           M_name( name )
       { }
 
-    ~DirNamed()
+    ~DirNamed() override
       { }
 
     virtual
@@ -209,11 +209,11 @@ public:
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     /* class specific */
     std::string & getName()
@@ -285,15 +285,15 @@ public:
         : Token()
       { }
 
-    ~TokClear()
+    ~TokClear() override
       { }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
     std::shared_ptr< Token > deepCopy() const
@@ -323,20 +323,20 @@ public:
       { }
 
     virtual
-    ~TokRule()
+    ~TokRule() override
       {
           clearDirs();
       }
 
     virtual
-    std::shared_ptr< Token > deepCopy() const;
+    std::shared_ptr< Token > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     /* class specific stuff */
     int getTTL() const
@@ -375,13 +375,16 @@ class DefAct;
 class DefRule;
 
 class Def {
-public:
+protected:
     Def()
       { }
 
+    explicit
     Def( const std::string & name )
         : M_name( name )
       { }
+
+public:
 
     virtual
     ~Def()
@@ -439,7 +442,7 @@ public:
           M_cond( def.M_cond->deepCopy() )
       { }
 
-    ~DefCond()
+    ~DefCond() override
       { }
 
     DefCond & operator=( const DefCond & def )
@@ -451,17 +454,17 @@ public:
       }
 
     virtual
-    std::shared_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const override
       {
           return std::shared_ptr< Def >( new DefCond( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
 private:
     std::shared_ptr< Cond > M_cond;
@@ -487,7 +490,7 @@ public:
           M_dir( def.M_dir->deepCopy() )
       { }
 
-    ~DefDir()
+    ~DefDir() override
       { }
 
     DefDir & operator=( const DefDir & def )
@@ -499,17 +502,17 @@ public:
       }
 
     virtual
-    std::shared_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const override
       {
           return std::shared_ptr< Def >( new DefDir( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
 private:
     std::shared_ptr< Dir > M_dir;
@@ -535,7 +538,7 @@ public:
           M_reg( def.M_reg->deepCopy() )
       { }
 
-    ~DefReg()
+    ~DefReg() override
       { }
 
     DefReg & operator=( const DefReg & def )
@@ -547,17 +550,17 @@ public:
       }
 
     virtual
-    std::shared_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const override
       {
           return std::shared_ptr< Def >( new DefReg( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
 private:
     std::shared_ptr< Region > M_reg;
@@ -583,7 +586,7 @@ public:
           M_act( def.M_act->deepCopy() )
       { }
 
-    ~DefAct()
+    ~DefAct() override
       { }
 
     DefAct & operator=( const DefAct & def )
@@ -595,17 +598,17 @@ public:
       }
 
     virtual
-    std::shared_ptr< Def > deepCopy() const
+    std::shared_ptr< Def > deepCopy() const override
       {
           return std::shared_ptr< Def >( new DefAct( *this ) );
       }
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
 private:
     std::shared_ptr< Action > M_act;
@@ -640,14 +643,14 @@ public:
       { }
 
     virtual
-    std::shared_ptr< Def > deepCopy() const;
+    std::shared_ptr< Def > deepCopy() const override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
 private:
 	std::shared_ptr< Rule > M_rule;

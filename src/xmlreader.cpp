@@ -46,7 +46,7 @@ XmlReader::readXml( const string & path_name )
         return false;
     }
 
-    parser = XML_ParserCreate( NULL );
+    parser = XML_ParserCreate( nullptr );
     if ( ! parser )
     {
         std::cerr << __FILE__ << ": " << __LINE__

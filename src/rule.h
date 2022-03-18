@@ -105,7 +105,7 @@ public:
 	CondRule( std::shared_ptr< Cond > cond );
 
 	virtual
-	~CondRule();
+	~CondRule() override;
 
 	const std::shared_ptr< const Cond > & getCond() const
       {
@@ -125,14 +125,14 @@ public:
     SimpleRule( std::shared_ptr< Cond > cond );
     SimpleRule( std::shared_ptr< Cond > cond,
                 const Storage & dirs );
-    ~SimpleRule();
+    ~SimpleRule() override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
     std::shared_ptr< Rule > deepCopy() const;
@@ -155,17 +155,17 @@ public:
                 const Storage & rules );
 
     virtual
-    ~NestedRule();
+    ~NestedRule() override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Rule > deepCopy() const;
+    std::shared_ptr< Rule > deepCopy() const override;
 
     const Storage & getRules() const;
 
@@ -179,17 +179,17 @@ public:
 
     IDListRule();
     IDListRule( const RuleIDList & rules );
-    ~IDListRule();
+    ~IDListRule() override;
 
     virtual
-    std::ostream & print( std::ostream & out ) const;
+    std::ostream & print( std::ostream & out ) const override;
 
     virtual
     std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const;
+                                const std::string & line_header ) const override;
 
     virtual
-    std::shared_ptr< Rule > deepCopy() const;
+    std::shared_ptr< Rule > deepCopy() const override;
 
     const RuleIDList & getIDList() const;
 

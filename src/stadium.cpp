@@ -63,12 +63,12 @@
 Stadium::Stadium()
     : M_alive( true ),
       M_logger( *this ),
-      M_ball( NULL ),
+      M_ball( nullptr ),
       M_players( MAX_PLAYER*2, static_cast< Player * >( 0 ) ),
-      M_coach( NULL ),
+      M_coach( nullptr ),
       M_olcoaches( 2, static_cast< OnlineCoach * >( 0 ) ),
-      M_team_l( NULL ),
-      M_team_r( NULL ),
+      M_team_l( nullptr ),
+      M_team_r( nullptr ),
       M_playmode( PM_BeforeKickOff ),
       M_time( 0 ),
       M_stoppage_time( 0 ),
@@ -79,25 +79,6 @@ Stadium::Stadium()
       M_left_child( 0 ),
       M_right_child( 0 )
 {
-#if 0
-    time_t tmp_time = std::time( NULL );
-    tm * tmp_local_time = std::localtime( &tmp_time );
-    if ( tmp_local_time == NULL )
-    {
-        std::cerr << __FILE__ << ":" << __LINE__
-                  << ": Error getting time: "
-                  << strerror( errno ) << std::endl;
-        //this->exit( EXIT_FAILURE );
-        disable();
-        return;
-    }
-    m_real_time = *tmp_local_time;
-
-    srand( tmp_time );
-    srandom( tmp_time );
-    rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( tmp_time ) );
-#endif
-
     // !!! registration order is very important !!!
     // TODO: fix dependencies among referees.
     M_referees.push_back( new TimeRef( *this ) );
@@ -171,18 +152,18 @@ Stadium::~Stadium()
           it != M_player_types.end();
           ++it )
     {
-        if ( *it != NULL )
+        if ( *it )
         {
             delete *it;
         }
     }
     M_player_types.clear();
 
-    delete M_team_l; M_team_l = NULL;
-    delete M_team_r; M_team_r = NULL;
+    delete M_team_l; M_team_l = nullptr;
+    delete M_team_r; M_team_r = nullptr;
 
-    delete M_coach; M_coach = NULL;
-    delete M_ball; M_ball = NULL;
+    delete M_coach; M_coach = nullptr;
+    delete M_ball; M_ball = nullptr;
 }
 
 
@@ -195,18 +176,7 @@ Stadium::~Stadium()
 bool
 Stadium::init()
 {
-    time_t tmp_time = std::time( NULL );
-    tm * tmp_local_time = std::localtime( &tmp_time );
-    if ( tmp_local_time == NULL )
-    {
-        std::cerr << __FILE__ << ":" << __LINE__
-                  << ": Error getting time: "
-                  << strerror( errno ) << std::endl;
-        //this->exit( EXIT_FAILURE );
-        disable();
-        return false;
-    }
-    m_real_time = *tmp_local_time;
+    M_start_time = std::time( 0 );
 
     if ( ServerParam::instance().randomSeed() >= 0 )
     {
@@ -214,16 +184,16 @@ Stadium::init()
         std::cout << "Using given Simulator Random Seed: " << seed << std::endl;
         srand( seed );
         srandom( seed );
-        DefaultRNG::instance( seed );
+        DefaultRNG::seed( seed );
     }
     else
     {
-        int seed = static_cast< int >( tmp_time );
+        int seed = static_cast< int >( M_start_time );
         std::cout << "Simulator Random Seed: " << seed << std::endl;
         ServerParam::instance().setRandomSeed( seed );
         srand( seed );
         srandom( seed );
-        DefaultRNG::instance( seed );
+        DefaultRNG::seed( seed );
     }
 
     //std::cout << "Simulator Random Seed: " << ServerParam::instance().randomSeed() << std::endl;
@@ -234,12 +204,10 @@ Stadium::init()
     // errors creating them, it will be reported before
     // the game starts, not after it has finished.
     std::list< ResultSaver::FactoryHolder::Index > savers = ResultSaver::factory().list();
-    for ( std::list< ResultSaver::FactoryHolder::Index >::iterator i = savers.begin();
-          i != savers.end();
-          ++i )
+    for ( const auto & idx : savers )
     {
         ResultSaver::Creator creator;
-        if ( ResultSaver::factory().getCreator( creator, *i ) )
+        if ( ResultSaver::factory().getCreator( creator, idx ) )
         {
             ResultSaver::Ptr saver = creator();
             std::cout << saver->getName() << ": Ready\n";
@@ -247,10 +215,9 @@ Stadium::init()
         }
         else
         {
-            std::cerr << *i << ": error loading" << std::endl;
+            std::cerr << idx << ": error loading" << std::endl;
         }
     }
-
 
     if ( ServerParam::instance().coachMode()
          && ! ServerParam::instance().coachWithRefereeMode() )
@@ -468,7 +435,7 @@ Stadium::startTeam( const std::string & start )
 
     if ( pid == 0 )
     {
-        execlp( "/bin/sh", "sh", "-c", start.c_str(), (char *)NULL );
+        execlp( "/bin/sh", "sh", "-c", start.c_str(), (char *)nullptr );
         std::cerr << PACKAGE << "-" << VERSION
                   << ": Error: Could not execute \"/bin/sh -c "
                   << start.c_str() << "\": "
@@ -538,7 +505,7 @@ Stadium::playerType( int id ) const
         std::cerr << __FILE__ << ':' << __LINE__
                   << " Exception caught! " << e.what()
                   << std::endl;
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -722,13 +689,13 @@ Stadium::initCoach( const double & version,
     if ( M_coach->open() != 0 )
     {
         sendToCoach( "(error socket_open_failed)", addr );
-        return NULL;
+        return nullptr;
     }
 
     if ( ! M_coach->connect( addr ) )
     {
         sendToCoach( "(error connection_failed)", addr );
-        return NULL;
+        return nullptr;
     }
 
     if ( ! M_coach->setSenders( version ) )
@@ -736,7 +703,7 @@ Stadium::initCoach( const double & version,
         std::cerr << "Error: Could not find serializer or sender for version"
                   << version << std::endl;
         sendToCoach( "(error illegal_client_version)", addr );
-        return NULL;
+        return nullptr;
     }
 
     addOfflineCoach( M_coach );
@@ -820,17 +787,13 @@ Stadium::initOnlineCoach( const char * teamname,
 void
 Stadium::step()
 {
-    const PlayerCont::iterator end = M_players.end();
-
     //
     // reset command flags
     //
-    for ( PlayerCont::iterator p = M_players.begin();
-          p != end;
-          ++p )
+    for ( PlayerCont::reference p : M_players )
     {
-        (*p)->resetCommandFlags();
-        (*p)->incArmAge();
+        p->resetCommandFlags();
+        p->incArmAge();
     }
 
     for ( int i = 0; i < 2; ++i )
@@ -849,7 +812,8 @@ Stadium::step()
     {
         turnMovableObjects();
         ++M_stoppage_time;
-        for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
     }
     else if ( playmode() == PM_AfterGoal_Right
               || playmode() == PM_AfterGoal_Left
@@ -872,7 +836,8 @@ Stadium::step()
         clearBallCatcher();
         incMovableObjects();
         ++M_stoppage_time;
-        for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
         if ( pm != playmode() )
         {
             ++M_time;
@@ -884,8 +849,9 @@ Stadium::step()
         incMovableObjects();
         ++M_time;
         M_stoppage_time = 0;
-        for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
         //for_each( M_referees.begin(), M_referees.end(), std::mem_fun( &Referee::analyse ) );
+        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
     }
     else if ( playmode() == PM_TimeOver )
     {
@@ -895,14 +861,12 @@ Stadium::step()
     //
     // update stamina etc
     //
-    for ( PlayerCont::iterator p = M_players.begin();
-          p != end;
-          ++p )
+    for ( PlayerCont::reference p : M_players )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        (*p)->updateStamina();
-        (*p)->updateCapacity();
+        p->updateStamina();
+        p->updateCapacity();
     }
 
     if ( stoppageTime() == 0
@@ -924,11 +888,9 @@ Stadium::step()
     //
     // reset player state
     //
-    for ( PlayerCont::iterator p = M_players.begin();
-          p != end;
-          ++p )
+    for ( PlayerCont::reference p : M_players )
     {
-        (*p)->resetState();
+        p->resetState();
     }
 }
 
@@ -936,13 +898,10 @@ void
 Stadium::turnMovableObjects()
 {
     std::shuffle( M_movable_objects.begin(), M_movable_objects.end(),
-                  DefaultRNG::instance().engine() );
-    const MPObjectCont::iterator end = M_movable_objects.end();
-    for ( MPObjectCont::iterator it = M_movable_objects.begin();
-          it != end;
-          ++it )
+                  DefaultRNG::instance() );
+    for ( MPObjectCont::reference o : M_movable_objects )
     {
-        (*it)->_turn();
+        o->_turn();
     }
 }
 
@@ -950,15 +909,12 @@ void
 Stadium::incMovableObjects()
 {
     std::shuffle( M_movable_objects.begin(), M_movable_objects.end(),
-                  DefaultRNG::instance().engine() );
-    const MPObjectCont::iterator end = M_movable_objects.end();
-    for ( MPObjectCont::iterator it = M_movable_objects.begin();
-          it != end;
-          ++it )
+                  DefaultRNG::instance() );
+    for ( MPObjectCont::reference o : M_movable_objects )
     {
-        if ( (*it)->isEnabled() )
+        if ( o->isEnabled() )
         {
-            (*it)->_inc();
+            o->_inc();
         }
     }
 
@@ -982,11 +938,9 @@ Stadium::sendDisp()
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     // send to displays
-    for ( MonitorCont::iterator i = M_monitors.begin();
-          i != M_monitors.end();
-          ++i )
+    for ( MonitorCont::reference m : M_monitors )
     {
-        (*i)->sendShow();
+        m->sendShow();
     }
 
     // record game log
@@ -1001,14 +955,11 @@ Stadium::sendDisp()
 void
 Stadium::recoveryPlayers()
 {
-    const PlayerCont::iterator end = M_players.end();
-    for ( PlayerCont::iterator p = M_players.begin();
-          p != end;
-          ++p )
+    for ( PlayerCont::reference p : M_players )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        (*p)->recoverAll();
+        p->recoverAll();
     }
 }
 
@@ -1180,14 +1131,11 @@ Stadium::callHalfTime( const Side kick_off_side,
     // recover only stamina capacity at the start of extra halves
     if ( half_time_count == ServerParam::instance().nrNormalHalfs() )
     {
-        const PlayerCont::iterator end = M_players.end();
-        for ( PlayerCont::iterator p = M_players.begin();
-              p != end;
-              ++p )
+        for ( PlayerCont::reference p : M_players )
         {
-            if ( ! (*p)->isEnabled() ) continue;
+            if ( ! p->isEnabled() ) continue;
 
-            (*p)->recoverStaminaCapacity();
+            p->recoverStaminaCapacity();
         }
     }
 
@@ -1481,7 +1429,11 @@ Stadium::changePlayMode( const PlayMode pm )
     M_playmode = pm;
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doPlayModeChange( pm ) );
+              //Referee::doPlayModeChange( pm ) );
+              [&]( Referee * ref )
+              {
+                  ref->playModeChange( pm );
+              } );
 
     if ( pm == PM_KickOff_Left
          || pm == PM_KickIn_Left
@@ -1617,10 +1569,9 @@ Stadium::broadcastSubstitution( const int side,
               "(change_player_type %s %d %d)",
               ( side == LEFT ? "l" : "r" ),
               unum, player_type );
-    for ( MonitorCont::iterator i = M_monitors.begin();
-          i != M_monitors.end(); ++i )
+    for ( MonitorCont::reference m : M_monitors )
     {
-        (*i)->sendMsg( MSG_BOARD, buffer );
+        m->sendMsg( MSG_BOARD, buffer );
     }
 
     M_logger.writeTextLog( buffer, SUBS );
@@ -1682,10 +1633,9 @@ Stadium::broadcastChangePlayerToGoalie( const Player * player )
     // TODO: send to offline coach
 
     // monitors
-    for ( MonitorCont::iterator i = M_monitors.begin();
-          i != M_monitors.end(); ++i )
+    for ( MonitorCont::reference m : M_monitors )
     {
-        (*i)->sendMsg( MSG_BOARD, msg );
+        m->sendMsg( MSG_BOARD, msg );
     }
 
     M_logger.writeTextLog( msg, SUBS );
@@ -1699,34 +1649,32 @@ Stadium::collisions()
     int max_loop = 10;
 
     const std::size_t SIZE = M_players.size();
-    const PlayerCont::iterator end = M_players.end();
 
     do
     {
         col = false;
         M_ball->clearCollision();
-        for ( PlayerCont::iterator it = M_players.begin();
-              it != end;
-              ++it )
+        for ( PlayerCont::reference p : M_players )
         {
-            (*it)->clearCollision();
+            p->clearCollision();
         }
 
         // check ball to player
-        for ( PlayerCont::iterator it = M_players.begin();
-              it != end;
-              ++it )
+        for ( PlayerCont::reference p : M_players )
         {
-            if ( (*it)->isEnabled()
-                 && (*it) != M_ball_catcher
-                 && M_ball->pos().distance2( (*it)->pos() )
-                 < std::pow( M_ball->size() + (*it)->size(), 2 ) )
+            if ( p->isEnabled()
+                 && p != M_ball_catcher
+                 && M_ball->pos().distance2( p->pos() ) < std::pow( M_ball->size() + p->size(), 2 ) )
             {
                 col = true;
-                (*it)->collidedWithBall();
+                p->collidedWithBall();
                 for_each( M_referees.begin(), M_referees.end(),
-                          Referee::doBallTouched( **it ) );
-                calcBallCollisionPos( *it );
+                          //Referee::doBallTouched( *p ) );
+                          [&]( Referee * ref )
+                          {
+                              ref->ballTouched( *p );
+                          } );
+                calcBallCollisionPos( p );
             }
         }
 
@@ -1737,8 +1685,7 @@ Stadium::collisions()
             {
                 if ( M_players[i]->isEnabled()
                      && M_players[j]->isEnabled()
-                     && M_players[i]->pos().distance2( M_players[j]->pos() )
-                     < std::pow( M_players[i]->size() + M_players[j]->size(), 2 ) )
+                     && M_players[i]->pos().distance2( M_players[j]->pos() ) < std::pow( M_players[i]->size() + M_players[j]->size(), 2 ) )
                 {
                     col = true;
                     M_players[i]->collidedWithPlayer();
@@ -1749,11 +1696,9 @@ Stadium::collisions()
         }
 
         M_ball->moveToCollisionPos();
-        for ( PlayerCont::iterator it = M_players.begin();
-              it != end;
-              ++it )
+        for ( PlayerCont::reference p : M_players )
         {
-            (*it)->moveToCollisionPos();
+            p->moveToCollisionPos();
         }
 
         --max_loop;
@@ -1765,11 +1710,9 @@ Stadium::collisions()
     //              << std::endl;
 
     M_ball->updateCollisionVel();
-    for ( PlayerCont::iterator it = M_players.begin();
-          it != end;
-          ++it )
+    for ( PlayerCont::reference p : M_players )
     {
-        (*it)->updateCollisionVel();
+        p->updateCollisionVel();
     }
 
 }
@@ -1803,7 +1746,7 @@ void
 Stadium::calcCollisionPos( MPObject * a,
                            MPObject * b )
 {
-    if ( a == NULL || b == NULL )
+    if ( ! a || ! b )
     {
         return;
     }
@@ -1920,15 +1863,24 @@ Stadium::kickTaken( const Player & kicker,
 
     M_ball->push( accel );
 
+    const double accel_r = accel.r();
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doKickTaken( kicker, accel.r() ) );
+              //Referee::doKickTaken( kicker, accel.r() ) );
+              [&]( Referee * ref )
+              {
+                  ref->kickTaken( kicker, accel_r );
+              } );
 }
 
 void
 Stadium::failedKickTaken( const Player & kicker )
 {
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doFailedKickTaken( kicker ) );
+              //Referee::doFailedKickTaken( kicker ) );
+              [&]( Referee * ref )
+              {
+                  ref->failedKickTaken( kicker );
+              } );
 }
 
 void
@@ -1940,8 +1892,13 @@ Stadium::tackleTaken( const Player & tackler,
 
     M_ball->push( accel );
 
+    const double accel_r = accel.r();
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doTackleTaken( tackler, accel.r(), foul ) );
+              //Referee::doTackleTaken( tackler, accel.r(), foul ) );
+              [&]( Referee * ref )
+              {
+                  ref->tackleTaken( tackler, accel_r, foul );
+              } );
 }
 
 void
@@ -1949,7 +1906,11 @@ Stadium::failedTackleTaken( const Player & tackler,
                             const bool foul )
 {
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doFailedTackleTaken( tackler, foul ) );
+              //Referee::doFailedTackleTaken( tackler, foul ) );
+              [&]( Referee * ref )
+              {
+                  ref->failedTackleTaken( tackler, foul );
+              } );
 }
 
 
@@ -1966,10 +1927,18 @@ Stadium::ballCaught( const Player & catcher )
     collisions();
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doBallTouched( catcher ) );
+              //Referee::doBallTouched( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballTouched( catcher );
+              } );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doCaughtBall( catcher ) );
+              //Referee::doCaughtBall( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballCaught( catcher );
+              } );
 
     if ( playmode() == PM_FreeKick_Left
          || playmode() == PM_FreeKick_Right )
@@ -1985,10 +1954,18 @@ Stadium::ballPunched( const Player & catcher,
     M_ball->push( accel );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doBallTouched( catcher ) );
+              //Referee::doBallTouched( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballTouched( catcher );
+              } );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doPunchedBall( catcher ) );
+              //Referee::doPunchedBall( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballPunched( catcher );
+              } );
 }
 
 void
@@ -2069,19 +2046,16 @@ void
 Stadium::sendRefereeAudio( const char * msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     // the following should work, but I haven't tested it yet
     //      std::for_each( M_listeners.begin(), M_listeners.end(),
     //                     std::bind2nd( std::mem_fun( &rcss::Listener::sendRefereeAudio ),
     //                                   msg.c_str() ) );
 
-    const ListenerCont::iterator end = M_listeners.end();
-    for ( ListenerCont::iterator it = M_listeners.begin();
-          it != end;
-          ++it )
+    for ( ListenerCont::reference l : M_listeners )
     {
-        (*it)->sendRefereeAudio( msg );
+        l->sendRefereeAudio( msg );
     }
 
     M_logger.writeRefereeAudio( msg );
@@ -2094,11 +2068,9 @@ Stadium::sendRefereeAudio( const char * msg )
                   "(%s %s)",
                   REFEREE_NAME, msg );
 
-        for ( MonitorCont::iterator i = M_monitors.begin();
-              i != M_monitors.end();
-              ++i )
+        for ( MonitorCont::reference m : M_monitors )
         {
-            (*i)->sendMsg( MSG_BOARD, buf );
+            m->sendMsg( MSG_BOARD, buf );
         }
     }
 }
@@ -2109,14 +2081,11 @@ Stadium::sendPlayerAudio( const Player & player,
                           const char * msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
-    const ListenerCont::iterator end = M_listeners.end();
-    for ( ListenerCont::iterator it = M_listeners.begin();
-          it != end;
-          ++it )
+    for ( ListenerCont::reference l : M_listeners )
     {
-        (*it)->sendPlayerAudio( player, msg );
+        l->sendPlayerAudio( player, msg );
     }
 
     M_logger.writePlayerAudio( player, msg );
@@ -2130,11 +2099,9 @@ Stadium::sendPlayerAudio( const Player & player,
                   player.name().c_str(), msg );
 
         // send to monitors
-        for ( Stadium::MonitorCont::iterator i = monitors().begin();
-              i != monitors().end();
-              ++i )
+        for ( MonitorCont::reference m : monitors() )
         {
-            (*i)->sendMsg( MSG_BOARD, buf );
+            m->sendMsg( MSG_BOARD, buf );
         }
     }
 }
@@ -2145,14 +2112,11 @@ Stadium::sendCoachAudio( const Coach & coach,
                          const char * msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
-    const ListenerCont::iterator end = M_listeners.end();
-    for ( ListenerCont::iterator it = M_listeners.begin();
-          it != end;
-          ++it )
+    for ( ListenerCont::reference l : M_listeners )
     {
-        (*it)->sendCoachAudio( coach, msg );
+        l->sendCoachAudio( coach, msg );
     }
 
     M_logger.writeCoachAudio( coach, msg );
@@ -2172,11 +2136,9 @@ Stadium::sendCoachAudio( const Coach & coach,
                     ? OLCOACH_NAME_L: REFEREE_NAME ),
                   msg );
 
-        for ( MonitorCont::iterator i = monitors().begin();
-              i != monitors().end();
-              ++i )
+        for ( MonitorCont::reference m : monitors() )
         {
-            (*i)->sendMsg( MSG_BOARD, buf );
+            m->sendMsg( MSG_BOARD, buf );
         }
     }
 }
@@ -2186,14 +2148,11 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
                             const rcss::clang::Msg & msg )
 {
     std::shuffle( M_listeners.begin(), M_listeners.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
-    const ListenerCont::iterator end = M_listeners.end();
-    for ( ListenerCont::iterator it = M_listeners.begin();
-          it != end;
-          ++it )
+    for ( ListenerCont::reference l : M_listeners )
     {
-        (*it)->sendCoachStdAudio( msg );
+        l->sendCoachStdAudio( msg );
     }
 
     M_logger.writeCoachStdAudio( coach, msg );
@@ -2215,11 +2174,9 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
                   (coach.side() == RIGHT) ? OLCOACH_NAME_R : OLCOACH_NAME_L,
                   coach_mess.str().c_str() );
 
-        for ( MonitorCont::iterator i = monitors().begin();
-              i != monitors().end();
-              ++i )
+        for ( MonitorCont::reference m : monitors() )
         {
-            (*i)->sendMsg( MSG_BOARD, buf );
+            m->sendMsg( MSG_BOARD, buf );
         }
     }
 
@@ -2244,13 +2201,10 @@ Stadium::doRecvFromClients()
         s_stoppage_time = M_stoppage_time;
 
         std::shuffle( M_shuffle_players.begin(), M_shuffle_players.end(),
-                      DefaultRNG::instance().engine() );
-        for ( PlayerCont::iterator p = M_shuffle_players.begin(),
-                  p_end = M_shuffle_players.end();
-              p != p_end;
-              ++p )
+                      DefaultRNG::instance() );
+        for ( PlayerCont::reference p : M_shuffle_players )
         {
-            (*p)->doLongKick();
+            p->doLongKick();
         }
     }
 
@@ -2297,39 +2251,40 @@ Stadium::doSendSenseBody()
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::shuffle( M_remote_players.begin(), M_remote_players.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     //
     // send sense_body & fullstate
     //
-    const PlayerCont::iterator end = M_remote_players.end();
-    for ( PlayerCont::iterator it = M_remote_players.begin();
-          it != end;
-          ++it )
+    for ( PlayerCont::reference p : M_remote_players )
     {
-        if ( (*it)->isEnabled()
-             && (*it)->connected() )
+        if ( p->isEnabled()
+             && p->connected() )
         {
-            (*it)->sendBody();
+            p->sendBody();
 
-            if ( ( (*it)->side() == LEFT
+            if ( ( p->side() == LEFT
                    && ServerParam::instance().fullstateLeft() )
-                 || ( (*it)->side() == RIGHT
+                 || ( p->side() == RIGHT
                       && ServerParam::instance().fullstateRight() ) )
             {
-                (*it)->sendFullstate();
+                p->sendFullstate();
             }
         }
 
         // reset collision flags
-        (*it)->resetCollisionFlags();
+        p->resetCollisionFlags();
     }
 
     //
     // send audio message
     //
     std::for_each( M_listeners.begin(), M_listeners.end(),
-                   rcss::Listener::NewCycle() ); //std::mem_fun( &rcss::Listener::newCycle ) );
+                   []( rcss::Listener * l )
+                   {
+                       l->newCycle();
+                   } );
+                   //rcss::Listener::NewCycle() ); //std::mem_fun( &rcss::Listener::newCycle ) );
 
     //
     // write profile
@@ -2344,17 +2299,14 @@ Stadium::doSendVisuals()
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::shuffle( M_remote_players.begin(), M_remote_players.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
-    const PlayerCont::iterator end = M_remote_players.end();
-    for ( PlayerCont::iterator it = M_remote_players.begin();
-          it != end;
-          ++it )
+    for ( PlayerCont::reference p : M_remote_players )
     {
-        if ( (*it)->isEnabled()
-             && (*it)->connected() )
+        if ( p->isEnabled()
+             && p->connected() )
         {
-            (*it)->sendVisual();
+            p->sendVisual();
         }
     }
 
@@ -2368,17 +2320,14 @@ Stadium::doSendSynchVisuals()
     const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
     std::shuffle( M_remote_players.begin(), M_remote_players.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
-    const PlayerCont::iterator end = M_remote_players.end();
-    for ( PlayerCont::iterator it = M_remote_players.begin();
-          it != end;
-          ++it )
+    for ( PlayerCont::reference p : M_remote_players )
     {
-        if ( (*it)->isEnabled()
-             && (*it)->connected() )
+        if ( p->isEnabled()
+             && p->connected() )
         {
-            (*it)->sendSynchVisual();
+            p->sendSynchVisual();
         }
     }
 
@@ -2609,7 +2558,7 @@ void
 recv_from_clients( std::vector< T > & clients )
 {
     std::shuffle( clients.begin(), clients.end(),
-                  DefaultRNG::instance().engine() );
+                  DefaultRNG::instance() );
 
     for ( typename std::vector< T >::iterator i = clients.begin();
           i != clients.end(); )
@@ -2645,13 +2594,11 @@ Stadium::udp_recv_message()
             //              std::cerr << std::endl;
 
             bool found = false;
-            for ( PlayerCont::iterator i = M_remote_players.begin();
-                  i != M_remote_players.end();
-                  ++i )
+            for ( PlayerCont::reference p : M_remote_players )
             {
-                if ( (*i)->getDest() == cli_addr )
+                if ( p->getDest() == cli_addr )
                 {
-                    (*i)->undedicatedRecv( message, len );
+                    p->undedicatedRecv( message, len );
                     found = true;
                     break;
                 }
@@ -2659,13 +2606,11 @@ Stadium::udp_recv_message()
 
             if ( ! found )
             {
-                for ( MonitorCont::iterator i = M_monitors.begin();
-                      i != M_monitors.end();
-                      ++i )
+                for ( MonitorCont::reference m : M_monitors )
                 {
-                    if ( (*i)->getDest() == cli_addr )
+                    if ( m->getDest() == cli_addr )
                     {
-                        (*i)->undedicatedRecv( message, len );
+                        m->undedicatedRecv( message, len );
                         found = true;
                         break;
                     }
@@ -2896,13 +2841,11 @@ Stadium::udp_recv_from_coach()
             }
 
             bool found = false;
-            for ( OfflineCoachCont::iterator i = M_remote_offline_coaches.begin();
-                  i != M_remote_offline_coaches.end();
-                  ++i )
+            for ( OfflineCoachCont::reference c : M_remote_offline_coaches )
             {
-                if ( (*i)->getDest() == cli_addr )
+                if ( c->getDest() == cli_addr )
                 {
-                    (*i)->undedicatedRecv( message, len );
+                    c->undedicatedRecv( message, len );
                     found = true;
                     break;
                 }
@@ -3003,17 +2946,16 @@ Stadium::udp_recv_from_online_coach()
         if ( len > 0 )
         {
             bool found = false;
-            for ( OnlineCoachCont::iterator i = M_remote_online_coaches.begin();
-                  i != M_remote_online_coaches.end();
-                  ++i )
+            for ( OnlineCoachCont::reference c : M_remote_online_coaches )
             {
-                if ( (*i)->getDest() == cli_addr )
+                if ( c->getDest() == cli_addr )
                 {
-                    (*i)->undedicatedRecv( message, len );
+                    c->undedicatedRecv( message, len );
                     found = true;
                     break;
                 }
             }
+
             if ( ! found )
             {
                 // a new online coach
@@ -3246,41 +3188,39 @@ Stadium::saveResults()
     }
 
     std::cout << "\nSaving Results:"  << std::endl;
-    for ( std::list< ResultSaver::Ptr >::iterator i = M_savers.begin();
-          i != M_savers.end();
-          ++i )
+    for ( std::list< ResultSaver::Ptr >::reference s : M_savers )
     {
-        std::cout << "\t" << (*i)->getName() << ": saving...\n";
-        if ( (*i)->enabled() )
+        std::cout << "\t" << s->getName() << ": saving...\n";
+        if ( s->enabled() )
         {
-            (*i)->saveStart();
-            (*i)->saveTime( realTime() );
+            s->saveStart();
+            s->saveTime( getStartTime() );
             if ( M_team_l )
             {
                 rcss::save_results( ResultSaver::TEAM_LEFT,
                                     *M_team_l,
-                                    **i );
+                                    *s );
             }
 
             if ( M_team_r )
             {
                 rcss::save_results( ResultSaver::TEAM_RIGHT,
                                     *M_team_r,
-                                    **i );
+                                    *s );
             }
 
-            if ( (*i)->saveComplete() )
+            if ( s->saveComplete() )
             {
-                std::cout << "\t" << (*i)->getName() << ": ...saved\n";
+                std::cout << "\t" << s->getName() << ": ...saved\n";
             }
             else
             {
-                std::cout << "\t" << (*i)->getName() << ": ...failed\n";
+                std::cout << "\t" << s->getName() << ": ...failed\n";
             }
         }
         else
         {
-            std::cout << "\t" << (*i)->getName() << ": ...disabled\n";
+            std::cout << "\t" << s->getName() << ": ...disabled\n";
         }
     }
     std::cout << '\n';

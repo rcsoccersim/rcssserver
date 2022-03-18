@@ -99,7 +99,7 @@ Team::newPlayer( const double & version,
         {
             std::cerr << "Warning:Too many players." << std::endl;
         }
-        return NULL;
+        return nullptr;
     }
 
     if ( goalie_flag )
@@ -112,7 +112,7 @@ Team::newPlayer( const double & version,
                 {
                     std::cerr << "Warning:Too many goalies." << std::endl;
                 }
-                return NULL;
+                return nullptr;
             }
         }
     }
@@ -121,7 +121,7 @@ Team::newPlayer( const double & version,
 
     if ( ! p->init( version, goalie_flag ) )
     {
-        return NULL;
+        return nullptr;
     }
 
     ++M_size;
@@ -201,13 +201,8 @@ Team::assignPlayerTypes()
         }
     }
 
-    for ( std::list< Player * >::iterator it = players.begin();
-          it != players.end();
-          ++it )
+    for ( Player * p : players )
     {
-        //Player * p = M_players[i];
-        Player * p = *it;
-
         // 2009-10-29 akiyama
         // enabled heterogeneous goalie
         // if ( p->isGoalie() )

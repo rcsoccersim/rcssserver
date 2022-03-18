@@ -41,7 +41,7 @@ Builder::Builder( const std::string & progname,
     : m_err( false ),
       m_progname( progname ),
       m_version( version ),
-      m_parent( NULL ),
+      m_parent( nullptr ),
       m_generic_help_requested( false ),
       m_detailed_help_requested( false ),
       m_module_name( module_name )
@@ -78,11 +78,9 @@ Builder::createConfFile( std::ostream & conf,
     }
     else
     {
-        for ( std::list< Builder * >::iterator i = m_children.begin();
-              i != m_children.end();
-              ++i )
+        for ( Builder * c : m_children )
         {
-            (*i)->createConfFile( conf, module_name );
+            c->createConfFile( conf, module_name );
         }
     }
 }
@@ -128,18 +126,14 @@ Builder::parseError( const std::string & curr,
     requestGenericHelp();
     m_err = true;
 
-    for ( std::list< StatusHandler * >::iterator i = m_handlers.begin();
-          i != m_handlers.end();
-          ++i )
+    for ( StatusHandler * h : m_handlers )
     {
-        (*i)->parseError( curr, err, name, lineno );
+        h->parseError( curr, err, name, lineno );
     }
 
-    for ( std::list< Builder * >::iterator i = m_children.begin();
-          i != m_children.end();
-          ++i )
+    for ( Builder * c : m_children )
     {
-        (*i)->parseError( curr, err, name, lineno );
+        c->parseError( curr, err, name, lineno );
     }
 }
 
@@ -153,18 +147,14 @@ Builder::buildError( const std::string & module,
     requestDetailedHelp();
     m_err = true;
 
-    for ( std::list< StatusHandler * >::iterator i = m_handlers.begin();
-          i != m_handlers.end();
-          ++i )
+    for ( StatusHandler * h : m_handlers )
     {
-        (*i)->buildError( module, param, err, name, lineno );
+        h->buildError( module, param, err, name, lineno );
     }
 
-    for ( std::list< Builder * >::iterator i = m_children.begin();
-          i != m_children.end();
-          ++i )
+    for ( Builder * c : m_children )
     {
-        (*i)->buildError( module, param, err, name, lineno );
+        c->buildError( module, param, err, name, lineno );
     }
 }
 
@@ -175,54 +165,42 @@ Builder::buildWarning( const std::string & module,
                        const std::string & name,
                        int lineno )
 {
-    for ( std::list< StatusHandler * >::iterator i = m_handlers.begin();
-          i != m_handlers.end();
-          ++i )
+    for ( StatusHandler * h : m_handlers )
     {
-        (*i)->buildWarning( module, param, warn, name, lineno );
+        h->buildWarning( module, param, warn, name, lineno );
     }
 
-    for ( std::list< Builder * >::iterator i = m_children.begin();
-          i != m_children.end();
-          ++i )
+    for ( Builder * c : m_children )
     {
-        (*i)->buildWarning( module, param, warn, name, lineno );
+        c->buildWarning( module, param, warn, name, lineno );
     }
 }
 
 void
 Builder::creatingConfFile( const std::string & conf_name )
 {
-    for ( std::list< StatusHandler * >::iterator i = m_handlers.begin();
-          i != m_handlers.end();
-          ++i )
+    for ( StatusHandler * h : m_handlers )
     {
-        (*i)->creatingConfFile( conf_name );
+        h->creatingConfFile( conf_name );
     }
 
-    for ( std::list< Builder * >::iterator i = m_children.begin();
-          i != m_children.end();
-          ++i )
+    for ( Builder * c : m_children )
     {
-        (*i)->creatingConfFile( conf_name );
+        c->creatingConfFile( conf_name );
     }
 }
 
 void
 Builder::createdConfFile( const std::string & conf_name )
 {
-    for ( std::list< StatusHandler * >::iterator i = m_handlers.begin();
-          i != m_handlers.end();
-          ++i )
+    for ( StatusHandler * h : m_handlers )
     {
-        (*i)->createdConfFile( conf_name );
+        h->createdConfFile( conf_name );
     }
 
-    for ( std::list< Builder * >::iterator i = m_children.begin();
-          i != m_children.end();
-          ++i )
+    for ( Builder * c : m_children )
     {
-        (*i)->createdConfFile( conf_name );
+        c->createdConfFile( conf_name );
     }
 }
 
@@ -230,18 +208,14 @@ void
 Builder::confCreationFailed( const std::string & conf_name,
                              int error )
 {
-    for( std::list< StatusHandler * >::iterator i = m_handlers.begin();
-         i != m_handlers.end();
-         ++i )
+    for( StatusHandler * h : m_handlers )
     {
-        (*i)->confCreationFailed( conf_name, error );
+        h->confCreationFailed( conf_name, error );
     }
 
-    for ( std::list< Builder * >::iterator i = m_children.begin();
-          i != m_children.end();
-          ++i )
+    for ( Builder * c : m_children )
     {
-        (*i)->confCreationFailed( conf_name, error );
+        c->confCreationFailed( conf_name, error );
     }
 }
 
@@ -253,18 +227,14 @@ Builder::includeFailed( const std::string & filename,
 {
     m_err = true;
 
-    for ( std::list< StatusHandler * >::iterator i = m_handlers.begin();
-          i != m_handlers.end();
-          ++i )
+    for ( StatusHandler * h : m_handlers )
     {
-        (*i)->includeFailed( filename, error, name, lineno );
+        h->includeFailed( filename, error, name, lineno );
     }
 
-    for ( std::list< Builder * >::iterator i = m_children.begin();
-          i != m_children.end();
-          ++i )
+    for ( Builder * c : m_children )
     {
-        (*i)->includeFailed( filename, error, name, lineno );
+        c->includeFailed( filename, error, name, lineno );
     }
 }
 
@@ -328,11 +298,9 @@ Builder::requestGenericHelp()
 void
 Builder::requestDetailedHelp( const std::string & module_name )
 {
-    for( std::list< Builder * >::iterator i = m_children.begin();
-         i != m_children.end();
-         ++i )
+    for( Builder * c : m_children )
     {
-        (*i)->requestDetailedHelp( module_name );
+        c->requestDetailedHelp( module_name );
     }
     doRequestDetailedHelp( module_name );
 }
@@ -352,24 +320,20 @@ void
 Builder::addedToParser( Parser & p )
 {
     m_parser = &p;
-    for( std::list< Builder * >::iterator i = m_children.begin();
-         i != m_children.end();
-         ++i )
+    for( Builder * c : m_children )
     {
-        (*i)->addedToParser( p );
+        c->addedToParser( p );
     }
 }
 
 void
 Builder::removedFromParser()
 {
-    m_parser = NULL;
-    m_parent = NULL;
-    for( std::list< Builder * >::iterator i = m_children.begin();
-         i != m_children.end();
-         ++i )
+    m_parser = nullptr;
+    m_parent = nullptr;
+    for( Builder * c : m_children )
     {
-        (*i)->removedFromParser();
+        c->removedFromParser();
     }
 }
 
@@ -391,18 +355,16 @@ Builder::displayHelp()
 {
     if ( genericHelpRequested() )
     {
-        if ( m_parent == NULL )
+        if ( m_parent == nullptr )
         {
             displayUsage( m_progname );
         }
 
         displayGenericHelp();
 
-        for ( std::list< Builder * >::iterator i = m_children.begin();
-              i != m_children.end();
-              ++i )
+        for ( Builder * c : m_children )
         {
-            (*i)->displayGenericHelp();
+            c->displayGenericHelp();
         }
 
         if ( detailedHelpRequested() )
@@ -410,13 +372,11 @@ Builder::displayHelp()
             displayDetailedHelp();
         }
 
-        for ( std::list< Builder * >::iterator i = m_children.begin();
-              i != m_children.end();
-              ++i )
+        for ( Builder * c : m_children )
         {
-            if ( (*i)->detailedHelpRequested() )
+            if ( c->detailedHelpRequested() )
             {
-                (*i)->displayDetailedHelp();
+                c->displayDetailedHelp();
             }
         }
     }
@@ -486,48 +446,40 @@ Builder::displayDetailedHelp()
     std::cout << m_module_name << " Options:\n";
 
     std::ostream & conf = std::cout;
-    for ( IntMap::iterator iter = m_ints.begin();
-          iter != m_ints.end();
-          ++iter )
+    for ( IntMap::const_reference i : m_ints )
     {
         displayHelpEntry( conf,
                           m_module_name,
-                          iter->first,
-                          iter->second.get(),
-                          iter->second.desc() );
+                          i.first,
+                          i.second.get(),
+                          i.second.desc() );
     }
 
-    for ( BoolMap::iterator iter = m_bools.begin();
-          iter != m_bools.end();
-          ++iter )
+    for ( BoolMap::const_reference i : m_bools )
     {
         displayHelpEntry( conf,
                           m_module_name,
-                          iter->first,
-                          iter->second.get(),
-                          iter->second.desc() );
+                          i.first,
+                          i.second.get(),
+                          i.second.desc() );
     }
 
-    for ( DoubMap::iterator iter = m_doubs.begin();
-          iter != m_doubs.end();
-          ++iter )
+    for ( DoubMap::const_reference i : m_doubs )
     {
         displayHelpEntry( conf,
                           m_module_name,
-                          iter->first,
-                          iter->second.get(),
-                          iter->second.desc() );
+                          i.first,
+                          i.second.get(),
+                          i.second.desc() );
     }
 
-    for ( StrMap::iterator iter = m_strs.begin();
-          iter != m_strs.end();
-          ++iter )
+    for ( StrMap::const_reference i : m_strs )
     {
         displayHelpEntry( conf,
                           m_module_name,
-                          iter->first,
-                          iter->second.get(),
-                          iter->second.desc() );
+                          i.first,
+                          i.second.get(),
+                          i.second.desc() );
     }
 }
 
@@ -763,48 +715,40 @@ Builder::doCreateConfFile( std::ostream& conf )
                          "" );
     m_parsed_version = m_version;
 
-    for ( IntMap::iterator iter = m_ints.begin();
-          iter != m_ints.end();
-          ++iter )
+    for ( IntMap::const_reference i : m_ints )
     {
         createConfFileEntry( conf,
                              m_module_name,
-                             iter->first,
-                             iter->second.get(),
-                             iter->second.desc() );
+                             i.first,
+                             i.second.get(),
+                             i.second.desc() );
     }
 
-    for ( BoolMap::iterator iter = m_bools.begin();
-          iter != m_bools.end();
-          ++iter )
+    for ( BoolMap::const_reference i : m_bools )
     {
         createConfFileEntry( conf,
                              m_module_name,
-                             iter->first,
-                             iter->second.get(),
-                             iter->second.desc() );
+                             i.first,
+                             i.second.get(),
+                             i.second.desc() );
     }
 
-    for ( DoubMap::iterator iter = m_doubs.begin();
-          iter != m_doubs.end();
-          ++iter )
+    for ( DoubMap::const_reference i : m_doubs )
     {
         createConfFileEntry( conf,
                              m_module_name,
-                             iter->first,
-                             iter->second.get(),
-                             iter->second.desc() );
+                             i.first,
+                             i.second.get(),
+                             i.second.desc() );
     }
 
-    for ( StrMap::iterator iter = m_strs.begin();
-          iter != m_strs.end();
-          ++iter )
+    for ( StrMap::const_reference i : m_strs )
     {
         createConfFileEntry( conf,
                              m_module_name,
-                             iter->first,
-                             iter->second.get(),
-                             iter->second.desc() );
+                             i.first,
+                             i.second.get(),
+                             i.second.desc() );
     }
 }
 

@@ -51,10 +51,9 @@ std::shared_ptr< Msg >
 AdviceMsg::deepCopy() const
 {
 	Storage new_tokens;
-	for( Storage::const_iterator i = M_tokens.begin();
-	     i != M_tokens.end(); ++i )
+	for( Storage::const_reference i : M_tokens )
 	{
-	    new_tokens.push_back( (*i)->deepCopy() );
+	    new_tokens.push_back( i->deepCopy() );
 	}
 
 	std::shared_ptr< Msg > rval( new AdviceMsg( new_tokens ) );
@@ -73,17 +72,15 @@ std::ostream &
 AdviceMsg::print( std::ostream & out ) const
 {
     out << "(advice";
-    for ( Storage::const_iterator token_iter = getTokens().begin();
-          token_iter != getTokens().end();
-          ++token_iter )
+    for ( Storage::const_reference token : getTokens() )
     {
-        if ( *token_iter == NULL )
+        if ( ! token )
         {
             out << " (null)";
         }
         else
         {
-            out << " " << **token_iter;
+            out << " " << *token;
         }
     }
     out << ")";
@@ -95,17 +92,15 @@ AdviceMsg::printPretty( std::ostream & out,
                         const std::string & line_header ) const
 {
     out << line_header << "Advice" << std::endl;
-    for ( Storage::const_iterator token_iter = getTokens().begin();
-          token_iter != getTokens().end();
-          ++token_iter )
+    for ( Storage::const_reference token : getTokens() )
     {
-        if ( *token_iter == NULL )
+        if ( ! token )
         {
             out << line_header << " - (null)\n";
         }
         else
         {
-            (*token_iter)->printPretty( out, line_header + " - " );
+            token->printPretty( out, line_header + " - " );
         }
     }
     return out;

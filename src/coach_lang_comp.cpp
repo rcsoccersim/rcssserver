@@ -56,11 +56,9 @@ DirComm::print( std::ostream & out ) const
     }
     else
     {
-        for ( Storage::const_iterator i = getActions().begin();
-              i != getActions().end();
-              ++i )
+        for ( Storage::const_reference i : getActions() )
         {
-            out << **i;
+            out << *i;
         }
     }
     return out << ")";
@@ -80,11 +78,9 @@ DirComm::printPretty( std::ostream & out,
     }
     else
     {
-        for ( Storage::const_iterator i = getActions().begin();
-              i != getActions().end();
-              ++i )
+        for ( Storage::const_reference i : getActions() )
         {
-            (*i)->printPretty( out, line_header + " " );
+            i->printPretty( out, line_header + " " );
         }
     }
     return out;
@@ -94,12 +90,6 @@ DirComm::printPretty( std::ostream & out,
 void
 DirComm::clearActions()
 {
-    // for ( Storage::iterator i = M_actions.begin();
-    //       i != M_actions.end();
-    //       ++i )
-    // {
-    //     delete *i;
-    // }
     M_actions.clear();
 }
 
@@ -116,11 +106,9 @@ std::shared_ptr< Dir >
 DirComm::deepCopy() const
 {
     Storage new_actions;
-    for ( Storage::const_iterator i = getActions().begin();
-          i != getActions().end();
-          ++i )
+    for ( Storage::const_reference i : getActions() )
     {
-        new_actions.push_back( (*i)->deepCopy() );
+        new_actions.push_back( i->deepCopy() );
     }
 
     std::shared_ptr< Dir > rval( new DirComm( M_positive,
@@ -176,17 +164,15 @@ TokRule::print( std::ostream & out ) const
         out << *M_cond;
     }
 
-    for ( Storage::const_iterator iter = getDirs().begin();
-          iter != getDirs().end();
-          ++iter )
+    for ( Storage::const_reference dir : getDirs() )
     {
-        if ( *iter == NULL )
+        if ( ! dir )
         {
             out << " (null)";
         }
         else
         {
-            out << " " << **iter;
+            out << " " << *dir;
         }
     }
     return out << ")";
@@ -208,17 +194,15 @@ TokRule::printPretty( std::ostream & out,
 
     out << line_header << "then" << std::endl;
 
-    for ( Storage::const_iterator iter = getDirs().begin();
-          iter != getDirs().end();
-          ++iter )
+    for ( Storage::const_reference dir : getDirs() )
     {
-        if ( *iter == NULL )
+        if ( ! dir )
         {
             out << line_header << " *(null)\n";
         }
         else
         {
-            (*iter)->printPretty( out, line_header + " *");
+            dir->printPretty( out, line_header + " *");
         }
     }
     return out;
@@ -240,11 +224,9 @@ TokRule::deepCopy() const
     }
 
     Storage new_dirs;
-    for ( Storage::const_iterator i = M_dirs.begin();
-          i != M_dirs.end();
-          ++i )
+    for ( Storage::const_reference dir : M_dirs )
     {
-        new_dirs.push_back( (*i)->deepCopy() );
+        new_dirs.push_back( dir->deepCopy() );
     }
 
     std::shared_ptr< Token > rval( new TokRule( M_ttl,
@@ -258,7 +240,7 @@ std::ostream &
 DefCond::print( std::ostream & out ) const
 {
     out << "(definec \"" << M_name << "\" ";
-    if ( M_cond.get() == NULL )
+    if ( ! M_cond )
     {
         out << " (null)";
     }
@@ -274,7 +256,7 @@ DefCond::printPretty( std::ostream & out,
                       const std::string & line_header ) const
 {
     out << line_header << "Cond \"" << M_name << "\"" << std::endl;
-    if ( M_cond.get() == NULL )
+    if ( ! M_cond )
     {
         out << line_header << " (null)\n";
     }
@@ -290,7 +272,7 @@ DefCond::printPretty( std::ostream & out,
  DefDir::print( std::ostream & out ) const
  {
      out << "(defined \"" << M_name << "\" ";
-     if ( M_dir.get() == NULL )
+     if ( ! M_dir )
      {
          out << "(null)";
      }
@@ -306,7 +288,7 @@ DefDir::printPretty( std::ostream & out,
                      const std::string & line_header ) const
 {
     out << line_header << "Dir \"" << M_name << "\"" << std::endl;
-    if ( M_dir.get() == NULL )
+    if ( ! M_dir )
     {
         out << line_header << " (null)\n";
     }
@@ -321,7 +303,7 @@ std::ostream &
 DefReg::print( std::ostream & out ) const
 {
     out << "(definer \"" << M_name << "\" ";
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << "(null)";
     }
@@ -337,7 +319,7 @@ DefReg::printPretty( std::ostream & out,
                      const std::string & line_header ) const
 {
     out << line_header << "Region \"" << M_name << "\"" << std::endl;
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << line_header << " (null)\n";
     }

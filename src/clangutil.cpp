@@ -115,11 +115,9 @@ UNumSet::contains( const UNum & unum ) const
     if ( unum.isValid() )
     {
         // return std::find( M_entries.begin(), M_entries.end(), unum ) != M_entries.end();
-        for ( container::const_iterator i = M_entries.begin();
-              i != M_entries.end();
-              ++i )
+        for ( container::const_reference i : M_entries )
         {
-            if ( unum == *i )
+            if ( unum == i )
             {
                 return true;
             }

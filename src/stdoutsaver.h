@@ -37,52 +37,52 @@ private:
 
 public:
     virtual
-    ~STDOutSaver();
+    ~STDOutSaver() override;
 
     static
-    ResultSaver::Ptr create();
+    Ptr create();
 
 private:
     virtual
-    bool doEnabled() const;
+    bool doEnabled() const override;
 
     virtual
-    void doSaveStart();
+    void doSaveStart() override;
 
     virtual
-    void doSaveTime( const tm & time );
+    void doSaveTime( const std::time_t time ) override;
 
     virtual
     void doSaveTeamName( team_id id,
-                         const std::string & name );
+                         const std::string & name ) override;
 
     virtual
     void doSaveCoachName( team_id id,
-                          const std::string & name );
+                          const std::string & name ) override;
 
     virtual
     void doSaveScore( team_id id,
-                      unsigned int score );
+                      unsigned int score ) override;
 
     virtual
     void doSavePenTaken( team_id id,
-                         unsigned int taken );
+                         unsigned int taken ) override;
 
     virtual
     void doSavePenScored( team_id id,
-                          unsigned int scored );
+                          unsigned int scored ) override;
 
     virtual
-    void doSaveCoinTossWinner( team_id id );
+    void doSaveCoinTossWinner( team_id id ) override;
 
     virtual
-    bool doSaveComplete();
+    bool doSaveComplete() override;
 
     virtual
-    const char * doGetName() const;
+    const char * doGetName() const override;
 
 
-    tm M_time;
+    std::time_t M_time;
     std::string M_team_name[ 2 ];
     std::string M_coach_name[ 2 ];
     unsigned int M_score[ 2 ];
