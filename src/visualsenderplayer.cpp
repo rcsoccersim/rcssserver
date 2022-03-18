@@ -132,14 +132,11 @@ VisualSenderPlayerV1::sendVisual()
 void
 VisualSenderPlayerV1::sendFlags()
 {
-    const std::vector< PObject * >::const_iterator end = stadium().field().landmarks().end();
-    for ( std::vector< PObject * >::const_iterator it = stadium().field().landmarks().begin();
-          it != end;
-          ++it )
+    for ( const PObject * o : stadium().field().landmarks() )
     {
-        if ( (*it)->objectVersion() <= self().version() )
+        if ( o->objectVersion() <= self().version() )
         {
-            sendFlag( **it );
+            sendFlag( *o );
         }
     }
 }
@@ -156,16 +153,13 @@ VisualSenderPlayerV1::sendBalls()
 void
 VisualSenderPlayerV1::sendPlayers()
 {
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        if ( *p != &self()
-             && (*p)->isEnabled()
-             && (*p)->objectVersion() <= self().version() )
+        if ( p != &self()
+             && p->isEnabled()
+             && p->objectVersion() <= self().version() )
         {
-            sendPlayer( **p );
+            sendPlayer( *p );
         }
     }
 }

@@ -1129,33 +1129,30 @@ Logger::writeGameLogV4()
        << ' ' << Quantize( M_stadium.ball().vel().y, prec )
        << ')';
 
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
     {
         os << " (";
-        os << "(" << SideStr( (*p)->side() )
-           << ' ' << (*p)->unum()
+        os << "(" << SideStr( p->side() )
+           << ' ' << p->unum()
            << ')';
-        os << ' ' << (*p)->playerTypeId()
+        os << ' ' << p->playerTypeId()
            << ' ' << std::hex << std::showbase
-           << (*p)->state() // include goalie flag
+           << p->state() // include goalie flag
            << std::dec << std::noshowbase;
 
-        os << ' ' << Quantize( (*p)->pos().x, prec )
-           << ' ' << Quantize( (*p)->pos().y, prec )
-           << ' ' << Quantize( (*p)->vel().x, prec )
-           << ' ' << Quantize( (*p)->vel().y, prec )
-           << ' ' << Quantize( Rad2Deg( (*p)->angleBodyCommitted() ), dprec )
-           << ' ' << Quantize( Rad2Deg( (*p)->angleNeckCommitted() ), dprec );
-        if ( (*p)->arm().isPointing() )
+        os << ' ' << Quantize( p->pos().x, prec )
+           << ' ' << Quantize( p->pos().y, prec )
+           << ' ' << Quantize( p->vel().x, prec )
+           << ' ' << Quantize( p->vel().y, prec )
+           << ' ' << Quantize( Rad2Deg( p->angleBodyCommitted() ), dprec )
+           << ' ' << Quantize( Rad2Deg( p->angleNeckCommitted() ), dprec );
+        if ( p->arm().isPointing() )
         {
-            os << ' ' << Quantize( (*p)->arm().dest().getX(), prec )
-               << ' ' << Quantize( (*p)->arm().dest().getY(), prec );
+            os << ' ' << Quantize( p->arm().dest().getX(), prec )
+               << ' ' << Quantize( p->arm().dest().getY(), prec );
 //             rcss::geom::Vector2D arm_dest;
-//             if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
-//                                                                (*p)->pos().y ),
+//             if ( p->arm().getRelDest( rcss::geom::Vector2D( p->pos().x,
+//                                                                p->pos().y ),
 //                                          0.0,
 //                                          arm_dest ) )
 //             {
@@ -1165,32 +1162,32 @@ Logger::writeGameLogV4()
         }
 
         os << " (v "
-           << ( (*p)->highquality() ? "h " : "l " )
-           << Quantize( Rad2Deg( (*p)->visibleAngle() ), dprec )
+           << ( p->highquality() ? "h " : "l " )
+           << Quantize( Rad2Deg( p->visibleAngle() ), dprec )
            << ')';
         os << " (s "
-           << (*p)->stamina() << ' '
-           << (*p)->effort() << ' '
-           << (*p)->recovery() << ')';
-        if ( (*p)->isEnabled()
-             && (*p)->getFocusTarget() != NULL )
+           << p->stamina() << ' '
+           << p->effort() << ' '
+           << p->recovery() << ')';
+        if ( p->isEnabled()
+             && p->getFocusTarget() != NULL )
         {
-            os << " (f " << SideStr( (*p)->getFocusTarget()->side() )
-               << ' ' << (*p)->getFocusTarget()->unum()
+            os << " (f " << SideStr( p->getFocusTarget()->side() )
+               << ' ' << p->getFocusTarget()->unum()
                << ')';
         }
         os << " (c "
-           << (*p)->kickCount()
-           << ' ' << (*p)->dashCount()
-           << ' ' << (*p)->turnCount()
-           << ' ' << (*p)->catchCount()
-           << ' ' << (*p)->moveCount()
-           << ' ' << (*p)->turnNeckCount()
-           << ' ' << (*p)->changeViewCount()
-           << ' ' << (*p)->sayCount()
-           << ' ' << (*p)->tackleCount()
-           << ' ' << (*p)->arm().getCounter()
-           << ' ' << (*p)->attentiontoCount()
+           << p->kickCount()
+           << ' ' << p->dashCount()
+           << ' ' << p->turnCount()
+           << ' ' << p->catchCount()
+           << ' ' << p->moveCount()
+           << ' ' << p->turnNeckCount()
+           << ' ' << p->changeViewCount()
+           << ' ' << p->sayCount()
+           << ' ' << p->tackleCount()
+           << ' ' << p->arm().getCounter()
+           << ' ' << p->attentiontoCount()
            << ')';
         os << ')'; // end of player
     }

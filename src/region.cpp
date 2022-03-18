@@ -447,17 +447,15 @@ std::ostream &
 RegUnion::print( std::ostream & out ) const
 {
     out << "(reg";
-    for ( Storage::const_iterator iter = M_regs.begin();
-          iter != M_regs.end();
-          ++iter )
+    for ( Storage::const_reference r : M_regs )
     {
-	    if ( ! *iter )
+	    if ( ! r )
         {
             out << " (null)";
         }
 	    else
         {
-            out << " " << **iter;
+            out << " " << *r;
         }
     }
     return out << ")";
@@ -468,17 +466,15 @@ RegUnion::printPretty( std::ostream & out,
                        const std::string & line_header ) const
 {
     out << line_header << "Region Union:" << std::endl;
-    for ( Storage::const_iterator iter = M_regs.begin();
-          iter != M_regs.end();
-          ++iter )
+    for ( Storage::const_reference r : M_regs )
     {
-        if ( ! *iter )
+        if ( ! r )
         {
             out << line_header << "o (null)";
         }
         else
         {
-            (*iter)->printPretty( out, line_header + "o " );
+            r->printPretty( out, line_header + "o " );
         }
     }
     return out;
@@ -488,11 +484,9 @@ std::shared_ptr< Region >
 RegUnion::deepCopy() const
 {
     Storage regs;
-    for ( Storage::const_iterator i = M_regs.begin();
-          i != M_regs.end();
-          ++i )
+    for ( Storage::const_reference r : M_regs )
     {
-        regs.push_front( (*i)->deepCopy() );
+        regs.push_front( r->deepCopy() );
     }
 
     std::shared_ptr< Region > rval( new RegUnion( regs ) );

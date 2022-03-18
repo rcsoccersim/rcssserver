@@ -93,12 +93,6 @@ MetaMsg::MetaMsg( const Storage & tokens )
 
 MetaMsg::~MetaMsg()
 {
-	// for ( Storage::const_iterator i = M_tokens.begin();
-    //       i != M_tokens.end();
-    //       ++i )
-	// {
-	//     delete *i;
-	// }
 	M_tokens.clear();
 }
 
@@ -106,11 +100,9 @@ std::shared_ptr< Msg >
 MetaMsg::deepCopy() const
 {
 	Storage new_tokens;
-	for ( Storage::const_iterator i = M_tokens.begin();
-          i != M_tokens.end();
-          ++i )
+	for ( Storage::const_reference token : M_tokens )
 	{
-	    new_tokens.push_back( (*i)->deepCopy() );
+	    new_tokens.push_back( token->deepCopy() );
 	}
 
 	std::shared_ptr< Msg > rval( new MetaMsg( new_tokens ) );
@@ -121,17 +113,15 @@ std::ostream &
 MetaMsg::print( std::ostream & out ) const
 {
     out << "(meta";
-    for ( Storage::const_iterator token_iter = M_tokens.begin();
-          token_iter != M_tokens.end();
-          ++token_iter )
+    for ( Storage::const_reference token : M_tokens )
     {
-        if ( *token_iter == NULL )
+        if ( ! token )
         {
             out << " (null)";
         }
         else
         {
-            out << " " << **token_iter;
+            out << " " << *token;
         }
     }
     out << ")";
@@ -144,17 +134,15 @@ MetaMsg::printPretty( std::ostream & out,
 {
     out << line_header << "Meta" << std::endl;
 
-    for ( Storage::const_iterator token_iter = M_tokens.begin();
-          token_iter != M_tokens.end();
-          ++token_iter )
+    for ( Storage::const_reference token : M_tokens )
     {
-        if ( *token_iter == NULL )
+        if ( ! token )
         {
             out << line_header << " - (null)\n";
         }
         else
         {
-            (*token_iter)->printPretty( out, line_header + " - " );
+            token->printPretty( out, line_header + " - " );
         }
     }
     return out;

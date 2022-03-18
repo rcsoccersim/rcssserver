@@ -51,11 +51,9 @@ std::shared_ptr< Msg >
 DefineMsg::deepCopy() const
 {
 	Storage new_defs;
-	for ( Storage::const_iterator i = M_defs.begin();
-          i != M_defs.end();
-          ++i )
+	for ( Storage::const_reference def : M_defs )
     {
-	    new_defs.push_back( (*i)->deepCopy() );
+	    new_defs.push_back( def->deepCopy() );
     }
 
 	std::shared_ptr< Msg > ptr( new DefineMsg( new_defs ) );
@@ -66,17 +64,15 @@ std::ostream &
 DefineMsg::print( std::ostream & out ) const
 {
     out << "(define";
-    for ( Storage::const_iterator token_iter = getDefs().begin();
-          token_iter != getDefs().end();
-          ++token_iter )
+    for ( Storage::const_reference def : getDefs() )
     {
-        if ( *token_iter == NULL )
+        if ( ! def )
         {
             out << " (null)";
         }
         else
         {
-            out << " " << **token_iter;
+            out << " " << *def;
         }
     }
     out << ")";
@@ -88,17 +84,15 @@ DefineMsg::printPretty( std::ostream & out,
                         const std::string & line_header ) const
 {
     out << line_header << "Define" << std::endl;
-    for ( Storage::const_iterator token_iter = getDefs().begin();
-          token_iter != getDefs().end();
-          ++token_iter )
+    for ( Storage::const_reference def : getDefs() )
     {
-        if ( *token_iter == NULL )
+        if ( ! def )
         {
             out << line_header << " - (null)\n";
         }
         else
         {
-            (*token_iter)->printPretty( out, line_header + " - " );
+            def->printPretty( out, line_header + " - " );
         }
     }
     return out;

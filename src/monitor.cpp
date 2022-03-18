@@ -234,9 +234,8 @@ Monitor::sendTeamGraphics()
 
     if ( M_left_sent_graphics.size() < M_stadium.teamLeft().teamGraphics().size() )
     {
-        const Team::GraphCont::const_reverse_iterator end = M_stadium.teamLeft().teamGraphics().rend();
-        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamLeft().teamGraphics().rbegin();
-              it != end;
+        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamLeft().teamGraphics().rbegin(), rend = M_stadium.teamLeft().teamGraphics().rend();
+              it != rend;
               ++it )
         {
             if ( send_count >= MAX_SEND ) break;
@@ -260,9 +259,8 @@ Monitor::sendTeamGraphics()
 
     if ( M_right_sent_graphics.size() < M_stadium.teamRight().teamGraphics().size() )
     {
-        const Team::GraphCont::const_reverse_iterator end = M_stadium.teamRight().teamGraphics().rend();
-        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamRight().teamGraphics().rbegin();
-              it != end;
+        for ( Team::GraphCont::const_reverse_iterator it = M_stadium.teamRight().teamGraphics().rbegin(), rend = M_stadium.teamRight().teamGraphics().rend();
+              it != rend;
               ++it )
         {
             if ( send_count >= MAX_SEND ) break;

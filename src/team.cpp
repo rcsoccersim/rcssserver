@@ -201,13 +201,8 @@ Team::assignPlayerTypes()
         }
     }
 
-    for ( std::list< Player * >::iterator it = players.begin();
-          it != players.end();
-          ++it )
+    for ( Player * p : players )
     {
-        //Player * p = M_players[i];
-        Player * p = *it;
-
         // 2009-10-29 akiyama
         // enabled heterogeneous goalie
         // if ( p->isGoalie() )

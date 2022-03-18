@@ -1888,15 +1888,11 @@ Player::tackle( double power_or_angle,
     if ( foul )
     {
         foul = false;
-
-        const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+        for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
         {
-            if ( (*p)->isEnabled()
-                 && (*p)->side() != this->side()
-                 && (*p)->ballKickable() )
+            if ( p->isEnabled()
+                 && p->side() != this->side()
+                 && p->ballKickable() )
             {
                 foul = true;
                 exponent = ServerParam::instance().foulExponent();

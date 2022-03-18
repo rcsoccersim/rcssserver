@@ -56,11 +56,9 @@ DirComm::print( std::ostream & out ) const
     }
     else
     {
-        for ( Storage::const_iterator i = getActions().begin();
-              i != getActions().end();
-              ++i )
+        for ( Storage::const_reference i : getActions() )
         {
-            out << **i;
+            out << *i;
         }
     }
     return out << ")";
@@ -80,11 +78,9 @@ DirComm::printPretty( std::ostream & out,
     }
     else
     {
-        for ( Storage::const_iterator i = getActions().begin();
-              i != getActions().end();
-              ++i )
+        for ( Storage::const_reference i : getActions() )
         {
-            (*i)->printPretty( out, line_header + " " );
+            i->printPretty( out, line_header + " " );
         }
     }
     return out;
@@ -94,12 +90,6 @@ DirComm::printPretty( std::ostream & out,
 void
 DirComm::clearActions()
 {
-    // for ( Storage::iterator i = M_actions.begin();
-    //       i != M_actions.end();
-    //       ++i )
-    // {
-    //     delete *i;
-    // }
     M_actions.clear();
 }
 
@@ -116,11 +106,9 @@ std::shared_ptr< Dir >
 DirComm::deepCopy() const
 {
     Storage new_actions;
-    for ( Storage::const_iterator i = getActions().begin();
-          i != getActions().end();
-          ++i )
+    for ( Storage::const_reference i : getActions() )
     {
-        new_actions.push_back( (*i)->deepCopy() );
+        new_actions.push_back( i->deepCopy() );
     }
 
     std::shared_ptr< Dir > rval( new DirComm( M_positive,
@@ -176,17 +164,15 @@ TokRule::print( std::ostream & out ) const
         out << *M_cond;
     }
 
-    for ( Storage::const_iterator iter = getDirs().begin();
-          iter != getDirs().end();
-          ++iter )
+    for ( Storage::const_reference dir : getDirs() )
     {
-        if ( *iter == NULL )
+        if ( ! dir )
         {
             out << " (null)";
         }
         else
         {
-            out << " " << **iter;
+            out << " " << *dir;
         }
     }
     return out << ")";
@@ -208,17 +194,15 @@ TokRule::printPretty( std::ostream & out,
 
     out << line_header << "then" << std::endl;
 
-    for ( Storage::const_iterator iter = getDirs().begin();
-          iter != getDirs().end();
-          ++iter )
+    for ( Storage::const_reference dir : getDirs() )
     {
-        if ( *iter == NULL )
+        if ( ! dir )
         {
             out << line_header << " *(null)\n";
         }
         else
         {
-            (*iter)->printPretty( out, line_header + " *");
+            dir->printPretty( out, line_header + " *");
         }
     }
     return out;
@@ -240,11 +224,9 @@ TokRule::deepCopy() const
     }
 
     Storage new_dirs;
-    for ( Storage::const_iterator i = M_dirs.begin();
-          i != M_dirs.end();
-          ++i )
+    for ( Storage::const_reference dir : M_dirs )
     {
-        new_dirs.push_back( (*i)->deepCopy() );
+        new_dirs.push_back( dir->deepCopy() );
     }
 
     std::shared_ptr< Token > rval( new TokRule( M_ttl,

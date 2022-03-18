@@ -180,14 +180,11 @@ FullStateSenderPlayerV5::sendFullState()
 
     sendBall();
 
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        sendPlayer( *(*p) );
+        sendPlayer( *p );
     }
 
     // send end of FS

@@ -60,11 +60,9 @@ std::ostream &
 RuleMsg::print( std::ostream & out ) const
 {
     out << "(rule ";
-    for ( Storage::const_iterator i = M_active.begin();
-          i != M_active.end();
-          ++i )
+    for ( Storage::const_reference i : M_active )
     {
-        out << *i;
+        out << i;
     }
     out << ")";
     return out;
@@ -76,9 +74,7 @@ RuleMsg::printPretty( std::ostream & out,
 {
     out << line_header << "Activation List:\n";
     bool first = true;
-    for ( Storage::const_iterator i = M_active.begin();
-          i != M_active.end();
-          ++i )
+    for ( Storage::const_reference i : M_active )
     {
         if ( first )
         {
@@ -88,7 +84,7 @@ RuleMsg::printPretty( std::ostream & out,
         {
             out << line_header << " Then:\n";
         }
-        i->printPretty( out, line_header + "  -" );
+        i.printPretty( out, line_header + "  -" );
     }
     return out;
 }
