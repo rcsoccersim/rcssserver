@@ -262,7 +262,7 @@ CSVSaver::doSaveStart()
 }
 
 void
-CSVSaver::doSaveTime( const tm & time )
+CSVSaver::doSaveTime( const std::time_t time )
 {
     M_time = time;
 }
@@ -328,7 +328,8 @@ CSVSaver::doSaveComplete()
     {
         M_file.seekp( std::ofstream::end );
         char time_str[256];
-        std::strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &M_time );
+        const struct tm * lt = std::localtime( &M_time );
+        std::strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", lt );
         M_file << time_str << ", ";
 
         if ( M_team_name[ TEAM_LEFT ].empty() )

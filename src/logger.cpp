@@ -508,9 +508,11 @@ Logger::renameLogs()
                               && M_stadium.teamRight().penaltyTaken() > 0 );
 
     char time_str[32];
+    const std::time_t time = M_stadium.getStartTime();
+    const std::tm * lt = std::localtime( &time );
     std::strftime( time_str, 32,
                    ServerParam::instance().logDateFormat().c_str(),
-                   &( M_stadium.realTime() ) );
+                   lt );
 
     std::string team_name_score( "" );
 
@@ -565,9 +567,11 @@ Logger::renameLogs()
     if ( isGameLogOpen() )
     {
         char time_stamp[32];
+        const std::time_t time = M_stadium.getStartTime();
+        const struct tm * lt = std::localtime( &time );
         std::strftime( time_stamp, 32,
                        "%Y%m%d%H%M",
-                       &( M_stadium.realTime() ) );
+                       lt );
         char msg[256];
         snprintf( msg, 256, "(result %s %s)", time_stamp, team_name_score.c_str() );
         writeMsgToGameLog( MSG_BOARD, msg, true );

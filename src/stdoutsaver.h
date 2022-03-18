@@ -50,7 +50,7 @@ private:
     void doSaveStart() override;
 
     virtual
-    void doSaveTime( const tm & time ) override;
+    void doSaveTime( const std::time_t time ) override;
 
     virtual
     void doSaveTeamName( team_id id,
@@ -82,7 +82,7 @@ private:
     const char * doGetName() const override;
 
 
-    tm M_time;
+    std::time_t M_time;
     std::string M_team_name[ 2 ];
     std::string M_coach_name[ 2 ];
     unsigned int M_score[ 2 ];

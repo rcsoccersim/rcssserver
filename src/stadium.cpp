@@ -176,18 +176,7 @@ Stadium::~Stadium()
 bool
 Stadium::init()
 {
-    time_t tmp_time = std::time( 0 );
-    tm * tmp_local_time = std::localtime( &tmp_time );
-    if ( ! tmp_local_time )
-    {
-        std::cerr << __FILE__ << ":" << __LINE__
-                  << ": Error getting time: "
-                  << strerror( errno ) << std::endl;
-        //this->exit( EXIT_FAILURE );
-        disable();
-        return false;
-    }
-    m_real_time = *tmp_local_time;
+    M_start_time = std::time( 0 );
 
     if ( ServerParam::instance().randomSeed() >= 0 )
     {
@@ -199,7 +188,7 @@ Stadium::init()
     }
     else
     {
-        int seed = static_cast< int >( tmp_time );
+        int seed = static_cast< int >( M_start_time );
         std::cout << "Simulator Random Seed: " << seed << std::endl;
         ServerParam::instance().setRandomSeed( seed );
         srand( seed );
@@ -3205,7 +3194,7 @@ Stadium::saveResults()
         if ( s->enabled() )
         {
             s->saveStart();
-            s->saveTime( realTime() );
+            s->saveTime( getStartTime() );
             if ( M_team_l )
             {
                 rcss::save_results( ResultSaver::TEAM_LEFT,

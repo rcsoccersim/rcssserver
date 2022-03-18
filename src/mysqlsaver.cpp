@@ -579,7 +579,7 @@ private:
 
     virtual
     void
-    doSaveTime( const tm& time )
+    doSaveTime( const std::time_t time )
     {
         m_time = time;
     }
@@ -654,7 +654,9 @@ private:
             }
 
             char time_str[256];
-            strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &m_time );
+            const std::time_t time = M_stadium.getStartTime();
+            const struct tm * lt = std::localtime( &time );
+            strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", lt );
 
             std::ostringstream query;`
             query << "INSERT INTO `GAMES` ( `DATETIME` , `ROUND_ID` ,\n"
@@ -795,7 +797,7 @@ private:
 
 
     MYSQL* m_mysql;
-    tm m_time;
+    std::time_t m_time;
     std::string m_team_name[ 2 ];
     std::string m_coach_name[ 2 ];
     unsigned int m_score[ 2 ];

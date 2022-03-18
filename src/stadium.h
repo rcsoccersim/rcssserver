@@ -35,7 +35,6 @@
 #include <rcssbase/net/udpsocket.hpp>
 
 #include <cstdio>
-#include <ctime>
 #include <string>
 #include <vector>
 #include <list>
@@ -51,8 +50,6 @@ class OnlineCoach;
 class Team;
 
 class Referee;
-
-struct timeval;
 
 namespace rcss {
 class Listener;
@@ -140,7 +137,7 @@ protected:
     int M_left_child;
     int M_right_child;
 
-    tm m_real_time;
+    std::time_t M_start_time;
 
     std::list< ResultSaver::Ptr > M_savers;
 
@@ -181,10 +178,9 @@ public:
           return M_stoppage_time;
       }
 
-    const
-    tm & realTime() const
+    std::time_t getStartTime() const
       {
-          return m_real_time;
+          return M_start_time;
       }
 
     const
