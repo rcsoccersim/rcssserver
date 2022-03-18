@@ -602,10 +602,10 @@ private:
 public:
     TouchRef( Stadium& stadium )
         : Referee( stadium ),
-          M_last_touched( NULL ),
+          M_last_touched( nullptr ),
           M_last_touched_time( 0 ),
           M_last_touched_accel_r( 0.0 ),
-          M_last_indirect_kicker( NULL ),
+          M_last_indirect_kicker( nullptr ),
           M_indirect_mode( false ),
           M_after_goal_time( 0 ),
           M_prev_ball_pos( 0.0, 0.0 )
@@ -691,8 +691,8 @@ public:
         : Referee( stadium ),
           M_last_back_passer_time( 0 ),
           M_last_back_passer_accel_r( 0.0 ),
-          M_last_back_passer( NULL ),
-          M_before_last_back_passer( NULL ),
+          M_last_back_passer( nullptr ),
+          M_before_last_back_passer( nullptr ),
           M_team_l_touched( false ),
           M_team_r_touched( false ),
           M_after_back_pass_time( 0 ),

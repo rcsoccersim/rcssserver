@@ -365,7 +365,7 @@ InitSenderCommonV7::sendPlayerTypes()
     for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
     {
         const HeteroPlayer * type = stadium().playerType( i );
-        if ( type != NULL )
+        if ( type )
         {
             serializer().serializePlayerTypeBegin( transport() );
 
@@ -548,7 +548,7 @@ InitSenderCommonV8::sendPlayerTypes()
     for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
     {
         const HeteroPlayer * type = stadium().playerType( i );
-        if ( type != NULL )
+        if ( type )
         {
             serializer().serializePlayerTypeBegin( transport() );
 

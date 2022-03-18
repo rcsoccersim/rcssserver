@@ -639,11 +639,11 @@ Monitor::coach_move( const char * command )
                                     ServerParam::instance().maxMoment() ) );
         if ( n == 3 )
         {
-            M_stadium.movePlayer( side, unum, pos, NULL, NULL );
+            M_stadium.movePlayer( side, unum, pos, nullptr, nullptr );
         }
         else if ( n == 4 )
         {
-            M_stadium.movePlayer( side, unum, pos, &ang, NULL );
+            M_stadium.movePlayer( side, unum, pos, &ang, nullptr );
         }
         else if ( n == 6 )
         {
@@ -701,7 +701,7 @@ Monitor::coach_change_player_type( const char * command )
         return false;
     }
 
-    const Team * team = NULL;
+    const Team * team = nullptr;
     if ( M_stadium.teamLeft().name() == teamname )
     {
         team = &( M_stadium.teamLeft() );
@@ -711,7 +711,7 @@ Monitor::coach_change_player_type( const char * command )
         team = &( M_stadium.teamRight() );
     }
 
-    if ( team == NULL )
+    if ( ! team )
     {
         sendMsg( MSG_BOARD, "(warning no_team_found)" );
         return false;
@@ -724,7 +724,7 @@ Monitor::coach_change_player_type( const char * command )
         return false;
     }
 
-    const Player * player = NULL;
+    const Player * player = nullptr;
     for ( int i = 0; i < team->size(); ++i )
     {
         const Player * p = team->player( i );
@@ -735,7 +735,7 @@ Monitor::coach_change_player_type( const char * command )
         }
     }
 
-    if ( player == NULL )
+    if ( ! player )
     {
         sendMsg( MSG_BOARD, "(warning no_such_player)" );
         return false;

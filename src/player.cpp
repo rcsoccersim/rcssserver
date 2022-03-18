@@ -145,7 +145,7 @@ Player::Player( Stadium & stadium,
       M_clang_min_ver( 0 ),
       M_clang_max_ver( 0 ),
       //
-      M_player_type( NULL ),
+      M_player_type( nullptr ),
       M_player_type_id( 0 ),
       M_substituted( false ),
       M_kick_rand( ServerParam::instance().kickRand() ), // pfr 8/14/00: for RC2000 evaluation
@@ -1781,7 +1781,7 @@ Player::attentionto( bool on,
     }
     else
     {
-        const Team * at_team = NULL;
+        const Team * at_team = nullptr;
 
         if ( team_side == rcss::pcom::OUR )
         {
@@ -2066,9 +2066,9 @@ Player::clang( int min, int max )
 
     sendOKClang();
 
-    if( M_team != NULL
-        && team()->olcoach() != NULL
-        && team()->olcoach()->assigned() )
+    if( M_team
+        && M_team->olcoach()
+        && M_team->olcoach()->assigned() )
     {
         M_team->olcoach()->sendPlayerClangVer( *this );
     }

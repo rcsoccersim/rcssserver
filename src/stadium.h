@@ -375,8 +375,8 @@ public:
     bool movePlayer( const Side side,
                      const int unum,
                      const PVector & pos,
-                     const double * ang = NULL,
-                     const PVector * vel = NULL );
+                     const double * ang = nullptr,
+                     const PVector * vel = nullptr );
 
     void changePlayMode( const PlayMode pm );
 

@@ -41,7 +41,7 @@ Builder::Builder( const std::string & progname,
     : m_err( false ),
       m_progname( progname ),
       m_version( version ),
-      m_parent( NULL ),
+      m_parent( nullptr ),
       m_generic_help_requested( false ),
       m_detailed_help_requested( false ),
       m_module_name( module_name )
@@ -329,8 +329,8 @@ Builder::addedToParser( Parser & p )
 void
 Builder::removedFromParser()
 {
-    m_parser = NULL;
-    m_parent = NULL;
+    m_parser = nullptr;
+    m_parent = nullptr;
     for( Builder * c : m_children )
     {
         c->removedFromParser();
@@ -355,7 +355,7 @@ Builder::displayHelp()
 {
     if ( genericHelpRequested() )
     {
-        if ( m_parent == NULL )
+        if ( m_parent == nullptr )
         {
             displayUsage( m_progname );
         }

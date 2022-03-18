@@ -48,7 +48,7 @@ class MySQLSaver
 public:
     MySQLSaver( int argc, const char** argv, const std::string& module_name )
         : rcss::ResultSaver( argc, argv, module_name ),
-          m_mysql( NULL ),
+          m_mysql( nullptr ),
           m_left_coin( false ),
           m_right_coin( false ),
           m_save( false ),
@@ -78,31 +78,21 @@ public:
 
         if( m_save )
         {
-            m_mysql = mysql_init( NULL );
-            if( m_mysql == 0 )
+            m_mysql = mysql_init( nullptr );
+            if ( m_mysql == 0 )
             {
                 std::cerr << "Error: could not initialise MySQL object\n";
             }
             else
             {
-                if( mysql_real_connect( m_mysql,
-                                        ( m_host.empty()
-                                          ? NULL
-                                          : m_host.c_str() ),
-                                        ( m_user.empty()
-                                          ? NULL
-                                          : m_user.c_str() ),
-                                        m_pass.c_str(),
-                                        m_db.c_str(),
-                                        m_port,
-                                        ( m_unix_socket.empty()
-                                          ? NULL
-                                          : m_host.c_str() ),
-                                        ( ( m_compress
-                                            ? CLIENT_COMPRESS : 0 )
-                                          | ( m_ssl
-                                              ? CLIENT_SSL : 0 ) ) )
-                    == NULL )
+                if ( ! mysql_real_connect( m_mysql,
+                                           ( m_host.empty() ? nullptr : m_host.c_str() ),
+                                           ( m_user.empty() ? nullptr : m_user.c_str() ),
+                                           m_pass.c_str(),
+                                           m_db.c_str(),
+                                           m_port,
+                                           ( m_unix_socket.empty() ? nullptr : m_host.c_str() ),
+                                           ( ( m_compress ? CLIENT_COMPRESS : 0 ) | ( m_ssl ? CLIENT_SSL : 0 ) ) ) )
                 {
                     std::cerr << "Error: could not connect to database: "
                               << mysql_error(  m_mysql ) << std::endl;
@@ -334,8 +324,8 @@ protected:
         }
         else
         {
-            MYSQL_RES* results = mysql_store_result( m_mysql );
-            if( results == NULL )
+            MYSQL_RES * results = mysql_store_result( m_mysql );
+            if ( ! results )
             {
                 std::cerr << "Error: Could not get select round results from database: "
                           << mysql_error( m_mysql ) << std::endl;
@@ -343,11 +333,11 @@ protected:
             else
             {
                 my_ulonglong rows = mysql_num_rows( results );
-                if( rows > 1 )
+                if ( rows > 1 )
                 {
                     std::cerr << "Error: Mutiple rounds returned for the name '" << m_round_name << "'\n";
                 }
-                else if( rows == 0 )
+                else if ( rows == 0 )
                 {
                     std::cout << "No round with the name '" << m_round_name << "' found.\n";
                     addRound();
@@ -356,7 +346,7 @@ protected:
                 else
                 {
                     MYSQL_ROW row = mysql_fetch_row( results );
-                    if( row == NULL )
+                    if ( ! row )
                     {
                         std::cerr << "Error: could not get row from round query:"
                                   << mysql_error( m_mysql ) << std::endl;
@@ -387,8 +377,8 @@ protected:
         }
         else
         {
-            MYSQL_RES* results = mysql_store_result( m_mysql );
-            if( results == NULL )
+            MYSQL_RES * results = mysql_store_result( m_mysql );
+            if ( ! results )
             {
                 std::cerr << "Error: Could not get select event results from database: "
                           << mysql_error( m_mysql ) << std::endl;
@@ -409,7 +399,7 @@ protected:
                 else
                 {
                     MYSQL_ROW row = mysql_fetch_row( results );
-                    if( row == NULL )
+                    if ( ! row )
                     {
                         std::cerr << "Error: could not get row from event query:"
                                   << mysql_error( m_mysql ) << std::endl;
@@ -440,8 +430,8 @@ protected:
         }
         else
         {
-            MYSQL_RES* results = mysql_store_result( m_mysql );
-            if( results == NULL )
+            MYSQL_RES * results = mysql_store_result( m_mysql );
+            if ( ! results )
             {
                 std::cerr << "Error: Could not get select round results from database: "
                           << mysql_error( m_mysql ) << std::endl;
@@ -464,7 +454,7 @@ protected:
                 else
                 {
                     MYSQL_ROW row = mysql_fetch_row( results );
-                    if( row == NULL )
+                    if ( ! row )
                     {
                         std::cerr << "Error: could not get row from round query:"
                                   << mysql_error( m_mysql ) << std::endl;
@@ -494,8 +484,8 @@ protected:
         }
         else
         {
-            MYSQL_RES* results = mysql_store_result( m_mysql );
-            if( results == NULL )
+            MYSQL_RES * results = mysql_store_result( m_mysql );
+            if ( ! results )
             {
                 std::cerr << "Error: Could not get select event results from database: "
                           << mysql_error( m_mysql ) << std::endl;
@@ -503,11 +493,11 @@ protected:
             else
             {
                 my_ulonglong rows = mysql_num_rows( results );
-                if( rows > 1 )
+                if ( rows > 1 )
                 {
                     std::cerr << "Error: Mutiple events returned for the ID '" << m_event_id << "'\n";
                 }
-                else if( rows == 0 )
+                else if ( rows == 0 )
                 {
                     std::cout << "No event with the id '" << m_event_id << "' found.\n";
                     std::cout << "Setting event id to -1\n";
@@ -517,7 +507,7 @@ protected:
                 else
                 {
                     MYSQL_ROW row = mysql_fetch_row( results );
-                    if( row == NULL )
+                    if ( ! row )
                     {
                         std::cerr << "Error: could not get row from event query:"
                                   << mysql_error( m_mysql ) << std::endl;
@@ -763,8 +753,8 @@ private:
             return;
         }
 
-        MYSQL_RES* results = mysql_store_result( m_mysql );
-        if( results == NULL )
+        MYSQL_RES * results = mysql_store_result( m_mysql );
+        if ( ! results )
         {
             std::cerr << "Error: Could not get select game results from database: "
                       << mysql_error( m_mysql ) << std::endl;
@@ -772,17 +762,17 @@ private:
         else
         {
             my_ulonglong rows = mysql_num_rows( results );
-            if( rows > 1 )
+            if ( rows > 1 )
             {
                 std::cerr << "Error: Mutiple rounds returned for the game\n";
             }
-            else if( rows == 0 )
+            else if ( rows == 0 )
             {
                 std::cerr << "Could not find game that was just inserted\n";                }
             else
             {
                 MYSQL_ROW row = mysql_fetch_row( results );
-                if( row == NULL )
+                if ( ! row )
                 {
                     std::cerr << "Error: could not get row from game query:"
                               << mysql_error( m_mysql ) << std::endl;

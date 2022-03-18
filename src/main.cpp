@@ -68,9 +68,9 @@ main( int argc, char *argv[] )
     struct sigaction sig_action;
     sig_action.sa_handler = &sigHandle;
     sig_action.sa_flags = 0;
-    if ( sigaction( SIGINT, &sig_action , NULL ) != 0
-         || sigaction( SIGTERM, &sig_action , NULL ) != 0
-         || sigaction( SIGHUP, &sig_action , NULL ) != 0 )
+    if ( sigaction( SIGINT, &sig_action, nullptr ) != 0
+         || sigaction( SIGTERM, &sig_action, nullptr ) != 0
+         || sigaction( SIGHUP, &sig_action, nullptr ) != 0 )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": could not set signal handler: "

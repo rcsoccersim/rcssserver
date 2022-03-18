@@ -113,10 +113,9 @@ public:
       { }
 
     virtual
-    const
-    Player * getFocusTarget() const
+    const Player * getFocusTarget() const
       {
-          return NULL;
+          return nullptr;
       }
 
     virtual
@@ -399,10 +398,9 @@ protected:
         key_value_t getMsg( msg_cont_t& msgs ) = 0;
 
         virtual
-        const
-        Player * getFocusTarget() const
+        const Player * getFocusTarget() const
           {
-              return NULL;
+              return nullptr;
           }
     };
 
@@ -426,7 +424,7 @@ protected:
         player_key_t M_key;
     public:
         Focused()
-            : M_key( NULL )
+            : M_key( nullptr )
           { }
 
         virtual

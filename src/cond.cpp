@@ -107,7 +107,7 @@ CondPlayerPos::print( std::ostream & out ) const
         << " " << M_min_match
         << " " << M_max_match
         << " ";
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << "(null)";
     }
@@ -129,7 +129,7 @@ CondPlayerPos::printPretty( std::ostream & out,
         << (M_our_side ? "our team" : "opponent") << " "
         << M_players << " "
         << "in:" << std::endl;
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << line_header << " (null)\n";
     }
@@ -145,7 +145,7 @@ std::ostream &
 CondBallPos::print( std::ostream & out ) const
 {
     out << "(bpos ";
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << "(null)";
     }
@@ -161,7 +161,7 @@ CondBallPos::printPretty( std::ostream & out,
                           const std::string & line_header ) const
 {
     out << line_header << "is ball position at: " << std::endl;
-    if ( getRegion() == NULL )
+    if ( ! getRegion() )
     {
         out << line_header << " (null)\n";
     }

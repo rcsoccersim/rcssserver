@@ -225,7 +225,7 @@ std::ostream &
 SimpleRule::print( std::ostream & out ) const
 {
     out << "(";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << "(null)";
     }
@@ -246,7 +246,7 @@ SimpleRule::printPretty( std::ostream & out,
                          const std::string & lineheader ) const
 {
     out << lineheader << "Simple Rule:\n";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << lineheader << " if:(null)\n";
     }
@@ -309,7 +309,7 @@ std::ostream &
 NestedRule::print( std::ostream & out ) const
 {
     out << "(";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << "(null)";
     }
@@ -330,7 +330,7 @@ NestedRule::printPretty( std::ostream & out,
                          const std::string & lineheader ) const
 {
     out << lineheader << "Nested Rule:\n";
-    if ( getCond() == NULL )
+    if ( ! getCond() )
     {
         out << lineheader << " if:(null)\n";
     }

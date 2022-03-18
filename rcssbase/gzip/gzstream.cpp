@@ -40,8 +40,8 @@ class gzstreambuf_impl {
 public:
     gzstreambuf_impl()
 #ifdef HAVE_LIBZ
-        : M_compression_stream( NULL ),
-          M_decompression_stream( NULL )
+        : M_compression_stream( nullptr ),
+          M_decompression_stream( nullptr )
 #endif
       { }
 
@@ -55,13 +55,13 @@ gzstreambuf::gzstreambuf( std::streambuf & strm,
                           unsigned int bufsize )
     : std::streambuf(),
       M_strmbuf( strm ),
-      M_output_stream( NULL ),
-      M_input_stream( NULL ),
+      M_output_stream( nullptr ),
+      M_input_stream( nullptr ),
       M_buffer_size( bufsize ),
-      M_read_buffer( NULL ),
-      M_input_buffer( NULL ),
-      M_output_buffer( NULL ),
-      M_write_buffer( NULL ),
+      M_read_buffer( nullptr ),
+      M_input_buffer( nullptr ),
+      M_output_buffer( nullptr ),
+      M_write_buffer( nullptr ),
       M_remained( 0 ),
       m_streams( new gzstreambuf_impl ),
       M_level(
@@ -146,7 +146,7 @@ gzstreambuf::writeData( int sync )
     }
 
 
-    if ( M_output_stream == NULL )
+    if ( M_output_stream == nullptr )
     {
         M_output_stream = new std::ostream( &M_strmbuf );
     }
@@ -160,12 +160,12 @@ gzstreambuf::writeData( int sync )
     }
     else
     {
-        if ( m_streams->M_compression_stream == NULL )
+        if ( m_streams->M_compression_stream == nullptr )
         {
             m_streams->M_compression_stream = new z_stream;
             m_streams->M_compression_stream->zalloc = Z_NULL;
             m_streams->M_compression_stream->zfree = Z_NULL;
-            m_streams->M_compression_stream->opaque = NULL;
+            m_streams->M_compression_stream->opaque = nullptr;
             m_streams->M_compression_stream->avail_in = 0;
             m_streams->M_compression_stream->next_in = 0;
             m_streams->M_compression_stream->next_out = 0;
@@ -175,7 +175,7 @@ gzstreambuf::writeData( int sync )
                 //                     cerr << "error in init\n";
                 return false;
             }
-            if( M_write_buffer == NULL )
+            if( M_write_buffer == nullptr )
                 M_write_buffer = new char[ M_buffer_size ];
             m_streams->M_compression_stream->next_out = (Bytef*)M_write_buffer;
             m_streams->M_compression_stream->avail_out = M_buffer_size;
@@ -223,7 +223,7 @@ int
 gzstreambuf::readData( char * dest,
                        int & dest_size )
 {
-    if ( M_input_stream == NULL )
+    if ( M_input_stream == nullptr )
     {
         M_input_stream = new std::istream( &M_strmbuf );
     }
@@ -273,7 +273,7 @@ gzstreambuf::overflow( int_type c )
 
     // if the buffer was not already allocated nor set by user,
     // do it just now
-    if ( pptr() == NULL )
+    if ( pptr() == nullptr )
     {
         M_output_buffer = new char_type[ M_buffer_size ];
     }
@@ -296,7 +296,7 @@ gzstreambuf::overflow( int_type c )
 int
 gzstreambuf::sync()
 {
-    if ( pptr() != NULL )
+    if ( pptr() != nullptr )
     {
         // just flush the put area
         if ( ! writeData(
@@ -319,7 +319,7 @@ gzstreambuf::underflow()
 
     // if the buffer was not already allocated nor set by user,
     // do it just now
-    if ( gptr() == NULL )
+    if ( gptr() == nullptr )
     {
         M_input_buffer = new char_type[ M_buffer_size ];
     }
@@ -349,7 +349,7 @@ gzstreambuf::underflow()
     }
     else
     {
-        if ( M_read_buffer == NULL )
+        if ( M_read_buffer == nullptr )
         {
             M_read_buffer = new char_type[ M_buffer_size ];
         }
@@ -359,12 +359,12 @@ gzstreambuf::underflow()
             M_input_buffer[ 0 ] = M_remaining_char;
         }
 
-        if ( m_streams->M_decompression_stream == NULL )
+        if ( m_streams->M_decompression_stream == nullptr )
         {
             m_streams->M_decompression_stream = new z_stream;
             m_streams->M_decompression_stream->zalloc = Z_NULL;
             m_streams->M_decompression_stream->zfree = Z_NULL;
-            m_streams->M_decompression_stream->opaque = NULL;
+            m_streams->M_decompression_stream->opaque = nullptr;
             m_streams->M_decompression_stream->avail_in = 0;
             m_streams->M_decompression_stream->next_in = 0;
             m_streams->M_decompression_stream->avail_out = 0;

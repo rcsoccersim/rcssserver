@@ -63,12 +63,12 @@
 Stadium::Stadium()
     : M_alive( true ),
       M_logger( *this ),
-      M_ball( NULL ),
+      M_ball( nullptr ),
       M_players( MAX_PLAYER*2, static_cast< Player * >( 0 ) ),
-      M_coach( NULL ),
+      M_coach( nullptr ),
       M_olcoaches( 2, static_cast< OnlineCoach * >( 0 ) ),
-      M_team_l( NULL ),
-      M_team_r( NULL ),
+      M_team_l( nullptr ),
+      M_team_r( nullptr ),
       M_playmode( PM_BeforeKickOff ),
       M_time( 0 ),
       M_stoppage_time( 0 ),
@@ -79,25 +79,6 @@ Stadium::Stadium()
       M_left_child( 0 ),
       M_right_child( 0 )
 {
-#if 0
-    time_t tmp_time = std::time( NULL );
-    tm * tmp_local_time = std::localtime( &tmp_time );
-    if ( tmp_local_time == NULL )
-    {
-        std::cerr << __FILE__ << ":" << __LINE__
-                  << ": Error getting time: "
-                  << strerror( errno ) << std::endl;
-        //this->exit( EXIT_FAILURE );
-        disable();
-        return;
-    }
-    m_real_time = *tmp_local_time;
-
-    srand( tmp_time );
-    srandom( tmp_time );
-    rcss::random::DefaultRNG::instance( static_cast< rcss::random::DefaultRNG::result_type >( tmp_time ) );
-#endif
-
     // !!! registration order is very important !!!
     // TODO: fix dependencies among referees.
     M_referees.push_back( new TimeRef( *this ) );
@@ -178,11 +159,11 @@ Stadium::~Stadium()
     }
     M_player_types.clear();
 
-    delete M_team_l; M_team_l = NULL;
-    delete M_team_r; M_team_r = NULL;
+    delete M_team_l; M_team_l = nullptr;
+    delete M_team_r; M_team_r = nullptr;
 
-    delete M_coach; M_coach = NULL;
-    delete M_ball; M_ball = NULL;
+    delete M_coach; M_coach = nullptr;
+    delete M_ball; M_ball = nullptr;
 }
 
 
@@ -195,9 +176,9 @@ Stadium::~Stadium()
 bool
 Stadium::init()
 {
-    time_t tmp_time = std::time( NULL );
+    time_t tmp_time = std::time( 0 );
     tm * tmp_local_time = std::localtime( &tmp_time );
-    if ( tmp_local_time == NULL )
+    if ( ! tmp_local_time )
     {
         std::cerr << __FILE__ << ":" << __LINE__
                   << ": Error getting time: "
@@ -465,7 +446,7 @@ Stadium::startTeam( const std::string & start )
 
     if ( pid == 0 )
     {
-        execlp( "/bin/sh", "sh", "-c", start.c_str(), (char *)NULL );
+        execlp( "/bin/sh", "sh", "-c", start.c_str(), (char *)nullptr );
         std::cerr << PACKAGE << "-" << VERSION
                   << ": Error: Could not execute \"/bin/sh -c "
                   << start.c_str() << "\": "
@@ -535,7 +516,7 @@ Stadium::playerType( int id ) const
         std::cerr << __FILE__ << ':' << __LINE__
                   << " Exception caught! " << e.what()
                   << std::endl;
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -719,13 +700,13 @@ Stadium::initCoach( const double & version,
     if ( M_coach->open() != 0 )
     {
         sendToCoach( "(error socket_open_failed)", addr );
-        return NULL;
+        return nullptr;
     }
 
     if ( ! M_coach->connect( addr ) )
     {
         sendToCoach( "(error connection_failed)", addr );
-        return NULL;
+        return nullptr;
     }
 
     if ( ! M_coach->setSenders( version ) )
@@ -733,7 +714,7 @@ Stadium::initCoach( const double & version,
         std::cerr << "Error: Could not find serializer or sender for version"
                   << version << std::endl;
         sendToCoach( "(error illegal_client_version)", addr );
-        return NULL;
+        return nullptr;
     }
 
     addOfflineCoach( M_coach );
@@ -1765,7 +1746,7 @@ void
 Stadium::calcCollisionPos( MPObject * a,
                            MPObject * b )
 {
-    if ( a == NULL || b == NULL )
+    if ( ! a || ! b )
     {
         return;
     }

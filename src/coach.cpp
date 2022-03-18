@@ -526,11 +526,11 @@ Coach::parse_move( const char * command )
                                     ServerParam::instance().maxMoment() ) );
         if ( n == 3 )
         {
-            M_stadium.movePlayer( side, unum, pos, NULL, NULL );
+            M_stadium.movePlayer( side, unum, pos, nullptr, nullptr );
         }
         else if ( n == 4 )
         {
-            M_stadium.movePlayer( side, unum, pos, &ang, NULL );
+            M_stadium.movePlayer( side, unum, pos, &ang, nullptr );
         }
         else if ( n == 6 )
         {
@@ -723,7 +723,7 @@ Coach::change_player_type( const std::string & team_name,
                            int unum,
                            int player_type )
 {
-    const Team * team = NULL;
+    const Team * team = nullptr;
     if ( M_stadium.teamLeft().name() == team_name )
     {
         team = &( M_stadium.teamLeft() );
@@ -734,7 +734,7 @@ Coach::change_player_type( const std::string & team_name,
         team = &( M_stadium.teamRight() );
     }
 
-    if ( team == NULL )
+    if ( ! team )
     {
         send( "(warning no_team_found)" );
         return;
@@ -747,7 +747,7 @@ Coach::change_player_type( const std::string & team_name,
         return;
     }
 
-    const Player * player = NULL;
+    const Player * player = nullptr;
     for ( int i = 0; i < team->size(); ++i )
     {
         const Player * p = team->player( i );
@@ -758,7 +758,7 @@ Coach::change_player_type( const std::string & team_name,
         }
     }
 
-    if ( player == NULL )
+    if ( ! player )
     {
         send( "(warning no_such_player)" );
         return;
@@ -777,7 +777,7 @@ void
 Coach::change_player_type_goalie( const std::string & team_name,
                                   int unum )
 {
-    const Team * team = NULL;
+    const Team * team = nullptr;
     if ( M_stadium.teamLeft().name() == team_name )
     {
         team = &( M_stadium.teamLeft() );
@@ -1670,7 +1670,7 @@ OnlineCoach::change_player_types( const char * command )
             return;
         }
 
-        const Player * player = NULL;
+        const Player * player = nullptr;
         for ( int i = 0; i < M_team.size(); ++i )
         {
             const Player * p = M_team.player( i );

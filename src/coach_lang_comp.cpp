@@ -240,7 +240,7 @@ std::ostream &
 DefCond::print( std::ostream & out ) const
 {
     out << "(definec \"" << M_name << "\" ";
-    if ( M_cond.get() == NULL )
+    if ( ! M_cond )
     {
         out << " (null)";
     }
@@ -256,7 +256,7 @@ DefCond::printPretty( std::ostream & out,
                       const std::string & line_header ) const
 {
     out << line_header << "Cond \"" << M_name << "\"" << std::endl;
-    if ( M_cond.get() == NULL )
+    if ( ! M_cond )
     {
         out << line_header << " (null)\n";
     }
@@ -272,7 +272,7 @@ DefCond::printPretty( std::ostream & out,
  DefDir::print( std::ostream & out ) const
  {
      out << "(defined \"" << M_name << "\" ";
-     if ( M_dir.get() == NULL )
+     if ( ! M_dir )
      {
          out << "(null)";
      }
@@ -288,7 +288,7 @@ DefDir::printPretty( std::ostream & out,
                      const std::string & line_header ) const
 {
     out << line_header << "Dir \"" << M_name << "\"" << std::endl;
-    if ( M_dir.get() == NULL )
+    if ( ! M_dir )
     {
         out << line_header << " (null)\n";
     }
@@ -303,7 +303,7 @@ std::ostream &
 DefReg::print( std::ostream & out ) const
 {
     out << "(definer \"" << M_name << "\" ";
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << "(null)";
     }
@@ -319,7 +319,7 @@ DefReg::printPretty( std::ostream & out,
                      const std::string & line_header ) const
 {
     out << line_header << "Region \"" << M_name << "\"" << std::endl;
-    if ( M_reg.get() == NULL )
+    if ( ! M_reg )
     {
         out << line_header << " (null)\n";
     }

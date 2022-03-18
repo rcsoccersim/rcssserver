@@ -294,7 +294,7 @@ BodySenderPlayerV8::sendBodyData()
                                state.dist(),
                                (int)state.head(),
                                state.count() );
-    if ( self().getFocusTarget() == NULL )
+    if ( ! self().getFocusTarget() )
     {
         serializer().serializeFocus( transport(),
                                      "none",

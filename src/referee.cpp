@@ -2133,7 +2133,7 @@ TouchRef::analyseImpl()
         {
             // check for goal kick or corner kick
             Side side = NEUTRAL;
-            if ( M_last_touched != NULL )
+            if ( M_last_touched )
             {
                 side = M_last_touched->side();
             }
@@ -2146,7 +2146,7 @@ TouchRef::analyseImpl()
                 {
                     awardCornerKick( LEFT, M_stadium.ball().pos() );
                 }
-                else if ( M_stadium.ballCatcher() == NULL )
+                else if ( ! M_stadium.ballCatcher() )
                 {
                     awardGoalKick( RIGHT, M_stadium.ball().pos() );
                 }
@@ -2166,7 +2166,7 @@ TouchRef::analyseImpl()
                 {
                     awardCornerKick( RIGHT, M_stadium.ball().pos() );
                 }
-                else if ( M_stadium.ballCatcher() == NULL )
+                else if ( ! M_stadium.ballCatcher() )
                 {
                     awardGoalKick( LEFT, M_stadium.ball().pos() );
                 }
@@ -2186,7 +2186,7 @@ TouchRef::analyseImpl()
             // check for kick in.
 
             Side side = NEUTRAL;
-            if ( M_last_touched != NULL )
+            if ( M_last_touched )
             {
                 side = M_last_touched->side();
             }
@@ -2215,7 +2215,7 @@ TouchRef::kickTaken( const Player & kicker,
              && M_last_indirect_kicker
              && M_last_indirect_kicker != &kicker )
         {
-            M_last_indirect_kicker = NULL;
+            M_last_indirect_kicker = nullptr;
             M_indirect_mode = false;
         }
 
@@ -2258,7 +2258,7 @@ TouchRef::ballTouched( const Player & kicker )
              && M_last_indirect_kicker
              && M_last_indirect_kicker != &kicker )
         {
-            M_last_indirect_kicker = NULL;
+            M_last_indirect_kicker = nullptr;
             M_indirect_mode = false;
         }
 
@@ -2288,17 +2288,17 @@ TouchRef::playModeChange( PlayMode pm )
 {
     if ( pm != PM_PlayOn )
     {
-        M_last_touched = NULL;
+        M_last_touched = nullptr;
     }
 
     if ( indirectFreeKick( pm ) )
     {
-        M_last_indirect_kicker = NULL;
+        M_last_indirect_kicker = nullptr;
         M_indirect_mode = true;
     }
     else if ( pm != PM_PlayOn && pm != PM_Drop_Ball )
     {
-        M_last_indirect_kicker = NULL;
+        M_last_indirect_kicker = nullptr;
         M_indirect_mode = false;
     }
 }
@@ -2425,8 +2425,8 @@ CatchRef::kickTaken( const Player & kicker,
 
     if ( M_team_l_touched && M_team_r_touched )
     {
-        M_last_back_passer = NULL;
-        M_before_last_back_passer = NULL;
+        M_last_back_passer = nullptr;
+        M_before_last_back_passer = nullptr;
         return;
     }
 
@@ -2468,8 +2468,8 @@ CatchRef::ballTouched( const Player & player )
 
     if ( M_team_l_touched && M_team_r_touched )
     {
-        M_before_last_back_passer = NULL;
-        M_last_back_passer = NULL;
+        M_before_last_back_passer = nullptr;
+        M_last_back_passer = nullptr;
     }
 }
 
@@ -2496,17 +2496,17 @@ CatchRef::ballCaught( const Player & catcher )
          && M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         && M_last_back_passer != NULL
+         && M_last_back_passer
          && M_last_back_passer->team() == catcher.team() )
     {
         if ( M_last_back_passer == &catcher
-             && M_before_last_back_passer != NULL
+             && M_before_last_back_passer
              && M_before_last_back_passer->team() != catcher.team() )
         {
             // no backpass violation, if last kicker is goalie itself and before kicker is opponent
         }
         else if ( M_stadium.time() == M_last_back_passer_time
-                  && ( M_before_last_back_passer == NULL
+                  && ( ! M_before_last_back_passer
                        || M_before_last_back_passer->team() != catcher.team() ) )
         {
             // no backpass violation. kick and catch are taken simultaneously
@@ -2522,8 +2522,8 @@ CatchRef::ballCaught( const Player & catcher )
         }
     }
 
-    M_last_back_passer = NULL;
-    M_before_last_back_passer = NULL;
+    M_last_back_passer = nullptr;
+    M_before_last_back_passer = nullptr;
 
     awardFreeKick( catcher.side(), M_stadium.ball().pos() );
 }
@@ -2552,7 +2552,7 @@ CatchRef::ballPunched( const Player & catcher )
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
          && M_stadium.time() != M_last_back_passer_time
-         && M_last_back_passer != NULL
+         && M_last_back_passer
          && M_last_back_passer->team() == catcher.team()
          && ServerParam::instance().backPasses() )
     {
@@ -2573,8 +2573,8 @@ CatchRef::ballPunched( const Player & catcher )
         return;
     }
 
-    M_last_back_passer = NULL;
-    M_before_last_back_passer = NULL;
+    M_last_back_passer = nullptr;
+    M_before_last_back_passer = nullptr;
 }
 
 
@@ -2682,8 +2682,8 @@ CatchRef::playModeChange( PlayMode pmode )
 {
     if ( pmode != PM_PlayOn )
     {
-        M_before_last_back_passer = NULL;
-        M_last_back_passer = NULL;
+        M_before_last_back_passer = nullptr;
+        M_last_back_passer = nullptr;
     }
 
     if ( pmode == PM_Back_Pass_Left
@@ -2718,7 +2718,7 @@ CatchRef::callBackPass( const Side side )
         M_stadium.placeBall( PM_Back_Pass_Right, LEFT, pos );
     }
 
-    M_last_back_passer = NULL;
+    M_last_back_passer = nullptr;
     M_after_back_pass_time = 0;
 }
 
@@ -2924,7 +2924,7 @@ KeepawayRef::analyse()
         return;
     }
 
-    static time_t s_start_time = std::time( NULL );
+    static time_t s_start_time = std::time( nullptr );
 
     if ( M_stadium.playmode() == PM_PlayOn )
     {
@@ -2974,7 +2974,7 @@ KeepawayRef::analyse()
     }
     else if ( ServerParam::instance().kawayStart() >= 0 )
     {
-        if ( difftime( std::time( NULL ), s_start_time ) > ServerParam::instance().kawayStart() )
+        if ( difftime( std::time( nullptr ), s_start_time ) > ServerParam::instance().kawayStart() )
         {
             M_stadium.changePlayMode( PM_PlayOn );
         }
@@ -3119,7 +3119,7 @@ PenaltyRef::PenaltyRef( Stadium& stadium )
       M_pen_nr_taken( 0 ),
       M_bDebug( false ),
       M_cur_pen_taker( NEUTRAL ),
-      M_last_taker( NULL ),
+      M_last_taker( nullptr ),
       M_prev_ball_pos( 0.0, 0.0 ),
       M_timeover( false )
 {
@@ -3495,7 +3495,7 @@ PenaltyRef::kickTaken( const Player & kicker,
         return;
     }
 
-    if ( M_stadium.ballCatcher() != NULL )
+    if ( M_stadium.ballCatcher() )
     {
         std::cerr << "player kicked and goalie catched at the same time" << std::endl;
     }
@@ -3637,12 +3637,12 @@ PenaltyRef::playModeChange( PlayMode pm )
 
     if ( pm == PM_PenaltySetup_Left || pm == PM_PenaltySetup_Right )
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
         M_timer = ServerParam::instance().penSetupWait();
     }
     else if ( pm == PM_PenaltyReady_Left || pm == PM_PenaltyReady_Right )
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
         M_timer = ServerParam::instance().penReadyWait();
     }
     else if ( pm == PM_PenaltyTaken_Left || pm == PM_PenaltyTaken_Right )
@@ -3652,12 +3652,12 @@ PenaltyRef::playModeChange( PlayMode pm )
     else if ( pm == PM_PenaltyMiss_Left  || pm == PM_PenaltyMiss_Right ||
               pm == PM_PenaltyScore_Left || pm == PM_PenaltyScore_Right )
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
         M_timer = ServerParam::instance().penBeforeSetupWait();
     }
     else
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
     }
 }
 
@@ -3862,8 +3862,8 @@ PenaltyRef::penalty_check_players( const Side side )
     bool    bCheck         = true;
     PVector posGoalie;
     //int     iPlayerOutside = -1, iGoalieNr=-1;
-    const Player * outside_player = NULL;
-    const Player * goalie = NULL;
+    const Player * outside_player = nullptr;
+    const Player * goalie = nullptr;
 
     if ( pm == PM_PenaltyMiss_Left  || pm == PM_PenaltyMiss_Right
          || pm == PM_PenaltyScore_Left || pm == PM_PenaltyScore_Right )
@@ -4133,8 +4133,8 @@ PenaltyRef::getCandidateTaker()
                                           ? M_sLeftPenTaken
                                           : M_sRightPenTaken );
 
-    const Player * candidate = NULL;
-    const Player * goalie = NULL;
+    const Player * candidate = nullptr;
+    const Player * goalie = nullptr;
     double min_dist2 = std::numeric_limits< double >::max();
 
     // first find the closest player to the ball
@@ -4166,7 +4166,7 @@ PenaltyRef::getCandidateTaker()
         }
     }
 
-    if ( candidate == NULL )
+    if ( ! candidate )
     {
         return goalie;
     }

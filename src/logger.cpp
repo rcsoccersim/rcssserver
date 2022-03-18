@@ -1170,7 +1170,7 @@ Logger::writeGameLogV4()
            << p->effort() << ' '
            << p->recovery() << ')';
         if ( p->isEnabled()
-             && p->getFocusTarget() != NULL )
+             && p->getFocusTarget() )
         {
             os << " (f " << SideStr( p->getFocusTarget()->side() )
                << ' ' << p->getFocusTarget()->unum()

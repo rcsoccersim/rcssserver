@@ -63,7 +63,7 @@ PointRel::print( std::ostream & out ) const
 {
     out << "(pt " << M_offset.getVec().getX() << " "
         << M_offset.getVec().getY() << " ";
-    if ( getOrigin() == NULL )
+    if ( ! getOrigin() )
     {
         out << "(null)";
     }
@@ -80,7 +80,7 @@ PointRel::printPretty( std::ostream & out,
 {
     out << line_header << "Point-Relative(" << M_offset.getVec().getX()
         << ", " << M_offset.getVec().getY() << " ";
-    if ( getOrigin() == NULL )
+    if ( ! getOrigin() )
     {
         out << "(null)";
     }
@@ -150,7 +150,7 @@ PointPlayer::printPretty( std::ostream & out,
 
 // PointArith::PointArith()
 //     : Point(),
-//       M_arith_op( NULL ),
+//       M_arith_op(),
 //       M_idx( 0 )
 // {
 // }
@@ -193,7 +193,7 @@ PointArith::print( std::ostream & out ) const
 {
     out << "(";
 
-    if ( M_points[ 0 ].get() == NULL )
+    if ( ! M_points[ 0 ] )
     {
         out << "(null)";
     }
@@ -204,9 +204,9 @@ PointArith::print( std::ostream & out ) const
 
     out << " ";
 
-    if ( M_arith_op == NULL )
+    if ( ! M_arith_op )
     {
-              out << "(null)";
+        out << "(null)";
     }
     else
     {
@@ -215,9 +215,9 @@ PointArith::print( std::ostream & out ) const
 
     out << " ";
 
-    if ( M_points[ 1 ].get() == NULL )
+    if ( ! M_points[ 1 ] )
     {
-              out << "(null)";
+        out << "(null)";
     }
     else
     {
@@ -233,7 +233,7 @@ PointArith::printPretty( std::ostream & out,
 {
     out << line_header << "Point-Arith" << std::endl;
 
-    if ( M_points[ 0 ].get() == NULL )
+    if ( ! M_points[ 0 ] )
     {
         out << line_header << " (null)\n";
     }
@@ -242,7 +242,7 @@ PointArith::printPretty( std::ostream & out,
         M_points[ 0 ]->printPretty( out, line_header + " " );
     }
 
-    if ( M_points[ 1 ].get() == NULL )
+    if ( ! M_points[ 1 ] )
     {
         out << line_header << " (null)\n";
     }
@@ -251,7 +251,7 @@ PointArith::printPretty( std::ostream & out,
         M_points[ 1 ]->printPretty( out, line_header + " " );
     }
 
-    if ( M_arith_op == NULL )
+    if ( ! M_arith_op )
     {
         out << line_header << " (null)\n";
     }
@@ -300,7 +300,7 @@ RegQuad::print( std::ostream & out ) const
     out << "(quad";
     for ( unsigned int i = 0; i < 3; ++i )
     {
-	    if ( M_points[ i ].get() == NULL )
+	    if ( ! M_points[ i ] )
         {
             out << " (null)";
         }
@@ -320,7 +320,7 @@ RegQuad::printPretty( std::ostream & out,
         << "Quadrangle: ";
     for ( unsigned int i = 0; i < 4; ++i )
     {
-        if ( M_points[ i ].get() == NULL )
+        if ( ! M_points[ i ] )
         {
             out << "(null) ";
         }
@@ -380,7 +380,7 @@ std::ostream &
 RegArc::print( std::ostream & out ) const
 {
     out << "(arc";
-    if ( M_center.get() == NULL )
+    if ( ! M_center )
     {
         out << " (null)";
     }
@@ -403,7 +403,7 @@ RegArc::printPretty( std::ostream & out,
     out << line_header
         << "Arc: "
         << "center=";
-    if ( M_center.get() == NULL )
+    if ( ! M_center )
     {
         out << "(null)";
     }
@@ -522,7 +522,7 @@ RegNamed::printPretty( std::ostream & out,
 
 // RegPoint::RegPoint()
 //     : Region(),
-//       M_point( NULL )
+//       M_point()
 // {
 
 // }
@@ -557,7 +557,7 @@ RegPoint::~RegPoint()
 std::ostream &
 RegPoint::print( std::ostream & out ) const
 {
-    if ( M_point.get() == NULL )
+    if ( ! M_point )
     {
         return out << "(null)";
     }
@@ -572,7 +572,7 @@ RegPoint::printPretty( std::ostream & out,
                        const std::string & line_header ) const
 {
     out << line_header << "region point\n";
-    if ( M_point.get() == NULL )
+    if ( ! M_point )
     {
         return out << line_header << " (null)\n";
     }
@@ -599,7 +599,7 @@ RegTri::print( std::ostream & out ) const
     out << "(tri";
     for ( unsigned int i = 0; i < 3; ++i )
     {
-        if ( m_points[ i ].get() == NULL )
+        if ( ! m_points[ i ] )
         {
             out << " (null)";
         }
@@ -620,7 +620,7 @@ RegTri::printPretty( std::ostream & out,
         << "Triangle: ";
     for ( unsigned int i = 0; i < 3; ++i )
     {
-        if ( m_points[ i ].get() == NULL )
+        if ( ! m_points[ i ] )
         {
             out << "(null) ";
         }
@@ -664,7 +664,7 @@ RegRec::print( std::ostream & out ) const
     out << "(rec";
     for ( unsigned int i = 0; i < 2; ++i )
     {
-        if ( M_points[ i ].get() == NULL )
+        if ( ! M_points[ i ] )
         {
             out << " (null)";
         }
@@ -684,7 +684,7 @@ RegRec::printPretty( std::ostream & out,
         << "Rectangle: ";
     for ( unsigned int i = 0; i < 2; ++i )
     {
-	    if ( M_points[ i ].get() == NULL )
+	    if ( ! M_points[ i ] )
         {
             out << "(null) ";
         }

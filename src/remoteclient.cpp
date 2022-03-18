@@ -37,9 +37,9 @@
 
 RemoteClient::RemoteClient()
     : M_socket()
-    , M_socket_buf( NULL )
-    , M_gz_buf( NULL )
-    , M_transport( NULL )
+    , M_socket_buf( nullptr )
+    , M_gz_buf( nullptr )
+    , M_transport( nullptr )
     , M_comp_level( -1 )
     , M_enforce_dedicated_port( false )
 {
@@ -73,19 +73,19 @@ RemoteClient::close()
     if ( M_transport )
     {
         delete M_transport;
-        M_transport = NULL;
+        M_transport = nullptr;
     }
 
     if ( M_gz_buf )
     {
         delete M_gz_buf;
-        M_gz_buf = NULL;
+        M_gz_buf = nullptr;
     }
 
     if ( M_socket_buf )
     {
         delete M_socket_buf;
-        M_socket_buf = NULL;
+        M_socket_buf = nullptr;
     }
 
     setEnforceDedicatedPort( false );

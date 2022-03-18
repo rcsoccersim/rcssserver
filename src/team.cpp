@@ -99,7 +99,7 @@ Team::newPlayer( const double & version,
         {
             std::cerr << "Warning:Too many players." << std::endl;
         }
-        return NULL;
+        return nullptr;
     }
 
     if ( goalie_flag )
@@ -112,7 +112,7 @@ Team::newPlayer( const double & version,
                 {
                     std::cerr << "Warning:Too many goalies." << std::endl;
                 }
-                return NULL;
+                return nullptr;
             }
         }
     }
@@ -121,7 +121,7 @@ Team::newPlayer( const double & version,
 
     if ( ! p->init( version, goalie_flag ) )
     {
-        return NULL;
+        return nullptr;
     }
 
     ++M_size;

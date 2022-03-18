@@ -384,7 +384,7 @@ AudioSenderPlayerv8::~AudioSenderPlayerv8()
           ++i )
     {
         free( i->second );
-        i->second = NULL;
+        i->second = nullptr;
     }
     M_player_msgs.clear();
 
@@ -393,7 +393,7 @@ AudioSenderPlayerv8::~AudioSenderPlayerv8()
          ++i )
     {
         free( *i );
-        *i = NULL;
+        *i = nullptr;
     }
     M_self_msgs.clear();
 
@@ -402,7 +402,7 @@ AudioSenderPlayerv8::~AudioSenderPlayerv8()
           ++i )
     {
         free( i->second );
-        i->second = NULL;
+        i->second = nullptr;
     }
     M_coach_msgs.clear();
 }
@@ -437,7 +437,7 @@ AudioSenderPlayerv8::sendCoachAudio( const Coach & coach,
                                      const char * msg )
 {
     char * msg_copy = strdup( msg );
-    if ( msg_copy == NULL )
+    if ( ! msg_copy )
     {
         std::cerr << "Error:  could not alocate memory to cache coach audio message\n";
     }
@@ -453,7 +453,7 @@ void
 AudioSenderPlayerv8::sendSelfAudio( const char * msg )
 {
     char * msg_copy = strdup( msg );
-    if ( msg_copy == NULL )
+    if ( ! msg_copy )
     {
         std::cerr << "Error:  could not alocate memory to cache player's own audio message\n";
     }
@@ -490,7 +490,7 @@ AudioSenderPlayerv8::sendNonSelfPlayerAudio( const Player & player,
     }
 
     char * msg_copy = strdup( msg );
-    if ( msg_copy == NULL )
+    if ( ! msg_copy )
     {
         std::cerr << "Error:  could not alocate memory to cache player audio message\n";
     }
@@ -658,8 +658,10 @@ AudioSenderPlayerv8::Focused::getMsg( msg_cont_t & msgs )
          }
      }
 #else
-    if ( M_key == NULL )
+    if ( ! M_key )
+    {
         return Unfocused::getMsg( msgs );
+    }
 
     std::pair< msg_cont_t::iterator, msg_cont_t::iterator > iters
         = msgs.equal_range( M_key );
