@@ -291,7 +291,7 @@ public:
           doSendServerParam( param );
       }
 
-    void sendPlayerParam( PlayerParam::VerMap::value_type param )
+    void sendPlayerParam( const PlayerParam::VerMap::value_type & param )
       {
           doSendPlayerParam( param );
       }
@@ -304,10 +304,10 @@ public:
 
 protected:
     virtual
-    void doSendServerParam( ServerParam::VerMap::value_type param );
+    void doSendServerParam( const ServerParam::VerMap::value_type & param );
 
     virtual
-    void doSendPlayerParam( PlayerParam::VerMap::value_type param );
+    void doSendPlayerParam( const PlayerParam::VerMap::value_type & param );
 
     virtual
     void serializePlayerType( const int id,

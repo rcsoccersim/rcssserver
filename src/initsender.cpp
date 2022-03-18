@@ -422,8 +422,12 @@ InitSenderCommonV8::sendServerParams()
     serializer().serializeServerParamBegin( transport() );
     std::for_each( ServerParam::instance().verMap().begin(),
                    ServerParam::instance().verMap().end(),
-                   std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendServerParam ),
-                                 this ) );
+                   [this]( const ServerParam::VerMap::value_type & v )
+                   {
+                       sendServerParam( v );
+                   } );
+                   // std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendServerParam ),
+                   //               this ) );
     serializer().serializeServerParamEnd( transport() );
     if ( newLine() )
     {
@@ -436,7 +440,7 @@ InitSenderCommonV8::sendServerParams()
 }
 
 void
-InitSenderCommonV8::doSendServerParam( ServerParam::VerMap::value_type param )
+InitSenderCommonV8::doSendServerParam( const ServerParam::VerMap::value_type & param )
 {
     if ( param.second <= version() )
     {
@@ -485,8 +489,12 @@ InitSenderCommonV8::sendPlayerParams()
     serializer().serializePlayerParamBegin( transport() );
     std::for_each( PlayerParam::instance().verMap().begin(),
                    PlayerParam::instance().verMap().end(),
-                   std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendPlayerParam ),
-                                 this ) );
+                   [this]( const PlayerParam::VerMap::value_type & v )
+                   {
+                       sendPlayerParam( v );
+                   } );
+                   // std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendPlayerParam ),
+                   //               this ) );
     serializer().serializePlayerParamEnd( transport() );
     if ( newLine() )
     {
@@ -500,7 +508,7 @@ InitSenderCommonV8::sendPlayerParams()
 
 
 void
-InitSenderCommonV8::doSendPlayerParam( PlayerParam::VerMap::value_type param )
+InitSenderCommonV8::doSendPlayerParam( const PlayerParam::VerMap::value_type & param )
 {
     if ( param.second <= version() )
     {

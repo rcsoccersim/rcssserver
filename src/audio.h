@@ -195,13 +195,13 @@ public:
     void sendErrorNoTeamName( const std::string & team_name );
 
 
-    class NewCycle {
-    public:
-        void operator()( Listener * listener )
-          {
-              listener->newCycle();
-          }
-    };
+    // class NewCycle {
+    // public:
+    //     void operator()( Listener * listener )
+    //       {
+    //           listener->newCycle();
+    //       }
+    // };
 };
 
 

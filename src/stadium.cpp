@@ -823,7 +823,8 @@ Stadium::step()
     {
         turnMovableObjects();
         ++M_stoppage_time;
-        for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
     }
     else if ( playmode() == PM_AfterGoal_Right
               || playmode() == PM_AfterGoal_Left
@@ -846,7 +847,8 @@ Stadium::step()
         clearBallCatcher();
         incMovableObjects();
         ++M_stoppage_time;
-        for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
         if ( pm != playmode() )
         {
             ++M_time;
@@ -858,8 +860,9 @@ Stadium::step()
         incMovableObjects();
         ++M_time;
         M_stoppage_time = 0;
-        for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
+        //for_each( M_referees.begin(), M_referees.end(), &Referee::doAnalyse );
         //for_each( M_referees.begin(), M_referees.end(), std::mem_fun( &Referee::analyse ) );
+        for_each( M_referees.begin(), M_referees.end(), []( Referee * ref ) { ref->analyse(); } );
     }
     else if ( playmode() == PM_TimeOver )
     {
@@ -1437,7 +1440,11 @@ Stadium::changePlayMode( const PlayMode pm )
     M_playmode = pm;
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doPlayModeChange( pm ) );
+              //Referee::doPlayModeChange( pm ) );
+              [&]( Referee * ref )
+              {
+                  ref->playModeChange( pm );
+              } );
 
     if ( pm == PM_KickOff_Left
          || pm == PM_KickIn_Left
@@ -1673,7 +1680,11 @@ Stadium::collisions()
                 col = true;
                 p->collidedWithBall();
                 for_each( M_referees.begin(), M_referees.end(),
-                          Referee::doBallTouched( *p ) );
+                          //Referee::doBallTouched( *p ) );
+                          [&]( Referee * ref )
+                          {
+                              ref->ballTouched( *p );
+                          } );
                 calcBallCollisionPos( p );
             }
         }
@@ -1863,15 +1874,24 @@ Stadium::kickTaken( const Player & kicker,
 
     M_ball->push( accel );
 
+    const double accel_r = accel.r();
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doKickTaken( kicker, accel.r() ) );
+              //Referee::doKickTaken( kicker, accel.r() ) );
+              [&]( Referee * ref )
+              {
+                  ref->kickTaken( kicker, accel_r );
+              } );
 }
 
 void
 Stadium::failedKickTaken( const Player & kicker )
 {
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doFailedKickTaken( kicker ) );
+              //Referee::doFailedKickTaken( kicker ) );
+              [&]( Referee * ref )
+              {
+                  ref->failedKickTaken( kicker );
+              } );
 }
 
 void
@@ -1883,8 +1903,13 @@ Stadium::tackleTaken( const Player & tackler,
 
     M_ball->push( accel );
 
+    const double accel_r = accel.r();
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doTackleTaken( tackler, accel.r(), foul ) );
+              //Referee::doTackleTaken( tackler, accel.r(), foul ) );
+              [&]( Referee * ref )
+              {
+                  ref->tackleTaken( tackler, accel_r, foul );
+              } );
 }
 
 void
@@ -1892,7 +1917,11 @@ Stadium::failedTackleTaken( const Player & tackler,
                             const bool foul )
 {
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doFailedTackleTaken( tackler, foul ) );
+              //Referee::doFailedTackleTaken( tackler, foul ) );
+              [&]( Referee * ref )
+              {
+                  ref->failedTackleTaken( tackler, foul );
+              } );
 }
 
 
@@ -1909,10 +1938,18 @@ Stadium::ballCaught( const Player & catcher )
     collisions();
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doBallTouched( catcher ) );
+              //Referee::doBallTouched( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballTouched( catcher );
+              } );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doCaughtBall( catcher ) );
+              //Referee::doCaughtBall( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballCaught( catcher );
+              } );
 
     if ( playmode() == PM_FreeKick_Left
          || playmode() == PM_FreeKick_Right )
@@ -1928,10 +1965,18 @@ Stadium::ballPunched( const Player & catcher,
     M_ball->push( accel );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doBallTouched( catcher ) );
+              //Referee::doBallTouched( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballTouched( catcher );
+              } );
 
     for_each( M_referees.begin(), M_referees.end(),
-              Referee::doPunchedBall( catcher ) );
+              //Referee::doPunchedBall( catcher ) );
+              [&]( Referee * ref )
+              {
+                  ref->ballPunched( catcher );
+              } );
 }
 
 void
@@ -2246,7 +2291,11 @@ Stadium::doSendSenseBody()
     // send audio message
     //
     std::for_each( M_listeners.begin(), M_listeners.end(),
-                   rcss::Listener::NewCycle() ); //std::mem_fun( &rcss::Listener::newCycle ) );
+                   []( rcss::Listener * l )
+                   {
+                       l->newCycle();
+                   } );
+                   //rcss::Listener::NewCycle() ); //std::mem_fun( &rcss::Listener::newCycle ) );
 
     //
     // write profile

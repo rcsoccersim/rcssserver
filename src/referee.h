@@ -90,139 +90,139 @@ public:
     //
     //
 
-    static
-    void doAnalyse( Referee * ref )
-      {
-          ref->analyse();
-      }
+    // static
+    // void doAnalyse( Referee * ref )
+    //   {
+    //       ref->analyse();
+    //   }
 
     //
     //
     //
 
-    class doKickTaken {
-    private:
-        const Player & M_kicker;
-        const double M_accel_r;
-    public:
-        doKickTaken( const Player & kicker,
-                     const double accel_r )
-            : M_kicker( kicker ),
-              M_accel_r( accel_r )
-          { }
+    // class doKickTaken {
+    // private:
+    //     const Player & M_kicker;
+    //     const double M_accel_r;
+    // public:
+    //     doKickTaken( const Player & kicker,
+    //                  const double accel_r )
+    //         : M_kicker( kicker ),
+    //           M_accel_r( accel_r )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->kickTaken( M_kicker, M_accel_r );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->kickTaken( M_kicker, M_accel_r );
+    //       }
+    // };
 
-    class doFailedKickTaken {
-    private:
-        const Player & M_kicker;
-    public:
-        doFailedKickTaken( const Player & kicker )
-            : M_kicker( kicker )
-          { }
+    // class doFailedKickTaken {
+    // private:
+    //     const Player & M_kicker;
+    // public:
+    //     doFailedKickTaken( const Player & kicker )
+    //         : M_kicker( kicker )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->failedKickTaken( M_kicker );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->failedKickTaken( M_kicker );
+    //       }
+    // };
 
-    class doTackleTaken {
-    private:
-        const Player & M_tackler;
-        const double M_accel_r;
-        const bool M_foul;
-    public:
-        doTackleTaken( const Player & tackler,
-                       const double accel_r,
-                       const bool foul )
-            : M_tackler( tackler ),
-              M_accel_r( accel_r ),
-              M_foul( foul )
-          { }
+    // class doTackleTaken {
+    // private:
+    //     const Player & M_tackler;
+    //     const double M_accel_r;
+    //     const bool M_foul;
+    // public:
+    //     doTackleTaken( const Player & tackler,
+    //                    const double accel_r,
+    //                    const bool foul )
+    //         : M_tackler( tackler ),
+    //           M_accel_r( accel_r ),
+    //           M_foul( foul )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->tackleTaken( M_tackler, M_accel_r, M_foul );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->tackleTaken( M_tackler, M_accel_r, M_foul );
+    //       }
+    // };
 
-    class doFailedTackleTaken {
-    private:
-        const Player & M_tackler;
-        const bool M_foul;
-    public:
-        doFailedTackleTaken( const Player & tackler,
-                             const bool foul )
-            : M_tackler( tackler ),
-              M_foul( foul )
-          { }
+    // class doFailedTackleTaken {
+    // private:
+    //     const Player & M_tackler;
+    //     const bool M_foul;
+    // public:
+    //     doFailedTackleTaken( const Player & tackler,
+    //                          const bool foul )
+    //         : M_tackler( tackler ),
+    //           M_foul( foul )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->failedTackleTaken( M_tackler, M_foul );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->failedTackleTaken( M_tackler, M_foul );
+    //       }
+    // };
 
-    class doCaughtBall {
-    private:
-        const Player & M_catcher;
-    public:
-        doCaughtBall( const Player & catcher )
-            : M_catcher( catcher )
-          { }
+    // class doCaughtBall {
+    // private:
+    //     const Player & M_catcher;
+    // public:
+    //     doCaughtBall( const Player & catcher )
+    //         : M_catcher( catcher )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->ballCaught( M_catcher );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->ballCaught( M_catcher );
+    //       }
+    // };
 
-    class doPunchedBall {
-    private:
-        const Player & M_goalie;
-    public:
-        doPunchedBall( const Player & goalie )
-            : M_goalie( goalie )
-          { }
+    // class doPunchedBall {
+    // private:
+    //     const Player & M_goalie;
+    // public:
+    //     doPunchedBall( const Player & goalie )
+    //         : M_goalie( goalie )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->ballPunched( M_goalie );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->ballPunched( M_goalie );
+    //       }
+    // };
 
-    class doPlayModeChange {
-    private:
-        PlayMode M_pm;
-    public:
-        doPlayModeChange( PlayMode pm )
-            : M_pm( pm )
-          { }
+    // class doPlayModeChange {
+    // private:
+    //     PlayMode M_pm;
+    // public:
+    //     doPlayModeChange( PlayMode pm )
+    //         : M_pm( pm )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->playModeChange( M_pm );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->playModeChange( M_pm );
+    //       }
+    // };
 
-    class doBallTouched {
-    private:
-        const Player & M_player;
-    public:
-        doBallTouched( const Player & player )
-            : M_player( player )
-          { }
+    // class doBallTouched {
+    // private:
+    //     const Player & M_player;
+    // public:
+    //     doBallTouched( const Player & player )
+    //         : M_player( player )
+    //       { }
 
-        void operator()( Referee * ref )
-          {
-              ref->ballTouched( M_player );
-          }
-    };
+    //     void operator()( Referee * ref )
+    //       {
+    //           ref->ballTouched( M_player );
+    //       }
+    // };
 
 
 protected:
