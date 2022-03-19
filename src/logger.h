@@ -59,8 +59,8 @@ private:
     struct Impl;
     std::unique_ptr< Impl > M_impl;
 
-    rcss::InitObserverLogger * M_init_observer;
-    rcss::ObserverLogger * M_observer;
+    std::unique_ptr< rcss::InitObserverLogger > M_init_observer;
+    std::unique_ptr< rcss::ObserverLogger > M_observer;
 
     const Stadium & M_stadium;
 
