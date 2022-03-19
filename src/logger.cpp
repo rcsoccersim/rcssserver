@@ -90,18 +90,84 @@ const std::string Logger::DEF_GAME_SUFFIX = ".rcg";
 const std::string Logger::DEF_KAWAY_NAME = "incomplete";
 const std::string Logger::DEF_KAWAY_SUFFIX = ".kwy";
 
+struct Logger::Impl {
+
+    std::string game_log_filepath_;
+    std::string text_log_filepath_;
+    std::string kaway_log_filepath_;
+
+    std::ostream * game_log_;
+    std::ostream * text_log_;
+    std::ofstream kaway_log_;  //!< file for keepaway log
+
+
+    Impl()
+        : game_log_( nullptr ),
+          text_log_( nullptr )
+    {
+
+    }
+
+    void flush()
+    {
+        if ( game_log_ ) game_log_->flush();
+        if ( text_log_ ) text_log_->flush();
+        kaway_log_.flush();
+    }
+
+    void closeGameLog()
+    {
+         if ( game_log_ )
+         {
+             game_log_->flush();
+             delete game_log_;
+             game_log_ = nullptr;
+         }
+    }
+
+    void closeTextLog()
+    {
+        if ( text_log_ )
+        {
+            text_log_->flush();
+            delete text_log_;
+            text_log_ = nullptr;
+        }
+    }
+
+    void closeKeepawayLog()
+    {
+        if ( kaway_log_.is_open() )
+        {
+            kaway_log_.flush();
+            kaway_log_.close();
+        }
+    }
+
+    bool isGameLogOpen() const
+    {
+        return ( game_log_
+                 && game_log_->good() );
+    }
+
+    bool isTextLogOpen() const
+    {
+        return ( text_log_
+                 && text_log_->good() );
+    }
+
+    bool isKeepawayLogOpen() const
+    {
+        return kaway_log_.is_open();
+    }
+};
+
 
 Logger::Logger( Stadium & stadium )
-    : M_init_observer( new rcss::InitObserverLogger )
+    : M_impl( new Impl() )
+    , M_init_observer( new rcss::InitObserverLogger )
     , M_observer( new rcss::ObserverLogger )
     , M_stadium( stadium )
-    , M_game_log( static_cast< std::ostream * >( 0 ) )
-    , M_text_log( static_cast< std::ostream * >( 0 ) )
-    , M_playmode( PM_Null )
-    , M_team_l_score( 0 )
-    , M_team_r_score( 0 )
-    , M_team_l_pen_taken( 0 )
-    , M_team_r_pen_taken( 0 )
 {
 
 }
@@ -126,7 +192,7 @@ Logger::~Logger()
 bool
 Logger::setSenders()
 {
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return true;
     }
@@ -156,7 +222,7 @@ Logger::setSenders()
     // init sender
     //
     {
-        rcss::InitSenderLogger::Params init_params( *M_game_log,
+        rcss::InitSenderLogger::Params init_params( *M_impl->game_log_,
                                                     *this,
                                                     ser,
                                                     M_stadium );
@@ -171,7 +237,7 @@ Logger::setSenders()
 
     // disp sender
     {
-        rcss::DispSenderLogger::Params disp_params( *M_game_log,
+        rcss::DispSenderLogger::Params disp_params( *M_impl->game_log_,
                                                     *this,
                                                     ser,
                                                     M_stadium );
@@ -259,7 +325,7 @@ Logger::openGameLog()
             game_log /= Logger::DEF_GAME_NAME + Logger::DEF_GAME_SUFFIX;
         }
 
-        M_game_log_name = game_log.BOOST_FS_FILE_STRING();
+        M_impl->game_log_filepath_ = game_log.BOOST_FS_FILE_STRING();
     }
     catch ( std::exception & e )
     {
@@ -282,27 +348,27 @@ Logger::openGameLog()
 #ifdef HAVE_LIBZ
     if ( ServerParam::instance().gameLogCompression() > 0 )
     {
-        M_game_log_name += ".gz";
+        M_impl->game_log_filepath_ += ".gz";
         rcss::gz::gzofstream * f
-            = new rcss::gz::gzofstream( M_game_log_name.c_str(),
+            = new rcss::gz::gzofstream( M_impl->game_log_filepath_.c_str(),
                                         ServerParam::instance().gameLogCompression() );
-        M_game_log = f;
+        M_impl->game_log_ = f;
     }
     else
 #endif
     {
         std::ofstream * f
-            = new std::ofstream( M_game_log_name.c_str(),
+            = new std::ofstream( M_impl->game_log_filepath_.c_str(),
                                  ( std::ofstream::binary
                                    | std::ofstream::out
                                    | std::ofstream::trunc ) );
-        M_game_log = f;
+        M_impl->game_log_ = f;
     }
 
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open the game log file " << M_game_log_name << std::endl;
+                  << ": can't open the game log file " << M_impl->game_log_filepath_ << std::endl;
         return false;
     }
 
@@ -310,7 +376,7 @@ Logger::openGameLog()
     if ( ! setSenders() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't set senders " << M_game_log_name << std::endl;
+                  << ": can't set senders " << M_impl->game_log_filepath_ << std::endl;
         return false;
     }
 
@@ -318,7 +384,7 @@ Logger::openGameLog()
     M_init_observer->sendServerParams();
     M_init_observer->sendPlayerParams();
     M_init_observer->sendPlayerTypes();
-    M_game_log->flush();
+    M_impl->game_log_->flush();
 
     return true;
 }
@@ -354,7 +420,7 @@ Logger::openTextLog()
             text_log /= Logger::DEF_TEXT_NAME + Logger::DEF_TEXT_SUFFIX;
         }
 
-        M_text_log_name = text_log.BOOST_FS_FILE_STRING();
+        M_impl->text_log_filepath_ = text_log.BOOST_FS_FILE_STRING();
     }
     catch ( std::exception & e )
     {
@@ -377,23 +443,23 @@ Logger::openTextLog()
 #ifdef HAVE_LIBZ
     if ( ServerParam::instance().textLogCompression() > 0 )
     {
-        M_text_log_name += std::string ( ".gz" );
+        M_impl->text_log_filepath_ += std::string ( ".gz" );
         rcss::gz::gzofstream * f
-            = new rcss::gz::gzofstream( M_text_log_name.c_str(),
+            = new rcss::gz::gzofstream( M_impl->text_log_filepath_.c_str(),
                                         ServerParam::instance().textLogCompression() );
-        M_text_log = f;
+        M_impl->text_log_ = f;
     }
     else
 #endif
     {
-        std::ofstream * f = new std::ofstream( M_text_log_name.c_str() );
-        M_text_log = f;
+        std::ofstream * f = new std::ofstream( M_impl->text_log_filepath_.c_str() );
+        M_impl->text_log_ = f;
     }
 
-    if ( ! isTextLogOpen() )
+    if ( ! M_impl->isTextLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open the text log file '" << M_text_log_name
+                  << ": can't open the text log file '" << M_impl->text_log_filepath_
                   << "'" << std::endl;
         return false;
     }
@@ -433,7 +499,7 @@ Logger::openKawayLog()
             kaway_log /= Logger::DEF_KAWAY_NAME + Logger::DEF_KAWAY_SUFFIX;
         }
 
-        M_kaway_log_name = kaway_log.BOOST_FS_FILE_STRING();
+        M_impl->kaway_log_filepath_ = kaway_log.BOOST_FS_FILE_STRING();
     }
     catch ( std::exception & e )
     {
@@ -446,12 +512,12 @@ Logger::openKawayLog()
     }
 
     // open the output file stream
-    M_kaway_log.open( M_kaway_log_name.c_str() );
+    M_impl->kaway_log_.open( M_impl->kaway_log_filepath_.c_str() );
 
-    if ( ! M_kaway_log.is_open() )
+    if ( ! M_impl->kaway_log_.is_open() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open keepaway_log_file " << M_kaway_log_name
+                  << ": can't open keepaway_log_file " << M_impl->kaway_log_filepath_
                   << std::endl;
         return false;
     }
@@ -463,41 +529,33 @@ Logger::openKawayLog()
 void
 Logger::closeGameLog()
 {
-    if ( M_game_log )
-    {
-        M_game_log->flush();
-        delete M_game_log;
-        M_game_log =  static_cast< std::ostream * >( 0 );
-    }
+    M_impl->closeGameLog();
 }
 
 void
 Logger::closeTextLog()
 {
-    if ( M_text_log )
-    {
-        M_text_log->flush();
-        delete M_text_log;
-        M_text_log =  static_cast< std::ostream * >( 0 );
-    }
+    M_impl->closeTextLog();
 }
 
 void
 Logger::closeKawayLog()
 {
-    if ( M_kaway_log.is_open() )
-    {
-        M_kaway_log.flush();
-        M_kaway_log.close();
-    }
+    M_impl->closeKeepawayLog();
+}
+
+void
+Logger::flush()
+{
+    M_impl->flush();
 }
 
 void
 Logger::renameLogs()
 {
-    if ( ! isGameLogOpen()
-         && ! isTextLogOpen()
-         && ! M_kaway_log.is_open() )
+    if ( ! M_impl->isGameLogOpen()
+         && ! M_impl->isTextLogOpen()
+         && ! M_impl->isKeepawayLogOpen() )
     {
         return;
     }
@@ -564,7 +622,7 @@ Logger::renameLogs()
     //
     // write result
     //
-    if ( isGameLogOpen() )
+    if ( M_impl->isGameLogOpen() )
     {
         char time_stamp[32];
         const std::time_t time = M_stadium.getStartTime();
@@ -580,7 +638,7 @@ Logger::renameLogs()
     //
     // rename text log
     //
-    if ( isTextLogOpen()
+    if ( M_impl->isTextLogOpen()
          && ! ServerParam::instance().textLogFixed() )
     {
         std::string newname = ServerParam::instance().textLogDir();
@@ -601,19 +659,19 @@ Logger::renameLogs()
 
         closeTextLog();
 
-        if ( std::rename( M_text_log_name.c_str(),
+        if ( std::rename( M_impl->text_log_filepath_.c_str(),
                           newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": error renaming " << M_text_log_name << std::endl;
+                      << ": error renaming " << M_impl->text_log_filepath_ << std::endl;
         }
-        M_text_log_name = newname;
+        M_impl->text_log_filepath_ = newname;
     }
 
     //
     // rename game log
     //
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ! ServerParam::instance().gameLogFixed() )
     {
         std::string newname = ServerParam::instance().gameLogDir();
@@ -634,19 +692,19 @@ Logger::renameLogs()
 
         closeGameLog();
 
-        if ( std::rename( M_game_log_name.c_str(),
+        if ( std::rename( M_impl->game_log_filepath_.c_str(),
                           newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": error renaming " << M_game_log_name << std::endl;
+                      << ": error renaming " << M_impl->game_log_filepath_ << std::endl;
         }
-        M_game_log_name = newname;
+        M_impl->game_log_filepath_ = newname;
     }
 
     //
     // rename keepaway log
     //
-    if ( M_kaway_log.is_open()
+    if ( M_impl->kaway_log_.is_open()
          && ! ServerParam::instance().kawayLogFixed() )
     {
         std::string newname = ServerParam::instance().kawayLogDir();
@@ -663,23 +721,31 @@ Logger::renameLogs()
 
         closeKawayLog();
 
-        if( std::rename( M_kaway_log_name.c_str(),
+        if( std::rename( M_impl->kaway_log_filepath_.c_str(),
                          newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": error renaming " << M_kaway_log_name << std::endl;
+                      << ": error renaming " << M_impl->kaway_log_filepath_ << std::endl;
         }
     }
 
 }
 
+
+std::ostream &
+Logger::kawayLog()
+{
+    return M_impl->kaway_log_;
+}
+
+
 void
 Logger::writeToGameLog( const char * str,
                         const std::streamsize n )
 {
-    if ( M_game_log )
+    if ( M_impl->game_log_ )
     {
-        M_game_log->write( str, n );
+        M_impl->game_log_->write( str, n );
     }
 }
 
@@ -688,7 +754,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
                            const char * msg,
                            const bool force )
 {
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return;
     }
@@ -759,7 +825,7 @@ Logger::writeGameLog()
     /* TH - 2-NOV-2000 */
     static bool wrote_final_cycle = false;
 
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return;
     }
@@ -1205,7 +1271,7 @@ Logger::writeTeamGraphic( const Side side,
                           const unsigned int x,
                           const unsigned int y )
 {
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return;
     }
@@ -1240,16 +1306,16 @@ Logger::writeTextLog( const char * message,
 {
     if ( flag == RECV || flag == LOG_TEXT )
     {
-        if ( isTextLogOpen() )
+        if ( M_impl->isTextLogOpen() )
         {
-            *M_text_log << M_stadium.time()
-                        << ',' << M_stadium.stoppageTime()
-                        << "\t" << message << '\n';
+            *M_impl->text_log_ << M_stadium.time()
+                               << ',' << M_stadium.stoppageTime()
+                               << "\t" << message << '\n';
         }
     }
 
     if ( ( flag == RECV || flag == SUBS )
-         && isGameLogOpen()
+         && M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
          && M_stadium.playmode() != PM_TimeOver )
     {
@@ -1282,8 +1348,8 @@ Logger::writePlayerLog( const Player & player,
                         const char * message,
                         const TextLogFlag flag )
 {
-    if ( isTextLogOpen()
-         || ( flag == RECV && isGameLogOpen() )
+    if ( M_impl->isTextLogOpen()
+         || ( flag == RECV && M_impl->isGameLogOpen() )
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
@@ -1301,8 +1367,8 @@ void
 Logger::writeCoachLog( const char * message,
                        const TextLogFlag flag )
 {
-    if ( isTextLogOpen()
-         || ( flag == RECV && isGameLogOpen() )
+    if ( M_impl->isTextLogOpen()
+         || ( flag == RECV && M_impl->isGameLogOpen() )
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
@@ -1319,8 +1385,8 @@ Logger::writeOnlineCoachLog( const OnlineCoach & coach,
                              const char * message,
                              const TextLogFlag flag )
 {
-    if ( isTextLogOpen()
-         || ( flag == RECV && isGameLogOpen() )
+    if ( M_impl->isTextLogOpen()
+         || ( flag == RECV && M_impl->isGameLogOpen() )
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
@@ -1338,8 +1404,8 @@ Logger::writeOnlineCoachLog( const OnlineCoach & coach,
 void
 Logger::writeRefereeAudio( const char * msg )
 {
-    if ( isTextLogOpen()
-         || ( isGameLogOpen()
+    if ( M_impl->isTextLogOpen()
+         || ( M_impl->isGameLogOpen()
               && M_stadium.playmode() != PM_BeforeKickOff
               && M_stadium.playmode() != PM_TimeOver ) )
     {
@@ -1349,12 +1415,12 @@ Logger::writeRefereeAudio( const char * msg )
                   "(%s %s)",
                   REFEREE_NAME, msg );
 
-        if ( isTextLogOpen() )
+        if ( M_impl->isTextLogOpen() )
         {
             writeTextLog( buf, LOG_TEXT );
         }
 
-        if ( isGameLogOpen() )
+        if ( M_impl->isGameLogOpen() )
         {
             writeMsgToGameLog( MSG_BOARD, buf );
         }
@@ -1366,7 +1432,7 @@ Logger::writePlayerAudio( const Player & player,
                           const char * msg )
 {
 
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
          && M_stadium.playmode() != PM_BeforeKickOff
          && M_stadium.playmode() != PM_TimeOver )
@@ -1385,7 +1451,7 @@ void
 Logger::writeCoachAudio( const Coach & coach,
                          const char * msg )
 {
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
          && M_stadium.playmode() != PM_BeforeKickOff
          && M_stadium.playmode() != PM_TimeOver )
@@ -1412,7 +1478,7 @@ void
 Logger::writeCoachStdAudio( const OnlineCoach & coach,
                             const rcss::clang::Msg & msg )
 {
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
          && M_stadium.playmode() != PM_BeforeKickOff
          && M_stadium.playmode() != PM_TimeOver )
@@ -1441,15 +1507,15 @@ void
 Logger::writeTimes( const std::chrono::system_clock::time_point & old_time,
                     const std::chrono::system_clock::time_point & new_time )
 {
-    if ( isTextLogOpen()
+    if ( M_impl->isTextLogOpen()
          && ServerParam::instance().logTimes() )
     {
         const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( new_time - old_time );
         const double diff = nano_diff.count() * 0.001 * 0.001;
 
-        *M_text_log << M_stadium.time()
-                    << ',' << M_stadium.stoppageTime()
-                    << "\tCYCLE_TIMES: " << diff << '\n';
+        *M_impl->text_log_ << M_stadium.time()
+                           << ',' << M_stadium.stoppageTime()
+                           << "\tCYCLE_TIMES: " << diff << '\n';
     }
 }
 
@@ -1458,14 +1524,14 @@ Logger::writeProfile( const std::chrono::system_clock::time_point & start_time,
                       const std::chrono::system_clock::time_point & end_time,
                       const std::string & str )
 {
-    if ( isTextLogOpen()
+    if ( M_impl->isTextLogOpen()
          && ServerParam::instance().profile() )
     {
         const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( end_time - start_time );
         const double diff = nano_diff.count() * 0.001 * 0.001;
 
-        *M_text_log << M_stadium.time()
-                    << ',' << M_stadium.stoppageTime()
-                    << "\t" << str << ": " << diff << '\n';
+        *M_impl->text_log_ << M_stadium.time()
+                           << ',' << M_stadium.stoppageTime()
+                           << "\t" << str << ": " << diff << '\n';
     }
 }

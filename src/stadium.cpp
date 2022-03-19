@@ -2534,11 +2534,11 @@ Stadium::doSendThink()
         cycles_missed = 0;
     }
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().logTimes() )
+    if ( //M_logger.isTextLogOpen() &&
+         ServerParam::instance().logTimes() )
     {
-        char buf[32];
-        snprintf( buf, 32, "Num sleeps called: %d", num_sleeps );
+        char buf[128];
+        snprintf( buf, 127, "Num sleeps called: %d", num_sleeps );
         M_logger.writeTextLog( buf, LOG_TEXT );
     }
 

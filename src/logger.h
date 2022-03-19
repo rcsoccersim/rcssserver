@@ -29,6 +29,7 @@
 #include <fstream>
 #include <string>
 #include <chrono>
+#include <memory>
 
 class Player;
 class Coach;
@@ -55,27 +56,13 @@ private:
     static const std::string DEF_KAWAY_NAME;
     static const std::string DEF_KAWAY_SUFFIX;
 
+    struct Impl;
+    std::unique_ptr< Impl > M_impl;
+
     rcss::InitObserverLogger * M_init_observer;
     rcss::ObserverLogger * M_observer;
 
     const Stadium & M_stadium;
-
-    std::string M_game_log_name;
-    std::string M_text_log_name;
-    std::string M_kaway_log_name;
-
-    std::ostream * M_game_log;
-    std::ostream * M_text_log;
-    std::ofstream M_kaway_log;  //!< file for keepaway log
-
-
-    PlayMode M_playmode;
-    std::string M_team_l_name;
-    std::string M_team_r_name;
-    int M_team_l_score;
-    int M_team_r_score;
-    int M_team_l_pen_taken;
-    int M_team_r_pen_taken;
 
 public:
     explicit
@@ -86,6 +73,8 @@ public:
 
     bool open();
     void close();
+
+    std::ostream & kawayLog();
 
 private:
     bool openGameLog();
@@ -100,27 +89,7 @@ private:
 
 public:
 
-    bool isGameLogOpen() const
-      {
-          return ( M_game_log && M_game_log->good() );
-      }
-
-    bool isTextLogOpen() const
-      {
-          return ( M_text_log && M_text_log->good() );
-      }
-
-    std::ostream & kawayLog()
-      {
-          return M_kaway_log;
-      }
-
-    void flush()
-      {
-          if ( M_game_log ) M_game_log->flush();
-          if ( M_text_log ) M_text_log->flush();
-          M_kaway_log.flush();
-      }
+    void flush();
 
     void writeToGameLog( const char * str,
                          const std::streamsize n );
