@@ -29,6 +29,7 @@
 #include "clangmsg.h"
 #include "coach.h"
 #include "landmarkreader.h"
+#include "logger.h"
 #include "monitor.h"
 #include "object.h"
 #include "param.h"
@@ -62,7 +63,6 @@
 
 Stadium::Stadium()
     : M_alive( true ),
-      M_logger( *this ),
       M_ball( nullptr ),
       M_players( MAX_PLAYER*2, static_cast< Player * >( 0 ) ),
       M_coach( nullptr ),
@@ -294,7 +294,7 @@ Stadium::init()
     M_connect_wait = std::max( 0, ServerParam::instance().connectWait() );
 
 
-    if ( ! M_logger.open() )
+    if ( ! Logger::instance().open( *this ) )
     {
         disable();
         return false;
@@ -944,11 +944,11 @@ Stadium::sendDisp()
     }
 
     // record game log
-    M_logger.writeGameLog();
-    M_logger.flush();
+    Logger::instance().writeGameLog( *this );
+    Logger::instance().flush();
 
     const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    M_logger.writeProfile( start_time, end_time, "DISP" );
+    Logger::instance().writeProfile( *this, start_time, end_time, "DISP" );
 }
 
 
@@ -1574,7 +1574,7 @@ Stadium::broadcastSubstitution( const int side,
         m->sendMsg( MSG_BOARD, buffer );
     }
 
-    M_logger.writeTextLog( buffer, SUBS );
+    Logger::instance().writeTextLog( *this, buffer, SUBS );
 }
 
 
@@ -1638,7 +1638,7 @@ Stadium::broadcastChangePlayerToGoalie( const Player * player )
         m->sendMsg( MSG_BOARD, msg );
     }
 
-    M_logger.writeTextLog( msg, SUBS );
+    Logger::instance().writeTextLog( *this, msg, SUBS );
 }
 
 
@@ -1973,7 +1973,7 @@ Stadium::sendTeamGraphic( const Side side,
                           const unsigned int x,
                           const unsigned int y )
 {
-    M_logger.writeTeamGraphic( side, x, y );
+    Logger::instance().writeTeamGraphic( side, x, y );
 }
 
 
@@ -2058,7 +2058,7 @@ Stadium::sendRefereeAudio( const char * msg )
         l->sendRefereeAudio( msg );
     }
 
-    M_logger.writeRefereeAudio( msg );
+    Logger::instance().writeRefereeAudio( *this, msg );
 
     if ( ServerParam::instance().sendComms() )
     {
@@ -2088,7 +2088,7 @@ Stadium::sendPlayerAudio( const Player & player,
         l->sendPlayerAudio( player, msg );
     }
 
-    M_logger.writePlayerAudio( player, msg );
+    Logger::instance().writePlayerAudio( *this, player, msg );
 
     if ( ServerParam::instance().sendComms() )
     {
@@ -2119,7 +2119,7 @@ Stadium::sendCoachAudio( const Coach & coach,
         l->sendCoachAudio( coach, msg );
     }
 
-    M_logger.writeCoachAudio( coach, msg );
+    Logger::instance().writeCoachAudio( *this, coach, msg );
 
     if ( ServerParam::instance().sendComms() )
     {
@@ -2155,7 +2155,7 @@ Stadium::sendCoachStdAudio( const OnlineCoach & coach,
         l->sendCoachStdAudio( msg );
     }
 
-    M_logger.writeCoachStdAudio( coach, msg );
+    Logger::instance().writeCoachStdAudio( *this, coach, msg );
 
     if ( ServerParam::instance().sendComms() )
     {
@@ -2218,7 +2218,7 @@ Stadium::doRecvFromClients()
     removeDisconnectedClients();
 
     const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    M_logger.writeProfile( start_time, end_time, "RECV" );
+    Logger::instance().writeProfile( *this, start_time, end_time, "RECV" );
 }
 
 void
@@ -2231,7 +2231,7 @@ Stadium::doNewSimulatorStep()
     //  tp_old = tp_new;
     //  write_times displays nonsense at first call, since tp_old is never
     //  initialized. Don't want to handle special exception for first call.
-    M_logger.writeTimes( prev_time, start_time );
+    Logger::instance().writeTimes( *this, prev_time, start_time );
     prev_time = start_time;
 
     //
@@ -2242,7 +2242,7 @@ Stadium::doNewSimulatorStep()
     checkAutoMode();
 
     const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    M_logger.writeProfile( start_time, end_time, "SIM" );
+    Logger::instance().writeProfile( *this, start_time, end_time, "SIM" );
 }
 
 void
@@ -2290,7 +2290,7 @@ Stadium::doSendSenseBody()
     // write profile
     //
     const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    M_logger.writeProfile( start_time, end_time, "SB" );
+    Logger::instance().writeProfile( *this, start_time, end_time, "SB" );
 }
 
 void
@@ -2311,7 +2311,7 @@ Stadium::doSendVisuals()
     }
 
     const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    M_logger.writeProfile( start_time, end_time, "VIS" );
+    Logger::instance().writeProfile( *this, start_time, end_time, "VIS" );
 }
 
 void
@@ -2332,7 +2332,7 @@ Stadium::doSendSynchVisuals()
     }
 
     const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    M_logger.writeProfile( start_time, end_time, "VIS_S" );
+    Logger::instance().writeProfile( *this, start_time, end_time, "VIS_S" );
 }
 
 void
@@ -2355,7 +2355,7 @@ Stadium::doSendCoachMessages()
     }
 
     const std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
-    M_logger.writeProfile( start_time, end_time, "COACH" );
+    Logger::instance().writeProfile( *this, start_time, end_time, "COACH" );
 
 #if 0
     // At each cycle we flush to logs otherwise the buffers
@@ -2381,7 +2381,7 @@ Stadium::doSendCoachMessages()
     // reason for introducting threads to the code that to improve
     // logging.  Maybe later, when we already have a thread for each
     // client it will seem like less of a hurdle.
-    M_logger.flush();
+    Logger::instance().flush();
 #endif
 }
 
@@ -2534,12 +2534,11 @@ Stadium::doSendThink()
         cycles_missed = 0;
     }
 
-    if ( M_logger.isTextLogOpen()
-         && ServerParam::instance().logTimes() )
+    if ( ServerParam::instance().logTimes() )
     {
-        char buf[32];
-        snprintf( buf, 32, "Num sleeps called: %d", num_sleeps );
-        M_logger.writeTextLog( buf, LOG_TEXT );
+        char buf[128];
+        snprintf( buf, 127, "Num sleeps called: %d", num_sleeps );
+        Logger::instance().writeTextLog( *this, buf, LOG_TEXT );
     }
 
     if ( shutdown )
@@ -2726,7 +2725,7 @@ Stadium::parsePlayerInit( const char * message,
                       << "player (" << teamname << ' ' << p->unum() << ") connected."
                       << std::endl;
 
-            M_logger.writePlayerLog( *p, message, RECV );
+            Logger::instance().writePlayerLog( *this, *p, message, RECV );
         }
 
         return;
@@ -2758,7 +2757,7 @@ Stadium::parsePlayerInit( const char * message,
         {
             std::cout << "A player (" << teamname << ' ' << p->unum() << ") reconnected."
                       << std::endl;
-            M_logger.writePlayerLog( *p, message, RECV );
+            Logger::instance().writePlayerLog( *this, *p, message, RECV );
         }
 
         return;
@@ -2915,7 +2914,7 @@ Stadium::parseCoachInit( const char * message,
         {
             std::cout << "A new (v" << coach->version() << ") "
                       << "offline coach connected" << std::endl;
-            M_logger.writeCoachLog( message, RECV );
+            Logger::instance().writeCoachLog( *this, message, RECV );
         }
     }
     else
@@ -2923,7 +2922,7 @@ Stadium::parseCoachInit( const char * message,
         kickOff(); // need to remove this line if we
         // dont want the server to start when the coach connects
         M_coach->parse_command( message );
-        M_logger.writeCoachLog( message, RECV );
+        Logger::instance().writeCoachLog( *this, message, RECV );
     }
 
     return true;
@@ -3078,7 +3077,7 @@ Stadium::parseOnlineCoachInit( const char * message,
                   << "online coach (" << teamname << ") connected."
                   << std::endl;;
 
-        M_logger.writeOnlineCoachLog( *olc, message, RECV );
+        Logger::instance().writeOnlineCoachLog( *this, *olc, message, RECV );
     }
 }
 
@@ -3133,7 +3132,7 @@ Stadium::finalize( const std::string & msg )
         s_first = false;
         killTeams();
         std::cout << '\n' << msg << '\n';
-        M_logger.close();
+        Logger::instance().close( *this );
         saveResults();
         disable();
     }

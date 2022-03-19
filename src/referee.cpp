@@ -25,6 +25,7 @@
 
 #include "referee.h"
 
+#include "logger.h"
 #include "stadium.h"
 #include "player.h"
 #include "team.h"
@@ -3021,38 +3022,15 @@ KeepawayRef::ballInKeepawayArea()
 void
 KeepawayRef::logHeader()
 {
-    if ( M_stadium.logger().kawayLog() )
-    {
-        M_stadium.logger().kawayLog() << "# Keepers: " << M_keepers << '\n'
-                                      << "# Takers:  " << M_takers << '\n'
-                                      << "# Region:  " << ServerParam::instance().keepAwayLength()
-                                      << " x " << ServerParam::instance().keepAwayWidth()
-                                      << '\n'
-                                      << "#\n"
-                                      << "# Description of Fields:\n"
-                                      << "# 1) Episode number\n"
-                                      << "# 2) Start time in simulator steps (100ms)\n"
-                                      << "# 3) End time in simulator steps (100ms)\n"
-                                      << "# 4) Duration in simulator steps (100ms)\n"
-                                      << "# 5) (o)ut of bounds / (t)aken away\n"
-                                      << "#\n"
-                                      << std::flush;
-    }
+    Logger::instance().writeKeepawayHeader( M_keepers, M_takers );
 }
 
 void
-KeepawayRef::logEpisode( const char * endCond )
+KeepawayRef::logEpisode( const char * end_cond )
 {
-    if ( M_stadium.logger().kawayLog() )
-    {
-        M_stadium.logger().kawayLog() << M_episode++ << "\t"
-                                      << M_time << "\t"
-                                      << M_stadium.time() << "\t"
-                                      << M_stadium.time() - M_time << "\t"
-                                      << endCond
-                                      << std::endl;
-    }
+    Logger::instance().writeKeepawayLog( M_stadium, M_episode, M_time, end_cond );
 
+    ++M_episode;
     M_time = M_stadium.time();
 }
 

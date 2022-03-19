@@ -25,7 +25,6 @@
 
 #include "initsenderlogger.h"
 
-#include "logger.h"
 #include "serializermonitor.h"
 
 #include "types.h"

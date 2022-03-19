@@ -218,6 +218,11 @@ public:
     virtual
     void parse_command( const char * command ) override;
 
+    const Team & team() const
+    {
+        return M_team;
+    }
+
     virtual
     Side side() const override
       {

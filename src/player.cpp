@@ -25,6 +25,7 @@
 
 #include "player.h"
 
+#include "logger.h"
 #include "coach.h"
 #include "stadium.h"
 #include "team.h"
@@ -484,7 +485,7 @@ Player::parseMsg( char * msg,
         }
         command[ len ] = 0;
     }
-    M_stadium.logger().writePlayerLog( *this, command, RECV );
+    Logger::instance().writePlayerLog( M_stadium, *this, command, RECV );
 
     /** Call the PlayerCommandParser */
     if (
@@ -970,7 +971,7 @@ Player::send( const char * msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.logger().writePlayerLog( *this, msg, SEND );
+        Logger::instance().writePlayerLog( M_stadium, *this, msg, SEND );
     }
 }
 
