@@ -13,7 +13,7 @@ Make sure you have the required dependencies installed on your system:
 
 - g++
 - make
-- boost
+- boost >= 1.44
 - bison
 - flex
 
@@ -99,8 +99,8 @@ but not any directories that were created during the installation process.
 
 ## Using the Server
 
-To start only the server either type `./rcssserver` from the directory 
-containing the executable or `rcssserver` if you installed the executables 
+To start only the server either type `./rcssserver` from the directory
+containing the executable or `rcssserver` if you installed the executables
 in your PATH. rcssserver will look in your home directory for the configuration files:
 
 ```bash
@@ -111,9 +111,9 @@ in your PATH. rcssserver will look in your home directory for the configuration 
 
 If these files do not exist they will be created and populated with default values.
 
-To start the sample client, type `./rcssclient` or `rcssclient` as above.  Then type 
-`(init sample)`.  This will connect the sample client to the server.  You can then 
-type in client command to move the client around the field. You will also need a 
+To start the sample client, type `./rcssclient` or `rcssclient` as above.  Then type
+`(init sample)`.  This will connect the sample client to the server.  You can then
+type in client command to move the client around the field. You will also need a
 monitor to be able to see whats happening on the field.
 
 If you installed the server and the monitor successfully, you can use the

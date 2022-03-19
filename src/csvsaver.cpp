@@ -97,14 +97,7 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
     boost::filesystem::path conf_path;
     try
     {
-        conf_path = boost::filesystem::path( tildeExpand( conf_dir )
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                             , &boost::filesystem::native
-#  endif
-#endif
-                                             );
-
+        conf_path = boost::filesystem::path( tildeExpand( conf_dir ) );
         conf_path /= "CSVSaver.conf";
     }
     catch ( std::exception & e )
@@ -120,7 +113,7 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
                                                             "CSVSaver" ) )
     {
         std::cerr << "could not create or parse configuration file '"
-                  << conf_path.BOOST_FS_FILE_STRING()
+                  << conf_path.string()
                   << "'" << std::endl;
         return false;
     }
@@ -128,7 +121,7 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
     if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
     {
         std::cerr << "Version mismatched in the configuration file. "
-                  << "Need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
+                  << "Need to regenerate '" << conf_path.string() << "'"
                   << " or set '" << instance().M_builder->version() << "' to the 'version' option."
                   << std::endl;
 //         std::cerr << "registered version = ["
@@ -209,13 +202,7 @@ CSVSaver::openResultsFile()
     boost::filesystem::path file_path;
     try
     {
-        file_path = boost::filesystem::path( tildeExpand( CSVSaverParam::instance().filename() )
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                             , &boost::filesystem::native
-#  endif
-#endif
-                                             );
+        file_path = boost::filesystem::path( tildeExpand( CSVSaverParam::instance().filename() ) );
         new_file = ! boost::filesystem::exists( file_path );
     }
     catch ( std::exception & e )
@@ -228,7 +215,7 @@ CSVSaver::openResultsFile()
         return;
     }
 
-    M_file.open( file_path.BOOST_FS_FILE_STRING().c_str(),
+    M_file.open( file_path.c_str(),
                  std::ofstream::out | std::ostream::app );
     if ( ! M_file.is_open() )
     {

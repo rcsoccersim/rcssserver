@@ -238,7 +238,7 @@ bool
 Parser::parseCreateConf( const boost::filesystem::path & conf_name,
                          const std::string & module_name )
 {
-    std::string native_path = conf_name.BOOST_FS_FILE_STRING();
+    std::string native_path = conf_name.string();
 
     boost::filesystem::ifstream conf( conf_name );
     if ( ! conf.is_open() )
@@ -305,13 +305,7 @@ Parser::include( const char * begin,
     boost::filesystem::path path;
     try
     {
-        path = boost::filesystem::path( incname
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                        , &boost::filesystem::native
-#  endif
-#endif
-                                        );
+        path = boost::filesystem::path( incname );
     }
     catch ( ... )
     {
@@ -341,20 +335,14 @@ Parser::include( const char * begin,
              || curr_path == "cmd line args"
              || curr_path == "anonymous stream" )
         {
-            full_name = boost::filesystem::BOOST_FS_ABSOLUTE( path );
+            full_name = boost::filesystem::absolute( path );
         }
         else
         {
             try
             {
-                boost::filesystem::path branch( curr_path
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                                , &boost::filesystem::native
-#  endif
-#endif
-                                                );
-                branch = branch.BOOST_FS_PARENT_PATH();
+                boost::filesystem::path branch( curr_path );
+                branch = branch.parent_path();
                 full_name = branch / path;
             }
             catch  ( const std::exception & e )
@@ -373,7 +361,7 @@ Parser::include( const char * begin,
           i != m_stack.end();
           ++i )
     {
-        if ( full_name.BOOST_FS_FILE_STRING() == i->m_name )
+        if ( full_name.string() == i->m_name )
         {
             // file already included so ignore it
             return true;
@@ -388,14 +376,14 @@ Parser::include( const char * begin,
             if ( strm.is_open() && strm.good() )
             {
                 bool rval = parse( strm,
-                                   full_name.BOOST_FS_FILE_STRING() );
+                                   full_name.string() );
 
                 strm.close();
                 return rval;
             }
             else
             {
-                m_builder.includeFailed( full_name.BOOST_FS_FILE_STRING(),
+                m_builder.includeFailed( full_name.string(),
                                          "read failed",
                                          m_stack.front().m_name,
                                          m_stack.front().m_lineno );
@@ -404,7 +392,7 @@ Parser::include( const char * begin,
         }
         else
         {
-            m_builder.includeFailed( full_name.BOOST_FS_FILE_STRING(),
+            m_builder.includeFailed( full_name.string(),
                                      "cannot include a directory",
                                      m_stack.front().m_name,
                                      m_stack.front().m_lineno );
@@ -413,7 +401,7 @@ Parser::include( const char * begin,
     }
     else
     {
-        m_builder.includeFailed( full_name.BOOST_FS_FILE_STRING(),
+        m_builder.includeFailed( full_name.string(),
                                  "file not found",
                                  m_stack.front().m_name,
                                  m_stack.front().m_lineno );
