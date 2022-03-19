@@ -83,14 +83,19 @@
 
 #endif
 
-const std::string Logger::DEF_TEXT_NAME = "incomplete";
-const std::string Logger::DEF_TEXT_SUFFIX = ".rcl";
-const std::string Logger::DEF_GAME_NAME = "incomplete";
-const std::string Logger::DEF_GAME_SUFFIX = ".rcg";
-const std::string Logger::DEF_KAWAY_NAME = "incomplete";
-const std::string Logger::DEF_KAWAY_SUFFIX = ".kwy";
+namespace {
+const std::string DEF_TEXT_NAME = "incomplete";
+const std::string DEF_TEXT_SUFFIX = ".rcl";
+const std::string DEF_GAME_NAME = "incomplete";
+const std::string DEF_GAME_SUFFIX = ".rcg";
+const std::string DEF_KAWAY_NAME = "incomplete";
+const std::string DEF_KAWAY_SUFFIX = ".kwy";
+}
 
 struct Logger::Impl {
+
+    std::unique_ptr< rcss::InitObserverLogger > init_observer_;
+    std::unique_ptr< rcss::ObserverLogger > observer_;
 
     std::string game_log_filepath_;
     std::string text_log_filepath_;
@@ -102,7 +107,9 @@ struct Logger::Impl {
 
 
     Impl()
-        : game_log_( nullptr ),
+        : init_observer_( new rcss::InitObserverLogger ),
+          observer_( new rcss::ObserverLogger ),
+          game_log_( nullptr ),
           text_log_( nullptr )
     {
 
@@ -171,8 +178,6 @@ Logger::instance()
 
 Logger::Logger()
     : M_impl( new Impl() )
-    , M_init_observer( new rcss::InitObserverLogger )
-    , M_observer( new rcss::ObserverLogger )
 {
 
 }
@@ -225,7 +230,7 @@ Logger::setSenders( const Stadium & stadium )
             std::cerr << "No InitSenderLogger::Creator v" << log_version << std::endl;
             return false;
         }
-        M_init_observer->setInitSender( init_cre( init_params ) );
+        M_impl->init_observer_->setInitSender( init_cre( init_params ) );
     }
 
     // disp sender
@@ -240,7 +245,7 @@ Logger::setSenders( const Stadium & stadium )
             std::cerr << "No DispSenderLogger::Creator v" << log_version << std::endl;
             return false;
         }
-        M_observer->setDispSender( disp_cre( disp_params ) );
+        M_impl->observer_->setDispSender( disp_cre( disp_params ) );
     }
 
     return true;
@@ -311,11 +316,11 @@ Logger::openGameLog( const Stadium & stadium )
 
         if ( ServerParam::instance().gameLogFixed() )
         {
-            game_log /= ServerParam::instance().gameLogFixedName() + Logger::DEF_GAME_SUFFIX;
+            game_log /= ServerParam::instance().gameLogFixedName() + DEF_GAME_SUFFIX;
         }
         else
         {
-            game_log /= Logger::DEF_GAME_NAME + Logger::DEF_GAME_SUFFIX;
+            game_log /= DEF_GAME_NAME + DEF_GAME_SUFFIX;
         }
 
         M_impl->game_log_filepath_ = game_log.BOOST_FS_FILE_STRING();
@@ -373,10 +378,10 @@ Logger::openGameLog( const Stadium & stadium )
         return false;
     }
 
-    M_init_observer->sendHeader();
-    M_init_observer->sendServerParams();
-    M_init_observer->sendPlayerParams();
-    M_init_observer->sendPlayerTypes();
+    M_impl->init_observer_->sendHeader();
+    M_impl->init_observer_->sendServerParams();
+    M_impl->init_observer_->sendPlayerParams();
+    M_impl->init_observer_->sendPlayerTypes();
     M_impl->game_log_->flush();
 
     return true;
@@ -406,11 +411,11 @@ Logger::openTextLog()
 
         if ( ServerParam::instance().textLogFixed() )
         {
-            text_log /= ServerParam::instance().textLogFixedName() + Logger::DEF_TEXT_SUFFIX;
+            text_log /= ServerParam::instance().textLogFixedName() + DEF_TEXT_SUFFIX;
         }
         else
         {
-            text_log /= Logger::DEF_TEXT_NAME + Logger::DEF_TEXT_SUFFIX;
+            text_log /= DEF_TEXT_NAME + DEF_TEXT_SUFFIX;
         }
 
         M_impl->text_log_filepath_ = text_log.BOOST_FS_FILE_STRING();
@@ -485,11 +490,11 @@ Logger::openKawayLog()
 
         if ( ServerParam::instance().kawayLogFixed() )
         {
-            kaway_log /= ServerParam::instance().kawayLogFixedName() + Logger::DEF_KAWAY_SUFFIX;
+            kaway_log /= ServerParam::instance().kawayLogFixedName() + DEF_KAWAY_SUFFIX;
         }
         else
         {
-            kaway_log /= Logger::DEF_KAWAY_NAME + Logger::DEF_KAWAY_SUFFIX;
+            kaway_log /= DEF_KAWAY_NAME + DEF_KAWAY_SUFFIX;
         }
 
         M_impl->kaway_log_filepath_ = kaway_log.BOOST_FS_FILE_STRING();
@@ -644,7 +649,7 @@ Logger::renameLogs( const Stadium & stadium )
             newname += time_str;
         }
         newname += team_name_score;
-        newname += Logger::DEF_TEXT_SUFFIX;
+        newname += DEF_TEXT_SUFFIX;
         if ( ServerParam::instance().textLogCompression() > 0 )
         {
             newname += ".gz";
@@ -677,7 +682,7 @@ Logger::renameLogs( const Stadium & stadium )
             newname += time_str;
         }
         newname += team_name_score;
-        newname += Logger::DEF_GAME_SUFFIX;
+        newname += DEF_GAME_SUFFIX;
         if ( ServerParam::instance().gameLogCompression() > 0 )
         {
             newname += ".gz";
@@ -710,7 +715,7 @@ Logger::renameLogs( const Stadium & stadium )
             newname += time_str;
         }
         newname += team_name_score;
-        newname += Logger::DEF_KAWAY_SUFFIX;
+        newname += DEF_KAWAY_SUFFIX;
 
         closeKawayLog();
 
@@ -756,7 +761,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
          || ServerParam::instance().recordMessages()
          || ServerParam::instance().gameLogVersion() == REC_OLD_VERSION )
     {
-        M_observer->sendMsg( board_type, msg );
+        M_impl->observer_->sendMsg( board_type, msg );
     }
 
 //     if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_4 )
@@ -881,7 +886,7 @@ Logger::writeGameLogImpl( const Stadium & stadium )
     if ( pm != stadium.playmode() )
     {
         pm = stadium.playmode();
-        M_init_observer->sendPlayMode();
+        M_impl->init_observer_->sendPlayMode();
     }
 
     // if teams or score has changed, write teams and score
@@ -900,11 +905,11 @@ Logger::writeGameLogImpl( const Stadium & stadium )
         team_l_pen_taken = stadium.teamLeft().penaltyTaken();
         team_r_pen_taken = stadium.teamRight().penaltyTaken();
 
-        M_init_observer->sendTeam();
+        M_impl->init_observer_->sendTeam();
     }
 
 
-    M_observer->sendShow();
+    M_impl->observer_->sendShow();
 }
 
 #if 0
@@ -1269,7 +1274,7 @@ Logger::writeTeamGraphic( const Side side,
         return;
     }
 
-    M_observer->sendTeamGraphic( side, x, y );
+    M_impl->observer_->sendTeamGraphic( side, x, y );
 
 //     const XPMHolder * xpm = ( side == LEFT
 //                               ? stadium.teamLeft().teamGraphic( x, y )

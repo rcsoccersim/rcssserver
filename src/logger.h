@@ -39,8 +39,6 @@ class XPMHolder;
 struct timeval;
 
 namespace rcss {
-class InitObserverLogger;
-class ObserverLogger;
 namespace clang {
 class Msg;
 }
@@ -49,23 +47,14 @@ class Msg;
 class Logger {
 private:
 
-    static const std::string DEF_TEXT_NAME;
-    static const std::string DEF_TEXT_SUFFIX;
-    static const std::string DEF_GAME_NAME;
-    static const std::string DEF_GAME_SUFFIX;
-    static const std::string DEF_KAWAY_NAME;
-    static const std::string DEF_KAWAY_SUFFIX;
-
     struct Impl;
     std::unique_ptr< Impl > M_impl;
-
-    std::unique_ptr< rcss::InitObserverLogger > M_init_observer;
-    std::unique_ptr< rcss::ObserverLogger > M_observer;
 
     Logger();
 
     Logger( const Logger & ) = delete;
     Logger & operator=( const Logger & ) = delete;
+
 public:
 
     static Logger & instance();
