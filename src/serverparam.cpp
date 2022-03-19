@@ -414,19 +414,11 @@ ServerParam::init( const int & argc,
     boost::filesystem::path conf_path;
     try
     {
-        conf_path = boost::filesystem::path( tildeExpand( conf_dir )
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                             , &boost::filesystem::native
-#  endif
-#endif
-                                             );
+        conf_path = boost::filesystem::path( tildeExpand( conf_dir ) );
         if ( ! boost::filesystem::exists( conf_path )
              && ! boost::filesystem::create_directories( conf_path ) )
         {
-            std::cerr << "Could not read or create config directory '"
-                      << conf_path.BOOST_FS_FILE_STRING() << "'"
-                      << std::endl;
+            std::cerr << "Could not read or create config directory " << conf_path << std::endl;
             instance().clear();
             return false;
         }
@@ -444,13 +436,11 @@ ServerParam::init( const int & argc,
         return false;
     }
 
-    instance().convertOldConf( conf_path.BOOST_FS_FILE_STRING() );
+    instance().convertOldConf( conf_path.string() );
 
     if ( ! instance().M_conf_parser->parseCreateConf( conf_path, "server" ) )
     {
-        std::cerr << "could not create or parse configuration file '"
-                  << conf_path.BOOST_FS_FILE_STRING() << "'"
-                  << std::endl;
+        std::cerr << "could not create or parse configuration file " << conf_path << std::endl;
         instance().M_builder->displayHelp();
         instance().clear();
         return false;
@@ -459,7 +449,7 @@ ServerParam::init( const int & argc,
     if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
     {
         std::cerr << "Version mismatched in the configuration file. "
-                  << "You need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
+                  << "You need to regenerate " << conf_path
                   << " or set '" << instance().M_builder->version() << "' to the 'version' option."
                   << std::endl;
         //             std::cerr << "registered version = ["

@@ -49,40 +49,6 @@
 
 #include <sstream>
 
-// #ifdef HAVE_SYS_TIME_H
-// #include <sys/time.h>
-// #endif
-// #ifdef HAVE_NETINET_IN_H
-// #include <netinet/in.h>
-// #endif
-// #ifdef HAVE_WINSOCK2_H
-// #include <winsock2.h>
-// #endif
-
-
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION > 2
-
-#define BOOST_FS_ABSOLUTE absolute
-#define BOOST_FS_FILE_STRING string
-#define BOOST_FS_DIRECTORY_STRING string
-#define BOOST_FS_PARENT_PATH parent_path
-
-#else
-
-#define BOOST_FS_ABSOLUTE complete
-
-#  ifdef BOOST_FILESYSTEM_NO_DEPRECATED
-#    define BOOST_FS_FILE_STRING file_string
-#    define BOOST_FS_DIRECTORY_STRING directory_string
-#    define BOOST_FS_PARENT_PATH parent_path
-#  else
-#    define BOOST_FS_FILE_STRING native_file_string
-#    define BOOST_FS_DIRECTORY_STRING native_directory_string
-#    define BOOST_FS_PARENT_PATH branch_path
-#  endif
-
-#endif
-
 namespace {
 const std::string DEF_TEXT_NAME = "incomplete";
 const std::string DEF_TEXT_SUFFIX = ".rcl";
@@ -298,19 +264,12 @@ Logger::openGameLog( const Stadium & stadium )
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path game_log( ServerParam::instance().gameLogDir()
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                          , &boost::filesystem::native
-#  endif
-#endif
-                                          );
+        boost::filesystem::path game_log( ServerParam::instance().gameLogDir() );
         if ( ! boost::filesystem::exists( game_log )
              && ! boost::filesystem::create_directories( game_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": can't create game log directory '"
-                      << game_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+                      << ": can't create game log directory " << game_log << std::endl;
             return false;
         }
 
@@ -323,7 +282,7 @@ Logger::openGameLog( const Stadium & stadium )
             game_log /= DEF_GAME_NAME + DEF_GAME_SUFFIX;
         }
 
-        M_impl->game_log_filepath_ = game_log.BOOST_FS_FILE_STRING();
+        M_impl->game_log_filepath_ = game_log.string();
     }
     catch ( std::exception & e )
     {
@@ -393,19 +352,12 @@ Logger::openTextLog()
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path text_log( ServerParam::instance().textLogDir()
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                          , &boost::filesystem::native
-#  endif
-#endif
-                                          );
+        boost::filesystem::path text_log( ServerParam::instance().textLogDir() );
         if ( ! boost::filesystem::exists( text_log )
              && ! boost::filesystem::create_directories( text_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": can't create text log directory '"
-                      << text_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+                      << ": can't create text log directory " << text_log << std::endl;
             return false;
         }
 
@@ -418,7 +370,7 @@ Logger::openTextLog()
             text_log /= DEF_TEXT_NAME + DEF_TEXT_SUFFIX;
         }
 
-        M_impl->text_log_filepath_ = text_log.BOOST_FS_FILE_STRING();
+        M_impl->text_log_filepath_ = text_log.string();
     }
     catch ( std::exception & e )
     {
@@ -472,19 +424,12 @@ Logger::openKawayLog()
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path kaway_log( ServerParam::instance().kawayLogDir()
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                           , &boost::filesystem::native
-#  endif
-#endif
-                                           );
+        boost::filesystem::path kaway_log( ServerParam::instance().kawayLogDir() );
         if ( ! boost::filesystem::exists( kaway_log )
              && ! boost::filesystem::create_directories( kaway_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": can't create keepaway log directory '"
-                      << kaway_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+                      << ": can't create keepaway log directory " << kaway_log << std::endl;
             return false;
         }
 
@@ -497,7 +442,7 @@ Logger::openKawayLog()
             kaway_log /= DEF_KAWAY_NAME + DEF_KAWAY_SUFFIX;
         }
 
-        M_impl->kaway_log_filepath_ = kaway_log.BOOST_FS_FILE_STRING();
+        M_impl->kaway_log_filepath_ = kaway_log.string();
     }
     catch ( std::exception & e )
     {

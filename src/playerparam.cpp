@@ -184,13 +184,7 @@ PlayerParam::init( rcss::conf::Builder * parent )
     try
     {
 
-        conf_path = boost::filesystem::path( tildeExpand( conf_dir )
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                             , &boost::filesystem::native
-#  endif
-#endif
-                                             );
+        conf_path = boost::filesystem::path( tildeExpand( conf_dir ) );
         conf_path /= PlayerParam::PLAYER_CONF;
     }
     catch ( std::exception & e )
@@ -203,20 +197,18 @@ PlayerParam::init( rcss::conf::Builder * parent )
         return false;
     }
 
-    instance().convertOldConf( conf_path.BOOST_FS_FILE_STRING() );
+    instance().convertOldConf( conf_path.string() );
 
     if ( ! instance().M_builder->parser()->parseCreateConf( conf_path, "player" ) )
     {
-        std::cerr << "could not parse configuration file '"
-                  << conf_path.BOOST_FS_FILE_STRING()
-                  << "'\n";
+        std::cerr << "could not parse configuration file " << conf_path << std::endl;;
         return false;
     }
 
     if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
     {
         std::cerr << "Version mismatched in the configuration file. "
-                  << "Need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
+                  << "Need to regenerate " << conf_path
                   << " or set '" << instance().M_builder->version() << "' to the 'version' option."
                   << std::endl;
 //         std::cerr << "registered version = ["
