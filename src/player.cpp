@@ -1553,6 +1553,13 @@ Player::move( double x,
          //|| M_stadium.playmode() == PM_PenaltySetup_Right
          )
     {
+        if ( M_stadium.playmode() == PM_BeforeKickOff
+             && ServerParam::instance().kickOffOffside()
+             && x >= -size() )
+        {
+            send( "(warning moving_to_opponent_field)" );
+        }
+
         M_pos.x = x * side();
         M_pos.y = y * side();
         M_stadium.collisions();
