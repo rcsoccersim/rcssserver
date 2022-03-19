@@ -25,8 +25,6 @@
 
 #include "types.h"
 
-#include <iostream>
-#include <fstream>
 #include <string>
 #include <chrono>
 #include <memory>
@@ -35,8 +33,6 @@ class Player;
 class Coach;
 class OnlineCoach;
 class Stadium;
-class XPMHolder;
-struct timeval;
 
 namespace rcss {
 namespace clang {
@@ -138,7 +134,7 @@ public:
     void writeKeepawayLog( const Stadium & stadium,
                            const int episode,
                            const int time,
-                           const char * endCode );
+                           const char * end_cond );
 
     void writeTimes( const Stadium & stadium,
                      const std::chrono::system_clock::time_point & old_time,
