@@ -28,7 +28,6 @@
 #include "object.h"
 #include "field.h"
 #include "weather.h"
-#include "logger.h"
 #include "resultsaver.hpp"
 
 #include <rcssbase/gzip/gzfstream.hpp>
@@ -95,8 +94,6 @@ protected:
     Field M_field;
     Weather M_weather;
 
-    Logger M_logger;
-
     PlayerCont  M_remote_players; //!< connected players
     OfflineCoachCont M_remote_offline_coaches; //!< connected trainers
     OnlineCoachCont M_remote_online_coaches; //!< connected coaches
@@ -156,11 +153,6 @@ public:
     bool isAlive() override
       {
           return M_alive;
-      }
-
-    Logger & logger()
-      {
-          return M_logger;
       }
 
     PlayMode playmode() const

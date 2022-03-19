@@ -25,6 +25,7 @@
 
 #include "referee.h"
 
+#include "logger.h"
 #include "stadium.h"
 #include "player.h"
 #include "team.h"
@@ -3021,9 +3022,9 @@ KeepawayRef::ballInKeepawayArea()
 void
 KeepawayRef::logHeader()
 {
-    if ( M_stadium.logger().kawayLog() )
+    if ( Logger::instance().kawayLog() )
     {
-        M_stadium.logger().kawayLog() << "# Keepers: " << M_keepers << '\n'
+        Logger::instance().kawayLog() << "# Keepers: " << M_keepers << '\n'
                                       << "# Takers:  " << M_takers << '\n'
                                       << "# Region:  " << ServerParam::instance().keepAwayLength()
                                       << " x " << ServerParam::instance().keepAwayWidth()
@@ -3043,9 +3044,9 @@ KeepawayRef::logHeader()
 void
 KeepawayRef::logEpisode( const char * endCond )
 {
-    if ( M_stadium.logger().kawayLog() )
+    if ( Logger::instance().kawayLog() )
     {
-        M_stadium.logger().kawayLog() << M_episode++ << "\t"
+        Logger::instance().kawayLog() << M_episode++ << "\t"
                                       << M_time << "\t"
                                       << M_stadium.time() << "\t"
                                       << M_stadium.time() - M_time << "\t"

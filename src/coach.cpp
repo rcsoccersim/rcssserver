@@ -29,6 +29,7 @@
 #include "clangparser.h"
 #include "clangmsg.h"
 #include "clangmsgbuilder.h"
+#include "logger.h"
 #include "stadium.h"
 #include "object.h"
 #include "player.h"
@@ -216,7 +217,7 @@ Coach::send( const char * msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.logger().writeCoachLog( msg, SEND );
+        Logger::instance().writeCoachLog( M_stadium, msg, SEND );
     }
 }
 
@@ -233,7 +234,7 @@ Coach::parseMsg( char * msg,
         }
         str[ len ] = 0;
     }
-    M_stadium.logger().writeCoachLog( str, RECV );
+    Logger::instance().writeCoachLog( M_stadium, str, RECV );
     parse_command( str );
 }
 
@@ -1082,7 +1083,7 @@ OnlineCoach::send( const char * msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.logger().writeOnlineCoachLog( *this, msg, SEND );
+        Logger::instance().writeOnlineCoachLog( M_stadium, *this, msg, SEND );
     }
     else
     {
@@ -1106,7 +1107,7 @@ OnlineCoach::parseMsg( char * msg,
         str[ len ] = 0;
     }
 
-    M_stadium.logger().writeOnlineCoachLog( *this, str, RECV );
+    Logger::instance().writeOnlineCoachLog( M_stadium, *this, str, RECV );
     parse_command( str );
 }
 
