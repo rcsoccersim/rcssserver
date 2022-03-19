@@ -371,6 +371,12 @@ const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 0;
 const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 16.5;
 const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 40.32;
 
+namespace {
+// 17.0.0
+constexpr double MAX_CATCH_ANGLE = +90.0;
+constexpr double MIN_CATCH_ANGLE = -90.0;
+}
+
 // XXX
 const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
@@ -934,6 +940,10 @@ ServerParam::addParams()
               rcss::conf::makeGetter( M_fixed_teamname_r ),
               "", 16 );
 
+    // v17
+    addParam( "max_catch_angle", M_max_catch_angle, "", 17 );
+    addParam( "min_catch_angle", M_min_catch_angle, "", 17 );
+
     // XXX
     // addParam( "random_seed", M_random_seed, "", 999 );
     // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
@@ -1436,6 +1446,10 @@ ServerParam::setDefaults()
     M_illegal_defense_width = ILLEGAL_DEFENSE_WIDTH;
     M_fixed_teamname_l = "";
     M_fixed_teamname_r = "";
+
+    // 17.0.0
+    M_max_catch_angle = MAX_CATCH_ANGLE;
+    M_min_catch_angle = MIN_CATCH_ANGLE;
 
     // XXX
     M_long_kick_power_factor = LONG_KICK_POWER_FACTOR;
