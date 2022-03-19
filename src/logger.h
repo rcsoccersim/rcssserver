@@ -64,8 +64,6 @@ public:
     bool open( const Stadium & stadium );
     void close( const Stadium & stadium );
 
-    std::ostream & kawayLog();
-
 private:
     bool setSenders( const Stadium & stadium );
 
@@ -134,6 +132,13 @@ public:
     void writeCoachStdAudio( const Stadium & stadium,
                              const OnlineCoach & coach,
                              const rcss::clang::Msg & msg );
+
+    void writeKeepawayHeader( const int keepers,
+                              const int takers );
+    void writeKeepawayLog( const Stadium & stadium,
+                           const int episode,
+                           const int time,
+                           const char * endCode );
 
     void writeTimes( const Stadium & stadium,
                      const std::chrono::system_clock::time_point & old_time,

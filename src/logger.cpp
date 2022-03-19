@@ -729,14 +729,6 @@ Logger::renameLogs( const Stadium & stadium )
 
 }
 
-
-std::ostream &
-Logger::kawayLog()
-{
-    return M_impl->kaway_log_;
-}
-
-
 // void
 // Logger::writeToGameLog( const char * str,
 //                         const std::streamsize n )
@@ -1506,6 +1498,46 @@ Logger::writeCoachStdAudio( const Stadium & stadium,
     }
 }
 
+
+void
+Logger::writeKeepawayHeader( const int keepers,
+                             const int takers )
+{
+    if ( M_impl->kaway_log_ )
+    {
+        M_impl->kaway_log_ << "# Keepers: " << keepers << '\n'
+                           << "# Takers:  " << takers << '\n'
+                           << "# Region:  " << ServerParam::instance().keepAwayLength()
+                           << " x " << ServerParam::instance().keepAwayWidth()
+                           << '\n'
+                           << "#\n"
+                           << "# Description of Fields:\n"
+                           << "# 1) Episode number\n"
+                           << "# 2) Start time in simulator steps (100ms)\n"
+                           << "# 3) End time in simulator steps (100ms)\n"
+                           << "# 4) Duration in simulator steps (100ms)\n"
+                           << "# 5) (o)ut of bounds / (t)aken away\n"
+                           << "#\n"
+                           << std::flush;
+    }
+}
+
+void
+Logger::writeKeepawayLog( const Stadium & stadium,
+                          const int episode,
+                          const int time,
+                          const char * end_cond )
+{
+    if ( M_impl->kaway_log_ )
+    {
+        M_impl->kaway_log_ << episode << "\t"
+                           << time << "\t"
+                           << stadium.time() << "\t"
+                           << stadium.time() - time << "\t"
+                           << end_cond
+                           << std::endl;
+    }
+}
 
 void
 Logger::writeTimes( const Stadium & stadium,
