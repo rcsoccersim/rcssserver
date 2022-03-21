@@ -77,6 +77,15 @@ NormalizeKickPower( const double & p )
                         ServerParam::instance().maxPower() );
 }
 
+inline
+double
+NormalizeCatchAngle( const double d )
+{
+    return rcss::bound( ServerParam::instance().minCatchAngle(),
+                        d,
+                        ServerParam::instance().maxCatchAngle() );
+}
+
 // For v11 or older version
 inline
 double
@@ -1342,6 +1351,8 @@ Player::goalieCatch( double dir )
     {
         return;
     }
+
+    dir = NormalizeCatchAngle( dir );
 
     M_command_done = true;
     M_state |= CATCH;
