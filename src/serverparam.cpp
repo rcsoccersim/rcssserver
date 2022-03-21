@@ -373,8 +373,8 @@ const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 40.32;
 
 namespace {
 // 17.0.0
-constexpr double MAX_CATCH_ANGLE = +90.0;
-constexpr double MIN_CATCH_ANGLE = -90.0;
+constexpr double MAX_CATCH_ANGLE = +180.0;
+constexpr double MIN_CATCH_ANGLE = -180.0;
 }
 
 // XXX
