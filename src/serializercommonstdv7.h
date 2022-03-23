@@ -53,7 +53,8 @@ public:
     void serializePlayerParamEnd( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerTypeBegin( std::ostream & strm ) const override;
+    void serializePlayerTypeBegin( std::ostream & strm,
+                                   const int id ) const override;
 
     virtual
     void serializePlayerTypeEnd( std::ostream & strm ) const override;

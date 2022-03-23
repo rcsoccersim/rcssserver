@@ -92,6 +92,8 @@ struct Logger::Impl {
     {
          if ( game_log_ )
          {
+             init_observer_->sendTail();
+
              game_log_->flush();
              delete game_log_;
              game_log_ = nullptr;

@@ -76,7 +76,8 @@ public:
     void serializePlayerParamEnd( std::ostream & strm ) const;
 
     virtual
-    void serializePlayerTypeBegin( std::ostream & strm ) const;
+    void serializePlayerTypeBegin( std::ostream & strm,
+                                   const int id ) const;
 
     virtual
     void serializePlayerTypeEnd( std::ostream & strm ) const;

@@ -64,9 +64,10 @@ SerializerCommonStdv7::serializePlayerParamEnd( std::ostream & strm ) const
 }
 
 void
-SerializerCommonStdv7::serializePlayerTypeBegin( std::ostream & strm ) const
+SerializerCommonStdv7::serializePlayerTypeBegin( std::ostream & strm,
+                                                 const int id ) const
 {
-    strm << "(player_type";
+    strm << "(player_type " << id;
 }
 
 void

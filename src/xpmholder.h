@@ -68,7 +68,14 @@ public:
           return M_colors;
       }
 
+    const std::vector< std::string > & data() const
+    {
+        return M_data;
+    }
+
     std::ostream & print( std::ostream & o ) const;
+
+    std::ostream & printEscaped( std::ostream & o ) const;
 
 };
 

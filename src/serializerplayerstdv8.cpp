@@ -252,7 +252,8 @@ SerializerPlayerStdv8::serializePlayerParamBegin( std::ostream & strm ) const
 }
 
 void
-SerializerPlayerStdv8::serializePlayerTypeBegin( std::ostream & strm ) const
+SerializerPlayerStdv8::serializePlayerTypeBegin( std::ostream & strm,
+                                                 const int ) const
 {
     strm << "(player_type ";
 }
