@@ -815,16 +815,7 @@ SerializerMonitorJSON::serializeTeamGraphic( std::ostream & os,
 
     os << ',';
     os << std::quoted( "xpm" ) << ':'
-       << '{'
-       << std::quoted( "width" ) << ':' << xpm.width()
-       << ','
-       << std::quoted( "height" ) << ':' << xpm.height()
-       << ','
-       << std::quoted( "color" ) << ':' << xpm.colors();
-
-    os << ','
-       << std::quoted( "data" ) << ':'
-       << '[';
+       << '['; // begin xpm array
     bool first = true;
     for ( std::string str : xpm.data() )
     {
@@ -833,11 +824,9 @@ SerializerMonitorJSON::serializeTeamGraphic( std::ostream & os,
         std::replace( str.begin(), str.end(), '\t', ' ' );
         os << std::quoted( str );
     }
-    os << ']';
+    os << ']'; // end xpm array
 
-    os << '}'; // close xpm
-
-    os << '}'; // whole
+    os << '}';
 }
 
 void
