@@ -694,18 +694,15 @@ InitSenderCommonJSON::sendPlayerTypes()
         return;
     }
 
-    if ( isGameLog() )
-    {
-        transport() << ",";
-    }
-
     for ( int i = 0; i < max_types; ++i )
     {
         const HeteroPlayer * type = stadium().playerType( i );
         if ( type )
         {
-            if ( i != 0 ) transport() << ',';
-            if ( isGameLog() ) transport() << '\n';
+            if ( isGameLog() )
+            {
+                transport() << ",\n";
+            }
 
             serializer().serializePlayerTypeBegin( transport(), i );
 
