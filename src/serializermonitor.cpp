@@ -683,7 +683,7 @@ void SerializerMonitorJSON::serializePlayerViewMode( std::ostream & os,
 
 void
 SerializerMonitorJSON::serializePlayerStamina( std::ostream & os,
-                                                const Player & player ) const
+                                               const Player & player ) const
 {
     os << ',';
 #ifdef USE_FLAT_STYLE

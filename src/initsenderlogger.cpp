@@ -506,7 +506,7 @@ InitSenderLoggerJSON::~InitSenderLoggerJSON()
 void
 InitSenderLoggerJSON::sendHeader()
 {
-    //transport() << "ULG6\n";
+    transport() << "ULG6\n";
     transport() << "[\n";
 
     transport() << '{'
