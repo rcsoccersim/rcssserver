@@ -1,6 +1,7 @@
 add_subdirectory(net)
 add_subdirectory(conf)
 add_subdirectory(gzip)
+add_subdirectory(clang)
 
 add_library(RCSSBase INTERFACE)
 add_library(RCSS::Base ALIAS RCSSBase)
@@ -36,5 +37,6 @@ target_link_libraries(RCSSBase
 install(FILES
   factory.hpp
   parser.h
+  vector.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcss
 )
