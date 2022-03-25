@@ -25,9 +25,10 @@
 
 #include "serializercoachstdv8.h"
 
-#include "clangmsg.h"
 #include "object.h"
 #include "player.h"
+
+#include <rcss/clang/clangmsg.h>
 
 namespace rcss {
 

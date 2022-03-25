@@ -24,9 +24,10 @@
 #endif
 
 #include "serializercoachstdv1.h"
-#include "clangmsg.h"
 #include "param.h"
 #include "object.h"
+
+#include <rcss/clang/clangmsg.h>
 
 namespace rcss {
 

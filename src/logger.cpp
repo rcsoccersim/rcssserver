@@ -26,7 +26,6 @@
 #include "logger.h"
 
 #include "player.h"
-#include "clangmsg.h"
 #include "coach.h"
 #include "stadium.h"
 #include "heteroplayer.h"
@@ -42,10 +41,11 @@
 
 #include "serializercommonstdv8.h"
 
-#include <rcssbase/gzip/gzfstream.hpp>
-
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
+
+#include <rcss/clang/clangmsg.h>
+#include <rcss/gzip/gzfstream.hpp>
 
 #include <sstream>
 

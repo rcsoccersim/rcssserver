@@ -26,10 +26,10 @@
 #include "remoteclient.h"
 
 #include "param.h"
-#include "rcssexceptions.h"
+//#include "rcssexceptions.h"
 
-#include <rcssbase/net/socketstreambuf.hpp>
-#include <rcssbase/gzip/gzstream.hpp>
+#include <rcss/net/socketstreambuf.hpp>
+#include <rcss/gzip/gzstream.hpp>
 
 #include <cerrno>
 #include <cstring>
@@ -61,7 +61,8 @@ RemoteClient::getTransport()
     }
     else
     {
-        throw rcss::util::NullErr( __FILE__, __LINE__, "Transport is NULL" );
+        //throw rcss::util::NullErr( __FILE__, __LINE__, "Transport is NULL" );
+        throw std::logic_error( "Transport is NULL" );
     }
 }
 

@@ -23,7 +23,7 @@
 #ifndef RCSSOBSERVER_H
 #define RCSSOBSERVER_H
 
-#include "rcssexceptions.h"
+//#include "rcssexceptions.h"
 #include <memory>
 
 namespace rcss {
@@ -66,8 +66,9 @@ public:
       {
           if ( ! M_sender )
           {
-              throw util::NullErr( __FILE__, __LINE__,
-                                   "Sender is null" );
+              // throw util::NullErr( __FILE__, __LINE__,
+              //                      "Sender is null" );
+              throw std::logic_error( "Sender is null" );
           }
           return *M_sender;
       }
@@ -76,8 +77,9 @@ public:
       {
           if ( ! M_sender )
           {
-              throw util::NullErr( __FILE__, __LINE__,
-                                   "Sender is null" );
+              // throw util::NullErr( __FILE__, __LINE__,
+              //                      "Sender is null" );
+              throw std::logic_error( "Sender is null" );
           }
           return *M_sender;
       }

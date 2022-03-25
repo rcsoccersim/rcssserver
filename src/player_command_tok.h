@@ -27,7 +27,7 @@
 
 #undef yyFlexLexer
 #define yyFlexLexer RCSSPComFlexLexer
-//#include <rcssbase/FlexLexer.h>
+//#include <rcss/FlexLexer.h>
 #include <FlexLexer.h>
 
 class RCSSPComLexer

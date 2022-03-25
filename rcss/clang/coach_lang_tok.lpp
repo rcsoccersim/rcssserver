@@ -1,0 +1,239 @@
+/* -*-flex-*- */
+/*
+ *Copyright:
+
+    Copyright (C) 2001 RoboCup Soccer Server Maintainance Group.
+    	Patrick Riley, Tom Howard, Itsuki Noda,	Mikhail Prokopenko, Jan Wendler
+
+    This file is part of SoccerServer.
+
+    SoccerServer is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ *EndCopyright:
+ */
+%{
+
+#include "coach_lang_tok.h"
+#include "clangparser.h"
+#include "coach_lang_parser.hpp"
+#include <cstdio>
+
+#define LEFT 1
+#define RIGHT -1
+%}
+
+/* Definitions */
+
+%option nomain
+%option noyywrap
+%option full
+%option c++
+%option prefix="RCSSCLangFlexLexer"
+%option yyclass="RCSSCLangLexer"
+
+UINT [0-9]+
+INT  [\+\-]?{UINT}+
+REAL [\+\-]?{UINT}?\.{UINT}
+EXP  ({REAL}|{INT})[eE]{INT}
+
+%%
+
+\( { return RCSS_CLANG_LP;}
+\) { return RCSS_CLANG_RP;}
+\{ { return RCSS_CLANG_LB;}
+\} { return RCSS_CLANG_RB;}
+
+say { return RCSS_CLANG_SAY; }
+hear { return RCSS_CLANG_HEAR; }
+
+online_coach_left { *M_lexed_val = LEFT; return RCSS_CLANG_COACH_SIDE; }
+online_coach_right { *M_lexed_val = RIGHT; return RCSS_CLANG_COACH_SIDE; }
+
+meta { return RCSS_CLANG_META;}
+freeform { return RCSS_CLANG_FREEFORM;}
+unsupported_clang { return RCSS_CLANG_UNSUPP;}
+info { return RCSS_CLANG_INFO; }
+advice { return RCSS_CLANG_ADVICE; }
+define  { return RCSS_CLANG_DEFINE; }
+definec { return RCSS_CLANG_DEFINEC; }
+defined { return RCSS_CLANG_DEFINED; }
+definer { return RCSS_CLANG_DEFINER; }
+definea { return RCSS_CLANG_DEFINEA; }
+
+ver { return RCSS_CLANG_VER;}
+
+null { return RCSS_CLANG_NULL_REGION; }
+quad { return RCSS_CLANG_QUAD; }
+arc { return RCSS_CLANG_ARC; }
+pt { return RCSS_CLANG_PT; }
+reg { return RCSS_CLANG_REG; }
+tri { return RCSS_CLANG_TRI; }
+rec { return RCSS_CLANG_REC; }
+
+ball { return RCSS_CLANG_BALL;}
+
+pos { return RCSS_CLANG_POS;}
+home { return RCSS_CLANG_HOME;}
+bto { return RCSS_CLANG_BALLTO;}
+mark { return RCSS_CLANG_MARK;}
+markl { return RCSS_CLANG_MARK_LINE;}
+oline { return RCSS_CLANG_OFFLINE;}
+htype { return RCSS_CLANG_HTYPE;}
+p { *M_lexed_val = rcss::clang::Pass; return RCSS_CLANG_BMOVE_TOKEN; }
+d { *M_lexed_val = rcss::clang::Dribble; return RCSS_CLANG_BMOVE_TOKEN; }
+c { *M_lexed_val = rcss::clang::Clear; return RCSS_CLANG_BMOVE_TOKEN; }
+s { *M_lexed_val = rcss::clang::Score; return RCSS_CLANG_BMOVE_TOKEN; }
+
+do   { *M_lexed_val = true; return RCSS_CLANG_DO_DONT; }
+dont { *M_lexed_val = false; return RCSS_CLANG_DO_DONT; }
+
+our  { *M_lexed_val = true; return RCSS_CLANG_TEAM; }
+opp  { *M_lexed_val = false; return RCSS_CLANG_TEAM; }
+
+clear { return RCSS_CLANG_CLEAR; }
+
+true   { return RCSS_CLANG_TRUE_KW; }
+false  { return RCSS_CLANG_FALSE_KW; }
+ppos   { return RCSS_CLANG_PPOS; }
+bpos   { return RCSS_CLANG_BPOS; }
+bowner { return RCSS_CLANG_BOWNER; }
+and    { return RCSS_CLANG_AND; }
+or     { return RCSS_CLANG_OR; }
+not    { return RCSS_CLANG_NOT; }
+playm  { return RCSS_CLANG_PLAY_MODE_KW; }
+bko       { *M_lexed_val = rcss::clang::BeforeKickOff;
+            return RCSS_CLANG_PLAY_MODE; }
+time_over { *M_lexed_val = rcss::clang::TimeOver;
+            return RCSS_CLANG_PLAY_MODE; }
+play_on   { *M_lexed_val = rcss::clang::PlayOn;
+            return RCSS_CLANG_PLAY_MODE; }
+ko_our    { *M_lexed_val = rcss::clang::KickOff_Our;
+            return RCSS_CLANG_PLAY_MODE; }
+ko_opp    { *M_lexed_val = rcss::clang::KickOff_Opp;
+            return RCSS_CLANG_PLAY_MODE; }
+ki_our    { *M_lexed_val = rcss::clang::KickIn_Our;
+            return RCSS_CLANG_PLAY_MODE; }
+ki_opp    { *M_lexed_val = rcss::clang::KickIn_Opp;
+            return RCSS_CLANG_PLAY_MODE; }
+fk_our    { *M_lexed_val = rcss::clang::FreeKick_Our;
+            return RCSS_CLANG_PLAY_MODE; }
+fk_opp    { *M_lexed_val = rcss::clang::FreeKick_Opp;
+            return RCSS_CLANG_PLAY_MODE; }
+ck_our    { *M_lexed_val = rcss::clang::CornerKick_Our;
+            return RCSS_CLANG_PLAY_MODE; }
+ck_opp    { *M_lexed_val = rcss::clang::CornerKick_Opp;
+            return RCSS_CLANG_PLAY_MODE; }
+gk_our    { *M_lexed_val = rcss::clang::GoalKick_Our;
+            return RCSS_CLANG_PLAY_MODE; }
+gk_opp    { *M_lexed_val = rcss::clang::GoalKick_Opp;
+            return RCSS_CLANG_PLAY_MODE; }
+gc_our    { *M_lexed_val = rcss::clang::GoalieCatch_Our;
+            return RCSS_CLANG_PLAY_MODE; }
+gc_opp    { *M_lexed_val = rcss::clang::GoalieCatch_Opp;
+            return RCSS_CLANG_PLAY_MODE; }
+ag_our    { *M_lexed_val = rcss::clang::AfterGoal_Our;
+            return RCSS_CLANG_PLAY_MODE; }
+ag_opp    { *M_lexed_val = rcss::clang::AfterGoal_Opp;
+            return RCSS_CLANG_PLAY_MODE; }
+
+
+time      { return RCSS_CLANG_TIME; }
+opp_goals { return RCSS_CLANG_OPP_GOAL; }
+our_goals { return RCSS_CLANG_OUR_GOAL; }
+goal_diff { return RCSS_CLANG_GOAL_DIFF; }
+
+unum      { return RCSS_CLANG_UNUM; }
+
+pass      { return RCSS_CLANG_PASS; }
+dribble   { return RCSS_CLANG_DRIBBLE; }
+shoot     { return RCSS_CLANG_SHOOT; }
+hold      { return RCSS_CLANG_HOLD; }
+intercept { return RCSS_CLANG_INTERCEPT; }
+tackle    { return RCSS_CLANG_TACKLE; }
+
+rule      { return RCSS_CLANG_RULE; }
+on        { *M_lexed_val = true; return RCSS_CLANG_ON_OFF; }
+off       { *M_lexed_val = false; return RCSS_CLANG_ON_OFF; }
+all       { return RCSS_CLANG_ALL; }
+delete    { return RCSS_CLANG_DEL; }
+definerule { return RCSS_CLANG_DEFRULE; }
+model     { return RCSS_CLANG_MODEL; }
+direc     { return RCSS_CLANG_DIREC; }
+
+
+\<        { *M_lexed_val = rcss::util::CompOp::less();
+            return RCSS_CLANG_L; }
+\<\=      { *M_lexed_val = rcss::util::CompOp::lessEqual();
+            return RCSS_CLANG_LE; }
+\=\=      { *M_lexed_val = rcss::util::CompOp::equal();
+            return RCSS_CLANG_E; }
+\!\=      { *M_lexed_val = rcss::util::CompOp::notEqual();
+            return RCSS_CLANG_NE; }
+\>\=      { *M_lexed_val = rcss::util::CompOp::greaterEqual();
+            return RCSS_CLANG_GE; }
+\>        { *M_lexed_val = rcss::util::CompOp::greater();
+            return RCSS_CLANG_G; }
+
+\+        { *M_lexed_val = rcss::util::ArithOp::plus();
+             return RCSS_CLANG_PLUS; }
+\-        { *M_lexed_val = rcss::util::ArithOp::minus();
+            return RCSS_CLANG_MINUS; }
+\*        { *M_lexed_val = rcss::util::ArithOp::mult();
+            return RCSS_CLANG_MULT; }
+\/        { *M_lexed_val = rcss::util::ArithOp::div();
+            return RCSS_CLANG_DIV; }
+
+
+[ \t\n]+ ;
+
+
+{UINT} { *M_lexed_val = atoi(yytext); return RCSS_CLANG_INT; }
+{INT}  { *M_lexed_val = atoi(yytext); return RCSS_CLANG_INT; }
+{REAL} { *M_lexed_val = atof(yytext); return RCSS_CLANG_REAL; }
+{EXP}  { *M_lexed_val = atof(yytext); return RCSS_CLANG_REAL; }
+
+\"[0-9A-Za-z\(\)\.\+\-\*\/\?\<\>\_ ]+\" {
+    *M_lexed_val = yytext ;
+    return RCSS_CLANG_STR;
+}
+
+[abe-oqrt-zA-Z_][a-zA-Z0-9_]* {
+    *M_lexed_val = yytext;
+    return RCSS_CLANG_VAR;
+}
+
+. { return RCSS_CLANG_ERROR; }
+
+%%
+
+/* int RCSS_CLANG_parse( void* );*/
+
+/* namespace rcss*/
+/* {*/
+/*   namespace clang*/
+/*   {*/
+/*     int */
+/*     Parser::parse( const char* s, Parser::Param& param ) */
+/*     {*/
+/*       YY_BUFFER_STATE yybuffstateCurr;*/
+
+/*       yybuffstateCurr = yy_scan_string(s);*/
+
+/*       int ret = RCSS_CLANG_parse( (void*)&param );*/
+/*       yy_delete_buffer(yybuffstateCurr);*/
+/*       return ret;*/
+/*     }*/
+/*   };*/
+/* };*/

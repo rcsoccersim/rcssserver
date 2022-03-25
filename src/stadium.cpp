@@ -26,7 +26,6 @@
 #include "stadium.h"
 
 #include "audio.h"
-#include "clangmsg.h"
 #include "coach.h"
 #include "landmarkreader.h"
 #include "logger.h"
@@ -44,6 +43,8 @@
 #include "types.h"
 #include "utility.h"
 #include "xpmholder.h"
+
+#include <rcss/clang/clangmsg.h>
 
 #include <sstream>
 #include <vector>

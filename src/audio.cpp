@@ -27,15 +27,16 @@
 
 #include "object.h"
 #include "serializer.h"
-#include "clangmsg.h"
-#include "clangunsuppmsg.h"
 #include "coach.h"
 #include "stadium.h"
 #include "player.h"
 #include "random.h"
 #include "utility.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/clang/clangmsg.h>
+#include <rcss/clang/clangunsuppmsg.h>
+
+#include <rcss/factory.hpp>
 
 namespace rcss {
 

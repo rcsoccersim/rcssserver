@@ -22,7 +22,8 @@
 #ifndef ARM_H
 #define ARM_H
 
-#include "vector.h"
+#include <rcss/vector.h>
+
 #include "utility.h"
 
 class Arm {
