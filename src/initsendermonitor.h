@@ -105,8 +105,8 @@ protected:
 
 public:
 
-    void sendReconnect()
-      { }
+    // void sendReconnect()
+    //   { }
 
     virtual
     void sendPlayMode() = 0;
@@ -272,6 +272,49 @@ public:
     virtual
     void sendPlayMode() override;
 };
+
+
+/*!
+  \class InitSenderMonitorJSON
+  \brief version 5 of the init protocol (JSON format).
+
+  The version of the common sender is "-1".
+ */
+class InitSenderMonitorJSON
+    : public InitSenderMonitor {
+public:
+    InitSenderMonitorJSON( const Params & params );
+
+protected:
+    InitSenderMonitorJSON( const Params & params,
+                           const std::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderMonitorJSON() override;
+
+    virtual
+    void sendInit() override;
+
+    virtual
+    void sendServerParams() override;
+
+    virtual
+    void sendPlayerParams() override;
+
+    virtual
+    void sendPlayerTypes() override;
+
+    virtual
+    void sendChangedPlayers() override;
+
+    virtual
+    void sendScore() override;
+
+    virtual
+    void sendPlayMode() override;
+};
+
 
 }
 

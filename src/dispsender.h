@@ -44,9 +44,11 @@ class SerializerMonitor;
 */
 class DispSender
     : protected Sender {
-public:
+protected:
 
     DispSender( std::ostream & transport );
+
+public:
 
     virtual
     ~DispSender() override;
@@ -290,6 +292,34 @@ public:
 //                           const unsigned int y );
 // };
 
+/*!
+  \class DispSenderMonitorJSON
+  \brief class for the version 5 monitor protocol. (JSON format)
+*/
+class DispSenderMonitorJSON
+    : public DispSenderMonitor {
+public:
+
+    DispSenderMonitorJSON( const Params & params );
+
+    virtual
+    ~DispSenderMonitorJSON() override;
+
+    virtual
+    void sendShow() override;
+
+    virtual
+    void sendMsg( const BoardType board,
+                  const char * msg ) override;
+
+    virtual
+    void sendTeamGraphic( const Side side,
+                         const unsigned int x,
+                         const unsigned int y ) override;
+};
+
+
+
 
 //===================================================================
 //===================================================================
@@ -500,27 +530,31 @@ public:
 
 };
 
-// /*!
-//   \class DispSenderLoggerV5
-//   \brief class for the log version 5
-//  */
-// class DispSenderLoggerV5
-//     : public DispSenderLoggerV4 {
-// public:
+/*!
+  \class DispSenderLoggerV6
+  \brief class for the log version 6 (JSON format)
+ */
+class DispSenderLoggerJSON
+    : public DispSenderLogger {
+public:
 
-//     DispSenderLoggerV5( const Params & params );
+    DispSenderLoggerJSON( const Params & params );
 
-//     virtual
-//     ~DispSenderLoggerV5();
+    virtual
+    ~DispSenderLoggerJSON() override;
 
-//     virtual
-//     void sendShow();
+    virtual
+    void sendShow() override;
 
-//     virtual
-//     void sendMsg( const BoardType board,
-//                   const char * msg );
+    virtual
+    void sendMsg( const BoardType board,
+                  const char * msg );
 
-// };
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y ) override;
+};
 
 
 }

@@ -64,7 +64,8 @@ SerializerCommonStdv1::serializePlayerParamEnd( std::ostream & ) const
 }
 
 void
-SerializerCommonStdv1::serializePlayerTypeBegin( std::ostream & ) const
+SerializerCommonStdv1::serializePlayerTypeBegin( std::ostream &,
+                                                 const int ) const
 {
 
 }

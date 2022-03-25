@@ -121,6 +121,7 @@ rcssserver_SOURCES = \
 	serializercommonstdv1.cpp \
 	serializercommonstdv7.cpp \
 	serializercommonstdv8.cpp \
+	serializercommonjson.cpp \
 	serializermonitor.cpp \
 	serializeronlinecoachstdv1.cpp \
 	serializeronlinecoachstdv6.cpp \
@@ -192,6 +193,7 @@ noinst_HEADERS = \
 	serializercommonstdv1.h \
 	serializercommonstdv7.h \
 	serializercommonstdv8.h \
+	serializercommonjson.h \
 	serializeronlinecoachstdv1.h \
 	serializeronlinecoachstdv6.h \
 	serializeronlinecoachstdv7.h \

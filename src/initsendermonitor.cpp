@@ -275,7 +275,7 @@ void
 InitSenderMonitorV3::sendScore()
 {
     serializer().serializeTeam( transport(),
-                                stadium().time(),
+                                stadium().time(), stadium().stoppageTime(),
                                 stadium().teamLeft(),
                                 stadium().teamRight() );
     transport() << std::ends << std::flush;
@@ -285,10 +285,86 @@ void
 InitSenderMonitorV3::sendPlayMode()
 {
     serializer().serializePlayMode( transport(),
-                                    stadium().time(),
+                                    stadium().time(), stadium().stoppageTime(),
                                     stadium().playmode() );
     transport() << std::ends << std::flush;
 }
+
+/*
+//===================================================================
+//
+//  InitSenderMonitorJSON
+//
+//===================================================================
+*/
+
+
+InitSenderMonitorJSON::InitSenderMonitorJSON( const Params & params )
+    : InitSenderMonitor( params,
+                         std::shared_ptr< InitSenderCommon >( new InitSenderCommonJSON( params.M_transport,
+                                                                                        params.M_serializer,
+                                                                                        params.M_stadium,
+                                                                                        999 ) ) )
+{
+    // The client version must be "999" in order to send all parameters.
+}
+
+
+InitSenderMonitorJSON::~InitSenderMonitorJSON()
+{
+
+}
+
+void
+InitSenderMonitorJSON::sendInit()
+{
+
+}
+
+void
+InitSenderMonitorJSON::sendServerParams()
+{
+    commonSender().sendServerParams();
+}
+
+void
+InitSenderMonitorJSON::sendPlayerParams()
+{
+    commonSender().sendPlayerParams();
+}
+
+void
+InitSenderMonitorJSON::sendPlayerTypes()
+{
+    commonSender().sendPlayerTypes();
+}
+
+void
+InitSenderMonitorJSON::sendChangedPlayers()
+{
+
+}
+
+void
+InitSenderMonitorJSON::sendScore()
+{
+    serializer().serializeTeam( transport(),
+                                stadium().time(), stadium().stoppageTime(),
+                                stadium().teamLeft(),
+                                stadium().teamRight() );
+    transport() << std::ends << std::flush;
+}
+
+
+void
+InitSenderMonitorJSON::sendPlayMode()
+{
+    serializer().serializePlayMode( transport(),
+                                    stadium().time(), stadium().stoppageTime(),
+                                    stadium().playmode() );
+    transport() << std::ends << std::flush;
+}
+
 
 namespace initsender {
 
@@ -303,6 +379,7 @@ RegHolder v1 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV
 RegHolder v2 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV2 >, 2 );
 RegHolder v3 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 3 );
 RegHolder v4 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 4 );
+RegHolder v5 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorJSON >, 5 );
 }
 
 }

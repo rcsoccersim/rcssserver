@@ -32,6 +32,7 @@
 class Ball;
 class PVector;
 class Player;
+class HeteroPlayer;
 class Team;
 class XPMHolder;
 
@@ -81,9 +82,9 @@ public:
       { }
 
     virtual
-    void serializePlayerTypeBegin( std::ostream & ) const
+    void serializePlayerTypeBegin( std::ostream &,
+                                   const int ) const
       { }
-
     virtual
     void serializePlayerTypeEnd( std::ostream & ) const
       { }
@@ -188,9 +189,10 @@ public:
           commonSerializer().serializePlayerParamEnd( strm );
       }
 
-    void serializePlayerTypeBegin( std::ostream & strm ) const
+    void serializePlayerTypeBegin( std::ostream & strm,
+                                   const int id ) const
       {
-          commonSerializer().serializePlayerTypeBegin( strm );
+          commonSerializer().serializePlayerTypeBegin( strm, id );
       }
 
     void serializePlayerTypeEnd( std::ostream & strm ) const
@@ -1084,20 +1086,20 @@ public:
 
     virtual
     void serializeTeam( std::ostream &,
-                        const int,
+                        const int, const int,
                         const Team &,
                         const Team & ) const
       { }
 
     virtual
     void serializePlayMode( std::ostream &,
-                            const int,
+                            const int, const int,
                             const PlayMode ) const
       { }
 
     virtual
     void serializeShowBegin( std::ostream &,
-                             const int ) const
+                             const int, const int ) const
       { }
     virtual
     void serializeShowEnd( std::ostream & ) const
@@ -1114,6 +1116,14 @@ public:
     virtual
     void serializeBall( std::ostream &,
                         const Ball & ) const
+      { }
+
+    virtual
+    void serializePlayerArrayBegin( std::ostream & ) const
+      { }
+
+    virtual
+    void serializePlayerArrayEnd( std::ostream & ) const
       { }
 
     virtual
@@ -1155,6 +1165,13 @@ public:
                                const unsigned int,
                                const XPMHolder & ) const
       { }
+
+    virtual
+    void serializeMsg( std::ostream &,
+                       const int, const int,
+                       const int,
+                       const char * ) const
+    { }
 };
 
 
