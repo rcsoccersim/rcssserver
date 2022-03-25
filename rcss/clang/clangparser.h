@@ -19,12 +19,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGPARSER_H
-#define CLANGPARSER_H
+#ifndef RCSS_CLANGPARSER_H
+#define RCSS_CLANGPARSER_H
+
+#include <rcss/clang/coach_lang_tok.h>
+#include <rcss/parser.h>
 
 #include <string>
-#include <rcss/parser.h>
-#include "coach_lang_tok.h"
 
 namespace rcss {
 namespace clang {

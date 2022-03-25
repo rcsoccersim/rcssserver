@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangmetamsg.cc
-                       Class for CLang Meta messages
+                                clangadvicemsg.cc
+                       Class for CLang Advice messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -23,97 +23,55 @@
 #include <config.h>
 #endif
 
-#include "clangmetamsg.h"
-
-#include "types.h"
-
-#include <iostream>
-#include <string>
+#include "clangadvicemsg.h"
 
 namespace rcss {
 namespace clang {
 
-MetaToken::MetaToken()
-{
-
-}
-
-MetaToken::~MetaToken()
-{
-
-}
-
-MetaTokenVer::MetaTokenVer( const double & ver )
-	: MetaToken(),
-	  M_ver( ver )
-{
-
-}
-
-MetaTokenVer::~MetaTokenVer()
-{
-
-}
-
-std::shared_ptr< MetaToken >
-MetaTokenVer::deepCopy() const
-{
-    std::shared_ptr< MetaToken > rval( new MetaTokenVer( *this ) );
-    return rval;
-}
-
-std::ostream &
-MetaTokenVer::print( std::ostream & out ) const
-{
-    return out << "(ver " << M_ver << ")";
-}
-
-std::ostream &
-MetaTokenVer::printPretty( std::ostream & out,
-                           const std::string & line_header ) const
-{
-    return out << line_header << "version: " << M_ver << std::endl;
-}
-
-
-
-
-MetaMsg::MetaMsg()
+AdviceMsg::AdviceMsg()
     : Msg()
 {
 
 }
 
-MetaMsg::MetaMsg( const Storage & tokens )
-	: Msg(),
-	  M_tokens( tokens )
+AdviceMsg::AdviceMsg( const Storage & tokens )
+    : Msg(),
+      M_tokens( tokens )
 {
 
 }
 
-MetaMsg::~MetaMsg()
+AdviceMsg::~AdviceMsg()
 {
 	M_tokens.clear();
 }
 
 std::shared_ptr< Msg >
-MetaMsg::deepCopy() const
+AdviceMsg::deepCopy() const
 {
 	Storage new_tokens;
-	for ( Storage::const_reference token : M_tokens )
+	for( Storage::const_reference i : M_tokens )
 	{
-	    new_tokens.push_back( token->deepCopy() );
+	    new_tokens.push_back( i->deepCopy() );
 	}
 
-	std::shared_ptr< Msg > rval( new MetaMsg( new_tokens ) );
+	std::shared_ptr< Msg > rval( new AdviceMsg( new_tokens ) );
     return rval;
 }
 
+//     void
+//     AdviceMsg::accept( Visitor& v )
+//     { v.startVisit( this ); }
+
+//     void
+//     AdviceMsg::accept( ConstVisitor& v ) const
+//     { v.startVisit( this ); }
+
 std::ostream &
-MetaMsg::print( std::ostream & out ) const
+AdviceMsg::print( std::ostream & out ) const
 {
-    out << "(meta";
-    for ( Storage::const_reference token : M_tokens )
+    out << "(advice";
+    for ( Storage::const_reference token : getTokens() )
     {
         if ( ! token )
         {
@@ -129,12 +87,11 @@ MetaMsg::print( std::ostream & out ) const
 }
 
 std::ostream &
-MetaMsg::printPretty( std::ostream & out,
-                      const std::string & line_header ) const
+AdviceMsg::printPretty( std::ostream & out,
+                        const std::string & line_header ) const
 {
-    out << line_header << "Meta" << std::endl;
-
-    for ( Storage::const_reference token : M_tokens )
+    out << line_header << "Advice" << std::endl;
+    for ( Storage::const_reference token : getTokens() )
     {
         if ( ! token )
         {

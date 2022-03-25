@@ -19,8 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGUTIL_H
-#define CLANGUTIL_H
+#ifndef RCSS_CLANGUTIL_H
+#define RCSS_CLANGUTIL_H
 
 #include <iostream>
 #include <string>

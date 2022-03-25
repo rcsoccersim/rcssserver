@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangrulemsg.cc
-                       Class for CLang Rule messages
+                                clangdelmsg.cc
+                       Class for CLang Delete messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -23,70 +23,51 @@
 #include <config.h>
 #endif
 
-#include "clangrulemsg.h"
+#include "clangdelmsg.h"
 
 #include "rule.h"
-#include "types.h"
 
 namespace rcss {
 namespace clang {
 
-RuleMsg::RuleMsg()
+DelMsg::DelMsg()
     : Msg()
 {
 
 }
 
-RuleMsg::RuleMsg( const Storage & list )
-	: Msg(),
-	  M_active( list )
+DelMsg::DelMsg( const RuleIDList & list )
+    : Msg(),
+      M_rids( list )
 {
 
 }
 
-RuleMsg::~RuleMsg()
+DelMsg::~DelMsg()
 {
 
 }
 
 std::shared_ptr< Msg >
-RuleMsg::deepCopy() const
+DelMsg::deepCopy() const
 {
-	std::shared_ptr< Msg > rval( new RuleMsg( *this ) );
+    std::shared_ptr< Msg > rval( new DelMsg( *this ) );
     return rval;
 }
 
 std::ostream &
-RuleMsg::print( std::ostream & out ) const
+DelMsg::print( std::ostream & out ) const
 {
-    out << "(rule ";
-    for ( Storage::const_reference i : M_active )
-    {
-        out << i;
-    }
-    out << ")";
+    out << "(delete " << M_rids << ")";
     return out;
 }
 
 std::ostream &
-RuleMsg::printPretty( std::ostream & out,
-                      const std::string & line_header ) const
+DelMsg::printPretty( std::ostream & out,
+                     const std::string & line_header ) const
 {
-    out << line_header << "Activation List:\n";
-    bool first = true;
-    for ( Storage::const_reference i : M_active )
-    {
-        if ( first )
-        {
-            first = false;
-        }
-        else
-        {
-            out << line_header << " Then:\n";
-        }
-        i.printPretty( out, line_header + "  -" );
-    }
-    return out;
+    out << line_header << "Delete" << std::endl;
+    return M_rids.printPretty( out, line_header + " -" );
 }
 
 }

@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangdelmsg.h
-                       Class for CLang Delete messages
+                                clangfreeformmsg.h
+                       Class for CLang Freeform messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,58 +19,54 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGDELMSG_H
-#define CLANGDELMSG_H
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
-#include "clangmsg.h"
-#include "rule.h"
+#include "clangfreeformmsg.h"
 
 namespace rcss {
 namespace clang {
 
-class DelMsg
-    : public Msg {
-public:
+FreeformMsg::FreeformMsg()
+    : Msg()
+{
 
-    DelMsg();
-private:
-    DelMsg( const RuleIDList & list );
-public:
+}
 
-    virtual
-    ~DelMsg() override;
+FreeformMsg::FreeformMsg( const std::string & str )
+	: Msg(),
+	  M_str( str )
+{
 
-    virtual
-    std::shared_ptr< Msg > deepCopy() const override;
+}
 
-    virtual
-    std::ostream & print( std::ostream & out ) const override;
+FreeformMsg::~FreeformMsg()
+{
 
-    virtual
-    std::ostream & printPretty( std::ostream & out,
-                                const std::string & line_header ) const override;
+}
 
-    const RuleIDList & getList() const
-      {
-          return M_rids;
-      }
+std::shared_ptr< Msg >
+FreeformMsg::deepCopy() const
+{
+    std::shared_ptr< Msg > rval( new FreeformMsg( *this ) );
+    return rval;
+}
 
-	void set( const RuleIDList & rids )
-      {
-          M_rids = rids;
-      }
+std::ostream &
+FreeformMsg::print( std::ostream & out ) const
+{
+    out << "(freeform \"" << M_str << "\")";
+    return out;
+}
 
-	virtual
-	Types getType() const
-      {
-          return DEL;
-      }
-
-private:
-	RuleIDList M_rids;
-};
+std::ostream &
+FreeformMsg::printPretty( std::ostream & out,
+                          const std::string & line_header ) const
+{
+    return out << line_header << "Freeform" << std::endl
+               << line_header << "  " << "\"" << M_str << "\"" << std::endl;
+}
 
 }
 }
-
-#endif

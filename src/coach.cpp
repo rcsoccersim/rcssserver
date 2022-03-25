@@ -26,9 +26,6 @@
 #include "coach.h"
 
 #include "audio.h"
-#include "clangparser.h"
-#include "clangmsg.h"
-#include "clangmsgbuilder.h"
 #include "logger.h"
 #include "stadium.h"
 #include "object.h"
@@ -39,6 +36,10 @@
 #include "initsendercoach.h"
 #include "initsenderonlinecoach.h"
 #include "visualsendercoach.h"
+
+#include <rcss/clang/clangparser.h>
+#include <rcss/clang/clangmsg.h>
+#include <rcss/clang/clangmsgbuilder.h>
 
 #include <iostream>
 #include <sstream>

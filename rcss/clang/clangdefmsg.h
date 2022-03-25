@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangadvicemsg.h
-                       Class for CLang Advice messages
+                                clangdefmsg.h
+                       Class for CLang Define messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,27 +19,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGADVICEMSG_H
-#define CLANGADVICEMSG_H
+#ifndef RCSS_CLANGDEFMSG_H
+#define RCSS_CLANGDEFMSG_H
 
-#include "clangmsg.h"
-#include "coach_lang_comp.h"
+#include <rcss/clang/clangmsg.h>
+#include <rcss/clang/coach_lang_comp.h>
 
 namespace rcss {
 namespace clang {
 
-class AdviceMsg
+class DefineMsg
     : public Msg {
 public:
-    typedef std::list< std::shared_ptr< Token > > Storage;
+    typedef std::list< std::shared_ptr< Def > > Storage;
 
-    AdviceMsg();
+    DefineMsg();
 private:
-    AdviceMsg( const Storage & tokens );
+    DefineMsg( const Storage & defs );
 public:
 
     virtual
-    ~AdviceMsg() override;
+    ~DefineMsg() override;
 
     virtual
     std::shared_ptr< Msg > deepCopy() const override;
@@ -51,23 +51,25 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const override;
 
-    const Storage & getTokens() const
+    const Storage & getDefs() const
       {
-          return M_tokens;
+          return M_defs;
       }
-    Storage & getTokens()
+
+    Storage & getDefs()
       {
-          return M_tokens;
+          return M_defs;
       }
 
 	virtual
 	Types getType() const
       {
-          return ADVICE;
+          return DEFINE;
       }
 
 private:
-	Storage M_tokens;
+	Storage M_defs;
+
 };
 
 }

@@ -19,8 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ARITHOP_H
-#define ARITHOP_H
+#ifndef RCSS_CLANG_ARITHOP_H
+#define RCSS_CLANG_ARITHOP_H
 
 #include <iostream>
 

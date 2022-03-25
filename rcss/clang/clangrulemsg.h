@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangdefmsg.h
-                       Class for CLang Define messages
+                                clangrulemsg.h
+                       Class for CLang Rule messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,27 +19,29 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGDEFMSG_H
-#define CLANGDEFMSG_H
+#ifndef RCSS_CLANGRULEMSG_H
+#define RCSS_CLANGRULEMSG_H
 
-#include "clangmsg.h"
-#include "coach_lang_comp.h"
+#include <rcss/clang/clangmsg.h>
+
+#include <list>
 
 namespace rcss {
 namespace clang {
 
-class DefineMsg
+class ActivateRules;
+
+class RuleMsg
     : public Msg {
 public:
-    typedef std::list< std::shared_ptr< Def > > Storage;
+    typedef std::list< ActivateRules > Storage;
 
-    DefineMsg();
+    RuleMsg();
 private:
-    DefineMsg( const Storage & defs );
+    RuleMsg( const Storage & list );
 public:
-
     virtual
-    ~DefineMsg() override;
+    ~RuleMsg() override;
 
     virtual
     std::shared_ptr< Msg > deepCopy() const override;
@@ -51,24 +53,24 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const override;
 
-    const Storage & getDefs() const
+    const Storage & getList() const
       {
-          return M_defs;
+          return M_active;
       }
 
-    Storage & getDefs()
+	Storage & getList()
       {
-          return M_defs;
+          return M_active;
       }
 
 	virtual
 	Types getType() const
       {
-          return DEFINE;
+          return RULE;
       }
 
 private:
-	Storage M_defs;
+	Storage M_active;
 
 };
 

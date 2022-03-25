@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangunsuppmsg.h
-                       Class for CLang unsupported messages
+                                clangfreeformmsg.h
+                       Class for CLang Freeform messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,21 +19,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGUNSUPPMSG_H
-#define CLANGUNSUPPMSG_H
+#ifndef RCSS_CLANGFREEFORMMSG_H
+#define RCSS_CLANGFREEFORMMSG_H
 
-#include "clangmsg.h"
+#include <rcss/clang/clangmsg.h>
+
+#include <string>
 
 namespace rcss {
 namespace clang {
 
-class UnsuppMsg
-    : public Msg  {
+class FreeformMsg
+    : public Msg {
+private:
+    FreeformMsg();
+
 public:
-    UnsuppMsg();
+
+    FreeformMsg( const std::string & str );
 
     virtual
-    ~UnsuppMsg() override;
+    ~FreeformMsg() override;
 
     virtual
     std::shared_ptr< Msg > deepCopy() const override;
@@ -48,8 +54,11 @@ public:
 	virtual
 	Types getType() const
       {
-          return UNSUP;
+          return FREEFORM;
       }
+
+private:
+	std::string M_str;
 
 };
 

@@ -19,12 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGLEXER_H
-#define CLANGLEXER_H
+#ifndef RCSS_CLANGLEXER_H
+#define RCSS_CLANGLEXER_H
 
-#include "compop.h"
-#include "arithop.h"
-#include "clangutil.h"
+#include <rcss/clang/compop.h>
+#include <rcss/clang/arithop.h>
+#include <rcss/clang/clangutil.h>
 
 #include <cstring>
 

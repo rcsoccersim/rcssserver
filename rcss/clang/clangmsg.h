@@ -19,8 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGMSG_H
-#define CLANGMSG_H
+#ifndef RCSS_CLANGMSG_H
+#define RCSS_CLANGMSG_H
 
 #include <memory>
 #include <iostream>

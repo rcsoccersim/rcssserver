@@ -19,14 +19,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef RCSSSERVER_CLANGBUILDER_H
-#define RCSSSERVER_CLANGBUILDER_H
+#ifndef RCSS_CLANGBUILDER_H
+#define RCSS_CLANGBUILDER_H
 
+#include <rcss/clang/clangutil.h>
 
 #include <string>
 #include <exception>
-
-#include "clangutil.h"
 
 
 // The clang::Builder is called from within the parser to construct the

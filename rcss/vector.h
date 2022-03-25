@@ -20,14 +20,12 @@
 
 
 
-#ifndef VECTOR_H
-#define VECTOR_H
-
-#include "utility.h"
+#ifndef RCSS_CLANG_VECTOR_H
+#define RCSS_CLANG_VECTOR_H
 
 #include <iostream>
 #include <algorithm>
-
+#include <cmath>
 
 namespace rcss {
 namespace geom {
@@ -168,9 +166,9 @@ public:
           value sum = 0.0;
           for ( size_type i = X; i < DIM; ++i )
           {
-              sum += pow ( M_data[ i ], 2 );
+              sum += std::pow( M_data[ i ], 2 );
           }
-          return sqrt ( sum );
+          return std::sqrt( sum );
       }
 
     void setMag( const_reference mag );
@@ -327,7 +325,17 @@ Vector2D::value
 angle( const Vector2D & a,
        const Vector2D & b )
 {
-    return normalize_angle( b.getHead() - a.getHead() );
+    //return normalize_angle( b.getHead() - a.getHead() );
+    double ang = b.getHead() - a.getHead();
+    if ( std::fabs( ang ) > 2*M_PI )
+    {
+        ang = std::fmod( ang, 2*M_PI );
+    }
+
+    if ( ang < -M_PI ) ang += 2*M_PI;
+    if ( ang > M_PI ) ang -= 2*M_PI;
+
+    return ang;
 }
 
 inline

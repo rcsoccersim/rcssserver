@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangfreeformmsg.h
-                       Class for CLang Freeform messages
+                                clangdelmsg.h
+                       Class for CLang Delete messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,26 +19,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGFREEFORMMSG_H
-#define CLANGFREEFORMMSG_H
+#ifndef RCSS_CLANGDELMSG_H
+#define RCSS_CLANGDELMSG_H
 
-#include "clangmsg.h"
-#include <string>
+#include <rcss/clang/clangmsg.h>
+#include <rcss/clang/rule.h>
 
 namespace rcss {
 namespace clang {
 
-class FreeformMsg
+class DelMsg
     : public Msg {
-private:
-    FreeformMsg();
-
 public:
 
-    FreeformMsg( const std::string & str );
+    DelMsg();
+private:
+    DelMsg( const RuleIDList & list );
+public:
 
     virtual
-    ~FreeformMsg() override;
+    ~DelMsg() override;
 
     virtual
     std::shared_ptr< Msg > deepCopy() const override;
@@ -50,15 +50,24 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const override;
 
+    const RuleIDList & getList() const
+      {
+          return M_rids;
+      }
+
+	void set( const RuleIDList & rids )
+      {
+          M_rids = rids;
+      }
+
 	virtual
 	Types getType() const
       {
-          return FREEFORM;
+          return DEL;
       }
 
 private:
-	std::string M_str;
-
+	RuleIDList M_rids;
 };
 
 }

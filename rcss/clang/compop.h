@@ -19,8 +19,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef COMPOP_H
-#define COMPOP_H
+#ifndef RCSS_CLANG_COMPOP_H
+#define RCSS_CLANG_COMPOP_H
 
 #include <iostream>
 

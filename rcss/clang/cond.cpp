@@ -25,6 +25,8 @@
 
 #include "cond.h"
 
+#include <stdexcept>
+
 namespace rcss {
 namespace clang {
 
@@ -288,8 +290,9 @@ CondAnd::eval( const Context & context ) const
     {
         if ( ! c )
         {
-            throw util::NullErr( __FILE__, __LINE__,
-                                 "Null condition in CondAnd\n" );
+            // throw util::NullErr( __FILE__, __LINE__,
+            //                      "Null condition in CondAnd\n" );
+            throw std::logic_error( "Null condition in CondAnd\n" );
         }
 
         if ( ! c->eval( context ) )
@@ -364,8 +367,9 @@ CondOr::eval( const Context & context ) const
     {
         if ( ! c )
         {
-            throw util::NullErr( __FILE__, __LINE__,
-                                 "Null condition in CondOr\n" );
+            // throw util::NullErr( __FILE__, __LINE__,
+            //                      "Null condition in CondOr\n" );
+            throw std::logic_error( "Null condition in CondOr\n" );
         }
 
         if ( c->eval( context ) )
@@ -430,8 +434,9 @@ CondNot::eval( const Context & context ) const
 {
     if ( ! M_cond )
     {
-        throw util::NullErr( __FILE__, __LINE__,
-                             "Null condition in CondNot\n" );
+        // throw util::NullErr( __FILE__, __LINE__,
+        //                      "Null condition in CondNot\n" );
+        throw std::logic_error( "Null condition in CondNot\n" );
     }
     else
     {

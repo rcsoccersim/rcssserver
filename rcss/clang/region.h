@@ -27,12 +27,12 @@
 
 /* This files defines a class region to specify regions for the coach messages */
 
-#ifndef CLANGREGION_H
-#define CLANGREGION_H
+#ifndef RCSS_CLANGREGION_H
+#define RCSS_CLANGREGION_H
 
-#include "vector.h"
-#include "clangutil.h"
-#include "arithop.h"
+#include <rcss/clang/clangutil.h>
+#include <rcss/clang/arithop.h>
+#include <rcss/vector.h>
 
 #include <memory>
 #include <string>

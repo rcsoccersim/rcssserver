@@ -19,11 +19,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGACTION_H
-#define CLANGACTION_H
+#ifndef RCSS_CLANGACTION_H
+#define RCSS_CLANGACTION_H
 
-#include "region.h"
-#include "clangutil.h"
+#include <rcss/clang/region.h>
+#include <rcss/clang/clangutil.h>
+
 #include <memory>
 
 namespace rcss {

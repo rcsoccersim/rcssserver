@@ -25,7 +25,7 @@
 
 #include "serializerplayerstdv7.h"
 
-#include "clangmsg.h"
+#include <rcss/clang/clangmsg.h>
 
 namespace rcss {
 

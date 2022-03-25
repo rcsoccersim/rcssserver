@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangdefmsg.cpp
-                       Class for CLang Define messages
+                                clanginfomsg.cc
+                       Class for CLang Info messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -23,56 +23,55 @@
 #include <config.h>
 #endif
 
-#include "clangdefmsg.h"
-#include "types.h"
+#include "clanginfomsg.h"
 
 namespace rcss {
 namespace clang {
 
-DefineMsg::DefineMsg()
+InfoMsg::InfoMsg()
     : Msg()
 {
 
 }
 
-DefineMsg::DefineMsg( const Storage & defs )
+InfoMsg::InfoMsg( const Storage & tokens )
     : Msg(),
-      M_defs( defs )
+      M_tokens( tokens )
 {
 
 }
 
-DefineMsg::~DefineMsg()
+InfoMsg::~InfoMsg()
 {
-	M_defs.clear();
+	M_tokens.clear();
 }
 
 std::shared_ptr< Msg >
-DefineMsg::deepCopy() const
+InfoMsg::deepCopy() const
 {
-	Storage new_defs;
-	for ( Storage::const_reference def : M_defs )
-    {
-	    new_defs.push_back( def->deepCopy() );
-    }
+	Storage new_tokens;
+	for ( Storage::const_reference token : M_tokens )
+	{
+	    new_tokens.push_back( token->deepCopy() );
+	}
 
-	std::shared_ptr< Msg > ptr( new DefineMsg( new_defs ) );
+	std::shared_ptr< Msg > ptr( new InfoMsg( new_tokens ) );
     return ptr;
 }
 
 std::ostream &
-DefineMsg::print( std::ostream & out ) const
+InfoMsg::print( std::ostream & out ) const
 {
-    out << "(define";
-    for ( Storage::const_reference def : getDefs() )
+    out << "(info";
+    for ( Storage::const_reference token : getTokens() )
     {
-        if ( ! def )
+        if ( ! token )
         {
             out << " (null)";
         }
         else
         {
-            out << " " << *def;
+            out << " " << *token;
         }
     }
     out << ")";
@@ -80,19 +79,19 @@ DefineMsg::print( std::ostream & out ) const
 }
 
 std::ostream &
-DefineMsg::printPretty( std::ostream & out,
-                        const std::string & line_header ) const
+InfoMsg::printPretty( std::ostream & out,
+                      const std::string & line_header ) const
 {
-    out << line_header << "Define" << std::endl;
-    for ( Storage::const_reference def : getDefs() )
+    out << line_header << "Info" << std::endl;
+    for ( Storage::const_reference token : getTokens() )
     {
-        if ( ! def )
+        if ( ! token )
         {
             out << line_header << " - (null)\n";
         }
         else
         {
-            def->printPretty( out, line_header + " - " );
+            token->printPretty( out, line_header + " - " );
         }
     }
     return out;

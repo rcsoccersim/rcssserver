@@ -28,9 +28,10 @@
 #include "coach_lang_tok.h"
 #include "clangparser.h"
 #include "coach_lang_parser.hpp"
-#include "types.h"
 #include <cstdio>
 
+#define LEFT 1
+#define RIGHT -1
 %}
 
 /* Definitions */

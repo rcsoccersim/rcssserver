@@ -26,8 +26,8 @@
 #include "serializerplayerstdv1.h"
 
 #include "param.h"
-#include "clangmsg.h"
 
+#include <rcss/clang/clangmsg.h>
 
 static const char * playmode_strings[] = PLAYMODE_STRINGS;
 

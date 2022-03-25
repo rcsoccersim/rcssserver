@@ -19,13 +19,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANG_COND_H
-#define CLANG_COND_H
+#ifndef RCSS_CLANG_COND_H
+#define RCSS_CLANG_COND_H
 
-#include "clangutil.h"
-#include "region.h"
-#include "compop.h"
-#include "rcssexceptions.h"
+#include <rcss/clang/clangutil.h>
+#include <rcss/clang/region.h>
+#include <rcss/clang/compop.h>
+//#include "rcssexceptions.h"
 
 #include <iosfwd>
 #include <memory>

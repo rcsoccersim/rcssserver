@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clanginfomsg.h
-                       Class for CLang Info messages
+                                clangmetamsg.h
+                       Class for CLang Meta messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,27 +19,80 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGINFOMSG_H
-#define CLANGINFOMSG_H
+#ifndef RCSS_CLANGMETAMSG_H
+#define RCSS_CLANGMETAMSG_H
 
-#include "clangmsg.h"
-#include "coach_lang_comp.h"
+#include <rcss/clang/clangmsg.h>
+
+#include <list>
+#include <memory>
 
 namespace rcss {
 namespace clang {
 
-class InfoMsg
-    : public Msg {
-public:
-    typedef std::list< std::shared_ptr< Token > > Storage;
+class MetaTokenVer;
 
-    InfoMsg();
-private:
-    InfoMsg( const Storage & tokens );
+class MetaToken {
+protected:
+    MetaToken();
+
 public:
+    virtual
+    ~MetaToken();
 
     virtual
-    ~InfoMsg() override;
+    std::shared_ptr< MetaToken > deepCopy() const = 0;
+
+    virtual
+    std::ostream & print( std::ostream & out ) const = 0;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const = 0;
+};
+
+
+
+class MetaTokenVer
+    : public MetaToken {
+public:
+    MetaTokenVer( const double& ver = 0.0 );
+
+    virtual
+    ~MetaTokenVer() override;
+
+    virtual
+    std::shared_ptr< MetaToken > deepCopy() const override;
+
+    virtual
+    std::ostream & print( std::ostream & out ) const override;
+
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const override;
+
+//     double getVer() const
+//       {
+//           return M_ver;
+//       }
+
+private:
+	double M_ver;
+};
+
+
+
+class MetaMsg
+    : public Msg {
+public:
+    typedef std::list< std::shared_ptr< MetaToken > > Storage;
+
+    MetaMsg();
+private:
+    MetaMsg( const Storage& tokens );
+public:
+    virtual
+    ~MetaMsg() override;
 
     virtual
     std::shared_ptr< Msg > deepCopy() const override;
@@ -51,12 +104,12 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const override;
 
-    const Storage & getTokens() const
+    Storage & getTokens()
       {
           return M_tokens;
       }
 
-    Storage & getTokens()
+    const Storage & getTokens() const
       {
           return M_tokens;
       }
@@ -64,13 +117,22 @@ public:
 	virtual
 	Types getType() const
       {
-          return INFO;
+          return META;
       }
+
 
 private:
 	Storage M_tokens;
-
 };
+
+
+inline
+std::ostream &
+operator<<( std::ostream & os,
+            const rcss::clang::MetaToken & mt )
+{
+    return mt.print( os );
+}
 
 }
 }

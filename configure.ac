@@ -249,6 +249,7 @@ AC_CONFIG_FILES([Makefile
                 rcss/net/Makefile
                 rcss/conf/Makefile
                 rcss/gzip/Makefile
+                rcss/clang/Makefile
                 src/Makefile
                 src/rcsoccersim],
                 [test -f src/rcsoccersim && chmod +x src/rcsoccersim])

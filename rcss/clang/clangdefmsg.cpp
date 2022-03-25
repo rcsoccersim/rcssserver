@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangfreeformmsg.h
-                       Class for CLang Freeform messages
+                                clangdefmsg.cpp
+                       Class for CLang Define messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -23,51 +23,78 @@
 #include <config.h>
 #endif
 
-#include "clangfreeformmsg.h"
-
-#include "types.h"
+#include "clangdefmsg.h"
 
 namespace rcss {
 namespace clang {
 
-FreeformMsg::FreeformMsg()
+DefineMsg::DefineMsg()
     : Msg()
 {
 
 }
 
-FreeformMsg::FreeformMsg( const std::string & str )
-	: Msg(),
-	  M_str( str )
+DefineMsg::DefineMsg( const Storage & defs )
+    : Msg(),
+      M_defs( defs )
 {
 
 }
 
-FreeformMsg::~FreeformMsg()
+DefineMsg::~DefineMsg()
 {
-
+	M_defs.clear();
 }
 
 std::shared_ptr< Msg >
-FreeformMsg::deepCopy() const
+DefineMsg::deepCopy() const
 {
-    std::shared_ptr< Msg > rval( new FreeformMsg( *this ) );
-    return rval;
+	Storage new_defs;
+	for ( Storage::const_reference def : M_defs )
+    {
+	    new_defs.push_back( def->deepCopy() );
+    }
+
+	std::shared_ptr< Msg > ptr( new DefineMsg( new_defs ) );
+    return ptr;
 }
 
 std::ostream &
-FreeformMsg::print( std::ostream & out ) const
+DefineMsg::print( std::ostream & out ) const
 {
-    out << "(freeform \"" << M_str << "\")";
+    out << "(define";
+    for ( Storage::const_reference def : getDefs() )
+    {
+        if ( ! def )
+        {
+            out << " (null)";
+        }
+        else
+        {
+            out << " " << *def;
+        }
+    }
+    out << ")";
     return out;
 }
 
 std::ostream &
-FreeformMsg::printPretty( std::ostream & out,
-                          const std::string & line_header ) const
+DefineMsg::printPretty( std::ostream & out,
+                        const std::string & line_header ) const
 {
-    return out << line_header << "Freeform" << std::endl
-               << line_header << "  " << "\"" << M_str << "\"" << std::endl;
+    out << line_header << "Define" << std::endl;
+    for ( Storage::const_reference def : getDefs() )
+    {
+        if ( ! def )
+        {
+            out << line_header << " - (null)\n";
+        }
+        else
+        {
+            def->printPretty( out, line_header + " - " );
+        }
+    }
+    return out;
 }
 
 }

@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangdelmsg.cc
-                       Class for CLang Delete messages
+                                clangunsuppmsg.h
+                       Class for CLang unsupported messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,57 +19,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef RCSS_CLANGUNSUPPMSG_H
+#define RCSS_CLANGUNSUPPMSG_H
 
-#include "clangdelmsg.h"
-
-#include "rule.h"
-#include "types.h"
+#include <rcss/clang/clangmsg.h>
 
 namespace rcss {
 namespace clang {
 
-DelMsg::DelMsg()
-    : Msg()
-{
+class UnsuppMsg
+    : public Msg  {
+public:
+    UnsuppMsg();
 
-}
+    virtual
+    ~UnsuppMsg() override;
 
-DelMsg::DelMsg( const RuleIDList & list )
-    : Msg(),
-      M_rids( list )
-{
+    virtual
+    std::shared_ptr< Msg > deepCopy() const override;
 
-}
+    virtual
+    std::ostream & print( std::ostream & out ) const override;
 
-DelMsg::~DelMsg()
-{
+    virtual
+    std::ostream & printPretty( std::ostream & out,
+                                const std::string & line_header ) const override;
 
-}
+	virtual
+	Types getType() const
+      {
+          return UNSUP;
+      }
 
-std::shared_ptr< Msg >
-DelMsg::deepCopy() const
-{
-    std::shared_ptr< Msg > rval( new DelMsg( *this ) );
-    return rval;
-}
-
-std::ostream &
-DelMsg::print( std::ostream & out ) const
-{
-    out << "(delete " << M_rids << ")";
-    return out;
-}
-
-std::ostream &
-DelMsg::printPretty( std::ostream & out,
-                     const std::string & line_header ) const
-{
-    out << line_header << "Delete" << std::endl;
-    return M_rids.printPretty( out, line_header + " -" );
-}
+};
 
 }
 }
+
+#endif

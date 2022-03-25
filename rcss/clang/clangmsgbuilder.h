@@ -19,10 +19,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGMSGBUILDER_H
-#define CLANGMSGBUILDER_H
+#ifndef RCSS_CLANGMSGBUILDER_H
+#define RCSS_CLANGMSGBUILDER_H
 
-#include "clangbuilder.h"
+#include <rcss/clang/clangbuilder.h>
 
 #include <boost/any.hpp>
 

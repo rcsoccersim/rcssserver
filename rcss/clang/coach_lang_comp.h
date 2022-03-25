@@ -32,16 +32,16 @@
 
 /* This file contains miscellaneous components for the coach language */
 
-#ifndef COACH_LANG_COMP_H
-#define COACH_LANG_COMP_H
+#ifndef RCSS_COACH_LANG_COMP_H
+#define RCSS_COACH_LANG_COMP_H
+
+#include <rcss/clang/region.h>
+#include <rcss/clang/clangutil.h>
+#include <rcss/clang/clangaction.h>
 
 #include <iosfwd>
 #include <vector>
 #include <memory>
-
-#include "region.h"
-#include "clangutil.h"
-#include "clangaction.h"
 
 namespace rcss {
 namespace clang {

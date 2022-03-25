@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangrulemsg.h
-                       Class for CLang Rule messages
+                                clangadvicemsg.h
+                       Class for CLang Advice messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -19,29 +19,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CLANGRULEMSG_H
-#define CLANGRULEMSG_H
+#ifndef RCSS_CLANGADVICEMSG_H
+#define RCSS_CLANGADVICEMSG_H
 
-#include "clangmsg.h"
-#include <list>
-
+#include <rcss/clang/clangmsg.h>
+#include <rcss/clang/coach_lang_comp.h>
 
 namespace rcss {
 namespace clang {
 
-class ActivateRules;
-
-class RuleMsg
+class AdviceMsg
     : public Msg {
 public:
-    typedef std::list< ActivateRules > Storage;
+    typedef std::list< std::shared_ptr< Token > > Storage;
 
-    RuleMsg();
+    AdviceMsg();
 private:
-    RuleMsg( const Storage & list );
+    AdviceMsg( const Storage & tokens );
 public:
+
     virtual
-    ~RuleMsg() override;
+    ~AdviceMsg() override;
 
     virtual
     std::shared_ptr< Msg > deepCopy() const override;
@@ -53,25 +51,23 @@ public:
     std::ostream & printPretty( std::ostream & out,
                                 const std::string & line_header ) const override;
 
-    const Storage & getList() const
+    const Storage & getTokens() const
       {
-          return M_active;
+          return M_tokens;
       }
-
-	Storage & getList()
+    Storage & getTokens()
       {
-          return M_active;
+          return M_tokens;
       }
 
 	virtual
 	Types getType() const
       {
-          return RULE;
+          return ADVICE;
       }
 
 private:
-	Storage M_active;
-
+	Storage M_tokens;
 };
 
 }

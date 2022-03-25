@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clangadvicemsg.cc
-                       Class for CLang Advice messages
+                                clangrulemsg.cc
+                       Class for CLang Rule messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -23,85 +23,67 @@
 #include <config.h>
 #endif
 
-#include "clangadvicemsg.h"
-#include "types.h"
+#include "clangrulemsg.h"
+
+#include "rule.h"
 
 namespace rcss {
 namespace clang {
 
-AdviceMsg::AdviceMsg()
+RuleMsg::RuleMsg()
     : Msg()
 {
 
 }
 
-AdviceMsg::AdviceMsg( const Storage & tokens )
-    : Msg(),
-      M_tokens( tokens )
+RuleMsg::RuleMsg( const Storage & list )
+	: Msg(),
+	  M_active( list )
 {
 
 }
 
-AdviceMsg::~AdviceMsg()
+RuleMsg::~RuleMsg()
 {
-	M_tokens.clear();
+
 }
 
 std::shared_ptr< Msg >
-AdviceMsg::deepCopy() const
+RuleMsg::deepCopy() const
 {
-	Storage new_tokens;
-	for( Storage::const_reference i : M_tokens )
-	{
-	    new_tokens.push_back( i->deepCopy() );
-	}
-
-	std::shared_ptr< Msg > rval( new AdviceMsg( new_tokens ) );
+	std::shared_ptr< Msg > rval( new RuleMsg( *this ) );
     return rval;
 }
 
-//     void
-//     AdviceMsg::accept( Visitor& v )
-//     { v.startVisit( this ); }
-
-//     void
-//     AdviceMsg::accept( ConstVisitor& v ) const
-//     { v.startVisit( this ); }
-
 std::ostream &
-AdviceMsg::print( std::ostream & out ) const
+RuleMsg::print( std::ostream & out ) const
 {
-    out << "(advice";
-    for ( Storage::const_reference token : getTokens() )
+    out << "(rule ";
+    for ( Storage::const_reference i : M_active )
     {
-        if ( ! token )
-        {
-            out << " (null)";
-        }
-        else
-        {
-            out << " " << *token;
-        }
+        out << i;
     }
     out << ")";
     return out;
 }
 
 std::ostream &
-AdviceMsg::printPretty( std::ostream & out,
-                        const std::string & line_header ) const
+RuleMsg::printPretty( std::ostream & out,
+                      const std::string & line_header ) const
 {
-    out << line_header << "Advice" << std::endl;
-    for ( Storage::const_reference token : getTokens() )
+    out << line_header << "Activation List:\n";
+    bool first = true;
+    for ( Storage::const_reference i : M_active )
     {
-        if ( ! token )
+        if ( first )
         {
-            out << line_header << " - (null)\n";
+            first = false;
         }
         else
         {
-            token->printPretty( out, line_header + " - " );
+            out << line_header << " Then:\n";
         }
+        i.printPretty( out, line_header + "  -" );
     }
     return out;
 }

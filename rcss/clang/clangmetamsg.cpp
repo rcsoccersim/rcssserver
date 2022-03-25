@@ -1,8 +1,8 @@
 // -*-c++-*-
 
 /***************************************************************************
-                                clanginfomsg.cc
-                       Class for CLang Info messages
+                                clangmetamsg.cc
+                       Class for CLang Meta messages
                              -------------------
     begin                : 28-MAY-2002
     copyright            : (C) 2002 by The RoboCup Soccer Server
@@ -23,33 +23,79 @@
 #include <config.h>
 #endif
 
-#include "clanginfomsg.h"
+#include "clangmetamsg.h"
 
-#include "types.h"
+#include <iostream>
+#include <string>
 
 namespace rcss {
 namespace clang {
 
-InfoMsg::InfoMsg()
+MetaToken::MetaToken()
+{
+
+}
+
+MetaToken::~MetaToken()
+{
+
+}
+
+MetaTokenVer::MetaTokenVer( const double & ver )
+	: MetaToken(),
+	  M_ver( ver )
+{
+
+}
+
+MetaTokenVer::~MetaTokenVer()
+{
+
+}
+
+std::shared_ptr< MetaToken >
+MetaTokenVer::deepCopy() const
+{
+    std::shared_ptr< MetaToken > rval( new MetaTokenVer( *this ) );
+    return rval;
+}
+
+std::ostream &
+MetaTokenVer::print( std::ostream & out ) const
+{
+    return out << "(ver " << M_ver << ")";
+}
+
+std::ostream &
+MetaTokenVer::printPretty( std::ostream & out,
+                           const std::string & line_header ) const
+{
+    return out << line_header << "version: " << M_ver << std::endl;
+}
+
+
+
+
+MetaMsg::MetaMsg()
     : Msg()
 {
 
 }
 
-InfoMsg::InfoMsg( const Storage & tokens )
-    : Msg(),
-      M_tokens( tokens )
+MetaMsg::MetaMsg( const Storage & tokens )
+	: Msg(),
+	  M_tokens( tokens )
 {
 
 }
 
-InfoMsg::~InfoMsg()
+MetaMsg::~MetaMsg()
 {
 	M_tokens.clear();
 }
 
 std::shared_ptr< Msg >
-InfoMsg::deepCopy() const
+MetaMsg::deepCopy() const
 {
 	Storage new_tokens;
 	for ( Storage::const_reference token : M_tokens )
@@ -57,15 +103,15 @@ InfoMsg::deepCopy() const
 	    new_tokens.push_back( token->deepCopy() );
 	}
 
-	std::shared_ptr< Msg > ptr( new InfoMsg( new_tokens ) );
-    return ptr;
+	std::shared_ptr< Msg > rval( new MetaMsg( new_tokens ) );
+    return rval;
 }
 
 std::ostream &
-InfoMsg::print( std::ostream & out ) const
+MetaMsg::print( std::ostream & out ) const
 {
-    out << "(info";
-    for ( Storage::const_reference token : getTokens() )
+    out << "(meta";
+    for ( Storage::const_reference token : M_tokens )
     {
         if ( ! token )
         {
@@ -81,11 +127,12 @@ InfoMsg::print( std::ostream & out ) const
 }
 
 std::ostream &
-InfoMsg::printPretty( std::ostream & out,
+MetaMsg::printPretty( std::ostream & out,
                       const std::string & line_header ) const
 {
-    out << line_header << "Info" << std::endl;
-    for ( Storage::const_reference token : getTokens() )
+    out << line_header << "Meta" << std::endl;
+
+    for ( Storage::const_reference token : M_tokens )
     {
         if ( ! token )
         {
