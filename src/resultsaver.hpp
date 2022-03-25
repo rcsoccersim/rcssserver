@@ -22,7 +22,7 @@
 #ifndef RCSSRESULTSAVER_HPP
 #define RCSSRESULTSAVER_HPP
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <string>
 #include <memory>

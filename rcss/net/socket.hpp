@@ -23,7 +23,7 @@
 
 #include <memory>
 
-#include <rcssbase/net/addr.hpp>
+#include <rcss/net/addr.hpp>
 
 namespace rcss {
 namespace net {

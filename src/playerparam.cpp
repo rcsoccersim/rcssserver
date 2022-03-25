@@ -37,8 +37,8 @@
 
 #include "utility.h"
 
-#include <rcssbase/conf/parser.hpp>
-#include <rcssbase/conf/builder.hpp>
+#include <rcss/conf/parser.hpp>
+#include <rcss/conf/builder.hpp>
 
 #include <boost/filesystem/path.hpp>
 

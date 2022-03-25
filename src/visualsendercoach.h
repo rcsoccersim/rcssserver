@@ -28,7 +28,7 @@
 #include "object.h"
 #include "utility.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 

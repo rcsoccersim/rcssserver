@@ -27,11 +27,11 @@
 
 #include "utility.h"
 
-#include <rcssbase/conf/builder.hpp>
-#include <rcssbase/conf/parser.hpp>
-
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+
+#include <rcss/conf/builder.hpp>
+#include <rcss/conf/parser.hpp>
 
 #include <fstream>
 #include <cerrno>

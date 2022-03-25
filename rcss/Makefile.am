@@ -1,8 +1,8 @@
 SUBDIRS = net conf gzip
 
-rcssbasedir = $(includedir)/rcssbase
+rcssincludedir = $(includedir)/rcss
 
-rcssbase_HEADERS = \
+rcssinclude_HEADERS = \
 	factory.hpp \
 	parser.h
 

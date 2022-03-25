@@ -22,7 +22,7 @@
 #ifndef RCSS_NET_SOCKETSTREAMBUF_HPP
 #define RCSS_NET_SOCKETSTREAMBUF_HPP
 
-#include <rcssbase/net/addr.hpp>
+#include <rcss/net/addr.hpp>
 
 //g++ 2.95.6 doesn't have the streambuf header, so iostream is used instead
 //#include <streambuf>

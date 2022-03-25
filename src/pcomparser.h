@@ -22,9 +22,11 @@
 #ifndef PCOMPARSER_H
 #define PCOMPARSER_H
 
-#include <string>
-#include <rcssbase/parser.h>
 #include "player_command_tok.h"
+
+#include <rcss/parser.h>
+
+#include <string>
 
 namespace rcss {
 namespace pcom {

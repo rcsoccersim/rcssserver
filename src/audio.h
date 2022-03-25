@@ -28,7 +28,7 @@
 #include "param.h"
 #include "types.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <string>
 #include <map>

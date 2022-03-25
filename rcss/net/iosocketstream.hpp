@@ -1,7 +1,7 @@
 // -*-c++-*-
 
 /***************************************************************************
-                  isocketstream.hpp  -  An istream for sockets
+                  iosocketstream.hpp  -  An iostream for sockets
                              -------------------
     begin                : 08-JAN-2003
     copyright            : (C) 2003 by The RoboCup Soccer Server
@@ -18,37 +18,47 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef RCSS_NET_ISOCKETSTREAM_HPP
-#define RCSS_NET_ISOCKETSTREAM_HPP
+#ifndef RCSS_NET_IOSOCKETSTREAM_HPP
+#define RCSS_NET_IOSOCKETSTREAM_HPP
 
-#include <rcssbase/net/socketstreambuf.hpp>
+#include <rcss/net/socketstreambuf.hpp>
+#include <rcss/net/isocketstream.hpp>
+#include <rcss/net/osocketstream.hpp>
 
 namespace rcss {
 namespace net {
 
-class ISocketStream
+class IOSocketStream
     : public SocketStreamBuf,
-      public std::istream {
+      public std::iostream {
+    // The IOSocketStream can be used in threads, however if a read
+    // blocks waiting for input, then the sending at the same time
+    // will also block.  If you want to do this then you will need to
+    // either protect the stream with a mutex or create a
+    // ISocketStream for reading and a OSocketStream for
+    // writing.  You can pass the same socket to both to have the
+    // reading and writing performed by the same socket.
 public:
-    ISocketStream( Socket & socket,
-                   const Addr & dest,
-                   ConnType conn = CONN_ON_READ,
-                   int buffer_size = 8192 )
+
+    IOSocketStream( Socket & socket,
+                    const Addr & dest,
+                    ConnType conn = CONN_ON_READ,
+                    int buffer_size = 8192 )
         : SocketStreamBuf( socket, dest, conn, buffer_size ),
-          std::istream( this )
+          std::iostream( this )
       { }
 
-    ISocketStream( Socket & socket,
-                   ConnType conn = NO_CONN,
-                   int buffer_size = 8192 )
+    IOSocketStream( Socket & socket,
+                    ConnType conn = NO_CONN,
+                    int buffer_size = 8192 )
         : SocketStreamBuf( socket, conn, buffer_size ),
-          std::istream( this )
+          std::iostream( this )
       { }
 
 private:
     // not for use
-    ISocketStream(const ISocketStream & );
-    ISocketStream & operator=( const ISocketStream & );
+    IOSocketStream( const IOSocketStream & );
+    IOSocketStream & operator=( const IOSocketStream & );
 };
 
 }

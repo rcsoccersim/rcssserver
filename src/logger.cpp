@@ -42,10 +42,10 @@
 
 #include "serializercommonstdv8.h"
 
-#include <rcssbase/gzip/gzfstream.hpp>
-
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
+
+#include <rcss/gzip/gzfstream.hpp>
 
 #include <sstream>
 

@@ -245,10 +245,10 @@ fi
 ##################################################
 
 AC_CONFIG_FILES([Makefile
-                rcssbase/Makefile
-                rcssbase/net/Makefile
-                rcssbase/conf/Makefile
-                rcssbase/gzip/Makefile
+                rcss/Makefile
+                rcss/net/Makefile
+                rcss/conf/Makefile
+                rcss/gzip/Makefile
                 src/Makefile
                 src/rcsoccersim],
                 [test -f src/rcsoccersim && chmod +x src/rcsoccersim])

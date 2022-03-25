@@ -1,13 +1,13 @@
 
-lib_LTLIBRARIES = librcssconfparser.la
+lib_LTLIBRARIES = librcssgz.la
 
-librcssconfparser_la_SOURCES = \
-	parser.cpp \
-	builder.cpp \
-	statushandler.cpp \
-	streamstatushandler.cpp
+librcssgz_la_SOURCES= \
+	gzfstream.hpp \
+	gzfstream.cpp \
+	gzstream.hpp \
+	gzstream.cpp
 
-librcssconfparser_la_LDFLAGS = -version-info 3:0:0
+librcssgz_la_LDFLAGS = -version-info 1:0:0
 #    1. Start with version information of `0:0:0' for each libtool library.
 #
 #    2. Update the version information only immediately before a public
@@ -27,22 +27,18 @@ librcssconfparser_la_LDFLAGS = -version-info 3:0:0
 #    6. If any interfaces have been removed since the last public release,
 #       then set AGE to 0.
 
-#librcssconfparser_la_LIBADD = $(BOOST_FILESYSTEM_LIB)
+librcssgz_la_LIBADD =
 
-rcssbase_confdir = $(includedir)/rcssbase/conf
+librcssgzincludedir = $(includedir)/rcss/gzip
 
-rcssbase_conf_HEADERS = \
-	builder.hpp \
-	parser.hpp \
-	paramgetter.hpp \
-	paramsetter.hpp \
-	statushandler.hpp \
-	streamstatushandler.hpp
+librcssgzinclude_HEADERS = \
+	gzstream.hpp \
+	gzfstream.hpp
 
 AM_CPPFLAGS = -I$(top_srcdir)
 AM_CFLAGS = -W -Wall
 AM_CXXFLAGS = -W -Wall
-AM_LD_FLAGS =
+AM_LDFLAGS =
 
 CLEANFILES = \
 	*~ \

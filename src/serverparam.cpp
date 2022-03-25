@@ -40,11 +40,11 @@
 
 #include "utility.h"
 
-#include <rcssbase/conf/builder.hpp>
-#include <rcssbase/conf/parser.hpp>
-#include <rcssbase/conf/streamstatushandler.hpp>
-#include <rcssbase/conf/paramsetter.hpp>
-#include <rcssbase/conf/paramgetter.hpp>
+#include <rcss/conf/builder.hpp>
+#include <rcss/conf/parser.hpp>
+#include <rcss/conf/streamstatushandler.hpp>
+#include <rcss/conf/paramsetter.hpp>
+#include <rcss/conf/paramgetter.hpp>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>

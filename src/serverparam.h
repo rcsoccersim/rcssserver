@@ -35,7 +35,7 @@
 
 #include "types.h"
 
-#include <rcssbase/net/addr.hpp>
+#include <rcss/net/addr.hpp>
 
 #include <memory>
 #include <map>

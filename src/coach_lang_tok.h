@@ -30,7 +30,7 @@
 
 #undef yyFlexLexer
 #define yyFlexLexer RCSSCLangFLexLexer
-//#include <rcssbase/FlexLexer.h>
+//#include <rcss/FlexLexer.h>
 #include <FlexLexer.h>
 
 #define CLANG_MAX_STR 8192

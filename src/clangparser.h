@@ -23,7 +23,7 @@
 #define CLANGPARSER_H
 
 #include <string>
-#include <rcssbase/parser.h>
+#include <rcss/parser.h>
 #include "coach_lang_tok.h"
 
 namespace rcss {

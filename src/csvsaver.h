@@ -21,7 +21,7 @@
 
 #include "resultsaver.hpp"
 
-#include <rcssbase/conf/builder.hpp>
+#include <rcss/conf/builder.hpp>
 
 #include <ctime>
 #include <string>

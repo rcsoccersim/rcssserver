@@ -25,7 +25,7 @@
 
 #include "initsender.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 

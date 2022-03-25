@@ -28,8 +28,8 @@
 #include "param.h"
 #include "rcssexceptions.h"
 
-#include <rcssbase/net/socketstreambuf.hpp>
-#include <rcssbase/gzip/gzstream.hpp>
+#include <rcss/net/socketstreambuf.hpp>
+#include <rcss/gzip/gzstream.hpp>
 
 #include <cerrno>
 #include <cstring>

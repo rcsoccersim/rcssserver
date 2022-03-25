@@ -35,7 +35,7 @@
 #include "random.h"
 #include "utility.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 namespace rcss {
 

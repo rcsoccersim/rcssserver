@@ -225,9 +225,9 @@ noinst_HEADERS = \
 	xpmholder.h
 
 rcssserver_LDFLAGS = \
-	-L$(top_builddir)/rcssbase/conf \
-	-L$(top_builddir)/rcssbase/net \
-	-L$(top_builddir)/rcssbase/gzip
+	-L$(top_builddir)/rcss/conf \
+	-L$(top_builddir)/rcss/net \
+	-L$(top_builddir)/rcss/gzip
 
 rcssserver_LDADD = \
 	librcssclangparser.la \
@@ -272,8 +272,8 @@ rcssclient_SOURCES = \
 	client.cpp
 
 rcssclient_LDFLAGS = \
-	-L$(top_builddir)/rcssbase/net \
-	-L$(top_builddir)/rcssbase/gzip
+	-L$(top_builddir)/rcss/net \
+	-L$(top_builddir)/rcss/gzip
 
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
 	-lrcssnet \

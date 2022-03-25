@@ -32,9 +32,9 @@ librcssnet_la_LDFLAGS = -version-info 1:1:0
 #librcssnet_la_LIBADD = @NET_LIBS@ -lrcsserror
 librcssnet_la_LIBADD =
 
-rcssbase_netdir = $(includedir)/rcssbase/net
+librcssnetincludedir = $(includedir)/rcss/net
 
-rcssbase_net_HEADERS = \
+librcssnetinclude_HEADERS = \
 	addr.hpp \
 	socket.hpp \
 	udpsocket.hpp \

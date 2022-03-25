@@ -30,8 +30,8 @@
 #include "weather.h"
 #include "resultsaver.hpp"
 
-#include <rcssbase/gzip/gzfstream.hpp>
-#include <rcssbase/net/udpsocket.hpp>
+#include <rcss/gzip/gzfstream.hpp>
+#include <rcss/net/udpsocket.hpp>
 
 #include <cstdio>
 #include <string>

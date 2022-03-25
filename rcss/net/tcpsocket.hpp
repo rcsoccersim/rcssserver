@@ -1,9 +1,9 @@
 // -*-c++-*-
 
 /***************************************************************************
-                          udpsocket.hpp  -  A simple udp socket class
+                          tcpsocket.hpp  -  A simple tcp socket class
                              -------------------
-    begin                : 08-JAN-2003
+    begin                : 2003-11-11
     copyright            : (C) 2003 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
@@ -19,30 +19,35 @@
  ***************************************************************************/
 
 
-#ifndef RCSS_NET_UDPSOCKET_HPP
-#define RCSS_NET_UDPSOCKET_HPP
+#ifndef RCSS_NET_TCPSOCKET_HPP
+#define RCSS_NET_TCPSOCKET_HPP
 
-#include <rcssbase/net/socket.hpp>
+
+#include <rcss/net/socket.hpp>
 
 namespace rcss {
 namespace net {
 
-class UDPSocket
+class TCPSocket
     : public Socket {
 public:
 
-    UDPSocket();
+    TCPSocket();
 
-    UDPSocket( SocketDesc & s );
+    TCPSocket( SocketDesc & s );
 
-    UDPSocket( const Addr & addr );
+    TCPSocket( const Addr & addr );
 
-    UDPSocket( const Addr & addr,
+    TCPSocket( const Addr & addr,
                const Addr & dest );
+
+    bool accept( TCPSocket & sock );
+
+    bool listen( int backlog );
 
 protected:
     virtual
-    bool doOpen( SocketDesc & fd );
+    bool doOpen( SocketDesc& fd );
 };
 
 }

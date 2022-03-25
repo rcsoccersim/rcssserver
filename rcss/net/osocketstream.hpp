@@ -1,9 +1,9 @@
 // -*-c++-*-
 
 /***************************************************************************
-                          tcpsocket.hpp  -  A simple tcp socket class
+                  osocketstream.hpp  -  An ostream for sockets
                              -------------------
-    begin                : 2003-11-11
+    begin                : 08-JAN-2003
     copyright            : (C) 2003 by The RoboCup Soccer Server
                            Maintenance Group.
     email                : sserver-admin@lists.sourceforge.net
@@ -18,36 +18,36 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef RCSS_NET_OSOCKETSTREAM_HPP
+#define RCSS_NET_OSOCKETSTREAM_HPP
 
-#ifndef RCSS_NET_TCPSOCKET_HPP
-#define RCSS_NET_TCPSOCKET_HPP
-
-
-#include <rcssbase/net/socket.hpp>
+#include <rcss/net/socketstreambuf.hpp>
 
 namespace rcss {
 namespace net {
 
-class TCPSocket
-    : public Socket {
+class OSocketStream
+    : public SocketStreamBuf,
+      public std::ostream {
 public:
 
-    TCPSocket();
+    OSocketStream( Socket & socket,
+                   const Addr & dest,
+                   int buffer_size = 8192 )
+        : SocketStreamBuf( socket, dest, NO_CONN, buffer_size ),
+          std::ostream( this )
+      { }
 
-    TCPSocket( SocketDesc & s );
+    OSocketStream( Socket & socket,
+                   int buffer_size = 8192 )
+        : SocketStreamBuf( socket, NO_CONN, buffer_size ),
+          std::ostream( this )
+      { }
 
-    TCPSocket( const Addr & addr );
-
-    TCPSocket( const Addr & addr,
-               const Addr & dest );
-
-    bool accept( TCPSocket & sock );
-
-    bool listen( int backlog );
-
-protected:
-    virtual
-    bool doOpen( SocketDesc& fd );
+private:
+    // not for use
+    OSocketStream( const OSocketStream & );
+    OSocketStream & operator=( const OSocketStream & );
 };
 
 }

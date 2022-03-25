@@ -36,5 +36,5 @@ check_include_file_cxx("pwd.h" HAVE_PWD_H)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h)
 
-add_subdirectory(rcssbase)
+add_subdirectory(rcss)
 add_subdirectory(src)

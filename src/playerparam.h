@@ -34,7 +34,7 @@
 
 #include "types.h"
 
-#include <rcssbase/conf/builder.hpp>
+#include <rcss/conf/builder.hpp>
 
 #include <memory>
 #include <string>

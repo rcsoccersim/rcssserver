@@ -5,7 +5,7 @@ libtool:	$(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
 SUBDIRS = \
-	rcssbase \
+	rcss \
 	src \
 	.
 

@@ -36,5 +36,5 @@ target_link_libraries(RCSSBase
 install(FILES
   factory.hpp
   parser.h
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcssbase
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rcss
 )

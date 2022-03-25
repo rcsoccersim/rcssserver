@@ -25,9 +25,9 @@
 
 #include "compress.h"
 
-#include <rcssbase/net/socketstreambuf.hpp>
-#include <rcssbase/net/udpsocket.hpp>
-#include <rcssbase/gzip/gzstream.hpp>
+#include <rcss/net/socketstreambuf.hpp>
+#include <rcss/net/udpsocket.hpp>
+#include <rcss/gzip/gzstream.hpp>
 
 #include <sstream>
 #include <iostream>

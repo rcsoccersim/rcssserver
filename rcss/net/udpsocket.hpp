@@ -1,7 +1,7 @@
 // -*-c++-*-
 
 /***************************************************************************
-                  osocketstream.hpp  -  An ostream for sockets
+                          udpsocket.hpp  -  A simple udp socket class
                              -------------------
     begin                : 08-JAN-2003
     copyright            : (C) 2003 by The RoboCup Soccer Server
@@ -18,36 +18,31 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef RCSS_NET_OSOCKETSTREAM_HPP
-#define RCSS_NET_OSOCKETSTREAM_HPP
 
-#include <rcssbase/net/socketstreambuf.hpp>
+#ifndef RCSS_NET_UDPSOCKET_HPP
+#define RCSS_NET_UDPSOCKET_HPP
+
+#include <rcss/net/socket.hpp>
 
 namespace rcss {
 namespace net {
 
-class OSocketStream
-    : public SocketStreamBuf,
-      public std::ostream {
+class UDPSocket
+    : public Socket {
 public:
 
-    OSocketStream( Socket & socket,
-                   const Addr & dest,
-                   int buffer_size = 8192 )
-        : SocketStreamBuf( socket, dest, NO_CONN, buffer_size ),
-          std::ostream( this )
-      { }
+    UDPSocket();
 
-    OSocketStream( Socket & socket,
-                   int buffer_size = 8192 )
-        : SocketStreamBuf( socket, NO_CONN, buffer_size ),
-          std::ostream( this )
-      { }
+    UDPSocket( SocketDesc & s );
 
-private:
-    // not for use
-    OSocketStream( const OSocketStream & );
-    OSocketStream & operator=( const OSocketStream & );
+    UDPSocket( const Addr & addr );
+
+    UDPSocket( const Addr & addr,
+               const Addr & dest );
+
+protected:
+    virtual
+    bool doOpen( SocketDesc & fd );
 };
 
 }
