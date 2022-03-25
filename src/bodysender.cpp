@@ -427,6 +427,7 @@ RegHolder vp13 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV
 RegHolder vp14 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 14 );
 RegHolder vp15 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 15 );
 RegHolder vp16 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 16 );
+RegHolder vp17 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 17 );
 }
 
 }

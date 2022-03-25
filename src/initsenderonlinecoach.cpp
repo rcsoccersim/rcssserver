@@ -300,6 +300,7 @@ RegHolder voc13 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderO
 RegHolder voc14 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 14 );
 RegHolder voc15 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 15 );
 RegHolder voc16 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 16 );
+RegHolder voc17 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 17 );
 }
 
 }
