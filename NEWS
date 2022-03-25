@@ -1,3 +1,35 @@
+[17.0.0]
+  * New parameters:
+    - server::max_catch_angle (default value: 90.0)
+    - server::min_catch_angle (default value: -90.0)
+
+  * Changed parameters:
+    - server::min_dash_power (-100.0 -> 0)
+    - server::back_dash_rate (0.6 -> 0.7)
+
+  * Improvement of the catch model. The direction of goalie's catch
+    command has been restricted within [server::min_catch_angle,
+    server::max_catch_angle]. The default values are [-90.0, 90.0].
+	This setting means goalies cannot catch the ball behind them.
+
+  * Improvement of the dash model. server::min_dash_power is changed
+    from -100.0 to 0.0.  This means players cannot use the negative
+    power in order for them to accelerate backward.  If players would
+    like to accelerate backward, they need to use the omnidirectional
+    dash.  In connection with the change of the dash power,
+    server::back_dash_rate has been changed.
+
+  * Support a JSON-based monitor protocol. If the monitor tries to
+    connect to the server by the client version 5, the received
+    messages will be JSON. The format of the game log file (.rcg) has
+    also followed the monitor protocol. If the value of
+    server::game_log_version is 6, the content of the recorded game
+    log is a JSON array except for the header line.
+
+  * The installation destination of the library header files has been
+    unified under PREFIX/include/rcss. The location of the clang
+    parser library has been moved to prefix/include/rcss/clang.
+
 [16.0.1]
   * Fix a bug of the length of half time caused by slow_down_factor.
 

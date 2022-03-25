@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 LT_PREREQ([2.2])
-AC_INIT([RCSSServer],[16.0.1],[sserver-admin@users.sf.net],[rcssserver])
+AC_INIT([RCSSServer],[17.0.0],[https://github.com/rcsoccersim/],[rcssserver])
 
 #AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news foreign])
