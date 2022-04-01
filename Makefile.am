@@ -10,7 +10,9 @@ SUBDIRS = \
 	.
 
 EXTRA_DIST = \
-	README.md
+	README.md \
+	CMakeLists.txt \
+	config.h.cmake
 
 CLEANFILES = \
 	*~ \

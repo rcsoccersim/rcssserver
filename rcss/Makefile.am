@@ -13,6 +13,9 @@ AM_CFLAGS = -W -Wall
 AM_CXXFLAGS = -W -Wall
 AM_LDFLAGS =
 
+EXTRA_DIST = \
+	CMakeLists.txt
+
 CLEANFILES = \
 	*~ \
 	core

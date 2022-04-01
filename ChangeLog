@@ -1,5 +1,6 @@
-2022-03-26  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+2022-04-02  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
+	* CMakeLists.txt:
 	* NEWS:
 	* configure.ac:
 	- update a major version number. Official release 17.0.0

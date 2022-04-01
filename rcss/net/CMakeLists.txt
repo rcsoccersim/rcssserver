@@ -1,6 +1,5 @@
 add_library(RCSSNet SHARED
     addr.cpp
-    handler.cpp
     socket.cpp
     socketstreambuf.cpp
     tcpsocket.cpp

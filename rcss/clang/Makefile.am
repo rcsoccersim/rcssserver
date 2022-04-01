@@ -109,8 +109,10 @@ AM_FLEXFLEX=@AM_FLEXFLAGS@
 
 
 EXTRA_DIST = \
+	CMakeLists.txt \
 	coach_lang_parser.ypp \
-	coach_lang_tok.lpp
+	coach_lang_tok.lpp \
+	fix_lexer_file.cmake
 
 
 CLEANFILES = \
