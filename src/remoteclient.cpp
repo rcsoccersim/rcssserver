@@ -26,10 +26,10 @@
 #include "remoteclient.h"
 
 #include "param.h"
-#include "rcssexceptions.h"
+//#include "rcssexceptions.h"
 
-#include <rcssbase/net/socketstreambuf.hpp>
-#include <rcssbase/gzip/gzstream.hpp>
+#include <rcss/net/socketstreambuf.hpp>
+#include <rcss/gzip/gzstream.hpp>
 
 #include <cerrno>
 #include <cstring>
@@ -37,9 +37,9 @@
 
 RemoteClient::RemoteClient()
     : M_socket()
-    , M_socket_buf( NULL )
-    , M_gz_buf( NULL )
-    , M_transport( NULL )
+    , M_socket_buf( nullptr )
+    , M_gz_buf( nullptr )
+    , M_transport( nullptr )
     , M_comp_level( -1 )
     , M_enforce_dedicated_port( false )
 {
@@ -61,7 +61,8 @@ RemoteClient::getTransport()
     }
     else
     {
-        throw rcss::util::NullErr( __FILE__, __LINE__, "Transport is NULL" );
+        //throw rcss::util::NullErr( __FILE__, __LINE__, "Transport is NULL" );
+        throw std::logic_error( "Transport is NULL" );
     }
 }
 
@@ -73,19 +74,19 @@ RemoteClient::close()
     if ( M_transport )
     {
         delete M_transport;
-        M_transport = NULL;
+        M_transport = nullptr;
     }
 
     if ( M_gz_buf )
     {
         delete M_gz_buf;
-        M_gz_buf = NULL;
+        M_gz_buf = nullptr;
     }
 
     if ( M_socket_buf )
     {
         delete M_socket_buf;
-        M_socket_buf = NULL;
+        M_socket_buf = nullptr;
     }
 
     setEnforceDedicatedPort( false );

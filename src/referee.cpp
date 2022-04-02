@@ -25,6 +25,7 @@
 
 #include "referee.h"
 
+#include "logger.h"
 #include "stadium.h"
 #include "player.h"
 #include "team.h"
@@ -32,12 +33,7 @@
 
 #include <ctime>
 #include <limits>
-
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 
 namespace {
 const int CLEAR_PLAYER_TIME = 5;
@@ -618,37 +614,34 @@ Referee::placePlayersInTheirField()
                                   && ( M_stadium.playmode() == PM_KickOff_Left
                                        || M_stadium.playmode() == PM_KickOff_Right ) );
 
-    const Stadium::PlayerCont::iterator end = M_stadium.remotePlayers().end();
-    for ( Stadium::PlayerCont::iterator it = M_stadium.remotePlayers().begin();
-          it != end;
-          ++it )
+    for ( Stadium::PlayerCont::reference p : M_stadium.remotePlayers() )
     {
-        if ( ! (*it)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        switch ( (*it)->side() ) {
+        switch ( p->side() ) {
         case LEFT:
-            if ( (*it)->pos().x > 0 )
+            if ( p->pos().x > 0 )
             {
                 if ( kick_off_offside )
                 {
-                    (*it)->moveTo( PVector( -(*it)->size(), (*it)->pos().y ) );
+                    p->moveTo( PVector( -p->size(), p->pos().y ) );
                 }
                 else
                 {
-                    (*it)->moveTo( fld_l.randomize() );
+                    p->moveTo( fld_l.randomize() );
                 }
             }
             break;
         case RIGHT:
-            if ( (*it)->pos().x < 0 )
+            if ( p->pos().x < 0 )
             {
                 if ( kick_off_offside )
                 {
-                    (*it)->moveTo( PVector( (*it)->size(), (*it)->pos().y ) );
+                    p->moveTo( PVector( p->size(), p->pos().y ) );
                 }
                 else
                 {
-                    (*it)->moveTo( fld_r.randomize() );
+                    p->moveTo( fld_r.randomize() );
                 }
             }
             break;
@@ -657,14 +650,14 @@ Referee::placePlayersInTheirField()
             break;
         }
 
-        if ( (*it)->side() != M_stadium.kickOffSide() )
+        if ( p->side() != M_stadium.kickOffSide() )
         {
             CArea expand_c( PVector( 0.0, 0.0 ),
-                            ServerParam::KICK_OFF_CLEAR_DISTANCE + (*it)->size() );
+                            ServerParam::KICK_OFF_CLEAR_DISTANCE + p->size() );
 
-            if ( expand_c.inArea( (*it)->pos() ) )
+            if ( expand_c.inArea( p->pos() ) )
             {
-                (*it)->moveTo( expand_c.nearestEdge( (*it)->pos() ) );
+                p->moveTo( expand_c.nearestEdge( p->pos() ) );
             }
         }
     }
@@ -710,33 +703,30 @@ Referee::clearPlayersFromBall( const Side side )
         = ( std::fabs( M_stadium.ball().pos().x ) > max_x - clear_dist
             && std::fabs( M_stadium.ball().pos().y ) > max_y - clear_dist );
 
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
     for ( int loop = 0; loop < 10; ++loop )
     {
         bool exist = false;
-        for ( Stadium::PlayerCont::iterator it = M_stadium.players().begin();
-              it != end;
-              ++it )
+        for ( Stadium::PlayerCont::reference p : M_stadium.players() )
         {
-            if ( ! (*it)->isEnabled() ) continue;
+            if ( ! p->isEnabled() ) continue;
 
             if ( side == NEUTRAL
-                 || (*it)->side() == side )
+                 || p->side() == side )
             {
                 if ( indirect
-                     && std::fabs( (*it)->pos().x ) >= ServerParam::PITCH_LENGTH*0.5 )
+                     && std::fabs( p->pos().x ) >= ServerParam::PITCH_LENGTH*0.5 )
                 {
                     // defender is allowed to stand on the goal line.
                     continue;
                 }
 
                 CArea clear_area( M_stadium.ball().pos(),
-                                  clear_dist + (*it)->size() );
-                if ( clear_area.inArea( (*it)->pos() ) )
+                                  clear_dist + p->size() );
+                if ( clear_area.inArea( p->pos() ) )
                 {
                     CArea expand_clear_area( M_stadium.ball().pos(),
-                                             clear_dist + (*it)->size() + 1.0e-5 );
-                    PVector new_pos = expand_clear_area.nearestEdge( (*it)->pos() );
+                                             clear_dist + p->size() + 1.0e-5 );
+                    PVector new_pos = expand_clear_area.nearestEdge( p->pos() );
 
                     if ( ball_at_corner
                          && std::fabs( new_pos.x ) > ServerParam::PITCH_LENGTH*0.5
@@ -761,7 +751,7 @@ Referee::clearPlayersFromBall( const Side side )
 
                     if ( std::fabs( new_pos.x ) > max_x )
                     {
-                        double r = clear_dist + (*it)->size();
+                        double r = clear_dist + p->size();
                         double theta = std::acos( ( max_x - std::fabs( M_stadium.ball().pos().x ) ) / r );
                         double tmp_y = std::fabs( r * std::sin( theta ) );
                         new_pos.x = ( new_pos.x < 0.0 ? -max_x : +max_x );
@@ -773,7 +763,7 @@ Referee::clearPlayersFromBall( const Side side )
 
                     if ( std::fabs( new_pos.y ) > max_y )
                     {
-                        double r = clear_dist + (*it)->size();
+                        double r = clear_dist + p->size();
                         double theta = std::acos( ( max_y - std::fabs( M_stadium.ball().pos().y ) ) / r );
                         double tmp_x = std::fabs( r * std::sin( theta ) );
                         new_pos.x = ( M_stadium.ball().pos().x
@@ -791,7 +781,7 @@ Referee::clearPlayersFromBall( const Side side )
                         new_pos += M_stadium.ball().pos();
                     }
 
-                    (*it)->place( new_pos );
+                    p->place( new_pos );
                     exist = true;
                 }
             }
@@ -819,15 +809,11 @@ Referee::checkFoul( const Player & tackler,
     bool yellow_card = false;
     bool red_card = false;
 
-    boost::bernoulli_distribution<> rng( tackler.foulDetectProbability() );
-    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
-        dst( rcss::random::DefaultRNG::instance(), rng );
+    std::bernoulli_distribution dst( tackler.foulDetectProbability() );
 
     // 2011-05-14 akiyama
     // added red card probability
-    boost::bernoulli_distribution<> red_rng( ServerParam::instance().redCardProbability() );
-    boost::variate_generator< rcss::random::DefaultRNG &, boost::bernoulli_distribution<> >
-        red_dst( rcss::random::DefaultRNG::instance(), red_rng );
+    std::bernoulli_distribution red_dst( ServerParam::instance().redCardProbability() );
 
     const double ball_dist2 = tackler.pos().distance2( M_stadium.ball().pos() );
     const double ball_angle = ( M_stadium.ball().pos() - tackler.pos() ).th();
@@ -836,60 +822,57 @@ Referee::checkFoul( const Player & tackler,
     //          << " (tackler " << SideStr( tackler.side() ) << ' ' << tackler.unum() << ")"
     //          << std::endl;
 
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
-        if ( (*p)->side() == tackler.side() ) continue;
+        if ( ! p->isEnabled() ) continue;
+        if ( p->side() == tackler.side() ) continue;
 
-        if ( ! (*p)->ballKickable() ) continue; // no kickable
+        if ( ! p->ballKickable() ) continue; // no kickable
 
         bool pre_check = false;
         if ( foul )
         {
-            (*p)->setFoulCharged();
+            p->setFoulCharged();
 
-            //std::cerr << "---->" << (*p)->unum() << " intentional foul. prob=" << rng.p() << std::endl;
-            if ( dst() )
+            //std::cerr << "---->" << p->unum() << " intentional foul. prob=" << rng.p() << std::endl;
+            if ( dst( DefaultRNG::instance() ) )
             {
-                //std::cerr << "----> " << (*p)->unum() << " detected intentional foul." << std::endl;
+                //std::cerr << "----> " << p->unum() << " detected intentional foul." << std::endl;
                 pre_check = true;
                 foul_charge = true;
             }
         }
 
-        if ( ! (*p)->dashed() )
+        if ( ! p->dashed() )
         {
-            //std::cerr << "----> " << (*p)->unum() << " no dash." << std::endl;
+            //std::cerr << "----> " << p->unum() << " no dash." << std::endl;
             continue; // no dashing
         }
 
-        PVector player_rel = (*p)->pos() - tackler.pos();
+        PVector player_rel = p->pos() - tackler.pos();
 
         if ( player_rel.r2() > ball_dist2 )
         {
-            //std::cerr << "----> " << (*p)->unum() << " ball near." << std::endl;
+            //std::cerr << "----> " << p->unum() << " ball near." << std::endl;
             continue; // further than ball
         }
 
-        //std::cerr << "--> (player " << SideStr( (*p)->side() ) << ' ' << (*p)->unum() << ")\n";
+        //std::cerr << "--> (player " << SideStr( p->side() ) << ' ' << p->unum() << ")\n";
 
         player_rel.rotate( -ball_angle );
 
         if ( player_rel.x < 0.0
-             || std::fabs( player_rel.y ) > (*p)->size() + tackler.size() )
+             || std::fabs( player_rel.y ) > p->size() + tackler.size() )
         {
-            //std::cerr << "----> " << (*p)->unum() << " behind or big y_diff. rel=" << player_rel
+            //std::cerr << "----> " << p->unum() << " behind or big y_diff. rel=" << player_rel
             //          << std::endl;
             continue;
         }
 
-        double body_diff = std::fabs( normalize_angle( (*p)->angleBodyCommitted() - ball_angle ) );
+        double body_diff = std::fabs( normalize_angle( p->angleBodyCommitted() - ball_angle ) );
         if ( body_diff > M_PI*0.5 )
         {
-            //std::cerr << "----> " << (*p)->unum() << " over body angle. angle=" << body_diff / M_PI * 180.0
+            //std::cerr << "----> " << p->unum() << " over body angle. angle=" << body_diff / M_PI * 180.0
             //          << std::endl;
             continue;
         }
@@ -898,9 +881,9 @@ Referee::checkFoul( const Player & tackler,
         {
             if ( pre_check )
             {
-                //std::cerr << "----> " << (*p)->unum() << " detected yellow_card." << std::endl;
+                //std::cerr << "----> " << p->unum() << " detected yellow_card." << std::endl;
                 yellow_card = true;
-                if ( red_dst() )
+                if ( red_dst( DefaultRNG::instance() ) )
                 {
                     yellow_card = false;
                     red_card = true;
@@ -909,11 +892,11 @@ Referee::checkFoul( const Player & tackler,
         }
         else
         {
-            if ( dst() )
+            if ( dst( DefaultRNG::instance() ) )
             {
-                //std::cerr << "----> " << (*p)->unum() << " detected foul. prob=" << rng.p() << std::endl;
+                //std::cerr << "----> " << p->unum() << " detected foul. prob=" << rng.p() << std::endl;
                 foul_charge = true;
-                if ( red_dst() )
+                if ( red_dst( DefaultRNG::instance() ) )
                 {
                     yellow_card = true;
                 }
@@ -1014,16 +997,13 @@ OffsideRef::checkIntentionalAction( const Player & kicker )
         return;
     }
 
-    for ( std::vector< Candidate >::iterator it = M_offside_candidates.begin(),
-              end = M_offside_candidates.end();
-          it != end;
-          ++it )
+    for ( const Candidate & c : M_offside_candidates )
     {
-        if ( it->player_ == &kicker
-             && it->player_->pos().distance2( M_stadium.ball().pos() )
+        if ( c.player_ == &kicker
+             && c.player_->pos().distance2( M_stadium.ball().pos() )
              < std::pow( ServerParam::instance().offsideActiveArea(), 2 ) )
         {
-            M_offside_pos = it->pos_;
+            M_offside_pos = c.pos_;
             callOffside();
         }
     }
@@ -1110,19 +1090,16 @@ OffsideRef::analyse()
     {
         double dist2 = std::pow( ServerParam::instance().offsideActiveArea(), 2 );
 
-        for ( std::vector< Candidate >::const_iterator it = M_offside_candidates.begin(),
-                  end = M_offside_candidates.end();
-              it != end;
-              ++it )
+        for ( const Candidate & c : M_offside_candidates )
         {
-            if ( ! it->player_->isEnabled() ) continue;
+            if ( ! c.player_->isEnabled() ) continue;
 
-            double tmp = it->player_->pos().distance2( M_stadium.ball().pos() );
+            double tmp = c.player_->pos().distance2( M_stadium.ball().pos() );
             if ( tmp < dist2 )
             {
                 found = true;
                 dist2 = tmp;
-                M_offside_pos = it->pos_;
+                M_offside_pos = c.pos_;
             }
         }
     }
@@ -1174,14 +1151,11 @@ OffsideRef::setOffsideMark( const Player & kicker,
         M_last_kick_accel_r = accel_r;
     }
 
-    for ( std::vector< Candidate >::iterator it = M_offside_candidates.begin(),
-              end = M_offside_candidates.end();
-          it != end;
-          ++it )
+    for ( const Candidate & c : M_offside_candidates )
     {
-        if ( it->player_ == &kicker )
+        if ( c.player_ == &kicker )
         {
-            M_offside_pos = it->pos_;
+            M_offside_pos = c.pos_;
             callOffside();
             return;
         }
@@ -1199,25 +1173,21 @@ OffsideRef::setOffsideMark( const Player & kicker,
         return;
     }
 
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-
     double first = 0.0;
     double second = 0.0;
     double offside_line = 0.0;
 
     switch ( kicker.side() ) {
     case LEFT:
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+        for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
         {
-            if ( ! (*p)->isEnabled() ) continue;
+            if ( ! p->isEnabled() ) continue;
 
-            if ( (*p)->side() == RIGHT )
+            if ( p->side() == RIGHT )
             {
-                if ( (*p)->pos().x > second )
+                if ( p->pos().x > second )
                 {
-                    second = (*p)->pos().x;
+                    second = p->pos().x;
                     if ( second > first )
                     {
                         std::swap( first, second );
@@ -1235,33 +1205,29 @@ OffsideRef::setOffsideMark( const Player & kicker,
             offside_line = M_stadium.ball().pos().x;
         }
 
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+        for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
         {
-            if ( ! (*p)->isEnabled() ) continue;
+            if ( ! p->isEnabled() ) continue;
 
-            if ( (*p)->side() == LEFT
-                 && (*p)->pos().x > offside_line
-                 && (*p)->unum() != kicker.unum() )
+            if ( p->side() == LEFT
+                 && p->pos().x > offside_line
+                 && p->unum() != kicker.unum() )
             {
-                M_offside_candidates.push_back( Candidate( *p, offside_line, (*p)->pos().y ) );
+                M_offside_candidates.push_back( Candidate( p, offside_line, p->pos().y ) );
             }
         }
         break;
 
     case RIGHT:
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+        for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
         {
-            if ( ! (*p)->isEnabled() ) continue;
+            if ( ! p->isEnabled() ) continue;
 
-            if ( (*p)->side() == LEFT )
+            if ( p->side() == LEFT )
             {
-                if ( (*p)->pos().x < second )
+                if ( p->pos().x < second )
                 {
-                    second = (*p)->pos().x;
+                    second = p->pos().x;
                     if ( second < first )
                     {
                         std::swap( first, second );
@@ -1279,17 +1245,15 @@ OffsideRef::setOffsideMark( const Player & kicker,
             offside_line = M_stadium.ball().pos().x;
         }
 
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+        for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
         {
-            if ( ! (*p)->isEnabled() ) continue;
+            if ( ! p->isEnabled() ) continue;
 
-            if ( (*p)->side() == RIGHT
-                 && (*p)->pos().x < offside_line
-                 && (*p)->unum() != kicker.unum() )
+            if ( p->side() == RIGHT
+                 && p->pos().x < offside_line
+                 && p->unum() != kicker.unum() )
             {
-                M_offside_candidates.push_back( Candidate( *p, offside_line, (*p)->pos().y ) );
+                M_offside_candidates.push_back( Candidate( p, offside_line, p->pos().y ) );
             }
         }
         break;
@@ -1401,30 +1365,27 @@ OffsideRef::checkPlayerAfterOffside()
     const CArea c( M_offside_pos, 2.5 );
     const RArea fld( center, size );
 
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(),
-              end = M_stadium.players().end();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
-        if ( (*p)->side() != offsideside ) continue;
+        if ( ! p->isEnabled() ) continue;
+        if ( p->side() != offsideside ) continue;
 
-        if ( c.inArea( (*p)->pos() ) )
+        if ( c.inArea( p->pos() ) )
         {
-            (*p)->moveTo( c.nearestEdge( (*p)->pos() ) );
+            p->moveTo( c.nearestEdge( p->pos() ) );
         }
 
-        if ( ! fld.inArea( (*p)->pos() ))
+        if ( ! fld.inArea( p->pos() ))
         {
             if ( M_stadium.playmode() == PM_OffSide_Right )
             {
-                (*p)->moveTo( fld.nearestVEdge( (*p)->pos() )
-                              + PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
+                p->moveTo( fld.nearestVEdge( p->pos() )
+                           + PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
             }
             else
             {
-                (*p)->moveTo( fld.nearestVEdge( (*p)->pos() )
-                              - PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
+                p->moveTo( fld.nearestVEdge( p->pos() )
+                           - PVector( ServerParam::instance().offsideKickMargin(), 0 ) );
             }
         }
     }
@@ -1522,29 +1483,27 @@ IllegalDefenseRef::analyse()
     const double right_x = +ServerParam::PITCH_LENGTH * 0.5 - ServerParam::instance().illegalDefenseDistX();
     const double half_width = ServerParam::instance().illegalDefenseWidth() * 0.5;
 
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        if ( (*p)->side() == LEFT
+        if ( p->side() == LEFT
              && M_last_kicker_side == RIGHT
              && M_stadium.ball().pos().x < 0.0
-             && (*p)->pos().x < left_x
-             && std::fabs( (*p)->pos().y ) < half_width )
+             && p->pos().x < left_x
+             && std::fabs( p->pos().y ) < half_width )
         {
             left_player_illegal += 1;
-            (*p)->addState( ILLEGAL_DEFENSE );
+            p->addState( ILLEGAL_DEFENSE );
         }
-        else if ( (*p)->side() == RIGHT
+        else if ( p->side() == RIGHT
                   && M_last_kicker_side == LEFT
                   && M_stadium.ball().pos().x > 0.0
-                  && (*p)->pos().x > right_x
-                  && std::fabs( (*p)->pos().y ) < half_width )
+                  && p->pos().x > right_x
+                  && std::fabs( p->pos().y ) < half_width )
         {
             right_player_illegal += 1;
-            (*p)->addState( ILLEGAL_DEFENSE );
+            p->addState( ILLEGAL_DEFENSE );
         }
     }
 
@@ -1556,11 +1515,9 @@ IllegalDefenseRef::analyse()
     {
         M_left_illegal_counter = 0;
 
-        for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
-          p != end;
-          ++p )
+        for ( Stadium::PlayerCont::reference p : M_stadium.players() )
         {
-            if ( (*p)->side() == LEFT ) (*p)->removeState( ILLEGAL_DEFENSE );
+            if ( p->side() == LEFT ) p->removeState( ILLEGAL_DEFENSE );
         }
     }
 
@@ -1572,11 +1529,9 @@ IllegalDefenseRef::analyse()
     {
         M_right_illegal_counter = 0;
 
-        for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin(), end = M_stadium.players().end();
-          p != end;
-          ++p )
+        for ( Stadium::PlayerCont::reference p : M_stadium.players() )
         {
-            if ( (*p)->side() == RIGHT ) (*p)->removeState( ILLEGAL_DEFENSE );
+            if ( p->side() == RIGHT ) p->removeState( ILLEGAL_DEFENSE );
         }
     }
 
@@ -2091,24 +2046,21 @@ FreeKickRef::placePlayersForGoalkick()
         p_area = &p_r;
     }
 
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        if ( (*p)->side() == oppside )
+        if ( p->side() == oppside )
         {
-            const double size = (*p)->size();
+            const double size = p->size();
             RArea expand_area( p_area->left() - size,
                                p_area->right() + size,
                                p_area->top() - size,
                                p_area->bottom() + size );
 
-            if ( expand_area.inArea( (*p)->pos() ) )
+            if ( expand_area.inArea( p->pos() ) )
             {
-                PVector new_pos = expand_area.nearestEdge( (*p)->pos() );
+                PVector new_pos = expand_area.nearestEdge( p->pos() );
                 if ( new_pos.x * oppside >= ServerParam::PITCH_LENGTH/2 )
                 {
                     new_pos.x
@@ -2118,7 +2070,7 @@ FreeKickRef::placePlayersForGoalkick()
                         * oppside;
                 }
 
-                (*p)->moveTo( new_pos );
+                p->moveTo( new_pos );
             }
         }
     }
@@ -2182,7 +2134,7 @@ TouchRef::analyseImpl()
         {
             // check for goal kick or corner kick
             Side side = NEUTRAL;
-            if ( M_last_touched != NULL )
+            if ( M_last_touched )
             {
                 side = M_last_touched->side();
             }
@@ -2195,7 +2147,7 @@ TouchRef::analyseImpl()
                 {
                     awardCornerKick( LEFT, M_stadium.ball().pos() );
                 }
-                else if ( M_stadium.ballCatcher() == NULL )
+                else if ( ! M_stadium.ballCatcher() )
                 {
                     awardGoalKick( RIGHT, M_stadium.ball().pos() );
                 }
@@ -2215,7 +2167,7 @@ TouchRef::analyseImpl()
                 {
                     awardCornerKick( RIGHT, M_stadium.ball().pos() );
                 }
-                else if ( M_stadium.ballCatcher() == NULL )
+                else if ( ! M_stadium.ballCatcher() )
                 {
                     awardGoalKick( LEFT, M_stadium.ball().pos() );
                 }
@@ -2235,7 +2187,7 @@ TouchRef::analyseImpl()
             // check for kick in.
 
             Side side = NEUTRAL;
-            if ( M_last_touched != NULL )
+            if ( M_last_touched )
             {
                 side = M_last_touched->side();
             }
@@ -2264,7 +2216,7 @@ TouchRef::kickTaken( const Player & kicker,
              && M_last_indirect_kicker
              && M_last_indirect_kicker != &kicker )
         {
-            M_last_indirect_kicker = NULL;
+            M_last_indirect_kicker = nullptr;
             M_indirect_mode = false;
         }
 
@@ -2307,7 +2259,7 @@ TouchRef::ballTouched( const Player & kicker )
              && M_last_indirect_kicker
              && M_last_indirect_kicker != &kicker )
         {
-            M_last_indirect_kicker = NULL;
+            M_last_indirect_kicker = nullptr;
             M_indirect_mode = false;
         }
 
@@ -2337,17 +2289,17 @@ TouchRef::playModeChange( PlayMode pm )
 {
     if ( pm != PM_PlayOn )
     {
-        M_last_touched = NULL;
+        M_last_touched = nullptr;
     }
 
     if ( indirectFreeKick( pm ) )
     {
-        M_last_indirect_kicker = NULL;
+        M_last_indirect_kicker = nullptr;
         M_indirect_mode = true;
     }
     else if ( pm != PM_PlayOn && pm != PM_Drop_Ball )
     {
-        M_last_indirect_kicker = NULL;
+        M_last_indirect_kicker = nullptr;
         M_indirect_mode = false;
     }
 }
@@ -2434,16 +2386,9 @@ TouchRef::checkGoal()
 void
 TouchRef::announceGoal( const Team & team )
 {
-#ifdef HAVE_SSTREAM
     std::ostringstream msg;
     msg << "goal_" << SideStr( team.side() ) << "_" << team.point();
     M_stadium.sendRefereeAudio( msg.str().c_str() );
-#else
-    std::ostrstream msg;
-    msg << "goal_" << SideStr( team.side() ) << "_" << team.point() << std::ends;
-    M_stadium.say( msg.str() );
-    msg.freeze( false );
-#endif
 }
 
 
@@ -2481,8 +2426,8 @@ CatchRef::kickTaken( const Player & kicker,
 
     if ( M_team_l_touched && M_team_r_touched )
     {
-        M_last_back_passer = NULL;
-        M_before_last_back_passer = NULL;
+        M_last_back_passer = nullptr;
+        M_before_last_back_passer = nullptr;
         return;
     }
 
@@ -2524,8 +2469,8 @@ CatchRef::ballTouched( const Player & player )
 
     if ( M_team_l_touched && M_team_r_touched )
     {
-        M_before_last_back_passer = NULL;
-        M_last_back_passer = NULL;
+        M_before_last_back_passer = nullptr;
+        M_last_back_passer = nullptr;
     }
 }
 
@@ -2552,17 +2497,17 @@ CatchRef::ballCaught( const Player & catcher )
          && M_stadium.playmode() != PM_AfterGoal_Left
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
-         && M_last_back_passer != NULL
+         && M_last_back_passer
          && M_last_back_passer->team() == catcher.team() )
     {
         if ( M_last_back_passer == &catcher
-             && M_before_last_back_passer != NULL
+             && M_before_last_back_passer
              && M_before_last_back_passer->team() != catcher.team() )
         {
             // no backpass violation, if last kicker is goalie itself and before kicker is opponent
         }
         else if ( M_stadium.time() == M_last_back_passer_time
-                  && ( M_before_last_back_passer == NULL
+                  && ( ! M_before_last_back_passer
                        || M_before_last_back_passer->team() != catcher.team() ) )
         {
             // no backpass violation. kick and catch are taken simultaneously
@@ -2578,8 +2523,8 @@ CatchRef::ballCaught( const Player & catcher )
         }
     }
 
-    M_last_back_passer = NULL;
-    M_before_last_back_passer = NULL;
+    M_last_back_passer = nullptr;
+    M_before_last_back_passer = nullptr;
 
     awardFreeKick( catcher.side(), M_stadium.ball().pos() );
 }
@@ -2608,7 +2553,7 @@ CatchRef::ballPunched( const Player & catcher )
          && M_stadium.playmode() != PM_AfterGoal_Right
          && M_stadium.playmode() != PM_TimeOver
          && M_stadium.time() != M_last_back_passer_time
-         && M_last_back_passer != NULL
+         && M_last_back_passer
          && M_last_back_passer->team() == catcher.team()
          && ServerParam::instance().backPasses() )
     {
@@ -2629,8 +2574,8 @@ CatchRef::ballPunched( const Player & catcher )
         return;
     }
 
-    M_last_back_passer = NULL;
-    M_before_last_back_passer = NULL;
+    M_last_back_passer = nullptr;
+    M_before_last_back_passer = nullptr;
 }
 
 
@@ -2738,8 +2683,8 @@ CatchRef::playModeChange( PlayMode pmode )
 {
     if ( pmode != PM_PlayOn )
     {
-        M_before_last_back_passer = NULL;
-        M_last_back_passer = NULL;
+        M_before_last_back_passer = nullptr;
+        M_last_back_passer = nullptr;
     }
 
     if ( pmode == PM_Back_Pass_Left
@@ -2774,7 +2719,7 @@ CatchRef::callBackPass( const Side side )
         M_stadium.placeBall( PM_Back_Pass_Right, LEFT, pos );
     }
 
-    M_last_back_passer = NULL;
+    M_last_back_passer = nullptr;
     M_after_back_pass_time = 0;
 }
 
@@ -2980,7 +2925,7 @@ KeepawayRef::analyse()
         return;
     }
 
-    static time_t s_start_time = std::time( NULL );
+    static time_t s_start_time = std::time( nullptr );
 
     if ( M_stadium.playmode() == PM_PlayOn )
     {
@@ -3000,23 +2945,20 @@ KeepawayRef::analyse()
         {
             bool keeper_poss = false;
 
-            const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-            for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-                  p != end;
-                  ++p )
+            for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
             {
-                if ( ! (*p)->isEnabled() ) continue;
+                if ( ! p->isEnabled() ) continue;
 
-                PVector ppos = (*p)->pos();
+                PVector ppos = p->pos();
 
                 if ( ppos.distance2( M_stadium.ball().pos() )
                      < std::pow( ServerParam::instance().kickableArea(), 2 ) )
                 {
-                    if ( (*p)->side() == LEFT )
+                    if ( p->side() == LEFT )
                     {
                         keeper_poss = true;
                     }
-                    else if ( (*p)->side() == RIGHT )
+                    else if ( p->side() == RIGHT )
                     {
                         keeper_poss = false;
                         ++M_take_time;
@@ -3033,7 +2975,7 @@ KeepawayRef::analyse()
     }
     else if ( ServerParam::instance().kawayStart() >= 0 )
     {
-        if ( difftime( std::time( NULL ), s_start_time ) > ServerParam::instance().kawayStart() )
+        if ( difftime( std::time( nullptr ), s_start_time ) > ServerParam::instance().kawayStart() )
         {
             M_stadium.changePlayMode( PM_PlayOn );
         }
@@ -3049,18 +2991,15 @@ KeepawayRef::playModeChange( PlayMode pm )
         {
             M_episode = 1;
 
-            const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-            for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-                  p != end;
-                  ++p )
+            for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
             {
-                if ( ! (*p)->isEnabled() ) continue;
+                if ( ! p->isEnabled() ) continue;
 
-                if ( (*p)->side() == LEFT )
+                if ( p->side() == LEFT )
                 {
                     ++M_keepers;
                 }
-                else if ( (*p)->side() == RIGHT )
+                else if ( p->side() == RIGHT )
                 {
                     ++M_takers;
                 }
@@ -3083,38 +3022,15 @@ KeepawayRef::ballInKeepawayArea()
 void
 KeepawayRef::logHeader()
 {
-    if ( M_stadium.logger().kawayLog() )
-    {
-        M_stadium.logger().kawayLog() << "# Keepers: " << M_keepers << '\n'
-                                      << "# Takers:  " << M_takers << '\n'
-                                      << "# Region:  " << ServerParam::instance().keepAwayLength()
-                                      << " x " << ServerParam::instance().keepAwayWidth()
-                                      << '\n'
-                                      << "#\n"
-                                      << "# Description of Fields:\n"
-                                      << "# 1) Episode number\n"
-                                      << "# 2) Start time in simulator steps (100ms)\n"
-                                      << "# 3) End time in simulator steps (100ms)\n"
-                                      << "# 4) Duration in simulator steps (100ms)\n"
-                                      << "# 5) (o)ut of bounds / (t)aken away\n"
-                                      << "#\n"
-                                      << std::flush;
-    }
+    Logger::instance().writeKeepawayHeader( M_keepers, M_takers );
 }
 
 void
-KeepawayRef::logEpisode( const char * endCond )
+KeepawayRef::logEpisode( const char * end_cond )
 {
-    if ( M_stadium.logger().kawayLog() )
-    {
-        M_stadium.logger().kawayLog() << M_episode++ << "\t"
-                                      << M_time << "\t"
-                                      << M_stadium.time() << "\t"
-                                      << M_stadium.time() - M_time << "\t"
-                                      << endCond
-                                      << std::endl;
-    }
+    Logger::instance().writeKeepawayLog( M_stadium, M_episode, M_time, end_cond );
 
+    ++M_episode;
     M_time = M_stadium.time();
 }
 
@@ -3124,15 +3040,12 @@ KeepawayRef::resetField()
     int keeper_pos = irand( M_keepers );
     //int keeper_pos = boost::uniform_smallint<>( 0, M_keepers - 1 )( rcss::random::DefaultRNG::instance() );
 
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
         double x, y;
-        if ( (*p)->side() == LEFT )
+        if ( p->side() == LEFT )
         {
             switch( keeper_pos ) {
             case 0:
@@ -3152,16 +3065,16 @@ KeepawayRef::resetField()
                 break;
             }
 
-            (*p)->place( PVector( x, y ) );
+            p->place( PVector( x, y ) );
 
             keeper_pos = ( keeper_pos + 1 ) % M_keepers;
         }
-        else if ( (*p)->side() == RIGHT )
+        else if ( p->side() == RIGHT )
         {
             x = -ServerParam::instance().keepAwayLength() * 0.5 + drand( 0, 3 );
             y = ServerParam::instance().keepAwayWidth() * 0.5 - drand( 0, 3 );
 
-            (*p)->place( PVector( x, y ) );
+            p->place( PVector( x, y ) );
         }
     }
 
@@ -3184,7 +3097,7 @@ PenaltyRef::PenaltyRef( Stadium& stadium )
       M_pen_nr_taken( 0 ),
       M_bDebug( false ),
       M_cur_pen_taker( NEUTRAL ),
-      M_last_taker( NULL ),
+      M_last_taker( nullptr ),
       M_prev_ball_pos( 0.0, 0.0 ),
       M_timeover( false )
 {
@@ -3241,18 +3154,15 @@ PenaltyRef::startPenaltyShootout()
         // place the goalkeeper of the opposite field close to the penalty goal
         // otherwise it is hard to get there before pen_setup_wait cycles
         Side side = ( M_pen_side == LEFT ) ? RIGHT : LEFT;
-        const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-        for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+        for ( Stadium::PlayerCont::reference p : M_stadium.players() )
         {
-            if ( (*p)->isEnabled()
-                 && (*p)->side() == side
-                 && (*p)->isGoalie() )
+            if ( p->isEnabled()
+                 && p->side() == side
+                 && p->isGoalie() )
             {
-                (*p)->moveTo( PVector( -M_pen_side
-                                       * (ServerParam::PITCH_LENGTH/2-10),
-                                       10 ) );
+                p->moveTo( PVector( -M_pen_side
+                                    * (ServerParam::PITCH_LENGTH/2-10),
+                                    10 ) );
             }
         }
 
@@ -3563,7 +3473,7 @@ PenaltyRef::kickTaken( const Player & kicker,
         return;
     }
 
-    if ( M_stadium.ballCatcher() != NULL )
+    if ( M_stadium.ballCatcher() )
     {
         std::cerr << "player kicked and goalie catched at the same time" << std::endl;
     }
@@ -3705,12 +3615,12 @@ PenaltyRef::playModeChange( PlayMode pm )
 
     if ( pm == PM_PenaltySetup_Left || pm == PM_PenaltySetup_Right )
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
         M_timer = ServerParam::instance().penSetupWait();
     }
     else if ( pm == PM_PenaltyReady_Left || pm == PM_PenaltyReady_Right )
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
         M_timer = ServerParam::instance().penReadyWait();
     }
     else if ( pm == PM_PenaltyTaken_Left || pm == PM_PenaltyTaken_Right )
@@ -3720,12 +3630,12 @@ PenaltyRef::playModeChange( PlayMode pm )
     else if ( pm == PM_PenaltyMiss_Left  || pm == PM_PenaltyMiss_Right ||
               pm == PM_PenaltyScore_Left || pm == PM_PenaltyScore_Right )
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
         M_timer = ServerParam::instance().penBeforeSetupWait();
     }
     else
     {
-        M_last_taker = NULL;
+        M_last_taker = nullptr;
     }
 }
 
@@ -3930,8 +3840,8 @@ PenaltyRef::penalty_check_players( const Side side )
     bool    bCheck         = true;
     PVector posGoalie;
     //int     iPlayerOutside = -1, iGoalieNr=-1;
-    const Player * outside_player = NULL;
-    const Player * goalie = NULL;
+    const Player * outside_player = nullptr;
+    const Player * goalie = nullptr;
 
     if ( pm == PM_PenaltyMiss_Left  || pm == PM_PenaltyMiss_Right
          || pm == PM_PenaltyScore_Left || pm == PM_PenaltyScore_Right )
@@ -3941,29 +3851,26 @@ PenaltyRef::penalty_check_players( const Side side )
 
     // for all players from side 'side' get the goalie pos and count how many
     // players are outside the center circle.
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        if ( (*p)->side() == side )
+        if ( p->side() == side )
         {
-            if ( (*p)->isGoalie() )
+            if ( p->isGoalie() )
             {
-                goalie = *p;
-                posGoalie = (*p)->pos();
+                goalie = p;
+                posGoalie = p->pos();
                 continue;
             }
 
             CArea c( PVector( 0.0, 0.0 ),
                      ServerParam::KICK_OFF_CLEAR_DISTANCE
-                     - (*p)->size() );
-            if ( ! c.inArea( (*p)->pos() ) )
+                     - p->size() );
+            if ( ! c.inArea( p->pos() ) )
             {
                 iOutsideCircle++;
-                outside_player = *p;
+                outside_player = p;
             }
         }
     }
@@ -4097,16 +4004,13 @@ PenaltyRef::placeTakerTeamPlayers()
     const PVector goalie_wait_pos_t( -M_pen_side * ( ServerParam::PITCH_LENGTH / 2 + 2.0 ), -25.0 );
 
     // then replace the players from the specified side
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        if ( (*p)->side() != M_cur_pen_taker ) continue;
+        if ( p->side() != M_cur_pen_taker ) continue;
 
-        if ( (*p) == taker )
+        if ( p == taker )
         {
             if ( ! bPenTaken
                  && taker->pos().distance( M_stadium.ball().pos() ) > 2.0 )
@@ -4114,32 +4018,32 @@ PenaltyRef::placeTakerTeamPlayers()
                 //PVector new_pos( -M_pen_side * ( ServerParam::PITCH_LENGTH/2 - ServerParam::instance().pen_dist_x - 2.0 ),
                 //0.0 );
                 CArea c( M_stadium.ball().pos(), 2.0 );
-                //(*p)->moveTo( new_pos );
-                (*p)->moveTo( c.nearestEdge( taker->pos() ) );
+                //p->moveTo( new_pos );
+                p->moveTo( c.nearestEdge( taker->pos() ) );
             }
         }
         else
         {
-            if ( (*p)->isGoalie() )
+            if ( p->isGoalie() )
             {
-                CArea c( ( (*p)->pos().y > 0.0 ? goalie_wait_pos_b : goalie_wait_pos_t ),
+                CArea c( ( p->pos().y > 0.0 ? goalie_wait_pos_b : goalie_wait_pos_t ),
                          2.0 );
-                if ( ! c.inArea( (*p)->pos() ) )
+                if ( ! c.inArea( p->pos() ) )
                 {
-                    (*p)->moveTo( c.nearestEdge( (*p)->pos() ) );
+                    p->moveTo( c.nearestEdge( p->pos() ) );
                 }
             }
             else // not goalie
             {
                 CArea center( PVector( 0.0, 0.0 ),
                               ServerParam::KICK_OFF_CLEAR_DISTANCE
-                              - (*p)->size()
+                              - p->size()
                               //- ServerParam::instance().pspeed_max
                               );
-                if ( ! center.inArea( (*p)->pos() ) )
+                if ( ! center.inArea( p->pos() ) )
                 {
-                    //(*p)->moveTo( PVector::fromPolar( 6.5, Deg2Rad( i*15 ) ) );
-                    (*p)->moveTo( center.nearestEdge( (*p)->pos() ) );
+                    //p->moveTo( PVector::fromPolar( 6.5, Deg2Rad( i*15 ) ) );
+                    p->moveTo( center.nearestEdge( p->pos() ) );
                 }
             }
         }
@@ -4156,32 +4060,29 @@ PenaltyRef::placeOtherTeamPlayers()
             ? - ServerParam::PITCH_LENGTH/2.0 + ServerParam::instance().penMaxGoalieDistX()
             : + ServerParam::PITCH_LENGTH/2.0 - ServerParam::instance().penMaxGoalieDistX() );
 
-    const Stadium::PlayerCont::iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        if ( (*p)->side() == M_cur_pen_taker ) continue;
+        if ( p->side() == M_cur_pen_taker ) continue;
 
         // only move goalie in case the penalty has not been started yet.
-        if ( (*p)->isGoalie() )
+        if ( p->isGoalie() )
         {
             if ( ! bPenTaken )
             {
                 if ( M_pen_side == LEFT )
                 {
-                    if ( (*p)->pos().x - goalie_line > 0.0 )
+                    if ( p->pos().x - goalie_line > 0.0 )
                     {
-                        (*p)->moveTo( PVector( goalie_line - 1.5, 0.0 ) );
+                        p->moveTo( PVector( goalie_line - 1.5, 0.0 ) );
                     }
                 }
                 else
                 {
-                    if ( (*p)->pos().x - goalie_line < 0.0 )
+                    if ( p->pos().x - goalie_line < 0.0 )
                     {
-                        (*p)->moveTo( PVector( goalie_line + 1.5, 0.0 ) );
+                        p->moveTo( PVector( goalie_line + 1.5, 0.0 ) );
                     }
                 }
             }
@@ -4190,14 +4091,14 @@ PenaltyRef::placeOtherTeamPlayers()
         {
             CArea center( PVector( 0.0, 0.0 ),
                           ServerParam::KICK_OFF_CLEAR_DISTANCE
-                          - (*p)->size()
+                          - p->size()
                           //- ServerParam::instance().pspeed_max
                           );
-            if ( ! center.inArea( (*p)->pos() ) )
+            if ( ! center.inArea( p->pos() ) )
             {
                 // place other players in circle in penalty area
-                //(*p)->moveTo( PVector::fromPolar( 6.5, Deg2Rad( i*15 ) ) );
-                (*p)->moveTo( center.nearestEdge( (*p)->pos() ) );
+                //p->moveTo( PVector::fromPolar( 6.5, Deg2Rad( i*15 ) ) );
+                p->moveTo( center.nearestEdge( p->pos() ) );
             }
         }
     }
@@ -4210,21 +4111,18 @@ PenaltyRef::getCandidateTaker()
                                           ? M_sLeftPenTaken
                                           : M_sRightPenTaken );
 
-    const Player * candidate = NULL;
-    const Player * goalie = NULL;
+    const Player * candidate = nullptr;
+    const Player * goalie = nullptr;
     double min_dist2 = std::numeric_limits< double >::max();
 
     // first find the closest player to the ball
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        if ( (*p)->side() != M_cur_pen_taker ) continue;
+        if ( p->side() != M_cur_pen_taker ) continue;
 
-        if ( sPenTaken.find( (*p)->unum() )
+        if ( sPenTaken.find( p->unum() )
              != sPenTaken.end() )
         {
             // players that have already taken a kick cannot be
@@ -4232,21 +4130,21 @@ PenaltyRef::getCandidateTaker()
             continue;
         }
 
-        if ( (*p)->isGoalie() )
+        if ( p->isGoalie() )
         {
-            goalie = (*p);
+            goalie = p;
             continue;
         }
 
-        double d2 = (*p)->pos().distance2( M_stadium.ball().pos() );
+        double d2 = p->pos().distance2( M_stadium.ball().pos() );
         if( d2 < min_dist2 )
         {
             min_dist2 = d2;
-            candidate = (*p);
+            candidate = p;
         }
     }
 
-    if ( candidate == NULL )
+    if ( ! candidate )
     {
         return goalie;
     }

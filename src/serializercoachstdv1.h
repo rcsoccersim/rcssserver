@@ -34,7 +34,7 @@ protected:
 
 public:
     virtual
-    ~SerializerCoachStdv1();
+    ~SerializerCoachStdv1() override;
 
     static
     const
@@ -43,53 +43,53 @@ public:
     virtual
     void serializeRefereeAudio( std::ostream & strm,
                                 const int time,
-                                const char * msg ) const;
+                                const char * msg ) const override;
 
     virtual
     void serializeCoachAudio( std::ostream & strm,
                               const int time,
                               const std::string & name,
-                              const char * msg ) const;
+                              const char * msg ) const override;
 
     virtual
     void serializeCoachStdAudio( std::ostream & strm,
                                  const int time,
                                  const std::string & name,
-                                 const rcss::clang::Msg & msg ) const;
+                                 const rcss::clang::Msg & msg ) const override;
 
     virtual
     void serializePlayerAudio( std::ostream & strm,
                                const int time,
                                const std::string& name,
-                               const char* msg ) const;
+                               const char* msg ) const override;
 
     virtual
-    void serializeInit( std::ostream & ) const;
+    void serializeInit( std::ostream & ) const override;
 
     virtual
     void serializeVisualBegin( std::ostream & strm,
-                               const int time ) const;
+                               const int time ) const override;
 
     virtual
-    void serializeVisualEnd( std::ostream & strm ) const;
+    void serializeVisualEnd( std::ostream & strm ) const override;
 
     virtual
     void serializeLookBegin( std::ostream & strm,
-                             const int time ) const;
+                             const int time ) const override;
 
     virtual
-    void serializeLookEnd( std::ostream & strm ) const;
+    void serializeLookEnd( std::ostream & strm ) const override;
 
     virtual
     void serializeVisualObject( std::ostream & strm ,
                                 const std::string & name,
-                                const PVector & pos ) const;
+                                const PVector & pos ) const override;
 
     virtual
     void serializeVisualObject( std::ostream & strm,
                                 const std::string & name,
                                 const PVector & pos,
-                                const PVector & vel ) const;
+                                const PVector & vel ) const override;
 
     virtual
     void serializeVisualObject( std::ostream & strm,
@@ -97,7 +97,7 @@ public:
                                 const PVector & pos,
                                 const PVector & vel,
                                 const int body,
-                                const int neck ) const;
+                                const int neck ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -106,7 +106,7 @@ public:
                                 const PVector & pos,
                                 const PVector & vel,
                                 const int body,
-                                const int neck ) const;
+                                const int neck ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -116,12 +116,12 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 
 
     virtual
     void serializeOKEye( std::ostream & strm,
-                         const bool on ) const;
+                         const bool on ) const override;
 };
 
 }

@@ -34,7 +34,7 @@
 
 #include "types.h"
 
-#include <rcssbase/conf/builder.hpp>
+#include <rcss/conf/builder.hpp>
 
 #include <memory>
 #include <string>
@@ -46,9 +46,9 @@ public:
 
 private:
 
-    PlayerParam(); // not used
-    PlayerParam( const PlayerParam & ); // not used
-    PlayerParam & operator=( PlayerParam & ); // not used
+    PlayerParam() = delete; // not used
+    PlayerParam( const PlayerParam & ) = delete; // not used
+    PlayerParam & operator=( PlayerParam & ) = delete; // not used
 
 protected:
 

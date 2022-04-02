@@ -2,7 +2,7 @@
 
 /***************************************************************************
                                 serializermonitor.h
-               Classes for serializing data to std v1 monitors
+                   Classes for serializing data to monitors
                              -------------------
     begin                : 2007-11-21
     copyright            : (C) 2007 by The RoboCup Soccer Simulator
@@ -20,8 +20,8 @@
  ***************************************************************************/
 
 
-#ifndef RCSS_SERIALIZER_MONITOR_STD_V1_H
-#define RCSS_SERIALIZER_MONITOR_STD_V1_H
+#ifndef RCSS_SERIALIZER_MONITOR_H
+#define RCSS_SERIALIZER_MONITOR_H
 
 #include "serializer.h"
 
@@ -46,7 +46,7 @@ protected:
 public:
 
     virtual
-    ~SerializerMonitorStdv1();
+    ~SerializerMonitorStdv1() override;
 
     static
     const
@@ -58,7 +58,7 @@ public:
                                const Side side,
                                const unsigned int x,
                                const unsigned int y,
-                               const XPMHolder & xpm ) const;
+                               const XPMHolder & xpm ) const override;
 };
 
 
@@ -79,67 +79,67 @@ protected:
 public:
 
     virtual
-    ~SerializerMonitorStdv3();
+    ~SerializerMonitorStdv3() override;
 
     static
-    const
-    Ptr create();
+    const Ptr create();
 
     virtual
     void serializeTeam( std::ostream & os,
-                        const int time,
+                        const int time, const int stime,
                         const Team & team_l,
-                        const Team & team_r ) const;
+                        const Team & team_r ) const override;
 
     virtual
     void serializePlayMode( std::ostream & os,
-                            const int time,
-                            const PlayMode pmode ) const;
+                            const int time, const int stime,
+                            const PlayMode pmode ) const override;
 
     virtual
     void serializeShowBegin( std::ostream & os,
-                             const int time ) const;
+                             const int time, const int stime ) const override;
     virtual
-    void serializeShowEnd( std::ostream & ) const;
+    void serializeShowEnd( std::ostream & ) const override;
+
     virtual
     void serializePlayModeId( std::ostream & os,
-                              const PlayMode pmode ) const;
+                              const PlayMode pmode ) const override;
     virtual
     void serializeScore( std::ostream & os,
                          const Team & team_l,
-                         const Team & team_r ) const;
+                         const Team & team_r ) const override;
     virtual
     void serializeBall( std::ostream & os,
-                        const Ball & ball ) const;
+                        const Ball & ball ) const override;
     virtual
     void serializePlayerBegin( std::ostream & os,
-                               const Player & player ) const;
+                               const Player & player ) const override;
     virtual
-    void serializePlayerEnd( std::ostream & os ) const;
+    void serializePlayerEnd( std::ostream & os ) const override;
     virtual
     void serializePlayerPos( std::ostream & os,
-                             const Player & player ) const;
+                             const Player & player ) const override;
     virtual
     void serializePlayerArm( std::ostream & os,
-                             const Player & player ) const;
+                             const Player & player ) const override;
     virtual
     void serializePlayerViewMode( std::ostream & os,
-                                  const Player & player ) const;
+                                  const Player & player ) const override;
     virtual
     void serializePlayerStamina( std::ostream & os,
-                                 const Player & player ) const;
+                                 const Player & player ) const override;
     void serializePlayerFocus( std::ostream & os,
-                               const Player & player ) const;
+                               const Player & player ) const override;
 
     virtual
     void serializePlayerCounts( std::ostream & os,
-                                const Player & player ) const;
+                                const Player & player ) const override;
 };
 
 
 /*!
   \class SerializerMonitorStdv4
-  \brief class of the version 4 serialization for monitors.
+  \brief class of the version 4 serialization for monitors. Add the stamina capacity information.
 */
 class SerializerMonitorStdv4
     : public SerializerMonitorStdv3 {
@@ -151,7 +151,7 @@ protected:
 public:
 
     virtual
-    ~SerializerMonitorStdv4();
+    ~SerializerMonitorStdv4() override;
 
     static
     const
@@ -159,8 +159,112 @@ public:
 
     virtual
     void serializePlayerStamina( std::ostream & os,
-                                 const Player & player ) const;
+                                 const Player & player ) const override;
 };
+
+
+/*!
+  \class SerializerMonitorJSON
+  \brief class of the version 5 serialization for monitors. (JSON format)
+*/
+class SerializerMonitorJSON
+    : public SerializerMonitor {
+protected:
+
+    explicit
+    SerializerMonitorJSON( const SerializerCommon::Ptr common );
+
+public:
+
+    virtual
+    ~SerializerMonitorJSON() override;
+
+    static const Ptr create();
+
+    virtual
+    void serializeTeam( std::ostream & os,
+                        const int time, const int stime,
+                        const Team & team_l,
+                        const Team & team_r ) const override;
+
+    virtual
+    void serializePlayMode( std::ostream & os,
+                            const int time, const int stime,
+                            const PlayMode pmode ) const override;
+
+    virtual
+    void serializeShowBegin( std::ostream & os,
+                             const int time, const int stime ) const override;
+
+    virtual
+    void serializeShowEnd( std::ostream & os ) const override;
+
+    virtual
+    void serializePlayModeId( std::ostream & os,
+                              const PlayMode pmode ) const override;
+
+    virtual
+    void serializeScore( std::ostream & os,
+                         const Team & team_l,
+                         const Team & team_r ) const override;
+
+    virtual
+    void serializeBall( std::ostream & os,
+                        const Ball & ball ) const override;
+
+
+    virtual
+    void serializePlayerArrayBegin( std::ostream & ) const override;
+
+    virtual
+    void serializePlayerArrayEnd( std::ostream & ) const;
+
+    virtual
+    void serializePlayerBegin( std::ostream & os,
+                               const Player & player ) const override;
+
+    virtual
+    void serializePlayerEnd( std::ostream & os ) const override;
+
+    virtual
+    void serializePlayerPos( std::ostream & os,
+                             const Player & player ) const override;
+
+    virtual
+    void serializePlayerArm( std::ostream & os,
+                             const Player & player ) const override;
+
+    virtual
+    void serializePlayerViewMode( std::ostream & os,
+                                  const Player & player ) const override;
+
+    virtual
+    void serializePlayerStamina( std::ostream & os,
+                                 const Player & player ) const override;
+
+    virtual
+    void serializePlayerFocus( std::ostream & os,
+                               const Player & player ) const override;
+
+    virtual
+    void serializePlayerCounts( std::ostream & os,
+                                const Player & player ) const override;
+
+    virtual
+    void serializeTeamGraphic( std::ostream & os,
+                               const Side side,
+                               const unsigned int x,
+                               const unsigned int y,
+                               const XPMHolder & xpm ) const override;
+
+    virtual
+    void serializeMsg( std::ostream & os,
+                       const int time, const int stime,
+                       const int board,
+                       const char * msg ) const override;
+
+};
+
 
 }
 

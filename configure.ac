@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.61)
 LT_PREREQ([2.2])
-AC_INIT([RCSSServer],[16.0.1],[sserver-admin@users.sf.net],[rcssserver])
+AC_INIT([RCSSServer],[17.0.0],[https://github.com/rcsoccersim/],[rcssserver])
 
 #AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news foreign])
@@ -34,18 +34,13 @@ AC_PROG_MAKE_SET
 AC_CHECK_LIB([m], [cos])
 dnl AC_CHECK_LIB(expat, XML_Parse)
 #AC_CHECK_LIB([z], [deflate])
-AC_SUBST(GZ_LIBS)
-AC_CHECK_LIB([z], [deflate],
-             [AC_DEFINE([HAVE_LIBZ], [1],
-                        [Define to 1 if you have the `z' library (-lz).])
-              GZ_LIBS="-lz"])
-
-AC_ARG_WITH(sstream,
-        AS_HELP_STRING(--with-sstream,use sstream instead of strstream (default=yes)),
-                       use_sstream=$withval, use_sstream=yes)
-if test "$use_sstream" = "yes"; then
-   AC_CXX_HAVE_SSTREAM
-fi
+#AC_SUBST(GZ_LIBS)
+#AC_CHECK_LIB([z], [deflate],
+#             [AC_DEFINE([HAVE_LIBZ], [1],
+#                        [Define to 1 if you have the `z' library (-lz).])
+#              GZ_LIBS="-lz"])
+AX_CHECK_ZLIB([],
+              [AC_MSG_NOTICE(Zlib not found.)])
 
 ##################################################
 # Checks for header files.
@@ -250,10 +245,11 @@ fi
 ##################################################
 
 AC_CONFIG_FILES([Makefile
-                rcssbase/Makefile
-                rcssbase/net/Makefile
-                rcssbase/conf/Makefile
-                rcssbase/gzip/Makefile
+                rcss/Makefile
+                rcss/net/Makefile
+                rcss/conf/Makefile
+                rcss/gzip/Makefile
+                rcss/clang/Makefile
                 src/Makefile
                 src/rcsoccersim],
                 [test -f src/rcsoccersim && chmod +x src/rcsoccersim])

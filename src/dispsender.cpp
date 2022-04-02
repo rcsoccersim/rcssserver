@@ -460,7 +460,7 @@ DispSenderMonitorV3::sendShow()
     last_sent_time = stadium().time();
     last_sent_stoppage_time = stadium().stoppageTime();
 
-    message.erase();
+    message.clear();
 
     //
     // create new data
@@ -469,7 +469,7 @@ DispSenderMonitorV3::sendShow()
     std::ostringstream ostr;
 
     serializer().serializeShowBegin( ostr,
-                                     stadium().time() );
+                                     stadium().time(), stadium().stoppageTime() );
     serializer().serializePlayModeId( ostr,
                                       stadium().playmode() );
     serializer().serializeScore( ostr,
@@ -479,20 +479,19 @@ DispSenderMonitorV3::sendShow()
     serializer().serializeBall( ostr,
                                 stadium().ball() );
 
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    serializer().serializePlayerArrayBegin( ostr );
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        serializer().serializePlayerBegin( ostr, **p );
-        serializer().serializePlayerPos( ostr, **p );
-        serializer().serializePlayerArm( ostr, **p );
-        serializer().serializePlayerViewMode( ostr, **p );
-        serializer().serializePlayerStamina( ostr, **p );
-        serializer().serializePlayerFocus( ostr, **p );
-        serializer().serializePlayerCounts( ostr, **p );
+        serializer().serializePlayerBegin( ostr, *p );
+        serializer().serializePlayerPos( ostr, *p );
+        serializer().serializePlayerArm( ostr, *p );
+        serializer().serializePlayerViewMode( ostr, *p );
+        serializer().serializePlayerStamina( ostr, *p );
+        serializer().serializePlayerFocus( ostr, *p );
+        serializer().serializePlayerCounts( ostr, *p );
         serializer().serializePlayerEnd( ostr );
     }
+    serializer().serializePlayerArrayEnd( ostr );
 
     serializer().serializeShowEnd( ostr );
 
@@ -516,37 +515,120 @@ DispSenderMonitorV3::sendMsg( const BoardType board,
 // /*!
 // //===================================================================
 // //
-// //  CLASS: DispSenderMonitorV4
+// //  CLASS: DispSenderMonitorJSON
 // //
-// //  DESC: version 4 of display protocol.
+// //  DESC: version 5 of display protocol.
 // //
 // //===================================================================
 // */
 
-// DispSenderMonitorV4::DispSenderMonitorV4( const Params & params )
-//     : DispSenderMonitorV3( params )
-// {
+DispSenderMonitorJSON::DispSenderMonitorJSON( const Params & params )
+    : DispSenderMonitor( params )
+{
 
-// }
+}
 
-// DispSenderMonitorV4::~DispSenderMonitorV4()
-// {
+DispSenderMonitorJSON::~DispSenderMonitorJSON()
+{
 
-// }
+}
 
-// void
-// DispSenderMonitorV4::sendShow()
-// {
+void
+DispSenderMonitorJSON::sendShow()
+{
+    static std::string message;
+    static int last_sent_time = -1;
+    static int last_sent_stoppage_time = -1;
 
-// }
+    //
+    // send cached data
+    //
 
-// void
-// DispSenderMonitorV4::sendMsg( const BoardType board,
-//                               const char * msg )
-// {
+    if ( stadium().time() == last_sent_time
+         && stadium().stoppageTime() == last_sent_stoppage_time )
+    {
+        transport() << message << std::ends << std::flush;
+        return;
+    }
 
-// }
+    last_sent_time = stadium().time();
+    last_sent_stoppage_time = stadium().stoppageTime();
 
+    message.clear();
+
+    //
+    // create new data
+    //
+
+    std::ostringstream ostr;
+
+    serializer().serializeShowBegin( ostr,
+                                     stadium().time(), stadium().stoppageTime() );
+    ostr << ',';
+    serializer().serializePlayModeId( ostr,
+                                      stadium().playmode() );
+    ostr << ',';
+    serializer().serializeScore( ostr,
+                                 stadium().teamLeft(),
+                                 stadium().teamRight() );
+    ostr << ',';
+    serializer().serializeBall( ostr,
+                                stadium().ball() );
+
+    ostr << ',';
+    serializer().serializePlayerArrayBegin( ostr );
+    bool first = true;
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
+    {
+        if ( first ) first = false; else ostr << ',';
+        serializer().serializePlayerBegin( ostr, *p );
+        serializer().serializePlayerPos( ostr, *p );
+        serializer().serializePlayerArm( ostr, *p );
+        serializer().serializePlayerViewMode( ostr, *p );
+        serializer().serializePlayerStamina( ostr, *p );
+        serializer().serializePlayerFocus( ostr, *p );
+        //serializer().serializePlayerCounts( ostr, *p );
+        serializer().serializePlayerEnd( ostr );
+    }
+    serializer().serializePlayerArrayEnd( ostr );
+
+    serializer().serializeShowEnd( ostr );
+
+    message = ostr.str();
+    transport() << message << std::ends << std::flush;
+}
+
+void
+DispSenderMonitorJSON::sendMsg( const BoardType board,
+                                const char * msg )
+{
+    serializer().serializeMsg( transport(),
+                               stadium().time(), stadium().stoppageTime(),
+                               board,
+                               msg );
+    transport() << std::ends << std::flush;
+}
+
+
+void
+DispSenderMonitorJSON::sendTeamGraphic( const Side side,
+                                        const unsigned int x,
+                                        const unsigned int y )
+{
+    const std::shared_ptr< const XPMHolder > xpm = ( side == LEFT
+                                                     ? stadium().teamLeft().teamGraphic( x, y )
+                                                     : side == RIGHT
+                                                     ? stadium().teamRight().teamGraphic( x, y )
+                                                     : std::shared_ptr< const XPMHolder >() );
+    if ( ! xpm
+         || ! xpm->valid() )
+    {
+        return;
+    }
+
+    serializer().serializeTeamGraphic( transport(), side, x, y, *xpm );
+    transport() << std::ends << std::flush;
+}
 
 /*!
 //===================================================================
@@ -918,23 +1000,20 @@ void
 DispSenderLoggerV4::sendShow()
 {
     serializer().serializeShowBegin( transport(),
-                                     stadium().time() );
+                                     stadium().time(), stadium().stoppageTime() );
 
     serializer().serializeBall( transport(),
                                 stadium().ball() );
 
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        serializer().serializePlayerBegin( transport(), **p );
-        serializer().serializePlayerPos( transport(), **p );
-        serializer().serializePlayerArm( transport(), **p );
-        serializer().serializePlayerViewMode( transport(), **p );
-        serializer().serializePlayerStamina( transport(), **p );
-        serializer().serializePlayerFocus( transport(), **p );
-        serializer().serializePlayerCounts( transport(), **p );
+        serializer().serializePlayerBegin( transport(), *p );
+        serializer().serializePlayerPos( transport(), *p );
+        serializer().serializePlayerArm( transport(), *p );
+        serializer().serializePlayerViewMode( transport(), *p );
+        serializer().serializePlayerStamina( transport(), *p );
+        serializer().serializePlayerFocus( transport(), *p );
+        serializer().serializePlayerCounts( transport(), *p );
         serializer().serializePlayerEnd( transport() );
     }
 
@@ -955,40 +1034,93 @@ DispSenderLoggerV4::sendMsg( const BoardType board,
 }
 
 
-// /*!
-// //===================================================================
-// //
-// //  CLASS: DispSenderLoggerV5
-// //
-// //  DESC: version 5 log format
-// //
-// //===================================================================
-// */
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderLoggerJSON
+//
+//  DESC: version 6 log format
+//
+//===================================================================
+*/
 
-// DispSenderLoggerV5::DispSenderLoggerV5( const Params & params )
-//     : DispSenderLoggerV4( params )
-// {
+DispSenderLoggerJSON::DispSenderLoggerJSON( const Params & params )
+    : DispSenderLogger( params )
+{
 
-// }
+}
 
-// DispSenderLoggerV5::~DispSenderLoggerV5()
-// {
+DispSenderLoggerJSON::~DispSenderLoggerJSON()
+{
 
-// }
+}
 
-// void
-// DispSenderLoggerV5::sendShow()
-// {
-//     DispSenderLoggerV4::sendShow();
-// }
+void
+DispSenderLoggerJSON::sendShow()
+{
+    transport() << ",\n";
 
-// void
-// DispSenderLoggerV4::sendMsg( const BoardType board,
-//                              const char * msg )
-// {
+    serializer().serializeShowBegin( transport(),
+                                     stadium().time(), stadium().stoppageTime() );
+    transport() << ',';
+    serializer().serializeBall( transport(),
+                                stadium().ball() );
 
-// }
+    transport() << ',';
+    serializer().serializePlayerArrayBegin( transport() );
+    bool first = true;
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
+    {
+        if ( first ) first = false; else transport() << ',';
+        serializer().serializePlayerBegin( transport(), *p );
+        serializer().serializePlayerPos( transport(), *p );
+        serializer().serializePlayerArm( transport(), *p );
+        serializer().serializePlayerViewMode( transport(), *p );
+        serializer().serializePlayerStamina( transport(), *p );
+        serializer().serializePlayerFocus( transport(), *p );
+        serializer().serializePlayerCounts( transport(), *p );
+        serializer().serializePlayerEnd( transport() );
+    }
+    serializer().serializePlayerArrayEnd( transport() );
 
+    serializer().serializeShowEnd( transport() );
+
+    transport() << std::flush;
+}
+
+void
+DispSenderLoggerJSON::sendMsg( const BoardType board,
+                               const char * msg )
+{
+    transport() << ",\n";
+    serializer().serializeMsg( transport(),
+                               stadium().time(), stadium().stoppageTime(),
+                               board,
+                               msg );
+    transport() << std::flush;
+}
+
+
+void
+DispSenderLoggerJSON::sendTeamGraphic( const Side side,
+                                       const unsigned int x,
+                                       const unsigned int y )
+{
+    const std::shared_ptr< const XPMHolder > xpm = ( side == LEFT
+                                                     ? stadium().teamLeft().teamGraphic( x, y )
+                                                     : side == RIGHT
+                                                     ? stadium().teamRight().teamGraphic( x, y )
+                                                     : std::shared_ptr< const XPMHolder >() );
+    if ( ! xpm
+         || ! xpm->valid() )
+    {
+        return;
+    }
+
+    transport() << ",\n";
+    serializer().serializeTeamGraphic( transport(), side, x, y, *xpm );
+    transport() << std::flush;
+}
 
 namespace dispsender {
 
@@ -1003,6 +1135,7 @@ RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitor
 RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
 RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
 RegHolder vm4 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 4 );
+RegHolder vm5 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorJSON >, 5 );
 
 
 template< typename Sender >
@@ -1017,6 +1150,7 @@ RegHolder vl2 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV2
 RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 3 );
 RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 4 );
 RegHolder vl5 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 5 );
+RegHolder vl6 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerJSON >, 6 );
 
 }
 }

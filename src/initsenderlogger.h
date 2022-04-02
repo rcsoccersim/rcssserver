@@ -25,7 +25,7 @@
 
 #include "initsender.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -74,7 +74,7 @@ public:
     FactoryHolder & factory();
 
     virtual
-    ~InitSenderLogger();
+    ~InitSenderLogger() override;
 
 protected:
 
@@ -112,6 +112,9 @@ public:
     void sendHeader() = 0;
 
     virtual
+    void sendTail() = 0;
+
+    virtual
     void sendPlayMode() = 0;
 
     virtual
@@ -141,6 +144,11 @@ public:
     void sendHeader()
       {
           BaseObserver< InitSenderLogger >::sender().sendHeader();
+      }
+
+    void sendTail()
+      {
+          BaseObserver< InitSenderLogger >::sender().sendTail();
       }
 
     void sendServerParams()
@@ -182,26 +190,28 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV1();
+    ~InitSenderLoggerV1() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
     virtual
-    void sendServerParams();
+    void sendTail() override;
 
     virtual
-    void sendPlayerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendTeam();
+    void sendPlayMode() override;
 
+    virtual
+    void sendTeam() override;
 };
 
 class InitSenderLoggerV2
@@ -215,25 +225,28 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV2();
+    ~InitSenderLoggerV2() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
+
+    // virtual
+    // void sendTail() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 
     virtual
-    void sendTeam();
+    void sendTeam() override;
 
 };
 
@@ -248,25 +261,28 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV3();
+    ~InitSenderLoggerV3() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
+
+    // virtual
+    // void sendTail() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 
     virtual
-    void sendTeam();
+    void sendTeam() override;
 
 };
 
@@ -282,25 +298,28 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV4();
+    ~InitSenderLoggerV4() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
     virtual
-    void sendServerParams();
+    void sendTail() override;
 
     virtual
-    void sendPlayerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendTeam();
+    void sendPlayMode() override;
+
+    virtual
+    void sendTeam() override;
 
 };
 
@@ -316,12 +335,42 @@ protected:
 
 public:
     virtual
-    ~InitSenderLoggerV5();
+    ~InitSenderLoggerV5() override;
 
     virtual
-    void sendHeader();
+    void sendHeader() override;
 
 };
+
+/*!
+  \brief version 6 of the init sender for Logger (JSON format)
+*/
+class InitSenderLoggerJSON
+    : public InitSenderLogger {
+public:
+    InitSenderLoggerJSON( const Params & params );
+
+protected:
+    InitSenderLoggerJSON( const Params & params,
+                          const std::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderLoggerJSON() override;
+
+    virtual
+    void sendHeader() override;
+
+    virtual
+    void sendTail() override;
+
+    virtual
+    void sendPlayMode() override;
+
+    virtual
+    void sendTeam() override;
+};
+
 
 }
 

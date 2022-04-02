@@ -40,11 +40,11 @@
 
 #include "utility.h"
 
-#include <rcssbase/conf/builder.hpp>
-#include <rcssbase/conf/parser.hpp>
-#include <rcssbase/conf/streamstatushandler.hpp>
-#include <rcssbase/conf/paramsetter.hpp>
-#include <rcssbase/conf/paramgetter.hpp>
+#include <rcss/conf/builder.hpp>
+#include <rcss/conf/parser.hpp>
+#include <rcss/conf/streamstatushandler.hpp>
+#include <rcss/conf/paramsetter.hpp>
+#include <rcss/conf/paramgetter.hpp>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
@@ -351,9 +351,9 @@ const double ServerParam::MAX_DASH_ANGLE = +180.0;
 const double ServerParam::MIN_DASH_ANGLE = -180.0;
 const double ServerParam::DASH_ANGLE_STEP = 1.0; // [15.6.0] 45.0 -> 1.0 [14.0.0] 90.0 -> 45.0
 const double ServerParam::SIDE_DASH_RATE = 0.4; // [14.0.0] 0.25 -> 0.4
-const double ServerParam::BACK_DASH_RATE = 0.6; // [14.0.0] 0.5 -> 0.6
+const double ServerParam::BACK_DASH_RATE = 0.7; // [14.0.0] 0.5 -> 0.6 [17.0.0] 0.6 -> 0.7
 const double ServerParam::MAX_DASH_POWER = +100.0;
-const double ServerParam::MIN_DASH_POWER = -100.0;
+const double ServerParam::MIN_DASH_POWER = 0.0;
 
 // 14.0.0
 const double ServerParam::TACKLE_RAND_FACTOR = 2.0;
@@ -370,6 +370,12 @@ const int ServerParam::ILLEGAL_DEFENSE_DURATION = 20;
 const int ServerParam::ILLEGAL_DEFENSE_NUMBER = 0;
 const double ServerParam::ILLEGAL_DEFENSE_DIST_X = 16.5;
 const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 40.32;
+
+namespace {
+// 17.0.0
+constexpr double MAX_CATCH_ANGLE = +90.0;
+constexpr double MIN_CATCH_ANGLE = -90.0;
+}
 
 // XXX
 const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
@@ -399,7 +405,7 @@ ServerParam::init( const int & argc,
     }
 
 //         DIR* config_dir = opendir( config_dir_name.c_str() );
-//         if ( config_dir == NULL )
+//         if ( ! config_dir )
 //         {
 //             int err = mkdir( config_dir_name.c_str(), 0777 );
 //             if ( err != 0 )
@@ -414,19 +420,11 @@ ServerParam::init( const int & argc,
     boost::filesystem::path conf_path;
     try
     {
-        conf_path = boost::filesystem::path( tildeExpand( conf_dir )
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                             , &boost::filesystem::native
-#  endif
-#endif
-                                             );
+        conf_path = boost::filesystem::path( tildeExpand( conf_dir ) );
         if ( ! boost::filesystem::exists( conf_path )
              && ! boost::filesystem::create_directories( conf_path ) )
         {
-            std::cerr << "Could not read or create config directory '"
-                      << conf_path.BOOST_FS_FILE_STRING() << "'"
-                      << std::endl;
+            std::cerr << "Could not read or create config directory " << conf_path << std::endl;
             instance().clear();
             return false;
         }
@@ -444,13 +442,11 @@ ServerParam::init( const int & argc,
         return false;
     }
 
-    instance().convertOldConf( conf_path.BOOST_FS_FILE_STRING() );
+    instance().convertOldConf( conf_path.string() );
 
     if ( ! instance().M_conf_parser->parseCreateConf( conf_path, "server" ) )
     {
-        std::cerr << "could not create or parse configuration file '"
-                  << conf_path.BOOST_FS_FILE_STRING() << "'"
-                  << std::endl;
+        std::cerr << "could not create or parse configuration file " << conf_path << std::endl;
         instance().M_builder->displayHelp();
         instance().clear();
         return false;
@@ -459,7 +455,7 @@ ServerParam::init( const int & argc,
     if ( instance().M_builder->version() != instance().M_builder->parsedVersion() )
     {
         std::cerr << "Version mismatched in the configuration file. "
-                  << "You need to regenerate '" << conf_path.BOOST_FS_FILE_STRING() << "'"
+                  << "You need to regenerate " << conf_path
                   << " or set '" << instance().M_builder->version() << "' to the 'version' option."
                   << std::endl;
         //             std::cerr << "registered version = ["
@@ -943,6 +939,10 @@ ServerParam::addParams()
               rcss::conf::makeSetter( this, &ServerParam::setFixedTeamNameRight ),
               rcss::conf::makeGetter( M_fixed_teamname_r ),
               "", 16 );
+
+    // v17
+    addParam( "max_catch_angle", M_max_catch_angle, "", 17 );
+    addParam( "min_catch_angle", M_min_catch_angle, "", 17 );
 
     // XXX
     // addParam( "random_seed", M_random_seed, "", 999 );
@@ -1446,6 +1446,10 @@ ServerParam::setDefaults()
     M_illegal_defense_width = ILLEGAL_DEFENSE_WIDTH;
     M_fixed_teamname_l = "";
     M_fixed_teamname_r = "";
+
+    // 17.0.0
+    M_max_catch_angle = MAX_CATCH_ANGLE;
+    M_min_catch_angle = MIN_CATCH_ANGLE;
 
     // XXX
     M_long_kick_power_factor = LONG_KICK_POWER_FACTOR;

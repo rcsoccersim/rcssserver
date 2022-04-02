@@ -22,16 +22,7 @@
 #ifndef STDTIMER_H
 #define STDTIMER_H
 
-#ifdef __CYGWIN__
-// cygwin is not win32
-#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
-#define _WIN32_WINNT 0x0500
-#include <winsock2.h>
-#include <windows.h>
-#endif
-
 #include "timer.h"
-#include "rcssexceptions.h"
 
 /** This is a subclass of the timer class. The run method specifes the
     standard timer. This timer is controlled by the different server
@@ -46,31 +37,13 @@ class StandardTimer
     : public Timer {
 private:
 
-    static bool gotsig;            // variables needed to keep track
-    static int  timedelta;         // of amount of arrived signals
-    static bool lock_timedelta;
-
-    StandardTimer( const StandardTimer& t );
+    StandardTimer( const StandardTimer& t ) = delete;
 public:
 
+    explicit
     StandardTimer( Timeable &timeable );
 
-    void
-    run();
-
-#ifdef __CYGWIN__
-// cygwin is not win32
-    static
-    void check();
-#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
-    static
-    VOID
-    CALLBACK
-    check( PVOID lpParam, BOOL TimerOrWaitFired );
-#else
-    static
-    void check();
-#endif
+    void run() override;
 
 };
 

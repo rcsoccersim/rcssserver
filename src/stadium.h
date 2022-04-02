@@ -28,14 +28,12 @@
 #include "object.h"
 #include "field.h"
 #include "weather.h"
-#include "logger.h"
 #include "resultsaver.hpp"
 
-#include <rcssbase/gzip/gzfstream.hpp>
-#include <rcssbase/net/udpsocket.hpp>
+#include <rcss/gzip/gzfstream.hpp>
+#include <rcss/net/udpsocket.hpp>
 
 #include <cstdio>
-#include <ctime>
 #include <string>
 #include <vector>
 #include <list>
@@ -51,8 +49,6 @@ class OnlineCoach;
 class Team;
 
 class Referee;
-
-struct timeval;
 
 namespace rcss {
 class Listener;
@@ -79,14 +75,14 @@ public:
     typedef std::vector< MPObject * > MPObjectCont;
 protected:
     // definitions of different timeable methods
-    void doRecvFromClients( );
-    void doNewSimulatorStep();
-    void doSendSenseBody();
-    void doSendVisuals();
-    void doSendSynchVisuals();
-    void doSendCoachMessages();
-    bool doSendThink();
-    void doQuit();
+    void doRecvFromClients( ) override;
+    void doNewSimulatorStep() override;
+    void doSendSenseBody() override;
+    void doSendVisuals() override;
+    void doSendSynchVisuals() override;
+    void doSendCoachMessages() override;
+    bool doSendThink() override;
+    void doQuit() override;
 
 protected:
     bool M_alive;
@@ -97,8 +93,6 @@ protected:
 
     Field M_field;
     Weather M_weather;
-
-    Logger M_logger;
 
     PlayerCont  M_remote_players; //!< connected players
     OfflineCoachCont M_remote_offline_coaches; //!< connected trainers
@@ -140,7 +134,7 @@ protected:
     int M_left_child;
     int M_right_child;
 
-    tm m_real_time;
+    std::time_t M_start_time;
 
     std::list< ResultSaver::Ptr > M_savers;
 
@@ -149,21 +143,16 @@ public:
     Stadium();
 
     virtual
-    ~Stadium();
+    ~Stadium() override;
 
     bool init();
 
     void finalize( const std::string & msg );
 
     virtual
-    bool isAlive()
+    bool isAlive() override
       {
           return M_alive;
-      }
-
-    Logger & logger()
-      {
-          return M_logger;
       }
 
     PlayMode playmode() const
@@ -181,10 +170,9 @@ public:
           return M_stoppage_time;
       }
 
-    const
-    tm & realTime() const
+    std::time_t getStartTime() const
       {
-          return m_real_time;
+          return M_start_time;
       }
 
     const
@@ -375,8 +363,8 @@ public:
     bool movePlayer( const Side side,
                      const int unum,
                      const PVector & pos,
-                     const double * ang = NULL,
-                     const PVector * vel = NULL );
+                     const double * ang = nullptr,
+                     const PVector * vel = nullptr );
 
     void changePlayMode( const PlayMode pm );
 

@@ -69,14 +69,12 @@ InitSenderOnlineCoach::~InitSenderOnlineCoach()
 void
 InitSenderOnlineCoach::sendPlayerClangVer()
 {
-    for ( Stadium::PlayerCont::const_iterator i = stadium().remotePlayers().begin();
-          i != stadium().remotePlayers().end();
-          ++i )
+    for ( Stadium::PlayerCont::const_reference p : stadium().remotePlayers() )
     {
-        if ( (*i)->clangMinVer() != 0
-             || (*i)->clangMaxVer() != 0 )
+        if ( p->clangMinVer() != 0
+             || p->clangMaxVer() != 0 )
         {
-            sendPlayerClangVer( **i );
+            sendPlayerClangVer( *p );
         }
     }
 }
@@ -204,23 +202,20 @@ InitSenderOnlineCoachV7::~InitSenderOnlineCoachV7()
 void
 InitSenderOnlineCoachV7::sendChangedPlayers()
 {
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        if ( (*p)->playerTypeId() == 0 ) continue;
+        if ( p->playerTypeId() == 0 ) continue;
 
-        if ( self().side() == (*p)->side() )
+        if ( self().side() == p->side() )
         {
             serializer().serializeChangedPlayer( transport(),
-                                                 (*p)->unum(),
-                                                 (*p)->playerTypeId() );
+                                                 p->unum(),
+                                                 p->playerTypeId() );
         }
         else
         {
             serializer().serializeChangedPlayer( transport(),
-                                                 (*p)->unum() );
+                                                 p->unum() );
         }
         transport() << std::ends << std::flush;
     }
@@ -305,6 +300,7 @@ RegHolder voc13 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderO
 RegHolder voc14 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 14 );
 RegHolder voc15 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 15 );
 RegHolder voc16 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 16 );
+RegHolder voc17 = InitSenderOnlineCoach::factory().autoReg( &create< InitSenderOnlineCoachV8 >, 17 );
 }
 
 }

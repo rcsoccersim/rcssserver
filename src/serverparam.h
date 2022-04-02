@@ -35,7 +35,7 @@
 
 #include "types.h"
 
-#include <rcssbase/net/addr.hpp>
+#include <rcss/net/addr.hpp>
 
 #include <memory>
 #include <map>
@@ -66,9 +66,9 @@ private:
 
 private:
 
-    ServerParam(); // not used
-    ServerParam( const ServerParam & ); // not used
-    ServerParam & operator=( const ServerParam & ); // not used
+    ServerParam() = delete; // not used
+    ServerParam( const ServerParam & ) = delete; // not used
+    ServerParam & operator=( const ServerParam & ) = delete; // not used
 
 protected:
 
@@ -336,14 +336,15 @@ private:
     static const bool GOLDEN_GOAL;
     // 15.0.0
     static const double RED_CARD_PROBABILITY;
-    // XXX
-    static const double LONG_KICK_POWER_FACTOR;
-    static const int LONG_KICK_DELAY;
     // 16.0.0
     static const int ILLEGAL_DEFENSE_DURATION;
     static const int ILLEGAL_DEFENSE_NUMBER;
     static const double ILLEGAL_DEFENSE_DIST_X;
     static const double ILLEGAL_DEFENSE_WIDTH;
+
+    // XXX
+    static const double LONG_KICK_POWER_FACTOR;
+    static const int LONG_KICK_DELAY;
 
     double M_goal_width; /* goal width */
     double M_inertia_moment; /* intertia moment for turn */
@@ -616,6 +617,10 @@ private:
     double M_illegal_defense_width;
     std::string M_fixed_teamname_l;
     std::string M_fixed_teamname_r;
+
+    // 17.0.0
+    double M_max_catch_angle;
+    double M_min_catch_angle;
 
     // XXX
     double M_long_kick_power_factor;
@@ -970,6 +975,10 @@ public:
     double illegalDefenseWidth() const { return M_illegal_defense_width; }
     const std::string & fixedTeamNameLeft() const { return M_fixed_teamname_l; }
     const std::string & fixedTeamNameRight() const { return M_fixed_teamname_r; }
+
+    // v17
+    double maxCatchAngle() const { return M_max_catch_angle; }
+    double minCatchAngle() const { return M_min_catch_angle; }
 
     // XXX
     double longKickPowerFactor() const { return M_long_kick_power_factor; }

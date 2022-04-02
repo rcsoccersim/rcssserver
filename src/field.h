@@ -44,10 +44,9 @@
 
 #include "object.h"
 #include "weather.h"
-#include "logger.h"
 
-#include <rcssbase/gzip/gzfstream.hpp>
-#include <rcssbase/net/udpsocket.hpp>
+#include <rcss/gzip/gzfstream.hpp>
+#include <rcss/net/udpsocket.hpp>
 
 #include <string>
 #include <vector>

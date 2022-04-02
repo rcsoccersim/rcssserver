@@ -31,12 +31,12 @@ class SyncTimer
     : public Timer
 {
 public:
+    explicit
     SyncTimer( Timeable &timeable )
         : Timer( timeable )
-    {}
+    { }
 
-    void
-    run();
+    void run() override;
 
 //     static
 //     void

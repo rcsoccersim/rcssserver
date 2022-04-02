@@ -25,7 +25,7 @@
 
 #include "serializercommonstdv1.h"
 
-#include "clangmsg.h"
+#include <rcss/clang/clangmsg.h>
 
 namespace rcss {
 
@@ -64,7 +64,8 @@ SerializerCommonStdv1::serializePlayerParamEnd( std::ostream & ) const
 }
 
 void
-SerializerCommonStdv1::serializePlayerTypeBegin( std::ostream & ) const
+SerializerCommonStdv1::serializePlayerTypeBegin( std::ostream &,
+                                                 const int ) const
 {
 
 }

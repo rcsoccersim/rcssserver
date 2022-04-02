@@ -132,14 +132,11 @@ VisualSenderPlayerV1::sendVisual()
 void
 VisualSenderPlayerV1::sendFlags()
 {
-    const std::vector< PObject * >::const_iterator end = stadium().field().landmarks().end();
-    for ( std::vector< PObject * >::const_iterator it = stadium().field().landmarks().begin();
-          it != end;
-          ++it )
+    for ( const PObject * o : stadium().field().landmarks() )
     {
-        if ( (*it)->objectVersion() <= self().version() )
+        if ( o->objectVersion() <= self().version() )
         {
-            sendFlag( **it );
+            sendFlag( *o );
         }
     }
 }
@@ -156,16 +153,13 @@ VisualSenderPlayerV1::sendBalls()
 void
 VisualSenderPlayerV1::sendPlayers()
 {
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        if ( *p != &self()
-             && (*p)->isEnabled()
-             && (*p)->objectVersion() <= self().version() )
+        if ( p != &self()
+             && p->isEnabled()
+             && p->objectVersion() <= self().version() )
         {
-            sendPlayer( **p );
+            sendPlayer( *p );
         }
     }
 }
@@ -894,12 +888,8 @@ VisualSenderPlayerV8::calcPointDir( const Player & player )
         //sigma is now in a range of 2.5 to 180 degrees, dependant on
         //the distance of the player.  95% of the returned random values
         //will be within +- 2*sigma of dir
-        boost::normal_distribution<> rng( dir, sigma );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::normal_distribution<> >
-            gen( rcss::random::DefaultRNG::instance(), rng );
-
-        return rad2Deg( normalize_angle( gen() ) );
+        std::normal_distribution<> dst( dir, sigma );
+        return rad2Deg( normalize_angle( dst( DefaultRNG::instance() ) ) );
     }
     else
     {
@@ -1078,6 +1068,7 @@ RegHolder vp13 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPla
 RegHolder vp14 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV13 >, 14 );
 RegHolder vp15 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV13 >, 15 );
 RegHolder vp16 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV13 >, 16 );
+RegHolder vp17 = VisualSenderPlayer::factory().autoReg( &create< VisualSenderPlayerV13 >, 17 );
 }
 
 }

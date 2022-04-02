@@ -34,7 +34,7 @@ protected:
 
 public:
     virtual
-    ~SerializerPlayerStdv8();
+    ~SerializerPlayerStdv8() override;
 
     static
     const
@@ -46,7 +46,7 @@ public:
                                 const Player & player,
                                 const std::string & name,
                                 const double & dist,
-                                const int dir ) const;
+                                const int dir ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -54,7 +54,7 @@ public:
                                 const std::string & name,
                                 const double & dist,
                                 const int dir,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -65,7 +65,7 @@ public:
                                 const double & dist_chg,
                                 const double & dir_chg,
                                 const int body_dir,
-                                const int head_dir ) const;
+                                const int head_dir ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -77,36 +77,36 @@ public:
                                 const double & dir_chg,
                                 const int body_dir,
                                 const int head_dir,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 
     virtual
     void serializeAllyAudioFull( std::ostream & strm,
                                  const int time,
                                  const double & dir,
                                  const int unum,
-                                 const char * msg ) const;
+                                 const char * msg ) const override;
 
     virtual
     void serializeOppAudioFull( std::ostream & strm,
                                 const int time,
                                 const double & dir,
-                                const char * msg ) const;
+                                const char * msg ) const override;
 
     virtual
     void serializeAllyAudioShort( std::ostream & strm,
                                   const int time,
-                                  const int unum ) const;
+                                  const int unum ) const override;
 
     virtual
     void serializeOppAudioShort( std::ostream & strm,
-                                 const int time ) const;
+                                 const int time ) const override;
 
     virtual
     void serializeFSBall( std::ostream & strm,
                           const double & x,
                           const double & y,
                           const double & vel_x,
-                          const double & vel_y ) const;
+                          const double & vel_y ) const override;
 
     virtual
     void serializeFSPlayerBegin( std::ostream & strm,
@@ -119,19 +119,19 @@ public:
                                  const double & vel_x,
                                  const double & vel_y,
                                  const double & body_dir,
-                                 const double & neck_dir ) const;
+                                 const double & neck_dir ) const override;
 
     virtual
     void serializeFSPlayerArm( std::ostream & strm,
                                const double & mag,
-                               const double & head ) const;
+                               const double & head ) const override;
 
     virtual
     void serializeFSPlayerStamina( std::ostream & strm,
                                    const double & stamina,
                                    const double & effort,
                                    const double & recovery,
-                                   const double & stamina_capacity ) const;
+                                   const double & stamina_capacity ) const override;
 
     virtual
     void serializeFSCounts( std::ostream & strm,
@@ -142,16 +142,17 @@ public:
                             const int count_move,
                             const int count_turn_neck,
                             const int count_change_view,
-                            const int count_say ) const;
+                            const int count_say ) const override;
 
     virtual
-    void serializeServerParamBegin( std::ostream & strm ) const;
+    void serializeServerParamBegin( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerParamBegin( std::ostream & strm ) const;
+    void serializePlayerParamBegin( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerTypeBegin( std::ostream & strm ) const;
+    void serializePlayerTypeBegin( std::ostream & strm,
+                                   const int id ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,

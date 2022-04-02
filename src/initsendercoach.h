@@ -25,7 +25,7 @@
 
 #include "initsender.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -74,7 +74,7 @@ public:
     FactoryHolder & factory();
 
     virtual
-    ~InitSenderOfflineCoach();
+    ~InitSenderOfflineCoach() override;
 
 protected:
     InitSenderOfflineCoach( const Params & params,
@@ -193,7 +193,7 @@ protected:
 
 public:
     virtual
-    ~InitSenderOfflineCoachV1();
+    ~InitSenderOfflineCoachV1() override;
 
     virtual
     void sendInit();
@@ -226,7 +226,7 @@ protected:
 
 public:
     virtual
-    ~InitSenderOfflineCoachV7();
+    ~InitSenderOfflineCoachV7() override;
 
 };
 
@@ -251,7 +251,7 @@ protected:
 
 public:
     virtual
-    ~InitSenderOfflineCoachV8();
+    ~InitSenderOfflineCoachV8() override;
 
 };
 

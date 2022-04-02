@@ -28,7 +28,7 @@
 #include "object.h"
 #include "utility.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -80,8 +80,11 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     VisualSenderCoach( const Params & params );
 
+public:
+    virtual
     ~VisualSenderCoach();
 
 protected:
@@ -183,14 +186,14 @@ public:
     VisualSenderCoachV1( const Params & params );
 
     virtual
-    ~VisualSenderCoachV1();
+    ~VisualSenderCoachV1() override;
 
     void sendVisual();
 
-    void sendLook();
+    void sendLook() override;
 
     virtual
-    void sendOKEye();
+    void sendOKEye() override;
 
 private:
 
@@ -217,8 +220,7 @@ protected:
       }
 
     virtual
-    const
-    std::string & calcName( const PObject & obj ) const
+    const std::string & calcName( const PObject & obj ) const
       {
           return obj.name();
       }
@@ -249,20 +251,19 @@ public:
 protected:
 
     virtual
-    int rad2Deg( const double & rad ) const
+    int rad2Deg( const double & rad ) const override
       {
           return Rad2IDegRound( rad );
       }
 
     virtual
-    const
-    std::string & calcName( const PObject & obj ) const
+    const std::string & calcName( const PObject & obj ) const override
       {
           return obj.shortName();
       }
 
     virtual
-    const std::string & calcPlayerName( const Player & obj ) const;
+    const std::string & calcPlayerName( const Player & obj ) const override;
 };
 
 /*!
@@ -290,10 +291,10 @@ protected:
 
 
     virtual
-    void serializePlayer( const Player & player );
+    void serializePlayer( const Player & player ) override;
 
     virtual
-    void serializePlayerLook( const Player & player );
+    void serializePlayerLook( const Player & player ) override;
 
 };
 
@@ -321,10 +322,10 @@ public:
 protected:
 
     virtual
-    void serializePlayer( const Player & player );
+    void serializePlayer( const Player & player ) override;
 
     virtual
-    void serializePlayerLook( const Player & player );
+    void serializePlayerLook( const Player & player ) override;
 };
 
 }

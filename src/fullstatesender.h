@@ -26,7 +26,7 @@
 #include "sender.h"
 #include "observer.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -49,12 +49,13 @@ class SerializerPlayer;
 
 class FullStateSender
     : protected Sender {
-public:
+protected:
 
     FullStateSender( std::ostream & transport );
 
+public:
     virtual
-    ~FullStateSender();
+    ~FullStateSender() override;
 
     virtual
     void sendFullState() = 0;
@@ -108,10 +109,12 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     FullStateSenderPlayer( const Params & params );
 
+public:
     virtual
-    ~FullStateSenderPlayer();
+    ~FullStateSenderPlayer() override;
 
 protected:
     const
@@ -188,10 +191,10 @@ public:
     FullStateSenderPlayerV1( const Params & );
 
     virtual
-    ~FullStateSenderPlayerV1();
+    ~FullStateSenderPlayerV1() override;
 
     virtual
-    void sendFullState();
+    void sendFullState() override;
 };
 
 /*!
@@ -212,10 +215,10 @@ public:
     FullStateSenderPlayerV5( const Params & );
 
     virtual
-    ~FullStateSenderPlayerV5();
+    ~FullStateSenderPlayerV5() override;
 
     virtual
-    void sendFullState();
+    void sendFullState() override;
 
 protected:
     virtual
@@ -248,20 +251,20 @@ public:
     FullStateSenderPlayerV8( const Params & );
 
     virtual
-    ~FullStateSenderPlayerV8();
+    ~FullStateSenderPlayerV8() override;
 
 protected:
     virtual
-    void sendSelf();
+    void sendSelf() override;
 
     virtual
-    void sendScore();
+    void sendScore() override;
 
     virtual
-    void sendBall();
+    void sendBall() override;
 
     virtual
-    void sendPlayer( const Player & p );
+    void sendPlayer( const Player & p ) override;
 };
 
 
@@ -283,12 +286,12 @@ public:
     FullStateSenderPlayerV13( const Params & );
 
     virtual
-    ~FullStateSenderPlayerV13();
+    ~FullStateSenderPlayerV13() override;
 
 protected:
 
     virtual
-    void sendPlayer( const Player & p );
+    void sendPlayer( const Player & p ) override;
 };
 
 

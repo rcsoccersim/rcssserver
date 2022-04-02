@@ -193,23 +193,20 @@ InitSenderPlayerV7::~InitSenderPlayerV7()
 void
 InitSenderPlayerV7::sendChangedPlayers()
 {
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        if ( (*p)->playerTypeId() == 0 ) continue;
+        if ( p->playerTypeId() == 0 ) continue;
 
-        if ( self().team() == (*p)->team() )
+        if ( self().team() == p->team() )
         {
             serializer().serializeChangePlayer( transport(),
-                                                (*p)->unum(),
-                                                (*p)->playerTypeId() );
+                                                p->unum(),
+                                                p->playerTypeId() );
         }
         else
         {
             serializer().serializeChangePlayer( transport(),
-                                                (*p)->unum() );
+                                                p->unum() );
         }
         transport() << std::ends << std::flush;
     }
@@ -284,6 +281,7 @@ RegHolder vp13 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV
 RegHolder vp14 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 14 );
 RegHolder vp15 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 15 );
 RegHolder vp16 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 16 );
+RegHolder vp17 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 17 );
 }
 
 }

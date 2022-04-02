@@ -62,9 +62,10 @@ public:
 
     player_type_t convertToStruct( int id ) const;
 
-    void serializeParams( std::ostream & o,
-                          const unsigned int version,
-                          const int id ) const;
+    void printParamsSExp( std::ostream & o,
+                          const unsigned int version ) const;
+    void printParamsJSON( std::ostream & o,
+                          const unsigned int version ) const;
 private:
 
     double delta( const double & min,

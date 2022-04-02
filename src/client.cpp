@@ -25,15 +25,11 @@
 
 #include "compress.h"
 
-#include <rcssbase/net/socketstreambuf.hpp>
-#include <rcssbase/net/udpsocket.hpp>
-#include <rcssbase/gzip/gzstream.hpp>
+#include <rcss/net/socketstreambuf.hpp>
+#include <rcss/net/udpsocket.hpp>
+#include <rcss/gzip/gzstream.hpp>
 
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 #include <iostream>
 #include <cerrno>
 #include <csignal>
@@ -84,9 +80,9 @@ public:
             const int port )
         : M_dest( port ),
           M_socket(),
-          M_socket_buf( NULL ),
-          M_gz_buf( NULL ),
-          M_transport( NULL ),
+          M_socket_buf( nullptr ),
+          M_gz_buf( nullptr ),
+          M_transport( nullptr ),
           M_comp_level( -1 ),
           M_clean_cycle( true )
       {
@@ -156,19 +152,19 @@ private:
           if ( M_transport )
           {
               delete M_transport;
-              M_transport = NULL;
+              M_transport = nullptr;
           }
 
           if ( M_gz_buf )
           {
               delete M_gz_buf;
-              M_gz_buf = NULL;
+              M_gz_buf = nullptr;
           }
 
           if ( M_socket_buf )
           {
               delete M_socket_buf;
-              M_socket_buf = NULL;
+              M_socket_buf = nullptr;
           }
       }
 
@@ -258,7 +254,7 @@ private:
           {
 
               read_fds = read_fds_back;
-              int ret = ::select( max_fd, &read_fds, NULL, NULL, NULL );
+              int ret = ::select( max_fd, &read_fds, nullptr, nullptr, nullptr );
               if ( ret < 0 )
               {
                   perror( "Error selecting input" );
@@ -269,7 +265,7 @@ private:
                   // read from stdin
                   if ( FD_ISSET( in, &read_fds ) )
                   {
-                      if ( std::fgets( buf, sizeof( buf ), stdin ) != NULL )
+                      if ( std::fgets( buf, sizeof( buf ), stdin ) )
                       {
                           size_t len = std::strlen( buf );
                           if ( buf[len-1] == '\n' )

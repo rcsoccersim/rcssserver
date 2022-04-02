@@ -1,85 +1,4 @@
 
-lib_LTLIBRARIES = \
-	librcssclangparser.la
-
-librcssclangparser_la_SOURCES = \
-	clangbuilder.cpp \
-	clangmsgbuilder.cpp \
-	clangparser.cpp \
-	clangmsg.cpp \
-	clangmetamsg.cpp \
-	clangfreeformmsg.cpp \
-	clangunsuppmsg.cpp \
-	clangrulemsg.cpp \
-	clangdelmsg.cpp \
-	clanginfomsg.cpp \
-	clangadvicemsg.cpp \
-	clangdefmsg.cpp \
-	clangaction.cpp \
-	clangutil.cpp \
-	coach_lang_comp.cpp \
-	arithop.cpp \
-	cond.cpp \
-	compop.cpp \
-	region.cpp \
-	rule.cpp \
-	rcssexceptions.cpp
-
-librcssclangparser_la_LDFLAGS = -version-info 3:0:1
-#    Changed from 2.0.0 to 3.0.1 at 9.3.5 for addition of buildCondList
-#
-#    1. Start with version information of `0:0:0' for each libtool library.
-#
-#    2. Update the version information only immediately before a public
-#       release of your software.  More frequent updates are unnecessary,
-#       and only guarantee that the current interface number gets larger
-#       faster.
-#
-#    3. If the library source code has changed at all since the last
-#       update, then increment REVISION (`C:R:A' becomes `C:r+1:A').
-#
-#    4. If any interfaces have been added, removed, or changed since the
-#       last update, increment CURRENT, and set REVISION to 0.
-#
-#    5. If any interfaces have been added since the last public release,
-#       then increment AGE.
-#
-#    6. If any interfaces have been removed since the last public release,
-#       then set AGE to 0.
-
-pkginclude_HEADERS = \
-	clangparser.h \
-	coach_lang_tok.h \
-	clangbuilder.h \
-	clangmsgbuilder.h \
-	clangmsg.h \
-	clangmetamsg.h \
-	clangfreeformmsg.h \
-	clangunsuppmsg.h \
-	clangrulemsg.h \
-	clangdelmsg.h \
-	clanginfomsg.h \
-	clangadvicemsg.h \
-	clangdefmsg.h \
-	clangaction.h \
-	clangutil.h \
-	coach_lang_comp.h \
-	coach_lang_parser.hpp \
-	player_command_parser.hpp \
-	arithop.h \
-	compop.h \
-	cond.h \
-	region.h \
-	rule.h \
-	vector.h \
-	rcssexceptions.h
-
-nodist_librcssclangparser_la_SOURCES = \
-	coach_lang_parser.ypp \
-	coach_lang_tok.cpp
-
-
-
 bin_PROGRAMS = \
 	rcssserver @RCSSCLIENT@
 
@@ -121,6 +40,7 @@ rcssserver_SOURCES = \
 	serializercommonstdv1.cpp \
 	serializercommonstdv7.cpp \
 	serializercommonstdv8.cpp \
+	serializercommonjson.cpp \
 	serializermonitor.cpp \
 	serializeronlinecoachstdv1.cpp \
 	serializeronlinecoachstdv6.cpp \
@@ -192,6 +112,7 @@ noinst_HEADERS = \
 	serializercommonstdv1.h \
 	serializercommonstdv7.h \
 	serializercommonstdv8.h \
+	serializercommonjson.h \
 	serializeronlinecoachstdv1.h \
 	serializeronlinecoachstdv6.h \
 	serializeronlinecoachstdv7.h \
@@ -223,21 +144,20 @@ noinst_HEADERS = \
 	xpmholder.h
 
 rcssserver_LDFLAGS = \
-	-L$(top_builddir)/rcssbase/conf \
-	-L$(top_builddir)/rcssbase/net \
-	-L$(top_builddir)/rcssbase/gzip
+	-L$(top_builddir)/rcss/clang \
+	-L$(top_builddir)/rcss/conf \
+	-L$(top_builddir)/rcss/net \
+	-L$(top_builddir)/rcss/gzip
 
 rcssserver_LDADD = \
-	librcssclangparser.la \
+	-lrcssclangparser \
 	-lrcssconfparser \
 	-lrcssnet \
 	-lrcssgz \
-	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) @GZ_LIBS@
+	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
 
 BUILT_SOURCES = \
-	coach_lang_parser.hpp \
-	coach_lang_tok.cpp \
 	player_command_parser.hpp \
 	player_command_tok.cpp
 
@@ -270,13 +190,13 @@ rcssclient_SOURCES = \
 	client.cpp
 
 rcssclient_LDFLAGS = \
-	-L$(top_builddir)/rcssbase/net \
-	-L$(top_builddir)/rcssbase/gzip
+	-L$(top_builddir)/rcss/net \
+	-L$(top_builddir)/rcss/gzip
 
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
 	-lrcssnet \
 	-lrcssgz \
-	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB) @GZ_LIBS@
+	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
 
 AM_CPPFLAGS = -I$(top_srcdir)
@@ -286,16 +206,13 @@ AM_CXXFLAGS = -W -Wall
 
 
 EXTRA_DIST = \
-	coach_lang_parser.ypp \
-	coach_lang_tok.lpp \
+	CMakeLists.txt \
+	fix_lexer_file.cmake \
 	player_command_parser.ypp \
 	player_command_tok.lpp \
 	rcsoccersim.in
 
 CLEANFILES = \
-	coach_lang_parser.cpp \
-	coach_lang_parser.hpp \
-	coach_lang_tok.cpp \
 	player_command_parser.cpp \
 	player_command_parser.hpp \
 	player_command_tok.cpp \

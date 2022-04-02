@@ -25,23 +25,16 @@
 
 #include "types.h"
 
-#include <rcssbase/gzip/gzfstream.hpp>
-
-#include <iostream>
-#include <fstream>
 #include <string>
-
+#include <chrono>
+#include <memory>
 
 class Player;
 class Coach;
 class OnlineCoach;
 class Stadium;
-class XPMHolder;
-struct timeval;
 
 namespace rcss {
-class InitObserverLogger;
-class ObserverLogger;
 namespace clang {
 class Msg;
 }
@@ -50,82 +43,38 @@ class Msg;
 class Logger {
 private:
 
-    static const std::string DEF_TEXT_NAME;
-    static const std::string DEF_TEXT_SUFFIX;
-    static const std::string DEF_GAME_NAME;
-    static const std::string DEF_GAME_SUFFIX;
-    static const std::string DEF_KAWAY_NAME;
-    static const std::string DEF_KAWAY_SUFFIX;
+    struct Impl;
+    std::unique_ptr< Impl > M_impl;
 
-    rcss::InitObserverLogger * M_init_observer;
-    rcss::ObserverLogger * M_observer;
+    Logger();
 
-    const Stadium & M_stadium;
-
-    std::string M_game_log_name;
-    std::string M_text_log_name;
-    std::string M_kaway_log_name;
-
-    std::ostream * M_game_log;
-    std::ostream * M_text_log;
-    std::ofstream M_kaway_log;  //!< file for keepaway log
-
-
-    PlayMode M_playmode;
-    std::string M_team_l_name;
-    std::string M_team_r_name;
-    int M_team_l_score;
-    int M_team_r_score;
-    int M_team_l_pen_taken;
-    int M_team_r_pen_taken;
+    Logger( const Logger & ) = delete;
+    Logger & operator=( const Logger & ) = delete;
 
 public:
-    explicit
-    Logger( Stadium & stadium );
+
+    static Logger & instance();
+
     ~Logger();
 
-    bool setSenders();
-
-    bool open();
-    void close();
+    bool open( const Stadium & stadium );
+    void close( const Stadium & stadium );
 
 private:
-    bool openGameLog();
+    bool setSenders( const Stadium & stadium );
+
+    bool openGameLog( const Stadium & stadium );
     bool openTextLog();
     bool openKawayLog();
 
+    void renameLogs( const Stadium & stadium );
     void closeGameLog();
     void closeTextLog();
     void closeKawayLog();
 
-    void renameLogs();
-
 public:
 
-    bool isGameLogOpen() const
-      {
-          return ( M_game_log && M_game_log->good() );
-      }
-
-    bool isTextLogOpen() const
-      {
-          return ( M_text_log && M_text_log->good() );
-      }
-
-    std::ostream & kawayLog()
-      {
-          return M_kaway_log;
-      }
-
-    void flush()
-      {
-          if ( M_game_log ) M_game_log->flush();
-          if ( M_text_log ) M_text_log->flush();
-          M_kaway_log.flush();
-      }
-
-    void writeToGameLog( const char * str,
-                         const std::streamsize n );
+    void flush();
 
     void writeMsgToGameLog( const BoardType board_type,
                             const char * msg,
@@ -134,9 +83,12 @@ public:
     /*!
       \brief write current status
      */
-    void writeGameLog();
+    void writeGameLog( const Stadium & stadium );
 private:
-    void writeGameLogImpl();
+    void writeGameLogImpl( const Stadium & stadium );
+
+    // void writeToGameLog( const char * str,
+    //                      const std::streamsize n );
 
     //void writeGameLogV1();
     //void writeGameLogV2();
@@ -149,31 +101,49 @@ public:
                            const unsigned int x,
                            const unsigned int y );
 
-    void writeTextLog( const char * message,
+    void writeTextLog( const Stadium & stadium,
+                       const char * message,
                        const TextLogFlag flag );
 
-    void writePlayerLog( const Player & player,
+    void writePlayerLog( const Stadium & stadium,
+                         const Player & player,
                          const char * message,
                          const TextLogFlag flag );
-    void writeCoachLog( const char * message,
+    void writeCoachLog( const Stadium & stadium,
+                        const char * message,
                         const TextLogFlag flag );
-    void writeOnlineCoachLog( const OnlineCoach & coach,
+    void writeOnlineCoachLog( const Stadium & stadium,
+                              const OnlineCoach & coach,
                               const char * message,
                               const TextLogFlag flag );
 
-    void writeRefereeAudio( const char * msg );
-    void writePlayerAudio( const Player & player,
+    void writeRefereeAudio( const Stadium & stadium,
+                            const char * msg );
+    void writePlayerAudio( const Stadium & stadium,
+                           const Player & player,
                            const char * msg );
-    void writeCoachAudio( const Coach & coach,
+    void writeCoachAudio( const Stadium & stadium,
+                          const Coach & coach,
                           const char * msg );
-    void writeCoachStdAudio( const OnlineCoach & coach,
+    void writeCoachStdAudio( const Stadium & stadium,
+                             const OnlineCoach & coach,
                              const rcss::clang::Msg & msg );
 
-    void writeTimes( const timeval &,
-                     const timeval & );
-    void writeProfile( const timeval &,
-                       const timeval &,
-                       const char * );
+    void writeKeepawayHeader( const int keepers,
+                              const int takers );
+    void writeKeepawayLog( const Stadium & stadium,
+                           const int episode,
+                           const int time,
+                           const char * end_cond );
+
+    void writeTimes( const Stadium & stadium,
+                     const std::chrono::system_clock::time_point & old_time,
+                     const std::chrono::system_clock::time_point & new_time );
+    void writeProfile( const Stadium & stadium,
+                       const std::chrono::system_clock::time_point & start_time,
+                       const std::chrono::system_clock::time_point & end_time,
+                       const std::string & str );
+
 };
 
 

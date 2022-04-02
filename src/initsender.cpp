@@ -291,7 +291,7 @@ InitSenderCommonV7::sendServerParams()
     serializer().serializeParam( transport(),
                                  ServerParam::instance().dropTime() );
     serializer().serializeServerParamEnd( transport() );
-    if ( newLine() )
+    if ( isGameLog() )
     {
         transport() << std::endl;
     }
@@ -349,7 +349,7 @@ InitSenderCommonV7::sendPlayerParams()
     serializer().serializeParam( transport(),
                                  PlayerParam::instance().effortMinDeltaFactor() );
     serializer().serializePlayerParamEnd( transport() );
-    if ( newLine() )
+    if ( isGameLog() )
     {
         transport() << std::endl;
     }
@@ -365,14 +365,14 @@ InitSenderCommonV7::sendPlayerTypes()
     for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
     {
         const HeteroPlayer * type = stadium().playerType( i );
-        if ( type != NULL )
+        if ( type )
         {
-            serializer().serializePlayerTypeBegin( transport() );
+            serializer().serializePlayerTypeBegin( transport(), i );
 
-            serializePlayerType( i, *type );
+            serializePlayerType( *type );
 
             serializer().serializePlayerTypeEnd( transport() );
-            if ( newLine() )
+            if ( isGameLog() )
             {
                 transport() << std::endl;
             }
@@ -385,11 +385,10 @@ InitSenderCommonV7::sendPlayerTypes()
 }
 
 void
-InitSenderCommonV7::serializePlayerType( const int id,
-                                         const HeteroPlayer & type )
+InitSenderCommonV7::serializePlayerType( const HeteroPlayer & type )
 {
-    serializer().serializeParam( transport(),
-                                 id );
+    // serializer().serializeParam( transport(),
+    //                              id );
     serializer().serializeParam( transport(),
                                  type.playerSpeedMax() );
     serializer().serializeParam( transport(),
@@ -420,12 +419,20 @@ void
 InitSenderCommonV8::sendServerParams()
 {
     serializer().serializeServerParamBegin( transport() );
-    std::for_each( ServerParam::instance().verMap().begin(),
-                   ServerParam::instance().verMap().end(),
-                   std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendServerParam ),
-                                 this ) );
+    for ( ServerParam::VerMap::const_reference param : ServerParam::instance().verMap() )
+    {
+        sendServerParam( param );
+    }
+    // std::for_each( ServerParam::instance().verMap().begin(),
+    //                ServerParam::instance().verMap().end(),
+    //                [this]( const ServerParam::VerMap::value_type & v )
+    //                {
+    //                    sendServerParam( v );
+    //                } );
+    //                // std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendServerParam ),
+    //                //               this ) );
     serializer().serializeServerParamEnd( transport() );
-    if ( newLine() )
+    if ( isGameLog() )
     {
         transport() << std::endl;
     }
@@ -436,7 +443,7 @@ InitSenderCommonV8::sendServerParams()
 }
 
 void
-InitSenderCommonV8::doSendServerParam( ServerParam::VerMap::value_type param )
+InitSenderCommonV8::sendServerParam( const ServerParam::VerMap::value_type & param )
 {
     if ( param.second <= version() )
     {
@@ -483,12 +490,20 @@ void
 InitSenderCommonV8::sendPlayerParams()
 {
     serializer().serializePlayerParamBegin( transport() );
-    std::for_each( PlayerParam::instance().verMap().begin(),
-                   PlayerParam::instance().verMap().end(),
-                   std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendPlayerParam ),
-                                 this ) );
+    for ( PlayerParam::VerMap::const_reference param : PlayerParam::instance().verMap() )
+    {
+        sendPlayerParam( param );
+    }
+    // std::for_each( PlayerParam::instance().verMap().begin(),
+    //                PlayerParam::instance().verMap().end(),
+    //                [this]( const PlayerParam::VerMap::value_type & v )
+    //                {
+    //                    sendPlayerParam( v );
+    //                } );
+    //                // std::bind1st( std::mem_fun( &rcss::InitSenderCommonV8::sendPlayerParam ),
+    //                //               this ) );
     serializer().serializePlayerParamEnd( transport() );
-    if ( newLine() )
+    if ( isGameLog() )
     {
         transport() << std::endl;
     }
@@ -500,7 +515,7 @@ InitSenderCommonV8::sendPlayerParams()
 
 
 void
-InitSenderCommonV8::doSendPlayerParam( PlayerParam::VerMap::value_type param )
+InitSenderCommonV8::sendPlayerParam( const PlayerParam::VerMap::value_type & param )
 {
     if ( param.second <= version() )
     {
@@ -548,14 +563,14 @@ InitSenderCommonV8::sendPlayerTypes()
     for ( int i = 0; i < PlayerParam::instance().playerTypes(); ++i )
     {
         const HeteroPlayer * type = stadium().playerType( i );
-        if ( type != NULL )
+        if ( type )
         {
-            serializer().serializePlayerTypeBegin( transport() );
+            serializer().serializePlayerTypeBegin( transport(), i );
 
-            serializePlayerType( i, *type );
+            type->printParamsSExp( transport(), version() );
 
             serializer().serializePlayerTypeEnd( transport() );
-            if ( newLine() )
+            if ( isGameLog() )
             {
                 transport() << std::endl;
             }
@@ -567,13 +582,224 @@ InitSenderCommonV8::sendPlayerTypes()
     }
 }
 
+
+/*-------------------------------------------------------------------*/
+/*-------------------------------------------------------------------*/
+/*-------------------------------------------------------------------*/
+
 void
-InitSenderCommonV8::serializePlayerType( const int id,
-                                         const HeteroPlayer & type )
+InitSenderCommonJSON::sendServerParams()
 {
-    type.serializeParams( transport(),
-                          version(),
-                          id );
+    if ( isGameLog() )
+    {
+        transport() << ",\n";
+    }
+
+    serializer().serializeServerParamBegin( transport() );
+    bool first = true;
+    for ( ServerParam::VerMap::const_reference param : ServerParam::instance().verMap() )
+    {
+        if ( param.second <= version() )
+        {
+            if ( first )
+            {
+                first = false;
+            }
+            else
+            {
+                transport() << ',';
+            }
+
+            sendServerParam( param );
+        }
+    }
+    // std::for_each( ServerParam::instance().verMap().begin(),
+    //                ServerParam::instance().verMap().end(),
+    //                [this,&]( const ServerParam::VerMap::value_type & v )
+    //                {
+    //                    if ( v.second <= version() )
+    //                    {
+    //                        if ( ! first )
+    //                        {
+    //                            transport() << ",";
+    //                            first = false;
+    //                        }
+    //                        sendServerParam( v );
+    //                    }
+    //                } );
+    serializer().serializeServerParamEnd( transport() );
+
+    if ( isGameLog() )
+    {
+        transport() << std::flush;
+    }
+    else
+    {
+        transport() << std::ends << std::flush;
+    }
 }
+
+void
+InitSenderCommonJSON::sendPlayerParams()
+{
+    if ( isGameLog() )
+    {
+        transport() << ",\n";
+    }
+
+    serializer().serializePlayerParamBegin( transport() );
+    bool first = true;
+    for ( PlayerParam::VerMap::const_reference param : PlayerParam::instance().verMap() )
+    {
+        if ( param.second <= version() )
+        {
+            if ( first ) first = false; else transport() << ',';
+
+            sendPlayerParam( param );
+        }
+    }
+    // std::for_each( PlayerParam::instance().verMap().begin(),
+    //                PlayerParam::instance().verMap().end(),
+    //                [this,&]( const PlayerParam::VerMap::value_type & v )
+    //                {
+    //                    if ( v.second <= version() )
+    //                    {
+    //                        if ( ! first )
+    //                        {
+    //                            transport() << ",";
+    //                            first = false;
+    //                        }
+    //                        sendPlayerParam( v );
+    //                    }
+    //                } );
+    serializer().serializePlayerParamEnd( transport() );
+
+    if ( isGameLog() )
+    {
+        transport() << std::flush;
+    }
+    else
+    {
+        transport() << std::ends << std::flush;
+    }
+}
+
+
+void
+InitSenderCommonJSON::sendPlayerTypes()
+{
+    const int max_types = PlayerParam::instance().playerTypes();
+    if ( max_types == 0 )
+    {
+        return;
+    }
+
+    for ( int i = 0; i < max_types; ++i )
+    {
+        const HeteroPlayer * type = stadium().playerType( i );
+        if ( type )
+        {
+            if ( isGameLog() )
+            {
+                transport() << ",\n";
+            }
+
+            serializer().serializePlayerTypeBegin( transport(), i );
+
+            type->printParamsJSON( transport(), version() );
+
+            serializer().serializePlayerTypeEnd( transport() );
+            if ( isGameLog() )
+            {
+                transport() << std::flush;
+            }
+            else
+            {
+                transport() << std::ends << std::flush;
+            }
+        }
+    }
+}
+
+void
+InitSenderCommonJSON::sendServerParam( ServerParam::VerMap::value_type param )
+{
+    int ivalue;
+    if ( ServerParam::instance().getInt( param.first, ivalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     ivalue );
+        return;
+    }
+
+    bool bvalue;
+    if ( ServerParam::instance().getBool( param.first, bvalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     bvalue );
+        return;
+    }
+
+    double dvalue;
+    if ( ServerParam::instance().getDouble( param.first, dvalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     dvalue );
+        return;
+    }
+
+    std::string svalue;
+    if ( ServerParam::instance().getStr( param.first, svalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     svalue );
+        return;
+    }
+}
+
+void
+InitSenderCommonJSON::sendPlayerParam( const PlayerParam::VerMap::value_type & param )
+{
+    int ivalue;
+    if ( PlayerParam::instance().getInt( param.first, ivalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     ivalue );
+        return;
+    }
+
+    bool bvalue;
+    if ( PlayerParam::instance().getBool( param.first, bvalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     bvalue );
+        return;
+    }
+
+    double dvalue;
+    if ( PlayerParam::instance().getDouble( param.first, dvalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     dvalue );
+        return;
+    }
+
+    std::string svalue;
+    if ( PlayerParam::instance().getStr( param.first, svalue ) )
+    {
+        serializer().serializeParam( transport(),
+                                     param.first,
+                                     svalue );
+        return;
+    }
+}
+
 
 }

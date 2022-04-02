@@ -39,10 +39,10 @@
 
 #include "param.h"
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
-typedef boost::int16_t Int16;
-typedef boost::int32_t Int32;
+typedef std::int16_t Int16;
+typedef std::int32_t Int32;
 
 enum PlayerState {
     DISABLE =         0x00000000,
@@ -200,6 +200,8 @@ const int REC_VERSION_2 = 2;
 const int REC_VERSION_3 = 3;
 const int REC_VERSION_4 = 4;
 const int REC_VERSION_5 = 5;
+const int REC_VERSION_6 = 6;
+const int REC_VERSION_JSON = REC_VERSION_6;
 const int DEFAULT_REC_VERSION = REC_VERSION_5;
 
 enum DispInfoMode {

@@ -53,19 +53,19 @@ private:
     const std::shared_ptr< Serializer > M_serializer;
     const Stadium & M_stadium;
     const unsigned int M_version;
-    const bool M_new_line;
+    const bool M_game_log;
 
 public:
     InitSenderCommon( std::ostream & transport,
                       const std::shared_ptr< Serializer > serializer,
                       const Stadium & stadium,
                       unsigned int version,
-                      const bool new_line = false )
+                      const bool game_log = false )
         : M_transport( transport ),
           M_serializer( serializer ),
           M_stadium( stadium ),
           M_version( version ),
-          M_new_line( new_line )
+          M_game_log( game_log )
       { }
 
     virtual
@@ -92,9 +92,9 @@ public:
           return M_version;
       }
 
-    bool newLine() const
+    bool isGameLog() const
       {
-          return M_new_line;
+          return M_game_log;
       }
 
     virtual
@@ -129,7 +129,7 @@ protected:
 
 public:
     virtual
-    ~InitSender();
+    ~InitSender() override;
 
     InitSenderCommon & commonSender()
       {
@@ -192,19 +192,19 @@ public:
       { }
 
     virtual
-    ~InitSenderCommonV1()
+    ~InitSenderCommonV1() override
       { }
 
     virtual
-    void sendServerParams()
+    void sendServerParams() override
       { }
 
     virtual
-    void sendPlayerParams()
+    void sendPlayerParams() override
       { }
 
     virtual
-    void sendPlayerTypes()
+    void sendPlayerTypes() override
       { }
 };
 
@@ -235,22 +235,21 @@ public:
       { }
 
     virtual
-    ~InitSenderCommonV7()
+    ~InitSenderCommonV7() override
       { }
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
 protected:
     virtual
-    void serializePlayerType( const int id,
-                              const HeteroPlayer & type );
+    void serializePlayerType( const HeteroPlayer & type );
 
 };
 
@@ -280,40 +279,72 @@ public:
       { }
 
     virtual
-    ~InitSenderCommonV8()
+    ~InitSenderCommonV8() override
       { }
 
     virtual
-    void sendServerParams();
-
-    void sendServerParam( ServerParam::VerMap::value_type param )
-      {
-          doSendServerParam( param );
-      }
-
-    void sendPlayerParam( PlayerParam::VerMap::value_type param )
-      {
-          doSendPlayerParam( param );
-      }
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
+
+private:
+
+    void sendServerParam( const ServerParam::VerMap::value_type & param );
+
+    void sendPlayerParam( const PlayerParam::VerMap::value_type & param );
+};
+
+
+/*!
+//===================================================================
+//
+//  CLASS: InitSenderCommonJSON
+//
+//  DESC: JSON format of the init protocol for monitor/log.
+//
+//===================================================================
+*/
+
+class InitSenderCommonJSON
+    : public InitSenderCommon {
+public:
+    InitSenderCommonJSON( std::ostream & transport,
+                          const std::shared_ptr< Serializer > serializer,
+                          const Stadium & stad,
+                          unsigned int version,
+                          const bool new_line = false )
+        : InitSenderCommon( transport,
+                            serializer,
+                            stad,
+                            version,
+                            new_line )
+    { }
+
+    virtual
+    ~InitSenderCommonJSON() override
+    { }
+
+    virtual
+    void sendServerParams() override;
+
+    virtual
+    void sendPlayerParams() override;
+
+    virtual
+    void sendPlayerTypes() override;
+
 
 protected:
-    virtual
-    void doSendServerParam( ServerParam::VerMap::value_type param );
 
-    virtual
-    void doSendPlayerParam( PlayerParam::VerMap::value_type param );
-
-    virtual
-    void serializePlayerType( const int id,
-                              const HeteroPlayer & type );
+    void sendServerParam( ServerParam::VerMap::value_type param );
+    void sendPlayerParam( const PlayerParam::VerMap::value_type & param );
 
 };
+
 
 }
 

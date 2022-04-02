@@ -33,7 +33,7 @@ protected:
 
 public:
     virtual
-    ~SerializerPlayerStdv13();
+    ~SerializerPlayerStdv13() override;
 
     static
     const
@@ -45,7 +45,7 @@ public:
                                 const Player & player,
                                 const std::string & name,
                                 const double & dist,
-                                const int dir ) const;
+                                const int dir ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -53,7 +53,7 @@ public:
                                 const std::string & name,
                                 const double & dist,
                                 const int dir,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -64,7 +64,7 @@ public:
                                 const double & dist_chg,
                                 const double & dir_chg,
                                 const int body_dir,
-                                const int head_dir ) const;
+                                const int head_dir ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -76,25 +76,25 @@ public:
                                 const double & dir_chg,
                                 const int body_dir,
                                 const int head_dir,
-                                const int point_dir ) const;
+                                const int point_dir ) const override;
 
 
     virtual
     void serializeBodyStamina( std::ostream & strm,
                                const double & stamina,
                                const double & effort,
-                               const double & stamina_capacity ) const;
+                               const double & stamina_capacity ) const override;
 
     virtual
     void serializeFSPlayerStamina( std::ostream & strm,
                                    const double & stamina,
                                    const double & effort,
                                    const double & recovery,
-                                   const double & stamina_capacity ) const;
+                                   const double & stamina_capacity ) const override;
 
     virtual
     void serializeFSPlayerState( std::ostream & strm,
-                                 const Player & player ) const;
+                                 const Player & player ) const override;
 };
 
 }

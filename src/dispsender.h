@@ -26,7 +26,7 @@
 #include "observer.h"
 #include "types.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -44,12 +44,14 @@ class SerializerMonitor;
 */
 class DispSender
     : protected Sender {
-public:
+protected:
 
     DispSender( std::ostream & transport );
 
+public:
+
     virtual
-    ~DispSender();
+    ~DispSender() override;
 
     virtual
     void sendShow() = 0;
@@ -112,9 +114,12 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     DispSenderMonitor( const Params & params );
 
-    ~DispSenderMonitor();
+public:
+    virtual
+    ~DispSenderMonitor() override;
 
 protected:
 
@@ -192,19 +197,19 @@ public:
     DispSenderMonitorV1( const Params & params );
 
     virtual
-    ~DispSenderMonitorV1();
+    ~DispSenderMonitorV1() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     virtual
     void sendTeamGraphic( const Side side,
                           const unsigned int x,
-                          const unsigned int y );
+                          const unsigned int y ) override;
 };
 
 
@@ -219,14 +224,14 @@ public:
     DispSenderMonitorV2( const Params & params );
 
     virtual
-    ~DispSenderMonitorV2();
+    ~DispSenderMonitorV2() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     //virtual
     //void sendTeamGraphic( const Side side,
@@ -245,14 +250,14 @@ public:
     DispSenderMonitorV3( const Params & params );
 
     virtual
-    ~DispSenderMonitorV3();
+    ~DispSenderMonitorV3() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     //virtual
     //void sendTeamGraphic( const Side side,
@@ -286,6 +291,34 @@ public:
 //                           const unsigned int x,
 //                           const unsigned int y );
 // };
+
+/*!
+  \class DispSenderMonitorJSON
+  \brief class for the version 5 monitor protocol. (JSON format)
+*/
+class DispSenderMonitorJSON
+    : public DispSenderMonitor {
+public:
+
+    DispSenderMonitorJSON( const Params & params );
+
+    virtual
+    ~DispSenderMonitorJSON() override;
+
+    virtual
+    void sendShow() override;
+
+    virtual
+    void sendMsg( const BoardType board,
+                  const char * msg ) override;
+
+    virtual
+    void sendTeamGraphic( const Side side,
+                         const unsigned int x,
+                         const unsigned int y ) override;
+};
+
+
 
 
 //===================================================================
@@ -331,9 +364,11 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     DispSenderLogger( const Params & params );
 
-    ~DispSenderLogger();
+public:
+    ~DispSenderLogger() override;
 
 protected:
 
@@ -411,19 +446,19 @@ public:
     DispSenderLoggerV1( const Params & params );
 
     virtual
-    ~DispSenderLoggerV1();
+    ~DispSenderLoggerV1() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
     virtual
     void sendTeamGraphic( const Side side,
                           const unsigned int x,
-                          const unsigned int y );
+                          const unsigned int y ) override;
 
 };
 
@@ -439,14 +474,14 @@ public:
     DispSenderLoggerV2( const Params & params );
 
     virtual
-    ~DispSenderLoggerV2();
+    ~DispSenderLoggerV2() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
-                  const char * msg );
+                  const char * msg ) override;
 
 };
 
@@ -462,10 +497,10 @@ public:
     DispSenderLoggerV3( const Params & params );
 
     virtual
-    ~DispSenderLoggerV3();
+    ~DispSenderLoggerV3() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
 
     //virtual
     //void sendMsg( const BoardType board,
@@ -484,38 +519,42 @@ public:
     DispSenderLoggerV4( const Params & params );
 
     virtual
-    ~DispSenderLoggerV4();
+    ~DispSenderLoggerV4() override;
 
     virtual
-    void sendShow();
+    void sendShow() override;
+
+    virtual
+    void sendMsg( const BoardType board,
+                  const char * msg ) override;
+
+};
+
+/*!
+  \class DispSenderLoggerV6
+  \brief class for the log version 6 (JSON format)
+ */
+class DispSenderLoggerJSON
+    : public DispSenderLogger {
+public:
+
+    DispSenderLoggerJSON( const Params & params );
+
+    virtual
+    ~DispSenderLoggerJSON() override;
+
+    virtual
+    void sendShow() override;
 
     virtual
     void sendMsg( const BoardType board,
                   const char * msg );
 
+    virtual
+    void sendTeamGraphic( const Side side,
+                          const unsigned int x,
+                          const unsigned int y ) override;
 };
-
-// /*!
-//   \class DispSenderLoggerV5
-//   \brief class for the log version 5
-//  */
-// class DispSenderLoggerV5
-//     : public DispSenderLoggerV4 {
-// public:
-
-//     DispSenderLoggerV5( const Params & params );
-
-//     virtual
-//     ~DispSenderLoggerV5();
-
-//     virtual
-//     void sendShow();
-
-//     virtual
-//     void sendMsg( const BoardType board,
-//                   const char * msg );
-
-// };
 
 
 }

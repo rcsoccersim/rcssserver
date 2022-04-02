@@ -24,7 +24,7 @@
 
 #include "compress.h"
 
-#include <rcssbase/net/udpsocket.hpp>
+#include <rcss/net/udpsocket.hpp>
 
 namespace rcss {
 namespace net {

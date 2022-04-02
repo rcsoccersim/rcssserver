@@ -34,40 +34,41 @@ protected:
 
 public:
     virtual
-    ~SerializerCommonStdv8();
+    ~SerializerCommonStdv8() override;
 
     static
     const
     Ptr create();
 
     virtual
-    void serializeServerParamBegin( std::ostream & strm ) const;
+    void serializeServerParamBegin( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerParamBegin( std::ostream & strm ) const;
+    void serializePlayerParamBegin( std::ostream & strm ) const override;
 
     virtual
-    void serializePlayerTypeBegin( std::ostream & strm ) const;
-
-    virtual
-    void serializeParam( std::ostream & strm,
-                         const std::string & name,
-                         const int param ) const;
+    void serializePlayerTypeBegin( std::ostream & strm,
+                                   const int id ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,
                          const std::string & name,
-                         const bool param ) const;
+                         const int param ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,
                          const std::string & name,
-                         const double & param ) const;
+                         const bool param ) const override;
 
     virtual
     void serializeParam( std::ostream & strm,
                          const std::string & name,
-                         const std::string & param ) const;
+                         const double & param ) const override;
+
+    virtual
+    void serializeParam( std::ostream & strm,
+                         const std::string & name,
+                         const std::string & param ) const override;
 
 };
 

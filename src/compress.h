@@ -54,13 +54,13 @@ protected:
 public:
     Compressor( int level = Z_DEFAULT_COMPRESSION,
                 int strategy = Z_DEFAULT_STRATEGY )
-        : M_out_buffer( NULL ),
+        : M_out_buffer( nullptr ),
           M_out_size( 0 ),
           M_out_avail( 0 )
       {
           M_stream.zalloc = Z_NULL;
           M_stream.zfree = Z_NULL;
-          M_stream.opaque = NULL;
+          M_stream.opaque = nullptr;
 
           deflateInit( &M_stream, level );
           deflateParams( &M_stream, level, strategy );
@@ -86,12 +86,14 @@ public:
 
     int compress( const char* in_buffer, int in_size, int z_flush = Z_NO_FLUSH )
       {
-          if( M_out_buffer == NULL )
+          if ( ! M_out_buffer )
           {
               M_out_avail = (int)(in_size * 1.01 + 12);
               M_out_buffer = (char*)malloc( M_out_avail );
-              if( M_out_buffer == NULL )
+              if ( ! M_out_buffer )
+              {
                   return Z_MEM_ERROR;
+              }
 
               M_stream.next_out = (Bytef*)M_out_buffer;
               M_stream.avail_out = M_out_avail;
@@ -109,7 +111,7 @@ public:
               {
                   int extra = (int)(M_out_avail * 0.5);
                   M_out_buffer = (char*)realloc( M_out_buffer, M_out_avail + extra );
-                  if( M_out_buffer == NULL )
+                  if ( ! M_out_buffer )
                   {
                       err = Z_MEM_ERROR;
                       break;
@@ -134,13 +136,15 @@ public:
           out = M_out_buffer;
           size = M_out_size;
 
-          if( detach )
+          if ( detach )
           {
               out = (char*)realloc( out, size );
-              if( out == NULL )
+              if ( ! out )
+              {
                   return Z_MEM_ERROR;
+              }
 
-              M_out_buffer = NULL;
+              M_out_buffer = nullptr;
               M_out_avail = 0;
           }
 
@@ -164,13 +168,13 @@ protected:
 
 public:
     Decompressor()
-        : M_out_buffer( NULL ),
+        : M_out_buffer( nullptr ),
           M_out_size( 0 ),
           M_out_avail( 0 )
       {
           M_stream.zalloc = Z_NULL;
           M_stream.zfree = Z_NULL;
-          M_stream.opaque = NULL;
+          M_stream.opaque = nullptr;
 
           inflateInit( &M_stream );
       }
@@ -185,12 +189,14 @@ public:
                     int in_size,
                     int z_flush = Z_NO_FLUSH )
       {
-          if( M_out_buffer == NULL )
+          if ( ! M_out_buffer )
           {
               M_out_avail = in_size * 2;
               M_out_buffer = (char*)malloc( M_out_avail );
-              if( M_out_buffer == NULL )
+              if ( ! M_out_buffer )
+              {
                   return Z_MEM_ERROR;
+              }
 
               M_stream.next_out = (Bytef*)M_out_buffer;
               M_stream.avail_out = M_out_avail;
@@ -202,14 +208,14 @@ public:
           int bytes_out = M_stream.total_out;
 
           int err;
-          for(;;)
+          for ( ; ; )
           {
-              if( M_stream.avail_out == 0 )
+              if ( M_stream.avail_out == 0 )
               {
                   int extra = (int)(M_out_avail * 0.5);
                   M_out_buffer = (char*)realloc( M_out_buffer,
                                                  M_out_avail + extra );
-                  if( M_out_buffer == NULL )
+                  if ( ! M_out_buffer )
                   {
                       err = Z_MEM_ERROR;
                       break;
@@ -221,8 +227,10 @@ public:
               }
 
               err = inflate( &M_stream, z_flush );
-              if( err != Z_OK )
+              if ( err != Z_OK )
+              {
                   break;
+              }
           }
 
           M_out_size = M_stream.total_out - bytes_out;
@@ -237,10 +245,12 @@ public:
           if( detach )
           {
               out = (char*)realloc( out, size );
-              if( out == NULL )
+              if ( !out )
+              {
                   return Z_MEM_ERROR;
+              }
 
-              M_out_buffer = NULL;
+              M_out_buffer = nullptr;
               M_out_avail = 0;
           }
 

@@ -27,15 +27,16 @@
 
 #include "object.h"
 #include "serializer.h"
-#include "clangmsg.h"
-#include "clangunsuppmsg.h"
 #include "coach.h"
 #include "stadium.h"
 #include "player.h"
 #include "random.h"
 #include "utility.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/clang/clangmsg.h>
+#include <rcss/clang/clangunsuppmsg.h>
+
+#include <rcss/factory.hpp>
 
 namespace rcss {
 
@@ -384,7 +385,7 @@ AudioSenderPlayerv8::~AudioSenderPlayerv8()
           ++i )
     {
         free( i->second );
-        i->second = NULL;
+        i->second = nullptr;
     }
     M_player_msgs.clear();
 
@@ -393,7 +394,7 @@ AudioSenderPlayerv8::~AudioSenderPlayerv8()
          ++i )
     {
         free( *i );
-        *i = NULL;
+        *i = nullptr;
     }
     M_self_msgs.clear();
 
@@ -402,7 +403,7 @@ AudioSenderPlayerv8::~AudioSenderPlayerv8()
           ++i )
     {
         free( i->second );
-        i->second = NULL;
+        i->second = nullptr;
     }
     M_coach_msgs.clear();
 }
@@ -437,7 +438,7 @@ AudioSenderPlayerv8::sendCoachAudio( const Coach & coach,
                                      const char * msg )
 {
     char * msg_copy = strdup( msg );
-    if ( msg_copy == NULL )
+    if ( ! msg_copy )
     {
         std::cerr << "Error:  could not alocate memory to cache coach audio message\n";
     }
@@ -453,7 +454,7 @@ void
 AudioSenderPlayerv8::sendSelfAudio( const char * msg )
 {
     char * msg_copy = strdup( msg );
-    if ( msg_copy == NULL )
+    if ( ! msg_copy )
     {
         std::cerr << "Error:  could not alocate memory to cache player's own audio message\n";
     }
@@ -490,7 +491,7 @@ AudioSenderPlayerv8::sendNonSelfPlayerAudio( const Player & player,
     }
 
     char * msg_copy = strdup( msg );
-    if ( msg_copy == NULL )
+    if ( ! msg_copy )
     {
         std::cerr << "Error:  could not alocate memory to cache player audio message\n";
     }
@@ -658,8 +659,10 @@ AudioSenderPlayerv8::Focused::getMsg( msg_cont_t & msgs )
          }
      }
 #else
-    if ( M_key == NULL )
+    if ( ! M_key )
+    {
         return Unfocused::getMsg( msgs );
+    }
 
     std::pair< msg_cont_t::iterator, msg_cont_t::iterator > iters
         = msgs.equal_range( M_key );
@@ -980,6 +983,7 @@ RegHolder vp13 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlaye
 RegHolder vp14 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 14 );
 RegHolder vp15 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 15 );
 RegHolder vp16 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 16 );
+RegHolder vp17 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 17 );
 
 template< typename Sender >
 AudioSender::Ptr
@@ -1004,6 +1008,7 @@ RegHolder vc13 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv
 RegHolder vc14 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 14 );
 RegHolder vc15 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 15 );
 RegHolder vc16 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 16 );
+RegHolder vc17 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 17 );
 
 template< typename Sender >
 AudioSender::Ptr
@@ -1028,5 +1033,6 @@ RegHolder voc13 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSende
 RegHolder voc14 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 14 );
 RegHolder voc15 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 15 );
 RegHolder voc16 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 16 );
+RegHolder voc17 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 17 );
 }
 }

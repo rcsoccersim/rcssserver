@@ -39,21 +39,14 @@
 #include "playerparam.h"
 #include "utility.h"
 
-#include <boost/random.hpp>
+#include <iomanip>
+#include <random>
 
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h> /* needed for htonl, htons, ... */
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h> /* needed for htonl, htons, ... */
 #endif
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h> /* needed for htonl, htons, ... */
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h> // gettimeofday
 #endif
 
 HeteroPlayer::HeteroPlayer()
@@ -168,7 +161,7 @@ HeteroPlayer::delta( const double & min,
                      const double & max )
 {
     static bool s_seeded = false;
-    static boost::mt19937 s_engine;
+    static std::mt19937 s_engine;
 
     if ( ! s_seeded )
     {
@@ -187,10 +180,9 @@ HeteroPlayer::delta( const double & min,
         }
         else
         {
-            timeval now;
-            gettimeofday ( &now, NULL );
+            std::random_device seed_gen;
+            const int seed = seed_gen();
 
-            int seed = static_cast< int >( now.tv_usec );
             PlayerParam::instance().setRandomSeed( seed );
             std::cout << "Hetero Player Seed: " << seed << std::endl;
             s_engine.seed( PlayerParam::instance().randomSeed() );
@@ -211,9 +203,8 @@ HeteroPlayer::delta( const double & min,
         std::swap( minv, maxv );
     }
 
-    boost::uniform_real< double > rng( minv, maxv );
-    boost::variate_generator< boost::mt19937&, boost::uniform_real<> > gen( s_engine, rng );
-    return gen();
+    std::uniform_real_distribution< double > rng( minv, maxv );
+    return rng( s_engine );
 }
 
 void
@@ -297,39 +288,84 @@ namespace {
 
 template < typename T >
 void
-serialize_param( std::ostream & o,
-                 const std::string & name,
-                 const T & value )
+to_sexp( std::ostream & o,
+         const std::string & name,
+         const T & value )
 {
     o << '(' << name << ' ' << value << ')';
+}
+
+template < typename T >
+void
+to_json_member( std::ostream & os,
+                const std::string & name,
+                const T & value )
+{
+    os << std::quoted( name ) << ':' << value;
 }
 
 }
 
 void
-HeteroPlayer::serializeParams( std::ostream & o,
-                               const unsigned int version,
-                               const int id ) const
+HeteroPlayer::printParamsSExp( std::ostream & o,
+                               const unsigned int version ) const
 {
-    serialize_param( o, "id", id );
-    serialize_param( o, "player_speed_max", playerSpeedMax() );
-    serialize_param( o, "stamina_inc_max",  staminaIncMax() );
-    serialize_param( o, "player_decay",     playerDecay() );
-    serialize_param( o, "inertia_moment",   inertiaMoment() );
-    serialize_param( o, "dash_power_rate",  dashPowerRate() );
-    serialize_param( o, "player_size",      playerSize() );
-    serialize_param( o, "kickable_margin",  kickableMargin() );
-    serialize_param( o, "kick_rand",        kickRand() );
-    serialize_param( o, "extra_stamina",    extraStamina() );
-    serialize_param( o, "effort_max",       effortMax() );
-    serialize_param( o, "effort_min",       effortMin() );
+    //to_sexp( o, "id", id );
+    to_sexp( o, "player_speed_max", playerSpeedMax() );
+    to_sexp( o, "stamina_inc_max",  staminaIncMax() );
+    to_sexp( o, "player_decay",     playerDecay() );
+    to_sexp( o, "inertia_moment",   inertiaMoment() );
+    to_sexp( o, "dash_power_rate",  dashPowerRate() );
+    to_sexp( o, "player_size",      playerSize() );
+    to_sexp( o, "kickable_margin",  kickableMargin() );
+    to_sexp( o, "kick_rand",        kickRand() );
+    to_sexp( o, "extra_stamina",    extraStamina() );
+    to_sexp( o, "effort_max",       effortMax() );
+    to_sexp( o, "effort_min",       effortMin() );
 
     if ( version < 14 )
     {
         return;
     }
 
-    serialize_param( o, "kick_power_rate", kickPowerRate() );
-    serialize_param( o, "foul_detect_probability", foulDetectProbability() );
-    serialize_param( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
+    to_sexp( o, "kick_power_rate", kickPowerRate() );
+    to_sexp( o, "foul_detect_probability", foulDetectProbability() );
+    to_sexp( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
+}
+
+
+void
+HeteroPlayer::printParamsJSON( std::ostream & o,
+                               const unsigned int version ) const
+{
+    to_json_member( o, "player_speed_max", playerSpeedMax() );
+    o << ',';
+    to_json_member( o, "stamina_inc_max",  staminaIncMax() );
+    o << ',';
+    to_json_member( o, "player_decay",     playerDecay() );
+    o << ',';
+    to_json_member( o, "inertia_moment",   inertiaMoment() );
+    o << ',';
+    to_json_member( o, "dash_power_rate",  dashPowerRate() );
+    o << ',';
+    to_json_member( o, "player_size",      playerSize() );
+    o << ',';
+    to_json_member( o, "kickable_margin",  kickableMargin() );
+    o << ',';
+    to_json_member( o, "kick_rand",        kickRand() );
+    o << ',';
+    to_json_member( o, "extra_stamina",    extraStamina() );
+    o << ',';
+    to_json_member( o, "effort_max",       effortMax() );
+    o << ',';
+    to_json_member( o, "effort_min",       effortMin() );
+    if ( version >= 14 )
+    {
+        o << ',';
+        to_json_member( o, "kick_power_rate", kickPowerRate() );
+        o << ',';
+        to_json_member( o, "foul_detect_probability", foulDetectProbability() );
+        o << ',';
+        to_json_member( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
+    }
 }

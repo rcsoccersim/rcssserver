@@ -34,16 +34,14 @@ protected:
 
 public:
     virtual
-    ~SerializerOnlineCoachStdv6();
+    ~SerializerOnlineCoachStdv6() override;
 
     static
-    const
-    Ptr create();
+    const Ptr create();
 
     virtual
-    void
-    serializeInit( std::ostream &,
-                   const int side = 0 ) const;
+    void serializeInit( std::ostream &,
+                        const int side = 0 ) const override;
 };
 
 }

@@ -24,7 +24,7 @@
 
 #include "types.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 #include <iostream>
@@ -32,6 +32,7 @@
 class Ball;
 class PVector;
 class Player;
+class HeteroPlayer;
 class Team;
 class XPMHolder;
 
@@ -53,8 +54,8 @@ public:
 
 private:
 
-    SerializerCommon( const SerializerCommon & ); // not used
-    SerializerCommon & operator=( const SerializerCommon & ); // not used
+    SerializerCommon( const SerializerCommon & ) = delete; // not used
+    SerializerCommon & operator=( const SerializerCommon & ) = delete; // not used
 
 protected:
     SerializerCommon();
@@ -81,9 +82,9 @@ public:
       { }
 
     virtual
-    void serializePlayerTypeBegin( std::ostream & ) const
+    void serializePlayerTypeBegin( std::ostream &,
+                                   const int ) const
       { }
-
     virtual
     void serializePlayerTypeEnd( std::ostream & ) const
       { }
@@ -145,9 +146,9 @@ private:
 
     const SerializerCommon::Ptr M_common;
 
-    Serializer(); // not used
-    Serializer( const Serializer & ); // not used
-    Serializer & operator=( const Serializer & ); // not used
+    Serializer() = delete; // not used
+    Serializer( const Serializer & ) = delete; // not used
+    Serializer & operator=( const Serializer & ) = delete; // not used
 
 protected:
     explicit
@@ -188,9 +189,10 @@ public:
           commonSerializer().serializePlayerParamEnd( strm );
       }
 
-    void serializePlayerTypeBegin( std::ostream & strm ) const
+    void serializePlayerTypeBegin( std::ostream & strm,
+                                   const int id ) const
       {
-          commonSerializer().serializePlayerTypeBegin( strm );
+          commonSerializer().serializePlayerTypeBegin( strm, id );
       }
 
     void serializePlayerTypeEnd( std::ostream & strm ) const
@@ -272,9 +274,9 @@ protected:
     explicit
     SerializerPlayer( const SerializerCommon::Ptr common );
 
-    virtual
-    ~SerializerPlayer();
 public:
+    virtual
+    ~SerializerPlayer() override;
 
     virtual
     void serializeRefereeAudio( std::ostream & strm,
@@ -890,11 +892,10 @@ protected:
     SerializerOnlineCoach( const SerializerCommon::Ptr common,
                            const SerializerCoach::Ptr cosch );
 
+public:
     virtual
     ~SerializerOnlineCoach();
 
-
-public:
     const
     SerializerCoach::Ptr coachSerializerPtr() const
       {
@@ -1085,20 +1086,20 @@ public:
 
     virtual
     void serializeTeam( std::ostream &,
-                        const int,
+                        const int, const int,
                         const Team &,
                         const Team & ) const
       { }
 
     virtual
     void serializePlayMode( std::ostream &,
-                            const int,
+                            const int, const int,
                             const PlayMode ) const
       { }
 
     virtual
     void serializeShowBegin( std::ostream &,
-                             const int ) const
+                             const int, const int ) const
       { }
     virtual
     void serializeShowEnd( std::ostream & ) const
@@ -1115,6 +1116,14 @@ public:
     virtual
     void serializeBall( std::ostream &,
                         const Ball & ) const
+      { }
+
+    virtual
+    void serializePlayerArrayBegin( std::ostream & ) const
+      { }
+
+    virtual
+    void serializePlayerArrayEnd( std::ostream & ) const
       { }
 
     virtual
@@ -1156,6 +1165,13 @@ public:
                                const unsigned int,
                                const XPMHolder & ) const
       { }
+
+    virtual
+    void serializeMsg( std::ostream &,
+                       const int, const int,
+                       const int,
+                       const char * ) const
+    { }
 };
 
 

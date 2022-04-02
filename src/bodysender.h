@@ -27,7 +27,7 @@
 
 #include "observer.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -93,10 +93,12 @@ public:
     static
     FactoryHolder & factory();
 
+protected:
     BodySenderPlayer( const Params & params );
+public:
 
     virtual
-    ~BodySenderPlayer();
+    ~BodySenderPlayer() override;
 
 protected:
     const
@@ -177,10 +179,10 @@ public:
     BodySenderPlayerV1( const Params & params );
 
     virtual
-    ~BodySenderPlayerV1();
+    ~BodySenderPlayerV1() override;
 
     virtual
-    void sendBody();
+    void sendBody() override;
 
 protected:
     virtual
@@ -217,14 +219,14 @@ public:
     BodySenderPlayerV5( const Params & params );
 
     virtual
-    ~BodySenderPlayerV5();
+    ~BodySenderPlayerV5() override;
 
 protected:
     virtual
-    void sendNeck();
+    void sendNeck() override;
 
     virtual
-    void sendCounts();
+    void sendCounts() override;
 };
 
 /*!
@@ -245,11 +247,11 @@ public:
     BodySenderPlayerV6( const Params & params );
 
     virtual
-    ~BodySenderPlayerV6();
+    ~BodySenderPlayerV6() override;
 
 protected:
     virtual
-    void sendVelocity();
+    void sendVelocity() override;
 };
 
 /*!
@@ -269,11 +271,11 @@ public:
     BodySenderPlayerV7( const Params & params );
 
     virtual
-    ~BodySenderPlayerV7();
+    ~BodySenderPlayerV7() override;
 
 protected:
     virtual
-    void sendCounts();
+    void sendCounts() override;
 
 };
 
@@ -295,11 +297,11 @@ public:
     BodySenderPlayerV8( const Params & params );
 
     virtual
-    ~BodySenderPlayerV8();
+    ~BodySenderPlayerV8() override;
 
 protected:
     virtual
-    void sendBodyData();
+    void sendBodyData() override;
 
 };
 
@@ -320,11 +322,11 @@ public:
     BodySenderPlayerV12( const Params & params );
 
     virtual
-    ~BodySenderPlayerV12();
+    ~BodySenderPlayerV12() override;
 
 protected:
     virtual
-    void sendBodyData();
+    void sendBodyData() override;
 
 };
 
@@ -347,7 +349,7 @@ public:
     BodySenderPlayerV13( const Params & params );
 
     virtual
-    ~BodySenderPlayerV13();
+    ~BodySenderPlayerV13() override;
 
 };
 
@@ -369,11 +371,11 @@ public:
     BodySenderPlayerV14( const Params & params );
 
     virtual
-    ~BodySenderPlayerV14();
+    ~BodySenderPlayerV14() override;
 
 protected:
     virtual
-    void sendBodyData();
+    void sendBodyData() override;
 
 };
 

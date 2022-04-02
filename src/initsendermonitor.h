@@ -25,7 +25,7 @@
 
 #include "initsender.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -78,7 +78,7 @@ public:
     FactoryHolder & factory();
 
    virtual
-    ~InitSenderMonitor();
+    ~InitSenderMonitor() override;
 
 protected:
 
@@ -105,8 +105,8 @@ protected:
 
 public:
 
-    void sendReconnect()
-      { }
+    // void sendReconnect()
+    //   { }
 
     virtual
     void sendPlayMode() = 0;
@@ -188,25 +188,25 @@ public:
     ~InitSenderMonitorV1();
 
     virtual
-    void sendInit();
+    void sendInit() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendChangedPlayers();
+    void sendChangedPlayers() override;
 
     virtual
-    void sendScore();
+    void sendScore() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 };
 
 
@@ -225,16 +225,16 @@ protected:
 
 public:
     virtual
-    ~InitSenderMonitorV2();
+    ~InitSenderMonitorV2() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 };
 
 
@@ -255,23 +255,66 @@ protected:
 
 public:
     virtual
-    ~InitSenderMonitorV3();
+    ~InitSenderMonitorV3() override;
 
     virtual
-    void sendServerParams();
+    void sendServerParams() override;
 
     virtual
-    void sendPlayerParams();
+    void sendPlayerParams() override;
 
     virtual
-    void sendPlayerTypes();
+    void sendPlayerTypes() override;
 
     virtual
-    void sendScore();
+    void sendScore() override;
 
     virtual
-    void sendPlayMode();
+    void sendPlayMode() override;
 };
+
+
+/*!
+  \class InitSenderMonitorJSON
+  \brief version 5 of the init protocol (JSON format).
+
+  The version of the common sender is "-1".
+ */
+class InitSenderMonitorJSON
+    : public InitSenderMonitor {
+public:
+    InitSenderMonitorJSON( const Params & params );
+
+protected:
+    InitSenderMonitorJSON( const Params & params,
+                           const std::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderMonitorJSON() override;
+
+    virtual
+    void sendInit() override;
+
+    virtual
+    void sendServerParams() override;
+
+    virtual
+    void sendPlayerParams() override;
+
+    virtual
+    void sendPlayerTypes() override;
+
+    virtual
+    void sendChangedPlayers() override;
+
+    virtual
+    void sendScore() override;
+
+    virtual
+    void sendPlayMode() override;
+};
+
 
 }
 

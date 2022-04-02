@@ -61,7 +61,7 @@ STDOutSaver::doSaveStart()
 }
 
 void
-STDOutSaver::doSaveTime( const tm & time )
+STDOutSaver::doSaveTime( const std::time_t time )
 {
     M_time = time;
 }
@@ -124,7 +124,8 @@ bool
 STDOutSaver::doSaveComplete()
 {
     char time_str[256];
-    std::strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", &M_time );
+    const struct tm * lt = std::localtime( &M_time );
+    std::strftime( time_str, 256, "%Y-%m-%d %H:%M:%S", lt );
 
     std::cout << "\t" << time_str << "\n\t";
 

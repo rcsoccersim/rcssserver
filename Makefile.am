@@ -5,12 +5,14 @@ libtool:	$(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
 SUBDIRS = \
-	rcssbase \
+	rcss \
 	src \
 	.
 
 EXTRA_DIST = \
-	README.md
+	README.md \
+	CMakeLists.txt \
+	config.h.cmake
 
 CLEANFILES = \
 	*~ \

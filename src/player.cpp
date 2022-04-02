@@ -25,6 +25,7 @@
 
 #include "player.h"
 
+#include "logger.h"
 #include "coach.h"
 #include "stadium.h"
 #include "team.h"
@@ -45,12 +46,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
-
-#ifdef HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#endif
 
 namespace {
 
@@ -79,6 +75,15 @@ NormalizeKickPower( const double & p )
     return rcss::bound( ServerParam::instance().minPower(),
                         p,
                         ServerParam::instance().maxPower() );
+}
+
+inline
+double
+NormalizeCatchAngle( const double d )
+{
+    return rcss::bound( ServerParam::instance().minCatchAngle(),
+                        d,
+                        ServerParam::instance().maxCatchAngle() );
 }
 
 // For v11 or older version
@@ -150,7 +155,7 @@ Player::Player( Stadium & stadium,
       M_clang_min_ver( 0 ),
       M_clang_max_ver( 0 ),
       //
-      M_player_type( NULL ),
+      M_player_type( nullptr ),
       M_player_type_id( 0 ),
       M_substituted( false ),
       M_kick_rand( ServerParam::instance().kickRand() ), // pfr 8/14/00: for RC2000 evaluation
@@ -489,7 +494,7 @@ Player::parseMsg( char * msg,
         }
         command[ len ] = 0;
     }
-    M_stadium.logger().writePlayerLog( *this, command, RECV );
+    Logger::instance().writePlayerLog( M_stadium, *this, command, RECV );
 
     /** Call the PlayerCommandParser */
     if (
@@ -975,7 +980,7 @@ Player::send( const char * msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.logger().writePlayerLog( *this, msg, SEND );
+        Logger::instance().writePlayerLog( M_stadium, *this, msg, SEND );
     }
 }
 
@@ -1347,6 +1352,8 @@ Player::goalieCatch( double dir )
         return;
     }
 
+    dir = NormalizeCatchAngle( dir );
+
     M_command_done = true;
     M_state |= CATCH;
 
@@ -1452,11 +1459,8 @@ Player::goalieCatch( double dir )
     if ( min_catchable.inArea( rotated_pos ) )
     {
         //success = ( drand( 0, 1 ) <= SP.catchProb() );
-        boost::bernoulli_distribution<> rng( SP.catchProbability() );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::bernoulli_distribution<> >
-            dst( rcss::random::DefaultRNG::instance(), rng );
-        success = dst();
+        std::bernoulli_distribution dst( SP.catchProbability() );
+        success = dst( DefaultRNG::instance() );
         //std::cerr << M_stadium.time()
         //          << ": goalieCatch min_catchable ok" << std::endl;
     }
@@ -1469,11 +1473,8 @@ Player::goalieCatch( double dir )
         catch_prob = std::min( std::max( 0.0, catch_prob ), 1.0 );
 
         //success = ( drand( 0, 1 ) <= catch_prob );
-        boost::bernoulli_distribution<> rng( catch_prob );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::bernoulli_distribution<> >
-            dst( rcss::random::DefaultRNG::instance(), rng );
-        success = dst();
+        std::bernoulli_distribution dst( catch_prob );
+        success = dst( DefaultRNG::instance() );
         //std::cerr << M_stadium.time()
         //          << ": goalieCatch "
         //          << " dir=" << Rad2Deg( normalize_angle( angleBodyCommitted() + NormalizeMoment( dir ) ) )
@@ -1564,6 +1565,13 @@ Player::move( double x,
          //|| M_stadium.playmode() == PM_PenaltySetup_Right
          )
     {
+        if ( M_stadium.playmode() == PM_BeforeKickOff
+             && ServerParam::instance().kickOffOffside()
+             && x >= -size() )
+        {
+            send( "(warning moving_to_opponent_field)" );
+        }
+
         M_pos.x = x * side();
         M_pos.y = y * side();
         M_stadium.collisions();
@@ -1740,16 +1748,9 @@ Player::compression( int level )
         return;
     }
 
-#ifdef HAVE_SSTREAM
     std::ostringstream reply;
     reply << "(ok compression " << level << ")";
     send( reply.str().c_str() );
-#else
-    std::ostrstream reply;
-    reply << "(ok compression " << level << ")" << std::ends;
-    send( reply.str() );
-    reply.freeze( false );
-#endif
 
     setCompressionLevel( level );
 #else
@@ -1799,7 +1800,7 @@ Player::attentionto( bool on,
     }
     else
     {
-        const Team * at_team = NULL;
+        const Team * at_team = nullptr;
 
         if ( team_side == rcss::pcom::OUR )
         {
@@ -1906,15 +1907,11 @@ Player::tackle( double power_or_angle,
     if ( foul )
     {
         foul = false;
-
-        const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-        for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-              p != end;
-              ++p )
+        for ( Stadium::PlayerCont::const_reference p : M_stadium.players() )
         {
-            if ( (*p)->isEnabled()
-                 && (*p)->side() != this->side()
-                 && (*p)->ballKickable() )
+            if ( p->isEnabled()
+                 && p->side() != this->side()
+                 && p->ballKickable() )
             {
                 foul = true;
                 exponent = ServerParam::instance().foulExponent();
@@ -1931,12 +1928,9 @@ Player::tackle( double power_or_angle,
 
     if ( prob < 1.0 )
     {
-        boost::bernoulli_distribution<> rng( 1 - prob );
-        boost::variate_generator< rcss::random::DefaultRNG &,
-            boost::bernoulli_distribution<> >
-            dst( rcss::random::DefaultRNG::instance(), rng );
+        std::bernoulli_distribution dst( 1 - prob );
 
-        if ( dst() )
+        if ( dst( DefaultRNG::instance() ) )
         {
             M_state |= TACKLE;
 
@@ -2091,9 +2085,9 @@ Player::clang( int min, int max )
 
     sendOKClang();
 
-    if( M_team != NULL
-        && team()->olcoach() != NULL
-        && team()->olcoach()->assigned() )
+    if( M_team
+        && M_team->olcoach()
+        && M_team->olcoach()->assigned() )
     {
         M_team->olcoach()->sendPlayerClangVer( *this );
     }

@@ -33,9 +33,9 @@ private:
     int M_height;
     int M_colors;
 
-    XPMHolder(); // not used
-    XPMHolder( const XPMHolder & ); // not used
-    const XPMHolder & operator=( const XPMHolder & ); // not used
+    XPMHolder() = delete; // not used
+    XPMHolder( const XPMHolder & ) = delete; // not used
+    const XPMHolder & operator=( const XPMHolder & ) = delete; // not used
 public:
 
     explicit
@@ -68,7 +68,14 @@ public:
           return M_colors;
       }
 
+    const std::vector< std::string > & data() const
+    {
+        return M_data;
+    }
+
     std::ostream & print( std::ostream & o ) const;
+
+    std::ostream & printEscaped( std::ostream & o ) const;
 
 };
 

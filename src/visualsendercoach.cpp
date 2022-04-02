@@ -92,14 +92,11 @@ VisualSenderCoachV1::sendVisual()
     sendGoals();
     sendBall();
 
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        serializePlayer( **p );
+        serializePlayer( *p );
     }
 
     serializer().serializeVisualEnd( transport() );
@@ -114,14 +111,11 @@ VisualSenderCoachV1::sendLook()
     sendGoals();
     sendBall();
 
-    const Stadium::PlayerCont::const_iterator end = stadium().players().end();
-    for ( Stadium::PlayerCont::const_iterator p = stadium().players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
     {
-        if ( ! (*p)->isEnabled() ) continue;
+        if ( ! p->isEnabled() ) continue;
 
-        serializePlayerLook( **p );
+        serializePlayerLook( *p );
     }
 
     serializer().serializeLookEnd( transport() );
@@ -138,12 +132,9 @@ VisualSenderCoachV1::sendOKEye()
 void
 VisualSenderCoachV1::sendGoals()
 {
-    const std::vector< const PObject * >::const_iterator end = stadium().field().goals().end();
-    for ( std::vector< const PObject * >::const_iterator it = stadium().field().goals().begin();
-          it != end;
-          ++it )
+    for ( const PObject * o : stadium().field().goals() )
     {
-        sendGoal( **it );
+        sendGoal( *o );
     }
 }
 
@@ -378,6 +369,7 @@ RegHolder vc13 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoac
 RegHolder vc14 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 14 );
 RegHolder vc15 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 15 );
 RegHolder vc16 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 16 );
+RegHolder vc17 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 17 );
 }
 
 }

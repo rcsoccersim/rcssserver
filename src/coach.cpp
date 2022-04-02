@@ -26,9 +26,7 @@
 #include "coach.h"
 
 #include "audio.h"
-#include "clangparser.h"
-#include "clangmsg.h"
-#include "clangmsgbuilder.h"
+#include "logger.h"
 #include "stadium.h"
 #include "object.h"
 #include "player.h"
@@ -39,7 +37,9 @@
 #include "initsenderonlinecoach.h"
 #include "visualsendercoach.h"
 
-#include <boost/lexical_cast.hpp>
+#include <rcss/clang/clangparser.h>
+#include <rcss/clang/clangmsg.h>
+#include <rcss/clang/clangmsgbuilder.h>
 
 #include <iostream>
 #include <sstream>
@@ -218,7 +218,7 @@ Coach::send( const char * msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.logger().writeCoachLog( msg, SEND );
+        Logger::instance().writeCoachLog( M_stadium, msg, SEND );
     }
 }
 
@@ -235,7 +235,7 @@ Coach::parseMsg( char * msg,
         }
         str[ len ] = 0;
     }
-    M_stadium.logger().writeCoachLog( str, RECV );
+    Logger::instance().writeCoachLog( M_stadium, str, RECV );
     parse_command( str );
 }
 
@@ -410,7 +410,7 @@ Coach::sendExternalMsg()
     }
 
     std::string msg = "(include ";
-    msg += boost::lexical_cast< std::string >( buf.size() );
+    msg += std::to_string( buf.size() );
     msg += ' ';
     msg.append( buf.begin(), buf.end() );
     msg += ')';
@@ -528,11 +528,11 @@ Coach::parse_move( const char * command )
                                     ServerParam::instance().maxMoment() ) );
         if ( n == 3 )
         {
-            M_stadium.movePlayer( side, unum, pos, NULL, NULL );
+            M_stadium.movePlayer( side, unum, pos, nullptr, nullptr );
         }
         else if ( n == 4 )
         {
-            M_stadium.movePlayer( side, unum, pos, &ang, NULL );
+            M_stadium.movePlayer( side, unum, pos, &ang, nullptr );
         }
         else if ( n == 6 )
         {
@@ -725,7 +725,7 @@ Coach::change_player_type( const std::string & team_name,
                            int unum,
                            int player_type )
 {
-    const Team * team = NULL;
+    const Team * team = nullptr;
     if ( M_stadium.teamLeft().name() == team_name )
     {
         team = &( M_stadium.teamLeft() );
@@ -736,7 +736,7 @@ Coach::change_player_type( const std::string & team_name,
         team = &( M_stadium.teamRight() );
     }
 
-    if ( team == NULL )
+    if ( ! team )
     {
         send( "(warning no_team_found)" );
         return;
@@ -749,7 +749,7 @@ Coach::change_player_type( const std::string & team_name,
         return;
     }
 
-    const Player * player = NULL;
+    const Player * player = nullptr;
     for ( int i = 0; i < team->size(); ++i )
     {
         const Player * p = team->player( i );
@@ -760,7 +760,7 @@ Coach::change_player_type( const std::string & team_name,
         }
     }
 
-    if ( player == NULL )
+    if ( ! player )
     {
         send( "(warning no_such_player)" );
         return;
@@ -779,7 +779,7 @@ void
 Coach::change_player_type_goalie( const std::string & team_name,
                                   int unum )
 {
-    const Team * team = NULL;
+    const Team * team = nullptr;
     if ( M_stadium.teamLeft().name() == team_name )
     {
         team = &( M_stadium.teamLeft() );
@@ -1084,7 +1084,7 @@ OnlineCoach::send( const char * msg )
 {
     if ( RemoteClient::send( msg, std::strlen( msg ) + 1 ) != -1 )
     {
-        M_stadium.logger().writeOnlineCoachLog( *this, msg, SEND );
+        Logger::instance().writeOnlineCoachLog( M_stadium, *this, msg, SEND );
     }
     else
     {
@@ -1108,7 +1108,7 @@ OnlineCoach::parseMsg( char * msg,
         str[ len ] = 0;
     }
 
-    M_stadium.logger().writeOnlineCoachLog( *this, str, RECV );
+    Logger::instance().writeOnlineCoachLog( M_stadium, *this, str, RECV );
     parse_command( str );
 }
 
@@ -1672,7 +1672,7 @@ OnlineCoach::change_player_types( const char * command )
             return;
         }
 
-        const Player * player = NULL;
+        const Player * player = nullptr;
         for ( int i = 0; i < M_team.size(); ++i )
         {
             const Player * p = M_team.player( i );

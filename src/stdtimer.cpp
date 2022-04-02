@@ -29,153 +29,20 @@
 #include "param.h"          // needed for TIMEDELTA
 #include "serverparam.h"    // needed for ServerParam
 
-#include <csignal>          // needed for sigaction
-#include <cstdlib>          // needed for NULL
-
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>       // needed for itimerval
-#endif
-
-#ifdef __CYGWIN__
-// cygwin is not win32
-#elif defined(_WIN32) || defined(__WIN32__) || defined (WIN32)
-#define RCSS_WIN
-#endif
-
-
-bool StandardTimer::gotsig = false;
-int StandardTimer::timedelta = 0;
-bool StandardTimer::lock_timedelta = false;
+#include <chrono>
+#include <thread>
 
 StandardTimer::StandardTimer( Timeable & timeable )
     : Timer( timeable )
 {
-    gotsig         = false;
-    timedelta      = 0;
-    lock_timedelta = false;
+
 }
 
 
-#ifdef RCSS_WIN
-VOID
-CALLBACK
-StandardTimer::check( PVOID ptr, BOOL )
-{
-    static int td_mult = 1;
-    if ( lock_timedelta )
-    {
-        td_mult += 1;
-    }
-    else
-    {
-        timedelta += td_mult * TIMEDELTA;
-        td_mult = 1;
-    }
-    gotsig = true;
-    SetEvent((HANDLE)ptr);
-}
-#else
-void
-StandardTimer::check( void )
-{
-    static int td_mult = 1;
-    if ( lock_timedelta )
-    {
-        td_mult += 1;
-    }
-    else
-    {
-        timedelta += td_mult * TIMEDELTA;
-        td_mult = 1;
-    }
-    gotsig = true;
-}
-#endif
-
-#ifdef RCSS_WIN
-static
-void
-initTimer( HANDLE gDoneEvent )
-{
-    HANDLE hTimer = NULL;
-    HANDLE hTimerQueue = NULL;
-    int arg = 123;
-
-    // Use an event object to track the TimerRoutine execution
-    gDoneEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-    if ( ! gDoneEvent )
-    {
-        printf( "CreateEvent failed (%d)\n", GetLastError() );
-        //         return 1;
-    }
-
-    // Create the timer queue.
-    hTimerQueue = CreateTimerQueue();
-    if ( ! hTimerQueue )
-    {
-        printf( "CreateTimerQueue failed (%d)\n", GetLastError() );
-        //         return 2;
-    }
-
-    // Set a timer to call the timer routine in 10 seconds.
-    if ( ! CreateTimerQueueTimer( &hTimer, hTimerQueue,
-                                  (WAITORTIMERCALLBACK)&StandardTimer::check,
-                                  &gDoneEvent , TIMEDELTA, TIMEDELTA, 0 ) )
-    {
-        printf( "CreateTimerQueueTimer failed (%d)\n", GetLastError() );
-        //         return 3;
-    }
-
-    // TODO: Do other useful work here
-
-    printf( "Call timer routine in 10 seconds...\n" );
-
-    //     // Wait for the timer-queue thread to complete using an event
-    //     // object. The thread will signal the event at that time.
-
-    //     if (WaitForSingleObject(gDoneEvent, INFINITE) != WAIT_OBJECT_0)
-    //         printf("WaitForSingleObject failed (%d)\n", GetLastError());
-
-    //     // Delete all timers in the timer queue.
-    //     if (!DeleteTimerQueue(hTimerQueue))
-    //         printf("DeleteTimerQueue failed (%d)\n", GetLastError());
-}
-#else
-static
-void
-initTimer( struct itimerval & itv_prev,
-           struct sigaction & alarm_prev )
-{
-    struct itimerval itv;
-    struct sigaction alarm_action;
-    itv.it_interval.tv_sec = 0 ;
-    itv.it_interval.tv_usec = TIMEDELTA * 1000 ;
-    itv.it_value.tv_sec = 0 ;
-    itv.it_value.tv_usec = TIMEDELTA * 1000 ;
-
-    alarm_action.sa_handler = (void (*)(int))StandardTimer::check ;
-    alarm_action.sa_flags = 0; // [2000/11/20.frehberg.cs.tu-berlin.de]
-
-    sigaction( SIGALRM, &alarm_action, &alarm_prev );
-    setitimer( ITIMER_REAL, &itv, &itv_prev );
-}
-#endif
-
-#ifdef RCSS_WIN
-#else
-static
-void
-restoreTimer( struct itimerval & itv_prev,
-              struct sigaction & alarm_prev )
-{
-    setitimer( ITIMER_REAL, &itv_prev, NULL );   // restore the old timer
-    sigaction( SIGALRM, &alarm_prev, NULL );     // restore the old alaram handler
-}
-#endif
-
-/** This method controls the standard timer. After the arrival of a signal it
-    checks which messages should be sent / received by the clients and handles
-    them appropriately. */
+/** This method controls the standard timer.
+    In the mainloop, the sleep is called for each trial.
+    The sleep time is determined by subtracting the consumued time from the default delta.
+    After finishing the sleep, checking which messages should be sent / received by the clients and handles them appropriately. */
 void
 StandardTimer::run()
 {
@@ -203,40 +70,20 @@ StandardTimer::run()
     int c_synch_see = 1;
     bool sent_synch_see = false;
 
-    // create a timer that will be called every TIMEDELTA msec. Each time
-    // this timer is called, lcmt is raised and it is checked which message
-    // should be processed according to the part of the sequence we are in
+    const std::chrono::milliseconds default_delta( TIMEDELTA );
+    std::chrono::nanoseconds elapsed( 0 );
+    std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
 
-#ifdef RCSS_WIN
-    HANDLE gDoneEvent = NULL;
-    initTimer(gDoneEvent);
-#else
-    struct itimerval itv_prev;
-    struct sigaction alarm_prev;
-    initTimer( itv_prev, alarm_prev );
-#endif
-    //for (;;)
     while ( getTimeableRef().alive() )
     {
-#ifdef RCSS_WIN
-        if ( WaitForSingleObject(gDoneEvent, INFINITE) != WAIT_OBJECT_0 )
-            printf( "WaitForSingleObject failed (%d)\n", GetLastError() );
-#else
-        if ( ! gotsig )
-        {
-            //sigpause( SIGUSR1 );
-            sigset_t mask;
-            sigemptyset( &mask );
-            sigaddset( &mask, SIGUSR1 );
-            sigsuspend( &mask );
-        }
-#endif
-        gotsig = false;
+        const std::chrono::nanoseconds elapsed = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - start_time );
+        const std::chrono::nanoseconds sleep_count = default_delta - elapsed;
+        std::this_thread::sleep_for( sleep_count );
 
-        lock_timedelta = true;
-        lcmt += timedelta;
-        timedelta = 0;
-        lock_timedelta = false;
+        start_time = std::chrono::system_clock::now();
+        lcmt += ( sleep_count.count() < 0
+                  ? elapsed.count() * 0.001 * 0.001
+                  : ( sleep_count.count() + elapsed.count() ) * 0.001 * 0.001 );
 
         if ( lcmt >= ServerParam::instance().simStep() * c_simt )
         {
@@ -319,9 +166,6 @@ StandardTimer::run()
             c_synch_see = 1;
         }
     }
-#ifdef RCSS_WIN
-#else
-    restoreTimer( itv_prev, alarm_prev );
-#endif
+
     getTimeableRef().quit();
 }

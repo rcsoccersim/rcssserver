@@ -25,12 +25,9 @@
 
 #include "xpmholder.h"
 
-#ifdef HAVE_SSTREAM
+#include <iomanip>
+#include <algorithm>
 #include <sstream>
-#else
-#include <strstream>
-#endif
-
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -136,12 +133,42 @@ XPMHolder::print( std::ostream & o ) const
 {
     if ( ! M_data.empty() )
     {
+#if 1
+        bool first = true;
+        for ( std::string str : M_data )
+        {
+            if ( first ) first = false; else o << ' ';
+
+            std::replace( str.begin(), str.end(), '\t', ' ' );
+            o << std::quoted( str );
+        }
+#else
         std::vector< std::string >::const_iterator it = M_data.begin();
         o << '"' << *it << '"';
         ++it;
         for ( ; it != M_data.end(); ++it )
         {
             o << " \"" << *it << '"';
+        }
+#endif
+    }
+    return o;
+}
+
+
+std::ostream &
+XPMHolder::printEscaped( std::ostream & o ) const
+{
+    if ( ! M_data.empty() )
+    {
+        bool first = true;
+        for ( std::string str : M_data )
+        {
+            if ( first ) first = false; else o << ' ';
+
+            std::replace( str.begin(), str.end(), '\t', ' ' );
+
+            o << std::quoted( str );
         }
     }
     return o;

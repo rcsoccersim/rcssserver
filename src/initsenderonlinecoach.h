@@ -25,7 +25,7 @@
 
 #include "initsender.h"
 
-#include <rcssbase/factory.hpp>
+#include <rcss/factory.hpp>
 
 #include <memory>
 
@@ -77,7 +77,7 @@ public:
     FactoryHolder & factory();
 
     virtual
-    ~InitSenderOnlineCoach();
+    ~InitSenderOnlineCoach() override;
 
 protected:
     InitSenderOnlineCoach( const Params & params,
@@ -211,19 +211,19 @@ protected:
 
 public:
     virtual
-    ~InitSenderOnlineCoachV1();
+    ~InitSenderOnlineCoachV1() override;
 
     virtual
-    void sendInit();
+    void sendInit() override;
 
     virtual
-    void sendScore();
+    void sendScore() override;
 
     virtual
-    void sendChangedPlayers();
+    void sendChangedPlayers() override;
 
     virtual
-    void sendPlayerClangVer( const Player & )
+    void sendPlayerClangVer( const Player & ) override
       { }
 };
 
@@ -249,10 +249,10 @@ protected:
 
 public:
     virtual
-    ~InitSenderOnlineCoachV6();
+    ~InitSenderOnlineCoachV6() override;
 
     virtual
-    void sendInit();
+    void sendInit() override;
 };
 
 
@@ -277,10 +277,10 @@ protected:
 
 public:
     virtual
-    ~InitSenderOnlineCoachV7();
+    ~InitSenderOnlineCoachV7() override;
 
     virtual
-    void sendChangedPlayers();
+    void sendChangedPlayers() override;
 };
 
 /*!
@@ -304,10 +304,10 @@ protected:
 
 public:
     virtual
-    ~InitSenderOnlineCoachV8();
+    ~InitSenderOnlineCoachV8() override;
 
     virtual
-    void sendPlayerClangVer( const Player & player );
+    void sendPlayerClangVer( const Player & player ) override;
 };
 
 

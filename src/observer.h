@@ -23,7 +23,7 @@
 #ifndef RCSSOBSERVER_H
 #define RCSSOBSERVER_H
 
-#include "rcssexceptions.h"
+//#include "rcssexceptions.h"
 #include <memory>
 
 namespace rcss {
@@ -53,7 +53,7 @@ public:
         : M_sender( sender )
       { }
 
-
+    virtual
     ~BaseObserver()
       { }
 
@@ -66,8 +66,9 @@ public:
       {
           if ( ! M_sender )
           {
-              throw util::NullErr( __FILE__, __LINE__,
-                                   "Sender is null" );
+              // throw util::NullErr( __FILE__, __LINE__,
+              //                      "Sender is null" );
+              throw std::logic_error( "Sender is null" );
           }
           return *M_sender;
       }
@@ -76,16 +77,17 @@ public:
       {
           if ( ! M_sender )
           {
-              throw util::NullErr( __FILE__, __LINE__,
-                                   "Sender is null" );
+              // throw util::NullErr( __FILE__, __LINE__,
+              //                      "Sender is null" );
+              throw std::logic_error( "Sender is null" );
           }
           return *M_sender;
       }
 
 private:
 
-    BaseObserver( const BaseObserver & ); // not used;
-    BaseObserver & operator=( const BaseObserver & ); // not used;
+    BaseObserver( const BaseObserver & ) = delete; // not used;
+    BaseObserver & operator=( const BaseObserver & ) = delete; // not used;
 };
 
 }

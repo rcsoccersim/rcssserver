@@ -26,7 +26,6 @@
 #include "logger.h"
 
 #include "player.h"
-#include "clangmsg.h"
 #include "coach.h"
 #include "stadium.h"
 #include "heteroplayer.h"
@@ -42,90 +41,124 @@
 
 #include "serializercommonstdv8.h"
 
-#include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
 
+#include <rcss/clang/clangmsg.h>
+#include <rcss/gzip/gzfstream.hpp>
+
 #include <sstream>
 
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-// #ifdef HAVE_NETINET_IN_H
-// #include <netinet/in.h>
-// #endif
-// #ifdef HAVE_WINSOCK2_H
-// #include <winsock2.h>
-// #endif
+namespace {
+const std::string DEF_TEXT_NAME = "incomplete";
+const std::string DEF_TEXT_SUFFIX = ".rcl";
+const std::string DEF_GAME_NAME = "incomplete";
+const std::string DEF_GAME_SUFFIX = ".rcg";
+const std::string DEF_KAWAY_NAME = "incomplete";
+const std::string DEF_KAWAY_SUFFIX = ".kwy";
+}
+
+struct Logger::Impl {
+
+    std::unique_ptr< rcss::InitObserverLogger > init_observer_;
+    std::unique_ptr< rcss::ObserverLogger > observer_;
+
+    std::string game_log_filepath_;
+    std::string text_log_filepath_;
+    std::string kaway_log_filepath_;
+
+    std::ostream * game_log_;
+    std::ostream * text_log_;
+    std::ofstream kaway_log_;  //!< file for keepaway log
 
 
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION > 2
+    Impl()
+        : init_observer_( new rcss::InitObserverLogger ),
+          observer_( new rcss::ObserverLogger ),
+          game_log_( nullptr ),
+          text_log_( nullptr )
+    {
 
-#define BOOST_FS_ABSOLUTE absolute
-#define BOOST_FS_FILE_STRING string
-#define BOOST_FS_DIRECTORY_STRING string
-#define BOOST_FS_PARENT_PATH parent_path
+    }
 
-#else
+    void flush()
+    {
+        if ( game_log_ ) game_log_->flush();
+        if ( text_log_ ) text_log_->flush();
+        kaway_log_.flush();
+    }
 
-#define BOOST_FS_ABSOLUTE complete
+    void closeGameLog()
+    {
+         if ( game_log_ )
+         {
+             init_observer_->sendTail();
 
-#  ifdef BOOST_FILESYSTEM_NO_DEPRECATED
-#    define BOOST_FS_FILE_STRING file_string
-#    define BOOST_FS_DIRECTORY_STRING directory_string
-#    define BOOST_FS_PARENT_PATH parent_path
-#  else
-#    define BOOST_FS_FILE_STRING native_file_string
-#    define BOOST_FS_DIRECTORY_STRING native_directory_string
-#    define BOOST_FS_PARENT_PATH branch_path
-#  endif
+             game_log_->flush();
+             delete game_log_;
+             game_log_ = nullptr;
+         }
+    }
 
-#endif
+    void closeTextLog()
+    {
+        if ( text_log_ )
+        {
+            text_log_->flush();
+            delete text_log_;
+            text_log_ = nullptr;
+        }
+    }
 
-const std::string Logger::DEF_TEXT_NAME = "incomplete";
-const std::string Logger::DEF_TEXT_SUFFIX = ".rcl";
-const std::string Logger::DEF_GAME_NAME = "incomplete";
-const std::string Logger::DEF_GAME_SUFFIX = ".rcg";
-const std::string Logger::DEF_KAWAY_NAME = "incomplete";
-const std::string Logger::DEF_KAWAY_SUFFIX = ".kwy";
+    void closeKeepawayLog()
+    {
+        if ( kaway_log_.is_open() )
+        {
+            kaway_log_.flush();
+            kaway_log_.close();
+        }
+    }
 
+    bool isGameLogOpen() const
+    {
+        return ( game_log_
+                 && game_log_->good() );
+    }
 
-Logger::Logger( Stadium & stadium )
-    : M_init_observer( new rcss::InitObserverLogger )
-    , M_observer( new rcss::ObserverLogger )
-    , M_stadium( stadium )
-    , M_game_log( static_cast< std::ostream * >( 0 ) )
-    , M_text_log( static_cast< std::ostream * >( 0 ) )
-    , M_playmode( PM_Null )
-    , M_team_l_score( 0 )
-    , M_team_r_score( 0 )
-    , M_team_l_pen_taken( 0 )
-    , M_team_r_pen_taken( 0 )
+    bool isTextLogOpen() const
+    {
+        return ( text_log_
+                 && text_log_->good() );
+    }
+
+    bool isKeepawayLogOpen() const
+    {
+        return kaway_log_.is_open();
+    }
+};
+
+Logger &
+Logger::instance()
+{
+    static Logger s_instance;
+    return s_instance;
+}
+
+Logger::Logger()
+    : M_impl( new Impl() )
 {
 
 }
 
 Logger::~Logger()
 {
-    this->close();
 
-    if ( M_init_observer )
-    {
-        delete M_init_observer;
-        M_init_observer = static_cast< rcss::InitObserverLogger * >( 0 );
-    }
-
-    if ( M_observer )
-    {
-        delete M_observer;
-        M_observer = static_cast< rcss::ObserverLogger * >( 0 );
-    }
 }
 
 bool
-Logger::setSenders()
+Logger::setSenders( const Stadium & stadium )
 {
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return true;
     }
@@ -155,43 +188,43 @@ Logger::setSenders()
     // init sender
     //
     {
-        rcss::InitSenderLogger::Params init_params( *M_game_log,
+        rcss::InitSenderLogger::Params init_params( *M_impl->game_log_,
                                                     *this,
                                                     ser,
-                                                    M_stadium );
+                                                    stadium );
         rcss::InitSenderLogger::Creator init_cre;
         if ( ! rcss::InitSenderLogger::factory().getCreator( init_cre, log_version ) )
         {
             std::cerr << "No InitSenderLogger::Creator v" << log_version << std::endl;
             return false;
         }
-        M_init_observer->setInitSender( init_cre( init_params ) );
+        M_impl->init_observer_->setInitSender( init_cre( init_params ) );
     }
 
     // disp sender
     {
-        rcss::DispSenderLogger::Params disp_params( *M_game_log,
+        rcss::DispSenderLogger::Params disp_params( *M_impl->game_log_,
                                                     *this,
                                                     ser,
-                                                    M_stadium );
+                                                    stadium );
         rcss::DispSenderLogger::Creator disp_cre;
         if ( ! rcss::DispSenderLogger::factory().getCreator( disp_cre, log_version ) )
         {
             std::cerr << "No DispSenderLogger::Creator v" << log_version << std::endl;
             return false;
         }
-        M_observer->setDispSender( disp_cre( disp_params ) );
+        M_impl->observer_->setDispSender( disp_cre( disp_params ) );
     }
 
     return true;
 }
 
 bool
-Logger::open()
+Logger::open( const Stadium & stadium )
 {
     if ( ServerParam::instance().gameLogging() )
     {
-        if ( ! openGameLog() )
+        if ( ! openGameLog( stadium ) )
         {
             return false;
         }
@@ -218,9 +251,9 @@ Logger::open()
 }
 
 void
-Logger::close()
+Logger::close( const Stadium & stadium )
 {
-    renameLogs();
+    renameLogs( stadium );
 
     closeGameLog();
     closeTextLog();
@@ -228,37 +261,30 @@ Logger::close()
 }
 
 bool
-Logger::openGameLog()
+Logger::openGameLog( const Stadium & stadium )
 {
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path game_log( ServerParam::instance().gameLogDir()
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                          , &boost::filesystem::native
-#  endif
-#endif
-                                          );
+        boost::filesystem::path game_log( ServerParam::instance().gameLogDir() );
         if ( ! boost::filesystem::exists( game_log )
              && ! boost::filesystem::create_directories( game_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": can't create game log directory '"
-                      << game_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+                      << ": can't create game log directory " << game_log << std::endl;
             return false;
         }
 
         if ( ServerParam::instance().gameLogFixed() )
         {
-            game_log /= ServerParam::instance().gameLogFixedName() + Logger::DEF_GAME_SUFFIX;
+            game_log /= ServerParam::instance().gameLogFixedName() + DEF_GAME_SUFFIX;
         }
         else
         {
-            game_log /= Logger::DEF_GAME_NAME + Logger::DEF_GAME_SUFFIX;
+            game_log /= DEF_GAME_NAME + DEF_GAME_SUFFIX;
         }
 
-        M_game_log_name = game_log.BOOST_FS_FILE_STRING();
+        M_impl->game_log_filepath_ = game_log.string();
     }
     catch ( std::exception & e )
     {
@@ -281,43 +307,43 @@ Logger::openGameLog()
 #ifdef HAVE_LIBZ
     if ( ServerParam::instance().gameLogCompression() > 0 )
     {
-        M_game_log_name += ".gz";
+        M_impl->game_log_filepath_ += ".gz";
         rcss::gz::gzofstream * f
-            = new rcss::gz::gzofstream( M_game_log_name.c_str(),
+            = new rcss::gz::gzofstream( M_impl->game_log_filepath_.c_str(),
                                         ServerParam::instance().gameLogCompression() );
-        M_game_log = f;
+        M_impl->game_log_ = f;
     }
     else
 #endif
     {
         std::ofstream * f
-            = new std::ofstream( M_game_log_name.c_str(),
+            = new std::ofstream( M_impl->game_log_filepath_.c_str(),
                                  ( std::ofstream::binary
                                    | std::ofstream::out
                                    | std::ofstream::trunc ) );
-        M_game_log = f;
+        M_impl->game_log_ = f;
     }
 
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open the game log file " << M_game_log_name << std::endl;
+                  << ": can't open the game log file " << M_impl->game_log_filepath_ << std::endl;
         return false;
     }
 
     // write header and configration parameters
-    if ( ! setSenders() )
+    if ( ! setSenders( stadium ) )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't set senders " << M_game_log_name << std::endl;
+                  << ": can't set senders " << M_impl->game_log_filepath_ << std::endl;
         return false;
     }
 
-    M_init_observer->sendHeader();
-    M_init_observer->sendServerParams();
-    M_init_observer->sendPlayerParams();
-    M_init_observer->sendPlayerTypes();
-    M_game_log->flush();
+    M_impl->init_observer_->sendHeader();
+    M_impl->init_observer_->sendServerParams();
+    M_impl->init_observer_->sendPlayerParams();
+    M_impl->init_observer_->sendPlayerTypes();
+    M_impl->game_log_->flush();
 
     return true;
 }
@@ -328,32 +354,25 @@ Logger::openTextLog()
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path text_log( ServerParam::instance().textLogDir()
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                          , &boost::filesystem::native
-#  endif
-#endif
-                                          );
+        boost::filesystem::path text_log( ServerParam::instance().textLogDir() );
         if ( ! boost::filesystem::exists( text_log )
              && ! boost::filesystem::create_directories( text_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": can't create text log directory '"
-                      << text_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+                      << ": can't create text log directory " << text_log << std::endl;
             return false;
         }
 
         if ( ServerParam::instance().textLogFixed() )
         {
-            text_log /= ServerParam::instance().textLogFixedName() + Logger::DEF_TEXT_SUFFIX;
+            text_log /= ServerParam::instance().textLogFixedName() + DEF_TEXT_SUFFIX;
         }
         else
         {
-            text_log /= Logger::DEF_TEXT_NAME + Logger::DEF_TEXT_SUFFIX;
+            text_log /= DEF_TEXT_NAME + DEF_TEXT_SUFFIX;
         }
 
-        M_text_log_name = text_log.BOOST_FS_FILE_STRING();
+        M_impl->text_log_filepath_ = text_log.string();
     }
     catch ( std::exception & e )
     {
@@ -376,23 +395,23 @@ Logger::openTextLog()
 #ifdef HAVE_LIBZ
     if ( ServerParam::instance().textLogCompression() > 0 )
     {
-        M_text_log_name += std::string ( ".gz" );
+        M_impl->text_log_filepath_ += std::string ( ".gz" );
         rcss::gz::gzofstream * f
-            = new rcss::gz::gzofstream( M_text_log_name.c_str(),
+            = new rcss::gz::gzofstream( M_impl->text_log_filepath_.c_str(),
                                         ServerParam::instance().textLogCompression() );
-        M_text_log = f;
+        M_impl->text_log_ = f;
     }
     else
 #endif
     {
-        std::ofstream * f = new std::ofstream( M_text_log_name.c_str() );
-        M_text_log = f;
+        std::ofstream * f = new std::ofstream( M_impl->text_log_filepath_.c_str() );
+        M_impl->text_log_ = f;
     }
 
-    if ( ! isTextLogOpen() )
+    if ( ! M_impl->isTextLogOpen() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open the text log file '" << M_text_log_name
+                  << ": can't open the text log file '" << M_impl->text_log_filepath_
                   << "'" << std::endl;
         return false;
     }
@@ -407,32 +426,25 @@ Logger::openKawayLog()
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path kaway_log( ServerParam::instance().kawayLogDir()
-#if defined(BOOST_FILESYSTEM_VERSION) && BOOST_FILESYSTEM_VERSION == 2
-#  ifndef BOOST_FILESYSTEM_NO_DEPRECATED
-                                           , &boost::filesystem::native
-#  endif
-#endif
-                                           );
+        boost::filesystem::path kaway_log( ServerParam::instance().kawayLogDir() );
         if ( ! boost::filesystem::exists( kaway_log )
              && ! boost::filesystem::create_directories( kaway_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": can't create keepaway log directory '"
-                      << kaway_log.BOOST_FS_DIRECTORY_STRING() << "'" << std::endl;
+                      << ": can't create keepaway log directory " << kaway_log << std::endl;
             return false;
         }
 
         if ( ServerParam::instance().kawayLogFixed() )
         {
-            kaway_log /= ServerParam::instance().kawayLogFixedName() + Logger::DEF_KAWAY_SUFFIX;
+            kaway_log /= ServerParam::instance().kawayLogFixedName() + DEF_KAWAY_SUFFIX;
         }
         else
         {
-            kaway_log /= Logger::DEF_KAWAY_NAME + Logger::DEF_KAWAY_SUFFIX;
+            kaway_log /= DEF_KAWAY_NAME + DEF_KAWAY_SUFFIX;
         }
 
-        M_kaway_log_name = kaway_log.BOOST_FS_FILE_STRING();
+        M_impl->kaway_log_filepath_ = kaway_log.string();
     }
     catch ( std::exception & e )
     {
@@ -445,12 +457,12 @@ Logger::openKawayLog()
     }
 
     // open the output file stream
-    M_kaway_log.open( M_kaway_log_name.c_str() );
+    M_impl->kaway_log_.open( M_impl->kaway_log_filepath_.c_str() );
 
-    if ( ! M_kaway_log.is_open() )
+    if ( ! M_impl->kaway_log_.is_open() )
     {
         std::cerr << __FILE__ << ": " << __LINE__
-                  << ": can't open keepaway_log_file " << M_kaway_log_name
+                  << ": can't open keepaway_log_file " << M_impl->kaway_log_filepath_
                   << std::endl;
         return false;
     }
@@ -462,72 +474,66 @@ Logger::openKawayLog()
 void
 Logger::closeGameLog()
 {
-    if ( M_game_log )
-    {
-        M_game_log->flush();
-        delete M_game_log;
-        M_game_log =  static_cast< std::ostream * >( 0 );
-    }
+    M_impl->closeGameLog();
 }
 
 void
 Logger::closeTextLog()
 {
-    if ( M_text_log )
-    {
-        M_text_log->flush();
-        delete M_text_log;
-        M_text_log =  static_cast< std::ostream * >( 0 );
-    }
+    M_impl->closeTextLog();
 }
 
 void
 Logger::closeKawayLog()
 {
-    if ( M_kaway_log.is_open() )
-    {
-        M_kaway_log.flush();
-        M_kaway_log.close();
-    }
+    M_impl->closeKeepawayLog();
 }
 
 void
-Logger::renameLogs()
+Logger::flush()
 {
-    if ( ! isGameLogOpen()
-         && ! isTextLogOpen()
-         && ! M_kaway_log.is_open() )
+    M_impl->flush();
+}
+
+void
+Logger::renameLogs( const Stadium & stadium )
+{
+    if ( ! M_impl->isGameLogOpen()
+         && ! M_impl->isTextLogOpen()
+         && ! M_impl->isKeepawayLogOpen() )
     {
         return;
     }
 
     // add penalty to logfile when penalties are score or was draw and one team won
-    bool bAddPenaltyScore = ( M_stadium.teamRight().point() == M_stadium.teamLeft().point()
-                              && M_stadium.teamLeft().penaltyTaken() > 0
-                              && M_stadium.teamRight().penaltyTaken() > 0 );
+    bool bAddPenaltyScore = ( stadium.teamRight().point() == stadium.teamLeft().point()
+                              && stadium.teamLeft().penaltyTaken() > 0
+                              && stadium.teamRight().penaltyTaken() > 0 );
 
     char time_str[32];
+    const std::time_t time = stadium.getStartTime();
+    const std::tm * lt = std::localtime( &time );
     std::strftime( time_str, 32,
                    ServerParam::instance().logDateFormat().c_str(),
-                   &( M_stadium.realTime() ) );
+                   lt );
 
     std::string team_name_score( "" );
 
-    if ( M_stadium.teamLeft().enabled() )
+    if ( stadium.teamLeft().enabled() )
     {
-        team_name_score += M_stadium.teamLeft().name();
+        team_name_score += stadium.teamLeft().name();
         team_name_score += "_";
-        if ( ! M_stadium.teamLeft().olcoach()->name().empty() )
+        if ( ! stadium.teamLeft().olcoach()->name().empty() )
         {
-            team_name_score += M_stadium.teamLeft().olcoach()->name();
+            team_name_score += stadium.teamLeft().olcoach()->name();
             team_name_score += "_";
         }
-        team_name_score += boost::lexical_cast< std::string >( M_stadium.teamLeft().point() );
+        team_name_score += std::to_string( stadium.teamLeft().point() );
         if ( bAddPenaltyScore )
         {
             team_name_score += "_";
-            team_name_score += boost::lexical_cast< std::string >( M_stadium.teamLeft().penaltyPoint() );
-            team_name_score += ( M_stadium.teamLeft().penaltyWon() ? "w" : "" );
+            team_name_score += std::to_string( stadium.teamLeft().penaltyPoint() );
+            team_name_score += ( stadium.teamLeft().penaltyWon() ? "w" : "" );
         }
     }
     else
@@ -536,21 +542,21 @@ Logger::renameLogs()
     }
 
     team_name_score += "-vs-";
-    if ( M_stadium.teamRight().enabled() )
+    if ( stadium.teamRight().enabled() )
     {
-        team_name_score += M_stadium.teamRight().name();
+        team_name_score += stadium.teamRight().name();
         team_name_score += "_";
-        if ( ! M_stadium.teamRight().olcoach()->name().empty() )
+        if ( ! stadium.teamRight().olcoach()->name().empty() )
         {
-            team_name_score += M_stadium.teamRight().olcoach()->name();
+            team_name_score += stadium.teamRight().olcoach()->name();
             team_name_score += "_";
         }
-        team_name_score += boost::lexical_cast< std::string >( M_stadium.teamRight().point() );
+        team_name_score += std::to_string( stadium.teamRight().point() );
         if ( bAddPenaltyScore )
         {
             team_name_score += "_";
-            team_name_score += boost::lexical_cast< std::string >( M_stadium.teamRight().penaltyPoint() );
-            team_name_score += ( M_stadium.teamRight().penaltyWon() ? "w" : "" );
+            team_name_score += std::to_string( stadium.teamRight().penaltyPoint() );
+            team_name_score += ( stadium.teamRight().penaltyWon() ? "w" : "" );
         }
     }
     else
@@ -559,14 +565,16 @@ Logger::renameLogs()
     }
 
     //
-    // write result
+    // write the result to the game log
     //
-    if ( isGameLogOpen() )
+    if ( M_impl->isGameLogOpen() )
     {
         char time_stamp[32];
+        const std::time_t time = stadium.getStartTime();
+        const struct tm * lt = std::localtime( &time );
         std::strftime( time_stamp, 32,
                        "%Y%m%d%H%M",
-                       &( M_stadium.realTime() ) );
+                       lt );
         char msg[256];
         snprintf( msg, 256, "(result %s %s)", time_stamp, team_name_score.c_str() );
         writeMsgToGameLog( MSG_BOARD, msg, true );
@@ -575,7 +583,7 @@ Logger::renameLogs()
     //
     // rename text log
     //
-    if ( isTextLogOpen()
+    if ( M_impl->isTextLogOpen()
          && ! ServerParam::instance().textLogFixed() )
     {
         std::string newname = ServerParam::instance().textLogDir();
@@ -588,7 +596,7 @@ Logger::renameLogs()
             newname += time_str;
         }
         newname += team_name_score;
-        newname += Logger::DEF_TEXT_SUFFIX;
+        newname += DEF_TEXT_SUFFIX;
         if ( ServerParam::instance().textLogCompression() > 0 )
         {
             newname += ".gz";
@@ -596,19 +604,19 @@ Logger::renameLogs()
 
         closeTextLog();
 
-        if ( std::rename( M_text_log_name.c_str(),
+        if ( std::rename( M_impl->text_log_filepath_.c_str(),
                           newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": error renaming " << M_text_log_name << std::endl;
+                      << ": error renaming " << M_impl->text_log_filepath_ << std::endl;
         }
-        M_text_log_name = newname;
+        M_impl->text_log_filepath_ = newname;
     }
 
     //
     // rename game log
     //
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ! ServerParam::instance().gameLogFixed() )
     {
         std::string newname = ServerParam::instance().gameLogDir();
@@ -621,7 +629,7 @@ Logger::renameLogs()
             newname += time_str;
         }
         newname += team_name_score;
-        newname += Logger::DEF_GAME_SUFFIX;
+        newname += DEF_GAME_SUFFIX;
         if ( ServerParam::instance().gameLogCompression() > 0 )
         {
             newname += ".gz";
@@ -629,19 +637,19 @@ Logger::renameLogs()
 
         closeGameLog();
 
-        if ( std::rename( M_game_log_name.c_str(),
+        if ( std::rename( M_impl->game_log_filepath_.c_str(),
                           newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": error renaming " << M_game_log_name << std::endl;
+                      << ": error renaming " << M_impl->game_log_filepath_ << std::endl;
         }
-        M_game_log_name = newname;
+        M_impl->game_log_filepath_ = newname;
     }
 
     //
     // rename keepaway log
     //
-    if ( M_kaway_log.is_open()
+    if ( M_impl->kaway_log_.is_open()
          && ! ServerParam::instance().kawayLogFixed() )
     {
         std::string newname = ServerParam::instance().kawayLogDir();
@@ -654,36 +662,36 @@ Logger::renameLogs()
             newname += time_str;
         }
         newname += team_name_score;
-        newname += Logger::DEF_KAWAY_SUFFIX;
+        newname += DEF_KAWAY_SUFFIX;
 
         closeKawayLog();
 
-        if( std::rename( M_kaway_log_name.c_str(),
+        if( std::rename( M_impl->kaway_log_filepath_.c_str(),
                          newname.c_str() ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
-                      << ": error renaming " << M_kaway_log_name << std::endl;
+                      << ": error renaming " << M_impl->kaway_log_filepath_ << std::endl;
         }
     }
 
 }
 
-void
-Logger::writeToGameLog( const char * str,
-                        const std::streamsize n )
-{
-    if ( M_game_log )
-    {
-        M_game_log->write( str, n );
-    }
-}
+// void
+// Logger::writeToGameLog( const char * str,
+//                         const std::streamsize n )
+// {
+//     if ( M_impl->game_log_ )
+//     {
+//         M_impl->game_log_->write( str, n );
+//     }
+// }
 
 void
 Logger::writeMsgToGameLog( const BoardType board_type,
                            const char * msg,
                            const bool force )
 {
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return;
     }
@@ -692,7 +700,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
          || ServerParam::instance().recordMessages()
          || ServerParam::instance().gameLogVersion() == REC_OLD_VERSION )
     {
-        M_observer->sendMsg( board_type, msg );
+        M_impl->observer_->sendMsg( board_type, msg );
     }
 
 //     if ( ServerParam::instance().gameLogVersion() >= REC_VERSION_4 )
@@ -703,7 +711,7 @@ Logger::writeMsgToGameLog( const BoardType board_type,
 //             std::string str( msg );
 //             std::replace( str.begin(), str.end(), '\n', ' ' );
 
-//             *M_game_log << "(msg " << M_stadium.time()
+//             *M_game_log << "(msg " << stadium.time()
 //                         << ' ' << board_type << " \"" << str << "\")\n";
 //         }
 //     }
@@ -749,21 +757,21 @@ Logger::writeMsgToGameLog( const BoardType board_type,
 }
 
 void
-Logger::writeGameLog()
+Logger::writeGameLog( const Stadium & stadium )
 {
     /* TH - 2-NOV-2000 */
     static bool wrote_final_cycle = false;
 
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return;
     }
 
 
-    if ( M_stadium.playmode() != PM_BeforeKickOff
-         && M_stadium.playmode() != PM_TimeOver )
+    if ( stadium.playmode() != PM_BeforeKickOff
+         && stadium.playmode() != PM_TimeOver )
     {
-        writeGameLogImpl();
+        writeGameLogImpl( stadium );
 //         switch ( ServerParam::instance().gameLogVersion() ) {
 //         case REC_VERSION_4:
 //             writeGameLogV4();
@@ -781,10 +789,10 @@ Logger::writeGameLog()
 //             break;
 //         }
     }
-    else if ( M_stadium.playmode() == PM_TimeOver
+    else if ( stadium.playmode() == PM_TimeOver
               && ! wrote_final_cycle )
     {
-        writeGameLogImpl();
+        writeGameLogImpl( stadium );
 //         switch ( ServerParam::instance().gameLogVersion() ) {
 //         case REC_VERSION_4:
 //             writeGameLogV4();
@@ -806,7 +814,7 @@ Logger::writeGameLog()
 }
 
 void
-Logger::writeGameLogImpl()
+Logger::writeGameLogImpl( const Stadium & stadium )
 {
     static PlayMode pm = PM_Null;
     static std::string team_l_name, team_r_name;
@@ -814,33 +822,33 @@ Logger::writeGameLogImpl()
     static int team_l_pen_taken = 0, team_r_pen_taken = 0;
 
    // if playmode has changed wirte playmode
-    if ( pm != M_stadium.playmode() )
+    if ( pm != stadium.playmode() )
     {
-        pm = M_stadium.playmode();
-        M_init_observer->sendPlayMode();
+        pm = stadium.playmode();
+        M_impl->init_observer_->sendPlayMode();
     }
 
     // if teams or score has changed, write teams and score
-    if ( team_l_score != M_stadium.teamLeft().point()
-         || team_r_score != M_stadium.teamRight().point()
-         || team_l_pen_taken != M_stadium.teamLeft().penaltyTaken()
-         || team_r_pen_taken != M_stadium.teamRight().penaltyTaken()
-         || M_stadium.teamLeft().name() != team_l_name
-         || M_stadium.teamRight().name() != team_r_name
+    if ( team_l_score != stadium.teamLeft().point()
+         || team_r_score != stadium.teamRight().point()
+         || team_l_pen_taken != stadium.teamLeft().penaltyTaken()
+         || team_r_pen_taken != stadium.teamRight().penaltyTaken()
+         || stadium.teamLeft().name() != team_l_name
+         || stadium.teamRight().name() != team_r_name
          )
     {
-        team_l_name = M_stadium.teamLeft().name();
-        team_r_name = M_stadium.teamRight().name();
-        team_l_score = M_stadium.teamLeft().point();
-        team_r_score = M_stadium.teamRight().point();
-        team_l_pen_taken = M_stadium.teamLeft().penaltyTaken();
-        team_r_pen_taken = M_stadium.teamRight().penaltyTaken();
+        team_l_name = stadium.teamLeft().name();
+        team_r_name = stadium.teamRight().name();
+        team_l_score = stadium.teamLeft().point();
+        team_r_score = stadium.teamRight().point();
+        team_l_pen_taken = stadium.teamLeft().penaltyTaken();
+        team_r_pen_taken = stadium.teamRight().penaltyTaken();
 
-        M_init_observer->sendTeam();
+        M_impl->init_observer_->sendTeam();
     }
 
 
-    M_observer->sendShow();
+    M_impl->observer_->sendShow();
 }
 
 #if 0
@@ -852,14 +860,14 @@ Logger::writeGameLogV1()
 
     disp.mode = htons( SHOW_MODE );
 
-    disp.body.show.time = htons( M_stadium.time() );
+    disp.body.show.time = htons( stadium.time() );
 
-    disp.body.show.pmode = static_cast< char >( M_stadium.playmode() );
+    disp.body.show.pmode = static_cast< char >( stadium.playmode() );
 
-    disp.body.show.pos[0].x = htons( (Int16)rint( ( M_stadium.ball().pos().x * SHOWINFO_SCALE ) ) );
-    disp.body.show.pos[0].y = htons( (Int16)rint( ( M_stadium.ball().pos().y * SHOWINFO_SCALE ) ) );
+    disp.body.show.pos[0].x = htons( (Int16)rint( ( stadium.ball().pos().x * SHOWINFO_SCALE ) ) );
+    disp.body.show.pos[0].y = htons( (Int16)rint( ( stadium.ball().pos().y * SHOWINFO_SCALE ) ) );
 
-    const Stadium::PlayerCont & players = M_stadium.players();
+    const Stadium::PlayerCont & players = stadium.players();
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
         disp.body.show.pos[i+1].enable = htons( players[i]->state() );
@@ -870,12 +878,12 @@ Logger::writeGameLogV1()
         disp.body.show.pos[i+1].unum = htons( players[i]->unum() );
     }
 
-    if ( ! M_stadium.teamLeft().name().empty() )
+    if ( ! stadium.teamLeft().name().empty() )
     {
         std::strncpy( disp.body.show.team[0].name,
-                      M_stadium.teamLeft().name().c_str(),
-                      std::min( M_stadium.teamLeft().name().length() + 1, size_t( 16 ) ) );
-        disp.body.show.team[0].score = htons( M_stadium.teamLeft().point() );
+                      stadium.teamLeft().name().c_str(),
+                      std::min( stadium.teamLeft().name().length() + 1, size_t( 16 ) ) );
+        disp.body.show.team[0].score = htons( stadium.teamLeft().point() );
     }
     else
     {
@@ -884,12 +892,12 @@ Logger::writeGameLogV1()
                      sizeof( disp.body.show.team[0].name ) );
     }
 
-    if ( ! M_stadium.teamRight().name().empty() )
+    if ( ! stadium.teamRight().name().empty() )
     {
         std::strncpy( disp.body.show.team[1].name,
-                      M_stadium.teamRight().name().c_str(),
-                      std::min( M_stadium.teamRight().name().length() + 1, size_t( 16 ) ) );
-        disp.body.show.team[1].score = htons( M_stadium.teamRight().point() );
+                      stadium.teamRight().name().c_str(),
+                      std::min( stadium.teamRight().name().length() + 1, size_t( 16 ) ) );
+        disp.body.show.team[1].score = htons( stadium.teamRight().point() );
     }
     else
     {
@@ -910,14 +918,14 @@ Logger::writeGameLogV2()
 
     showinfo_t show;
 
-    show.time = htons( M_stadium.time() );
+    show.time = htons( stadium.time() );
 
-    show.pmode = static_cast< char >( M_stadium.playmode() );
+    show.pmode = static_cast< char >( stadium.playmode() );
 
-    show.pos[0].x = htons( (Int16)rint( ( M_stadium.ball().pos().x * SHOWINFO_SCALE ) ) );
-    show.pos[0].y = htons( (Int16)rint( ( M_stadium.ball().pos().y * SHOWINFO_SCALE ) ) );
+    show.pos[0].x = htons( (Int16)rint( ( stadium.ball().pos().x * SHOWINFO_SCALE ) ) );
+    show.pos[0].y = htons( (Int16)rint( ( stadium.ball().pos().y * SHOWINFO_SCALE ) ) );
 
-    const Stadium::PlayerCont & players = M_stadium.players();
+    const Stadium::PlayerCont & players = stadium.players();
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
         show.pos[i+1].enable = htons( players[i]->state() );
@@ -928,12 +936,12 @@ Logger::writeGameLogV2()
         show.pos[i+1].unum = htons( players[i]->unum() );
     }
 
-    if ( ! M_stadium.teamLeft().name().empty() )
+    if ( ! stadium.teamLeft().name().empty() )
     {
         std::strncpy( show.team[0].name,
-                      M_stadium.teamLeft().name().c_str(),
-                      std::min( M_stadium.teamLeft().name().length() + 1, size_t( 16 ) ) );
-        show.team[0].score = htons( M_stadium.teamLeft().point() );
+                      stadium.teamLeft().name().c_str(),
+                      std::min( stadium.teamLeft().name().length() + 1, size_t( 16 ) ) );
+        show.team[0].score = htons( stadium.teamLeft().point() );
     }
     else
     {
@@ -943,12 +951,12 @@ Logger::writeGameLogV2()
         show.team[0].score = htons( 0 );
     }
 
-    if ( ! M_stadium.teamRight().name().empty() )
+    if ( ! stadium.teamRight().name().empty() )
     {
         std::strncpy( show.team[1].name,
-                      M_stadium.teamRight().name().c_str(),
-                      std::min( M_stadium.teamRight().name().length() + 1, size_t( 16 ) ) );
-        show.team[1].score = htons( M_stadium.teamRight().point() );
+                      stadium.teamRight().name().c_str(),
+                      std::min( stadium.teamRight().name().length() + 1, size_t( 16 ) ) );
+        show.team[1].score = htons( stadium.teamRight().point() );
     }
     else
     {
@@ -978,9 +986,9 @@ Logger::writeGameLogV3()
     Int16 mode;
 
     // if playmode has changed wirte playmode
-    if ( pmode != M_stadium.playmode() )
+    if ( pmode != stadium.playmode() )
     {
-        pmode = M_stadium.playmode();
+        pmode = stadium.playmode();
 
         char pm = static_cast< char >( pmode );
 
@@ -992,22 +1000,22 @@ Logger::writeGameLogV3()
     }
 
     // if teams or score has changed, write teams and score
-    if ( M_stadium.teamLeft().point() != score_l
-         || M_stadium.teamRight().point() != score_r
-         || M_stadium.teamLeft().name() != teams[ 0 ].name
-         || M_stadium.teamRight().name() != teams[ 1 ].name )
+    if ( stadium.teamLeft().point() != score_l
+         || stadium.teamRight().point() != score_r
+         || stadium.teamLeft().name() != teams[ 0 ].name
+         || stadium.teamRight().name() != teams[ 1 ].name )
     {
-        score_l = M_stadium.teamLeft().point();
-        score_r = M_stadium.teamLeft().point();
+        score_l = stadium.teamLeft().point();
+        score_r = stadium.teamLeft().point();
 
         std::strncpy( teams[ 0 ].name,
-                      M_stadium.teamLeft().name().c_str(),
-                      std::min( M_stadium.teamLeft().name().length() + 1, size_t( 16 ) ) );
+                      stadium.teamLeft().name().c_str(),
+                      std::min( stadium.teamLeft().name().length() + 1, size_t( 16 ) ) );
         teams[ 0 ].score = htons( score_l );
 
         std::strncpy( teams[ 1 ].name,
-                      M_stadium.teamRight().name().c_str(),
-                      std::min( M_stadium.teamRight().name().length() + 1, size_t( 16 ) ) );
+                      stadium.teamRight().name().c_str(),
+                      std::min( stadium.teamRight().name().length() + 1, size_t( 16 ) ) );
         teams[ 1 ].score = htons( score_r );
 
         mode = htons( TEAM_MODE );
@@ -1021,14 +1029,14 @@ Logger::writeGameLogV3()
     // write positional data
     short_showinfo_t2 show;
 
-    show.time = htons( M_stadium.time() );
+    show.time = htons( stadium.time() );
 
-    show.ball.x = htonl( (Int32)rint( ( M_stadium.ball().pos().x * SHOWINFO_SCALE2 ) ) );
-    show.ball.y = htonl( (Int32)rint( ( M_stadium.ball().pos().y * SHOWINFO_SCALE2 ) ) );
-    show.ball.deltax = htonl( (Int32)rint( ( M_stadium.ball().vel().x * SHOWINFO_SCALE2 ) ) );
-    show.ball.deltay = htonl( (Int32)rint( ( M_stadium.ball().vel().y * SHOWINFO_SCALE2) ) );
+    show.ball.x = htonl( (Int32)rint( ( stadium.ball().pos().x * SHOWINFO_SCALE2 ) ) );
+    show.ball.y = htonl( (Int32)rint( ( stadium.ball().pos().y * SHOWINFO_SCALE2 ) ) );
+    show.ball.deltax = htonl( (Int32)rint( ( stadium.ball().vel().x * SHOWINFO_SCALE2 ) ) );
+    show.ball.deltay = htonl( (Int32)rint( ( stadium.ball().vel().y * SHOWINFO_SCALE2) ) );
 
-    const Stadium::PlayerCont & players = M_stadium.players();
+    const Stadium::PlayerCont & players = stadium.players();
     for ( int i = 0; i < MAX_PLAYER * 2; ++i )
     {
         show.pos[i].mode = htons( players[i]->state() );
@@ -1081,80 +1089,77 @@ Logger::writeGameLogV4()
     std::ostream & os = *M_game_log;
 
     // if playmode has changed wirte playmode
-    if ( pm != M_stadium.playmode() )
+    if ( pm != stadium.playmode() )
     {
-        pm = M_stadium.playmode();
+        pm = stadium.playmode();
 
-        os << "(playmode " << M_stadium.time()
+        os << "(playmode " << stadium.time()
            << ' ' << playmode_strings[pm] << ")\n";
     }
 
     // if teams or score has changed, write teams and score
-    if ( team_l_score != M_stadium.teamLeft().point()
-         || team_r_score != M_stadium.teamRight().point()
-         || team_l_pen_taken != M_stadium.teamLeft().penaltyTaken()
-         || team_r_pen_taken != M_stadium.teamRight().penaltyTaken()
-         || M_stadium.teamLeft().name() != team_l_name
-         || M_stadium.teamRight().name() != team_r_name
+    if ( team_l_score != stadium.teamLeft().point()
+         || team_r_score != stadium.teamRight().point()
+         || team_l_pen_taken != stadium.teamLeft().penaltyTaken()
+         || team_r_pen_taken != stadium.teamRight().penaltyTaken()
+         || stadium.teamLeft().name() != team_l_name
+         || stadium.teamRight().name() != team_r_name
          )
     {
-        team_l_name = M_stadium.teamLeft().name();
-        team_r_name = M_stadium.teamRight().name();
-        team_l_score = M_stadium.teamLeft().point();
-        team_r_score = M_stadium.teamRight().point();
-        team_l_pen_taken = M_stadium.teamLeft().penaltyTaken();
-        team_r_pen_taken = M_stadium.teamRight().penaltyTaken();
+        team_l_name = stadium.teamLeft().name();
+        team_r_name = stadium.teamRight().name();
+        team_l_score = stadium.teamLeft().point();
+        team_r_score = stadium.teamRight().point();
+        team_l_pen_taken = stadium.teamLeft().penaltyTaken();
+        team_r_pen_taken = stadium.teamRight().penaltyTaken();
 
-        os << "(team " << M_stadium.time()
+        os << "(team " << stadium.time()
            << ' ' << ( team_l_name.empty() ? "null" : team_l_name.c_str() )
            << ' ' << ( team_r_name.empty() ? "null" : team_r_name.c_str() )
            << ' ' << team_l_score
            << ' ' << team_r_score;
         if ( team_l_pen_taken > 0 || team_r_pen_taken > 0 )
         {
-            os << ' ' << M_stadium.teamLeft().penaltyPoint()
-               << ' ' << team_l_pen_taken - M_stadium.teamLeft().penaltyPoint()
-               << ' ' << M_stadium.teamRight().penaltyPoint()
-               << ' ' << team_r_pen_taken - M_stadium.teamRight().penaltyPoint();
+            os << ' ' << stadium.teamLeft().penaltyPoint()
+               << ' ' << team_l_pen_taken - stadium.teamLeft().penaltyPoint()
+               << ' ' << stadium.teamRight().penaltyPoint()
+               << ' ' << team_r_pen_taken - stadium.teamRight().penaltyPoint();
         }
         os << ")\n";
     }
 
-    os << "(show " << M_stadium.time();
+    os << "(show " << stadium.time();
     os << " (" << BALL_NAME_SHORT
-       << ' ' << Quantize( M_stadium.ball().pos().x, prec )
-       << ' ' << Quantize( M_stadium.ball().pos().y, prec )
-       << ' ' << Quantize( M_stadium.ball().vel().x, prec )
-       << ' ' << Quantize( M_stadium.ball().vel().y, prec )
+       << ' ' << Quantize( stadium.ball().pos().x, prec )
+       << ' ' << Quantize( stadium.ball().pos().y, prec )
+       << ' ' << Quantize( stadium.ball().vel().x, prec )
+       << ' ' << Quantize( stadium.ball().vel().y, prec )
        << ')';
 
-    const Stadium::PlayerCont::const_iterator end = M_stadium.players().end();
-    for ( Stadium::PlayerCont::const_iterator p = M_stadium.players().begin();
-          p != end;
-          ++p )
+    for ( Stadium::PlayerCont::const_reference p : stadium.players() )
     {
         os << " (";
-        os << "(" << SideStr( (*p)->side() )
-           << ' ' << (*p)->unum()
+        os << "(" << SideStr( p->side() )
+           << ' ' << p->unum()
            << ')';
-        os << ' ' << (*p)->playerTypeId()
+        os << ' ' << p->playerTypeId()
            << ' ' << std::hex << std::showbase
-           << (*p)->state() // include goalie flag
+           << p->state() // include goalie flag
            << std::dec << std::noshowbase;
 
-        os << ' ' << Quantize( (*p)->pos().x, prec )
-           << ' ' << Quantize( (*p)->pos().y, prec )
-           << ' ' << Quantize( (*p)->vel().x, prec )
-           << ' ' << Quantize( (*p)->vel().y, prec )
-           << ' ' << Quantize( Rad2Deg( (*p)->angleBodyCommitted() ), dprec )
-           << ' ' << Quantize( Rad2Deg( (*p)->angleNeckCommitted() ), dprec );
-        if ( (*p)->arm().isPointing() )
+        os << ' ' << Quantize( p->pos().x, prec )
+           << ' ' << Quantize( p->pos().y, prec )
+           << ' ' << Quantize( p->vel().x, prec )
+           << ' ' << Quantize( p->vel().y, prec )
+           << ' ' << Quantize( Rad2Deg( p->angleBodyCommitted() ), dprec )
+           << ' ' << Quantize( Rad2Deg( p->angleNeckCommitted() ), dprec );
+        if ( p->arm().isPointing() )
         {
-            os << ' ' << Quantize( (*p)->arm().dest().getX(), prec )
-               << ' ' << Quantize( (*p)->arm().dest().getY(), prec );
+            os << ' ' << Quantize( p->arm().dest().getX(), prec )
+               << ' ' << Quantize( p->arm().dest().getY(), prec );
 //             rcss::geom::Vector2D arm_dest;
-//             if ( (*p)->arm().getRelDest( rcss::geom::Vector2D( (*p)->pos().x,
-//                                                                (*p)->pos().y ),
+//             if ( p->arm().getRelDest( rcss::geom::Vector2D( p->pos().x,
+//                                                                p->pos().y ),
 //                                          0.0,
 //                                          arm_dest ) )
 //             {
@@ -1164,32 +1169,32 @@ Logger::writeGameLogV4()
         }
 
         os << " (v "
-           << ( (*p)->highquality() ? "h " : "l " )
-           << Quantize( Rad2Deg( (*p)->visibleAngle() ), dprec )
+           << ( p->highquality() ? "h " : "l " )
+           << Quantize( Rad2Deg( p->visibleAngle() ), dprec )
            << ')';
         os << " (s "
-           << (*p)->stamina() << ' '
-           << (*p)->effort() << ' '
-           << (*p)->recovery() << ')';
-        if ( (*p)->isEnabled()
-             && (*p)->getFocusTarget() != NULL )
+           << p->stamina() << ' '
+           << p->effort() << ' '
+           << p->recovery() << ')';
+        if ( p->isEnabled()
+             && p->getFocusTarget() )
         {
-            os << " (f " << SideStr( (*p)->getFocusTarget()->side() )
-               << ' ' << (*p)->getFocusTarget()->unum()
+            os << " (f " << SideStr( p->getFocusTarget()->side() )
+               << ' ' << p->getFocusTarget()->unum()
                << ')';
         }
         os << " (c "
-           << (*p)->kickCount()
-           << ' ' << (*p)->dashCount()
-           << ' ' << (*p)->turnCount()
-           << ' ' << (*p)->catchCount()
-           << ' ' << (*p)->moveCount()
-           << ' ' << (*p)->turnNeckCount()
-           << ' ' << (*p)->changeViewCount()
-           << ' ' << (*p)->sayCount()
-           << ' ' << (*p)->tackleCount()
-           << ' ' << (*p)->arm().getCounter()
-           << ' ' << (*p)->attentiontoCount()
+           << p->kickCount()
+           << ' ' << p->dashCount()
+           << ' ' << p->turnCount()
+           << ' ' << p->catchCount()
+           << ' ' << p->moveCount()
+           << ' ' << p->turnNeckCount()
+           << ' ' << p->changeViewCount()
+           << ' ' << p->sayCount()
+           << ' ' << p->tackleCount()
+           << ' ' << p->arm().getCounter()
+           << ' ' << p->attentiontoCount()
            << ')';
         os << ')'; // end of player
     }
@@ -1203,65 +1208,54 @@ Logger::writeTeamGraphic( const Side side,
                           const unsigned int x,
                           const unsigned int y )
 {
-    if ( ! isGameLogOpen() )
+    if ( ! M_impl->isGameLogOpen() )
     {
         return;
     }
 
-    M_observer->sendTeamGraphic( side, x, y );
+    M_impl->observer_->sendTeamGraphic( side, x, y );
 
 //     const XPMHolder * xpm = ( side == LEFT
-//                               ? M_stadium.teamLeft().teamGraphic( x, y )
+//                               ? stadium.teamLeft().teamGraphic( x, y )
 //                               : side == RIGHT
-//                               ? M_stadium.teamRight().teamGraphic( x, y )
+//                               ? stadium.teamRight().teamGraphic( x, y )
 //                               : static_cast< const XPMHolder * >( 0 ) );
 //     if ( ! xpm )
 //     {
 //         return;
 //     }
 
-// #ifdef HAVE_SSTREAM
 //     std::ostringstream data;
-// #else
-//     std::ostrstream data;
-// #endif
 //     data << "(team_graphic_"
 //          << ( side == LEFT ? "l" : "r" )
 //          << " (" << x << " " << y << " "
 //          << *xpm << ")";
 
-// #ifndef HAVE_SSTREAM
-//     data << std::ends;
-// #endif
-
 //     std::string msg = data.str();
-
-// #ifndef HAVE_SSTREAM
-//     data.freeze( false );
-// #endif
 
 //     writeMsgToGameLog( MSG_BOARD, msg.c_str(), true );
 }
 
 
 void
-Logger::writeTextLog( const char * message,
+Logger::writeTextLog( const Stadium & stadium,
+                      const char * message,
                       const TextLogFlag flag )
 {
     if ( flag == RECV || flag == LOG_TEXT )
     {
-        if ( isTextLogOpen() )
+        if ( M_impl->isTextLogOpen() )
         {
-            *M_text_log << M_stadium.time()
-                        << ',' << M_stadium.stoppageTime()
-                        << "\t" << message << '\n';
+            *M_impl->text_log_ << stadium.time()
+                               << ',' << stadium.stoppageTime()
+                               << "\t" << message << '\n';
         }
     }
 
     if ( ( flag == RECV || flag == SUBS )
-         && isGameLogOpen()
+         && M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
-         && M_stadium.playmode() != PM_TimeOver )
+         && stadium.playmode() != PM_TimeOver )
     {
         char buf[max_message_length_for_display];
         std::strncpy( buf, message, std::min( max_message_length_for_display,
@@ -1277,8 +1271,8 @@ Logger::writeTextLog( const char * message,
 //         std::strncpy( buf, message, std::min( max_message_length_for_display,
 //                                               (int)std::strlen( message ) ) );
 
-//         for ( Stadium::MonitorCont::iterator i = M_stadium.monitors().begin();
-//               i != M_stadium.monitors().end();
+//         for ( Stadium::MonitorCont::iterator i = stadium.monitors().begin();
+//               i != stadium.monitors().end();
 //               ++i )
 //         {
 //             (*i)->sendMsg( LOG_BOARD, buf );
@@ -1288,12 +1282,13 @@ Logger::writeTextLog( const char * message,
 }
 
 void
-Logger::writePlayerLog( const Player & player,
+Logger::writePlayerLog( const Stadium & stadium,
+                        const Player & player,
                         const char * message,
                         const TextLogFlag flag )
 {
-    if ( isTextLogOpen()
-         || ( flag == RECV && isGameLogOpen() )
+    if ( M_impl->isTextLogOpen()
+         || ( flag == RECV && M_impl->isGameLogOpen() )
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
@@ -1303,16 +1298,17 @@ Logger::writePlayerLog( const Player & player,
                   player.team()->name().c_str(),
                   player.unum(),
                   message );
-        writeTextLog( tmp, flag );
+        writeTextLog( stadium, tmp, flag );
     }
 }
 
 void
-Logger::writeCoachLog( const char * message,
+Logger::writeCoachLog( const Stadium & stadium,
+                       const char * message,
                        const TextLogFlag flag )
 {
-    if ( isTextLogOpen()
-         || ( flag == RECV && isGameLogOpen() )
+    if ( M_impl->isTextLogOpen()
+         || ( flag == RECV && M_impl->isGameLogOpen() )
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
@@ -1320,38 +1316,38 @@ Logger::writeCoachLog( const char * message,
                   "%s Coach: %s",
                   ( flag == SEND ? "Send" : "Recv" ),
                   message ) ;
-        writeTextLog( tmp, flag );
+        writeTextLog( stadium, tmp, flag );
     }
 }
 
 void
-Logger::writeOnlineCoachLog( const OnlineCoach & coach,
+Logger::writeOnlineCoachLog( const Stadium & stadium,
+                             const OnlineCoach & coach,
                              const char * message,
                              const TextLogFlag flag )
 {
-    if ( isTextLogOpen()
-         || ( flag == RECV && isGameLogOpen() )
+    if ( M_impl->isTextLogOpen()
+         || ( flag == RECV && M_impl->isGameLogOpen() )
          || ( flag == RECV && ServerParam::instance().sendComms() ) )
     {
         char tmp[MaxMesg];
         snprintf( tmp, MaxMesg,
                   "%s %s_Coach: %s",
                   ( flag == SEND ? "Send" : "Recv" ),
-                  ( coach.side() == LEFT
-                    ? M_stadium.teamLeft().name().c_str()
-                    : M_stadium.teamRight().name().c_str() ),
+                  coach.team().name().c_str(),
                   message );
-        writeTextLog( tmp, flag );
+        writeTextLog( stadium, tmp, flag );
     }
 }
 
 void
-Logger::writeRefereeAudio( const char * msg )
+Logger::writeRefereeAudio( const Stadium & stadium,
+                           const char * msg )
 {
-    if ( isTextLogOpen()
-         || ( isGameLogOpen()
-              && M_stadium.playmode() != PM_BeforeKickOff
-              && M_stadium.playmode() != PM_TimeOver ) )
+    if ( M_impl->isTextLogOpen()
+         || ( M_impl->isGameLogOpen()
+              && stadium.playmode() != PM_BeforeKickOff
+              && stadium.playmode() != PM_TimeOver ) )
     {
         char buf[max_message_length_for_display];
         snprintf( buf,
@@ -1359,12 +1355,12 @@ Logger::writeRefereeAudio( const char * msg )
                   "(%s %s)",
                   REFEREE_NAME, msg );
 
-        if ( isTextLogOpen() )
+        if ( M_impl->isTextLogOpen() )
         {
-            writeTextLog( buf, LOG_TEXT );
+            writeTextLog( stadium, buf, LOG_TEXT );
         }
 
-        if ( isGameLogOpen() )
+        if ( M_impl->isGameLogOpen() )
         {
             writeMsgToGameLog( MSG_BOARD, buf );
         }
@@ -1372,14 +1368,15 @@ Logger::writeRefereeAudio( const char * msg )
 }
 
 void
-Logger::writePlayerAudio( const Player & player,
+Logger::writePlayerAudio( const Stadium & stadium,
+                          const Player & player,
                           const char * msg )
 {
 
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
-         && M_stadium.playmode() != PM_BeforeKickOff
-         && M_stadium.playmode() != PM_TimeOver )
+         && stadium.playmode() != PM_BeforeKickOff
+         && stadium.playmode() != PM_TimeOver )
     {
         char buf[max_message_length_for_display];
         snprintf( buf,
@@ -1392,13 +1389,14 @@ Logger::writePlayerAudio( const Player & player,
 }
 
 void
-Logger::writeCoachAudio( const Coach & coach,
+Logger::writeCoachAudio( const Stadium & stadium,
+                         const Coach & coach,
                          const char * msg )
 {
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
-         && M_stadium.playmode() != PM_BeforeKickOff
-         && M_stadium.playmode() != PM_TimeOver )
+         && stadium.playmode() != PM_BeforeKickOff
+         && stadium.playmode() != PM_TimeOver )
     {
         char buf[max_message_length_for_display];
         char format[40];
@@ -1419,13 +1417,14 @@ Logger::writeCoachAudio( const Coach & coach,
 }
 
 void
-Logger::writeCoachStdAudio( const OnlineCoach & coach,
+Logger::writeCoachStdAudio( const Stadium & stadium,
+                            const OnlineCoach & coach,
                             const rcss::clang::Msg & msg )
 {
-    if ( isGameLogOpen()
+    if ( M_impl->isGameLogOpen()
          && ServerParam::instance().recordMessages()
-         && M_stadium.playmode() != PM_BeforeKickOff
-         && M_stadium.playmode() != PM_TimeOver )
+         && stadium.playmode() != PM_BeforeKickOff
+         && stadium.playmode() != PM_TimeOver )
     {
         std::ostringstream coach_mess;
 
@@ -1448,34 +1447,76 @@ Logger::writeCoachStdAudio( const OnlineCoach & coach,
 
 
 void
-Logger::writeTimes( const timeval & old_time,
-                    const timeval & new_time )
+Logger::writeKeepawayHeader( const int keepers,
+                             const int takers )
 {
-    if ( isTextLogOpen()
-         && ServerParam::instance().logTimes() )
+    if ( M_impl->kaway_log_ )
     {
-        double diff = (new_time.tv_sec - old_time.tv_sec) * 1000
-            + (double)(new_time.tv_usec - old_time.tv_usec) / 1000;
-
-        *M_text_log << M_stadium.time()
-                    << ',' << M_stadium.stoppageTime()
-                    << "\tCYCLE_TIMES: " << diff << '\n';
+        M_impl->kaway_log_ << "# Keepers: " << keepers << '\n'
+                           << "# Takers:  " << takers << '\n'
+                           << "# Region:  " << ServerParam::instance().keepAwayLength()
+                           << " x " << ServerParam::instance().keepAwayWidth()
+                           << '\n'
+                           << "#\n"
+                           << "# Description of Fields:\n"
+                           << "# 1) Episode number\n"
+                           << "# 2) Start time in simulator steps (100ms)\n"
+                           << "# 3) End time in simulator steps (100ms)\n"
+                           << "# 4) Duration in simulator steps (100ms)\n"
+                           << "# 5) (o)ut of bounds / (t)aken away\n"
+                           << "#\n"
+                           << std::flush;
     }
 }
 
 void
-Logger::writeProfile( const timeval & start_time,
-                      const timeval & end_time,
-                      const char * str )
+Logger::writeKeepawayLog( const Stadium & stadium,
+                          const int episode,
+                          const int time,
+                          const char * end_cond )
 {
-    if ( isTextLogOpen()
+    if ( M_impl->kaway_log_ )
+    {
+        M_impl->kaway_log_ << episode << "\t"
+                           << time << "\t"
+                           << stadium.time() << "\t"
+                           << stadium.time() - time << "\t"
+                           << end_cond
+                           << std::endl;
+    }
+}
+
+void
+Logger::writeTimes( const Stadium & stadium,
+                    const std::chrono::system_clock::time_point & old_time,
+                    const std::chrono::system_clock::time_point & new_time )
+{
+    if ( M_impl->isTextLogOpen()
+         && ServerParam::instance().logTimes() )
+    {
+        const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( new_time - old_time );
+        const double diff = nano_diff.count() * 0.001 * 0.001;
+
+        *M_impl->text_log_ << stadium.time()
+                           << ',' << stadium.stoppageTime()
+                           << "\tCYCLE_TIMES: " << diff << '\n';
+    }
+}
+
+void
+Logger::writeProfile( const Stadium & stadium,
+                      const std::chrono::system_clock::time_point & start_time,
+                      const std::chrono::system_clock::time_point & end_time,
+                      const std::string & str )
+{
+    if ( M_impl->isTextLogOpen()
          && ServerParam::instance().profile() )
     {
-        double diff = (end_time.tv_sec - start_time.tv_sec) * 1000
-            + (double)(end_time.tv_usec - start_time.tv_usec) / 1000;
+        const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( end_time - start_time );
+        const double diff = nano_diff.count() * 0.001 * 0.001;
 
-        *M_text_log << M_stadium.time()
-                    << ',' << M_stadium.stoppageTime()
-                    << "\t" << str << ": " << diff << '\n';
+        *M_impl->text_log_ << stadium.time()
+                           << ',' << stadium.stoppageTime()
+                           << "\t" << str << ": " << diff << '\n';
     }
 }

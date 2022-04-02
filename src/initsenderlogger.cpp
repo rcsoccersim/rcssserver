@@ -25,7 +25,6 @@
 
 #include "initsenderlogger.h"
 
-#include "logger.h"
 #include "serializermonitor.h"
 
 #include "types.h"
@@ -34,6 +33,8 @@
 #include "serverparam.h"
 #include "playerparam.h"
 #include "heteroplayer.h"
+
+#include <iomanip>
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -108,6 +109,12 @@ InitSenderLoggerV1::~InitSenderLoggerV1()
 
 void
 InitSenderLoggerV1::sendHeader()
+{
+
+}
+
+void
+InitSenderLoggerV1::sendTail()
 {
 
 }
@@ -377,6 +384,15 @@ InitSenderLoggerV4::sendHeader()
     transport() << "ULG4" << std::endl;
 }
 
+
+void
+InitSenderLoggerV4::sendTail()
+{
+    // write the game result
+    sendTeam();
+}
+
+
 void
 InitSenderLoggerV4::sendServerParams()
 {
@@ -400,7 +416,7 @@ void
 InitSenderLoggerV4::sendPlayMode()
 {
     serializer().serializePlayMode( transport(),
-                                    stadium().time(),
+                                    stadium().time(), stadium().stoppageTime(),
                                     stadium().playmode() );
     transport() << std::endl;
 }
@@ -409,7 +425,7 @@ void
 InitSenderLoggerV4::sendTeam()
 {
     serializer().serializeTeam( transport(),
-                                stadium().time(),
+                                stadium().time(), stadium().stoppageTime(),
                                 stadium().teamLeft(),
                                 stadium().teamRight() );
     transport() << std::endl;
@@ -456,6 +472,91 @@ InitSenderLoggerV5::sendHeader()
 }
 
 
+/*
+//===================================================================
+//
+//  InitSenderLoggerJSON
+//
+//===================================================================
+*/
+
+InitSenderLoggerJSON::InitSenderLoggerJSON( const Params & params )
+    : InitSenderLogger( params,
+                        std::shared_ptr< InitSenderCommon >( new InitSenderCommonJSON( params.M_transport,
+                                                                                       params.M_serializer,
+                                                                                       params.M_stadium,
+                                                                                       999,  // accept all parameters
+                                                                                       true ) ) ) // new line
+{
+    // The client version is set to "999" in order to send all parameters.
+}
+
+InitSenderLoggerJSON::InitSenderLoggerJSON( const Params & params,
+                                            const std::shared_ptr< InitSenderCommon > common )
+    : InitSenderLogger( params, common )
+{
+
+}
+
+InitSenderLoggerJSON::~InitSenderLoggerJSON()
+{
+
+}
+
+void
+InitSenderLoggerJSON::sendHeader()
+{
+    transport() << "ULG6\n";
+    transport() << "[\n";
+
+    transport() << '{'
+                << std::quoted( "type" ) << ':' << std::quoted( "header" );
+
+    transport() << ','
+                << std::quoted( "version" ) << ':' << std::quoted( VERSION );
+
+    const std::time_t t = stadium().getStartTime();
+    transport() << ','
+                << std::quoted( "timestamp" ) << ':'
+                << '"' << std::put_time( std::localtime( &t ), "%FT%T%z" ) << '"';
+
+    transport() << '}';
+}
+
+
+void
+InitSenderLoggerJSON::sendTail()
+{
+    // write the game result
+    sendTeam();
+
+    transport() << '\n'
+                << ']' << std::endl;
+}
+
+
+void
+InitSenderLoggerJSON::sendPlayMode()
+{
+    transport() << ",\n";
+    serializer().serializePlayMode( transport(),
+                                    stadium().time(), stadium().stoppageTime(),
+                                    stadium().playmode() );
+    transport() << std::flush;
+}
+
+void
+InitSenderLoggerJSON::sendTeam()
+{
+    transport() << ",\n";
+    serializer().serializeTeam( transport(),
+                                stadium().time(), stadium().stoppageTime(),
+                                stadium().teamLeft(),
+                                stadium().teamRight() );
+    transport() << std::flush;
+}
+
+
 namespace initsender {
 
 template< typename Sender >
@@ -470,6 +571,7 @@ RegHolder vl2 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV2
 RegHolder vl3 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV3 >, 3 );
 RegHolder vl4 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV4 >, 4 );
 RegHolder vl5 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV5 >, 5 );
+RegHolder vl6 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerJSON >, 6 );
 }
 
 }

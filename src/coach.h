@@ -62,9 +62,9 @@ protected:
 private:
 
     // not used
-    Coach();
-    Coach( const Coach & );
-    Coach & operator=( const Coach & );
+    Coach() = delete;
+    Coach( const Coach & ) = delete;
+    Coach & operator=( const Coach & ) = delete;
 
 public:
 
@@ -72,7 +72,7 @@ public:
     Coach( Stadium & stadim );
 
     virtual
-    ~Coach();
+    ~Coach() override;
 
     void disable();
 
@@ -87,7 +87,7 @@ public:
 
     virtual
     void parseMsg( char * msg,
-                   const size_t & len );
+                   const size_t & len ) override;
 
     virtual
     void parse_command( const char * command );
@@ -190,36 +190,41 @@ private:
     std::string M_coach_name;
 
     // not used
-    OnlineCoach();
-    OnlineCoach( const OnlineCoach & );
-    OnlineCoach & operator=( const OnlineCoach & );
+    OnlineCoach() = delete;
+    OnlineCoach( const OnlineCoach & ) = delete;
+    OnlineCoach & operator=( const OnlineCoach & ) = delete;
 
 public:
 
     OnlineCoach( Stadium & stadium,
                  Team & team );
-    ~OnlineCoach();
+    ~OnlineCoach() override;
 
     void disable();
 
     virtual
-    bool setSenders( const double & client_version );
+    bool setSenders( const double & client_version ) override;
 
     virtual
-    void sendInit();
+    void sendInit() override;
 
     virtual
-    void send( const char * msg );
+    void send( const char * msg ) override;
 
     virtual
     void parseMsg( char * msg,
-                   const size_t & len );
+                   const size_t & len ) override;
 
     virtual
-    void parse_command( const char * command );
+    void parse_command( const char * command ) override;
+
+    const Team & team() const
+    {
+        return M_team;
+    }
 
     virtual
-    Side side() const
+    Side side() const override
       {
           return M_side;
       }

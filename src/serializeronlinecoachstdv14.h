@@ -34,11 +34,10 @@ protected:
 
 public:
     virtual
-    ~SerializerOnlineCoachStdv14();
+    ~SerializerOnlineCoachStdv14() override;
 
     static
-    const
-    SerializerOnlineCoach::Ptr create();
+    const Ptr create();
 
 };
 
