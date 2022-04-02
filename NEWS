@@ -30,6 +30,12 @@
     unified under PREFIX/include/rcss. The location of the clang
     parser library has been moved to prefix/include/rcss/clang.
 
+  * Support CMake. Thanks to gikari for providing his great
+    contribution on GitHub.
+
+  * Support C++11/14. Some environment-dependent implementations have
+    been replaced by the C++ standard library.
+
 [16.0.1]
   * Fix a bug of the length of half time caused by slow_down_factor.
 
