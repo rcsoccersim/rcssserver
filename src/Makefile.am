@@ -206,6 +206,8 @@ AM_CXXFLAGS = -W -Wall
 
 
 EXTRA_DIST = \
+	CMakeLists.txt \
+	fix_lexer_file.cmake \
 	player_command_parser.ypp \
 	player_command_tok.lpp \
 	rcsoccersim.in

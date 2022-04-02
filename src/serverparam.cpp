@@ -351,9 +351,9 @@ const double ServerParam::MAX_DASH_ANGLE = +180.0;
 const double ServerParam::MIN_DASH_ANGLE = -180.0;
 const double ServerParam::DASH_ANGLE_STEP = 1.0; // [15.6.0] 45.0 -> 1.0 [14.0.0] 90.0 -> 45.0
 const double ServerParam::SIDE_DASH_RATE = 0.4; // [14.0.0] 0.25 -> 0.4
-const double ServerParam::BACK_DASH_RATE = 0.6; // [14.0.0] 0.5 -> 0.6
+const double ServerParam::BACK_DASH_RATE = 0.7; // [14.0.0] 0.5 -> 0.6 [17.0.0] 0.6 -> 0.7
 const double ServerParam::MAX_DASH_POWER = +100.0;
-const double ServerParam::MIN_DASH_POWER = -100.0;
+const double ServerParam::MIN_DASH_POWER = 0.0;
 
 // 14.0.0
 const double ServerParam::TACKLE_RAND_FACTOR = 2.0;
@@ -373,8 +373,8 @@ const double ServerParam::ILLEGAL_DEFENSE_WIDTH = 40.32;
 
 namespace {
 // 17.0.0
-constexpr double MAX_CATCH_ANGLE = +180.0;
-constexpr double MIN_CATCH_ANGLE = -180.0;
+constexpr double MAX_CATCH_ANGLE = +90.0;
+constexpr double MIN_CATCH_ANGLE = -90.0;
 }
 
 // XXX

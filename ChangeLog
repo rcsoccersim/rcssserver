@@ -1,3 +1,12 @@
+2022-04-02  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+	* CMakeLists.txt:
+	* NEWS:
+	* configure.ac:
+	- update a major version number. Official release 17.0.0
+	- improve the dash model and the catch model
+	- support a JSON-based monitor protocol.
+
 2021-07-20  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
 	* NEWS:
