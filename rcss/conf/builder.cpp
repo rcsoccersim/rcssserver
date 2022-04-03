@@ -27,6 +27,7 @@
 
 #include "statushandler.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <iostream>
 #include <iomanip>

@@ -25,6 +25,7 @@
 
 //#include "rcssexceptions.h"
 #include <memory>
+#include <stdexcept>
 
 namespace rcss {
 
