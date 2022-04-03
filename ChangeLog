@@ -1,3 +1,14 @@
+2022-04-03  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+	* CMakeLists.txt:
+	* NEWS:
+	* configure.ac:
+	- update a point version number. Official release 17.0.1
+
+	* rcss/conf/builder.cpp:
+	* src/observer.h:
+	- fix build problems caused by missing headers
+
 2022-04-02  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
 	* CMakeLists.txt:
