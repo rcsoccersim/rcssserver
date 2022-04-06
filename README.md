@@ -1,4 +1,4 @@
-# RoboCup Soccer Server Simulator
+# RoboCup Soccer Simulator Server
 
 [![CircleCI](https://circleci.com/gh/rcsoccersim/rcssserver/tree/master.svg?style=svg)](https://circleci.com/gh/rcsoccersim/rcssserver/tree/master)
 ![License](https://img.shields.io/github/license/rcsoccersim/rcssserver.svg)
@@ -121,6 +121,24 @@ running
 make install
 ```
 Depending on where you are installing the server, you may need special permissions.
+
+If you install the server under the location you specified, you may need to set the environment variable `PATH`.
+Otherwise, you have to enter the full path to the executable when you execute the server.
+In the case of Linux system, the recommended way is to add the following line at the bottom of `~/.profile`:
+```
+PATH="YOUR_INSTALLATION_DIR/bin:$PATH"
+```
+Then, log out and log in again.
+
+You may also need to set the library path before executing the server.
+In most Linux systems, you can modify the library path by editing `/etc/ld.so.conf` or the environment variable `LD_LIBRARY_PATH`.
+The recommended way is to use `LD_LIBRARY_PATH` because all users can edit this variable without extra privileges.
+Add the following line at the bottom of `~/.bashrc`:
+```
+LD_LIBRARY_PATH="YOUR_INSTALLATION_DIR/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH
+```
+Then, open a new terminal.
 
 ## :wastebasket: Uninstalling
 
