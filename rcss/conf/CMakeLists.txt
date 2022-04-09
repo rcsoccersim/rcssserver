@@ -24,6 +24,11 @@ target_include_directories(RCSSConfParser
     ${PROJECT_BINARY_DIR}
 )
 
+target_compile_options(RCSSConfParser
+  PRIVATE
+    -W -Wall
+)
+
 set_target_properties(RCSSConfParser
   PROPERTIES
     SOVERSION 3

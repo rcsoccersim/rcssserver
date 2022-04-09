@@ -26,6 +26,11 @@ target_include_directories(RCSSNet
     ${PROJECT_BINARY_DIR}
 )
 
+target_compile_options(RCSSNet
+  PRIVATE
+  -W -Wall
+  )
+
 set_target_properties(RCSSNet
   PROPERTIES
     SOVERSION 1
