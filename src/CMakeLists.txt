@@ -103,10 +103,15 @@ target_compile_definitions(RCSSServer
     HAVE_CONFIG_H
 )
 
+target_compile_options(RCSSServer
+  PRIVATE
+    -W -Wall
+)
 
 set_target_properties(RCSSServer
   PROPERTIES
     RUNTIME_OUTPUT_NAME "rcssserver"
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
 )
 
 
@@ -127,6 +132,7 @@ target_link_libraries(RCSSClient
 set_target_properties(RCSSClient
   PROPERTIES
     RUNTIME_OUTPUT_NAME "rcssclient"
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}
 )
 
 set(prefix ${CMAKE_INSTALL_PREFIX})
@@ -139,6 +145,6 @@ install(TARGETS RCSSServer
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     COMPONENT Libraries
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-	)
+)
 
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/rcsoccersim DESTINATION ${CMAKE_INSTALL_BINDIR})

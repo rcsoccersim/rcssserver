@@ -64,12 +64,17 @@ target_include_directories(RCSSCLangParser
     ${PROJECT_BINARY_DIR}
 	)
 
+target_compile_options(RCSSCLangParser
+  PRIVATE
+    -W -Wall
+)
+
 set_target_properties(RCSSCLangParser
   PROPERTIES
     SOVERSION 2
     VERSION 2.1.0
     LIBRARY_OUTPUT_NAME "rcssclangparser"
-	)
+)
 
 
 set_property(TARGET RCSSCLangParser PROPERTY
@@ -96,7 +101,7 @@ set_property(TARGET RCSSCLangParser PROPERTY
     cond.h
     region.h
     rule.h
-	)
+)
 
 install(TARGETS RCSSCLangParser
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
