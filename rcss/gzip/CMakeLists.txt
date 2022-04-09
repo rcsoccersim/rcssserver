@@ -20,6 +20,11 @@ target_include_directories(RCSSGZ
     ${PROJECT_BINARY_DIR}
 )
 
+target_compile_options(RCSSGZ
+  PRIVATE
+    -W -Wall
+)
+
 set_target_properties(RCSSGZ
   PROPERTIES
     SOVERSION 1
