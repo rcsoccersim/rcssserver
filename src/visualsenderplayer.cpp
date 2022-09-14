@@ -439,8 +439,8 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
         {
             //prob = ( ( quant_dist - UNUM_FAR_LENGTH )
             //         / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
-            prob = ( ( quant_dist - self().unumFarLength() )
-                     / ( self().unumTooFarLength() - self().unumFarLength() ) );
+            prob = ( ( quant_dist - self().playerType()->unumFarLength() )
+                     / ( self().playerType()->unumTooFarLength() - self().playerType()->unumFarLength() ) );
 
             if ( decide( prob ) )
             {
