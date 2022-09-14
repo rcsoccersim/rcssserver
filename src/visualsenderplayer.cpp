@@ -290,8 +290,10 @@ void
 VisualSenderPlayerV1::sendLowBall( const MPObject & ball )
 {
     const double ang = calcRadDir( ball );
+    double un_quant_dist = self().pos().distance2( ball.pos() );
 
-    if( std::fabs( ang ) < self().visibleAngle() * 0.5 )
+    if( std::fabs( ang ) < self().visibleAngle() * 0.5
+        && std::sqrt(un_quant_dist) < self().playerType()->ballMaxObservationLength())
     {
         serializer().serializeVisualObject( transport(),
                                             calcName( ball ),
@@ -313,7 +315,8 @@ VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
     //const double un_quant_dist = calcUnQuantDist( ball );
     double un_quant_dist = self().pos().distance2( ball.pos() );
 
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5 )
+    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
+         && std::sqrt(un_quant_dist) < self().playerType()->ballMaxObservationLength())
     {
         un_quant_dist = std::sqrt( un_quant_dist );
         const double quant_dist = calcQuantDist( un_quant_dist,
@@ -321,8 +324,8 @@ VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
 
         //double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
         //                / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
-        double prob = ( ( quant_dist - self().unumFarLength() )
-                        / ( self().unumTooFarLength() - self().unumFarLength() ) );
+        double prob = ( ( quant_dist - self().playerType()->ballVelFarLength() )
+                        / ( self().playerType()->ballVelTooFarLength() - self().playerType()->ballVelFarLength() ) );
 
         if ( decide( prob ) )
         {
