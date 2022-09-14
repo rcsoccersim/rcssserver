@@ -373,8 +373,12 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
 
         //double prob = ( ( quant_dist - TEAM_FAR_LENGTH )
         //              / ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
-        double prob = ( ( quant_dist - self().playerType()->teamFarLength() )
-                        / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
+        double prob = 0;
+        if ( self().playerType()->teamTooFarLength() > self().playerType()->teamFarLength() )
+        {
+            prob = ( ( quant_dist - self().playerType()->teamFarLength() )
+                     / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
+        }
         if ( decide( prob ) )
         {
             serializer().serializeVisualObject( transport(),
@@ -425,8 +429,12 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
                                                  self().distQStep() );
         //double prob = ( ( quant_dist - TEAM_FAR_LENGTH )
         //              / ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
-        double prob = ( ( quant_dist - self().playerType()->teamFarLength() )
-                        / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
+        double prob = 0;
+        if ( self().playerType()->teamTooFarLength() > self().playerType()->teamFarLength() )
+        {
+            prob = ( ( quant_dist - self().playerType()->teamFarLength() )
+                     / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
+        }
 
         if ( decide( prob ) )
         {
