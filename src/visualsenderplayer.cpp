@@ -881,7 +881,7 @@ VisualSenderPlayerV8::calcPointDir( const Player & player )
         // NOTE: This means that 5% of the time it will be outside
         // of this range.
         double sigma = self().pos().distance( player.pos() )
-            / self().teamTooFarLength();
+            / self().playerType()->teamTooFarLength();
             //            / 60.0; // this should be replaced by the line below.
             //        //        / ServerParam::instance().getTeamTooFarLength ();
         sigma = std::pow( sigma, 4 ); // 4 should be parameterized
