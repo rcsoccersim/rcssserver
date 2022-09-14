@@ -365,15 +365,16 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
     //const double un_quant_dist = calcUnQuantDist( player );
     const double un_quant_dist2 = self().pos().distance2( player.pos() );
 
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5 )
+    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
+         && std::sqrt(un_quant_dist2) < self().playerType()->playerMaxObservationLength())
     {
         const double quant_dist = calcQuantDist( std::sqrt( un_quant_dist2 ),
                                                  self().distQStep() );
 
         //double prob = ( ( quant_dist - TEAM_FAR_LENGTH )
         //              / ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
-        double prob = ( ( quant_dist - self().teamFarLength() )
-                        / ( self().teamTooFarLength() - self().teamFarLength() ) );
+        double prob = ( ( quant_dist - self().playerType()->teamFarLength() )
+                        / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
         if ( decide( prob ) )
         {
             serializer().serializeVisualObject( transport(),
@@ -384,8 +385,8 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
         {
             //prob = ( ( quant_dist - UNUM_FAR_LENGTH )
             //         / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
-            prob = ( ( quant_dist - self().unumFarLength() )
-                     / ( self().unumTooFarLength() - self().unumFarLength() ) );
+            prob = ( ( quant_dist - self().playerType()->unumFarLength() )
+                     / ( self().playerType()->unumTooFarLength() - self().playerType()->unumFarLength() ) );
             if ( decide( prob ) )
             {
                 serializer().serializeVisualObject( transport(),
@@ -416,15 +417,16 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
     //const double un_quant_dist = calcUnQuantDist( player );
     double un_quant_dist = self().pos().distance2( player.pos() );
 
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5 )
+    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
+         && std::sqrt(un_quant_dist) < self().playerType()->playerMaxObservationLength())
     {
         un_quant_dist = std::sqrt( un_quant_dist );
         const double quant_dist = calcQuantDist( un_quant_dist,
                                                  self().distQStep() );
         //double prob = ( ( quant_dist - TEAM_FAR_LENGTH )
         //              / ( TEAM_TOOFAR_LENGTH - TEAM_FAR_LENGTH ) );
-        double prob = ( ( quant_dist - self().teamFarLength() )
-                        / ( self().teamTooFarLength() - self().teamFarLength() ) );
+        double prob = ( ( quant_dist - self().playerType()->teamFarLength() )
+                        / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
 
         if ( decide( prob ) )
         {
