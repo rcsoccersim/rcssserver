@@ -218,8 +218,10 @@ void
 VisualSenderPlayerV1::sendLowFlag( const PObject & flag )
 {
     const double ang = calcRadDir( flag );
+    double un_quant_dist = self().pos().distance2( flag.pos() );
 
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5 )
+    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
+         && std::sqrt(un_quant_dist) < self().playerType()->flagMaxObservationLength() )
     {
         serializer().serializeVisualObject( transport(),
                                             calcName( flag ),
@@ -240,7 +242,8 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
     //const double un_quant_dist = calcUnQuantDist( flag );
     double un_quant_dist = self().pos().distance2( flag.pos() );
 
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5 )
+    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
+            && std::sqrt(un_quant_dist) < self().playerType()->flagMaxObservationLength() )
     {
         un_quant_dist = std::sqrt( un_quant_dist );
         const double quant_dist
@@ -248,8 +251,8 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
 
         //const double prob = ( ( quant_dist - UNUM_FAR_LENGTH )
         //                      / ( UNUM_TOOFAR_LENGTH - UNUM_FAR_LENGTH ) );
-        const double prob = ( ( quant_dist - self().unumFarLength() )
-                              / ( self().unumTooFarLength() - self().unumFarLength() ) );
+        const double prob = ( ( quant_dist - self().playerType()->flagChgFarLength() )
+                              / ( self().playerType()->flagChgTooFarLength() - self().playerType()->flagChgFarLength() ) );
 
         if ( decide( prob ) )
         {
