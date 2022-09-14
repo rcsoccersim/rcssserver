@@ -29,7 +29,7 @@
 #include "pcomparser.h"
 #include "remoteclient.h"
 #include "serverparam.h"
-
+#include "heteroplayer.h"
 #include <string>
 
 class Stadium;
@@ -279,6 +279,7 @@ public:
     //
     void setPlayerType( const int );
     void substitute( const int );
+    const HeteroPlayer * playerType() const { return M_player_type; }
     int playerTypeId() const { return M_player_type_id; }
     bool substituted() const { return M_substituted; }
 
