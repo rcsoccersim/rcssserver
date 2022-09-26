@@ -123,6 +123,20 @@ NormalizeNeckAngle( const double & p )
                         Deg2Rad( ServerParam::instance().maxNeckAngle() ) );
 }
 
+inline
+double
+NormalizeFocusAngle( const double & p, const double & neck_angle, const double & visible_angle)
+{
+    std::cout <<Rad2Deg(neck_angle - visible_angle / 2.0)<<" "<<Rad2Deg(p)<<" "<<Rad2Deg(neck_angle + visible_angle / 2.0 )<<std::endl;
+    double min_angle = normalize_angle(neck_angle - visible_angle / 2.0);
+    double max_angle = normalize_angle(neck_angle + visible_angle / 2.0);
+    double diff = normalize_angle(neck_angle - p);
+    if ( std::abs(diff) < visible_angle / 2.0 )
+        return p;
+    if ( std::abs(normalize_angle(min_angle - p)) < std::abs(normalize_angle(max_angle - p)))
+        return min_angle;
+    return max_angle;
+}
 } // end of no-name namespace
 
 
@@ -1127,6 +1141,21 @@ Player::turn_neck( double moment )
                                            + NormalizeNeckMoment( moment ) );
         ++M_turn_neck_count;
         M_turn_neck_done = true;
+    }
+}
+
+void
+Player::set_focus( double dist, double angle )
+{
+    if ( ! M_set_focus_done )
+    {
+        std::cout<<"p "<<side()<<" "<<unum()<<" neck:"<<Rad2Deg(angleNeckCommitted())<<" viewangle:"<<Rad2Deg(visibleAngle())<<std::endl;
+        angle = Deg2Rad(angle) + angleNeckCommitted() + angleBodyCommitted();
+        angle = normalize_angle(angle);
+        M_focus_point = rcss::geom::Vector2D(pos().x, pos().y) + rcss::geom::polarVector2D(dist, angle);
+        std::cout<<"set_focus to "<<dist<<" "<<Rad2Deg(angle)<<" > "<<M_focus_point.getX()<<" "<<M_focus_point.getY()<<std::endl;
+        ++M_set_focus_count;
+        M_set_focus_done = true;
     }
 }
 
@@ -2334,6 +2363,7 @@ Player::turnImpl()
     M_angle_neck_committed = this->M_angle_neck;
     M_vel.assign( 0.0, 0.0 );
     M_accel.assign( 0.0, 0.0 );
+    update_set_focus_point_committed();
 }
 
 void
@@ -2341,6 +2371,18 @@ Player::updateAngle()
 {
     M_angle_body_committed = this->M_angle_body;
     M_angle_neck_committed = this->M_angle_neck;
+    update_set_focus_point_committed();
+}
+
+void
+Player::update_set_focus_point_committed(){
+    rcss::geom::Vector2D player_pos(pos().x, pos().y);
+    M_focus_point_committed = this->M_focus_point;
+    double dist_to_player = dist(player_pos, M_focus_point_committed);
+    double angle_to_player = (M_focus_point_committed - player_pos).getHead();
+    dist_to_player = std::min(dist(M_focus_point_committed, player_pos), 40.0);
+    angle_to_player = NormalizeFocusAngle(angle_to_player,angleNeckCommitted() + angleBodyCommitted(), M_visible_angle);
+    M_focus_point_committed = player_pos + rcss::geom::polarVector2D(dist_to_player, angle_to_player);
 }
 
 void

@@ -454,6 +454,7 @@ private:
     void dash( double power, double dir ) override;
     void turn( double moment ) override;
     void turn_neck( double moment ) override;
+    void set_focus( double dist, double angle) override;
     void kick( double power, double dir ) override;
     void long_kick( double power, double dir ) override;
     void goalieCatch( double dir ) override;
@@ -475,7 +476,7 @@ private:
     void clang( int min, int max) override;
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode ) override;
     void synch_see() override;
-
+    void update_set_focus_point_committed();
 };
 
 #endif
