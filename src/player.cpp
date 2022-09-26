@@ -582,6 +582,20 @@ Player::parseCommand( const char * command )
 
             turn_neck( moment );
         }
+        else if ( ! std::strncmp( buf, "(set_focus ", 11 ) )
+        {
+            double dist = 0.0;
+            double angle = 0.0;
+            if ( std::sscanf( buf, " ( set_focus %lf %lf ) %n ",
+                              &dist, &angle, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            set_focus( dist, angle );
+        }
         else if ( ! std::strncmp( buf, "(say ", 5 ) )
         {
             buf += 5;
