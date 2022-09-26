@@ -241,9 +241,11 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
     const double ang = calcRadDir( flag );
     //const double un_quant_dist = calcUnQuantDist( flag );
     double un_quant_dist = self().pos().distance( flag.pos() );
-    const double quant_dist
-            = calcQuantDist( un_quant_dist, self().landDistQStep() );
-
+//    const double quant_dist
+//            = calcQuantDist( un_quant_dist, self().landDistQStep() );
+    const double quant_dist = calcQuantDistByFocusPoint( un_quant_dist,
+                                                         flag.pos().distance(self().focusPointCommitted()),
+                                                         self().landDistQStep() );
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
             && un_quant_dist < self().playerType()->flagMaxObservationLength() )
     {
@@ -311,9 +313,12 @@ VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
     const double ang = calcRadDir( ball );
     //const double un_quant_dist = calcUnQuantDist( ball );
     double un_quant_dist = self().pos().distance( ball.pos() );
-    const double quant_dist = calcQuantDist( un_quant_dist,
-                                             self().distQStep() );
+//    const double quant_dist = calcQuantDist( un_quant_dist,
+//                                             self().distQStep() );
 
+    const double quant_dist = calcQuantDistByFocusPoint( un_quant_dist,
+                                                         ball.pos().distance(self().focusPointCommitted()),
+                                                         self().distQStep() );
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && un_quant_dist < self().playerType()->ballMaxObservationLength())
     {
@@ -413,8 +418,11 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
 {
     const double ang = calcRadDir( player );
     const double un_quant_dist = self().pos().distance( player.pos() );
-    const double quant_dist = calcQuantDist( un_quant_dist,
-                                             self().distQStep() );
+//    const double quant_dist = calcQuantDist( un_quant_dist,
+//                                             self().distQStep() );
+    const double quant_dist = calcQuantDistByFocusPoint( un_quant_dist,
+                                                         player.pos().distance(self().focusPointCommitted()),
+                                                         self().distQStep() );
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && un_quant_dist < self().playerType()->playerMaxObservationLength())
     {

@@ -296,6 +296,15 @@ private:
           return Quantize( std::exp( Quantize( std::log( dist + EPS ), qstep ) ), 0.1 );
       }
 
+    double calcQuantDistByFocusPoint( const double & dist_to_player,
+                                      const double & dist_to_focus_point,
+                                      const double & qstep ) const
+    {
+        double quantize_dist_to_focus_point = Quantize( std::exp( Quantize( std::log( dist_to_focus_point + EPS ), qstep ) ), 0.1 );
+
+        return std::max(0.0, dist_to_player - (dist_to_focus_point - quantize_dist_to_focus_point));
+    }
+
     double calcLineDist( const double & sight_2_line_ang,
                          const double & player_2_line,
                          const double & qstep ) const
