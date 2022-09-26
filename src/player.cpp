@@ -184,6 +184,7 @@ Player::Player( Stadium & stadium,
       //
       M_command_done( false ),
       M_turn_neck_done( false ),
+      M_set_focus_done( false ),
       M_done_received( false ),
       //
       M_goalie_catch_ban( 0 ),
@@ -197,6 +198,7 @@ Player::Player( Stadium & stadium,
       M_catch_count( 0 ),
       M_move_count( 0 ),
       M_turn_neck_count( 0 ),
+      M_set_focus_count(0 ),
       M_change_view_count( 0 ),
       M_say_count( 0 ),
       M_arm( ServerParam::instance().pointToBan(),
@@ -220,6 +222,8 @@ Player::Player( Stadium & stadium,
 
     M_pos.x = -( unum() * 3 * team->side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
+
+    M_focus_point = rcss::geom::Vector2D(M_pos.x, M_pos.y);
 
     setPlayerType( 0 );
     recoverAll();
@@ -408,6 +412,8 @@ Player::resetState()
     }
 
     M_state &= state;
+
+    M_focus_point = rcss::geom::Vector2D(M_pos.x, M_pos.y);
 }
 
 void
@@ -2573,6 +2579,8 @@ Player::resetCommandFlags()
     }
 
     M_turn_neck_done = false;
+
+    M_set_focus_done = false;
 
     M_done_received = false;
 }

@@ -140,7 +140,8 @@ private:
     double M_angle_body_committed;
     double M_angle_neck; //!< temporal neck angle
     double M_angle_neck_committed;
-
+    rcss::geom::Vector2D M_focus_point; //!< temporal neck angle
+    rcss::geom::Vector2D M_focus_point_committed;
     //
     // collision state
     //
@@ -153,6 +154,7 @@ private:
     //
     bool M_command_done;
     bool M_turn_neck_done;
+    bool M_set_focus_done;
     bool M_done_received; //pfr:SYNCH
 
     int M_goalie_catch_ban;
@@ -167,6 +169,7 @@ private:
     int M_catch_count;
     int M_move_count;
     int M_turn_neck_count;
+    int M_set_focus_count;
     int M_change_view_count;
     int M_say_count;
 
@@ -333,6 +336,7 @@ public:
 
     const double & angleBodyCommitted() const { return M_angle_body_committed; }
     const double & angleNeckCommitted() const { return M_angle_neck_committed; }
+    const rcss::geom::Vector2D & focusPointCommitted() const { return M_focus_point_committed; }
 
     void recoverAll();
     void recoverStaminaCapacity();
@@ -367,6 +371,7 @@ public:
     int catchCount() const { return M_catch_count; }
     int moveCount() const { return M_move_count; }
     int turnNeckCount() const { return M_turn_neck_count; }
+    int setFocusCount() const { return M_set_focus_count; }
     int changeViewCount() const { return M_change_view_count; }
     int sayCount() const { return M_say_count; }
 
