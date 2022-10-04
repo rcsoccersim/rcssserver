@@ -125,15 +125,15 @@ NormalizeNeckAngle( const double & p )
 
 inline
 double
-NormalizeFocusAngle( const double & p, const double & neck_angle, const double & visible_angle)
+NormalizeFocusAngle(const double & player_to_focus_point_angle, const double & global_neck_angle, const double & visible_angle)
 {
-    std::cout <<Rad2Deg(neck_angle - visible_angle / 2.0)<<" "<<Rad2Deg(p)<<" "<<Rad2Deg(neck_angle + visible_angle / 2.0 )<<std::endl;
-    double min_angle = normalize_angle(neck_angle - visible_angle / 2.0);
-    double max_angle = normalize_angle(neck_angle + visible_angle / 2.0);
-    double diff = normalize_angle(neck_angle - p);
+    double min_angle = normalize_angle(global_neck_angle - visible_angle / 2.0);
+    double max_angle = normalize_angle(global_neck_angle + visible_angle / 2.0);
+    double diff = normalize_angle(global_neck_angle - player_to_focus_point_angle);
     if ( std::abs(diff) < visible_angle / 2.0 )
-        return p;
-    if ( std::abs(normalize_angle(min_angle - p)) < std::abs(normalize_angle(max_angle - p)))
+        return player_to_focus_point_angle;
+    if (std::abs(normalize_angle(min_angle - player_to_focus_point_angle))
+        < std::abs(normalize_angle(max_angle - player_to_focus_point_angle)))
         return min_angle;
     return max_angle;
 }
