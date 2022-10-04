@@ -1163,11 +1163,9 @@ Player::set_focus( double dist, double angle )
 {
     if ( ! M_set_focus_done )
     {
-        std::cout<<"p "<<side()<<" "<<unum()<<" neck:"<<Rad2Deg(angleNeckCommitted())<<" viewangle:"<<Rad2Deg(visibleAngle())<<std::endl;
-        angle = Deg2Rad(angle) + angleNeckCommitted() + angleBodyCommitted();
-        angle = normalize_angle(angle);
-        M_focus_point = rcss::geom::Vector2D(pos().x, pos().y) + rcss::geom::polarVector2D(dist, angle);
-        std::cout<<"set_focus to "<<dist<<" "<<Rad2Deg(angle)<<" > "<<M_focus_point.getX()<<" "<<M_focus_point.getY()<<std::endl;
+        double global_angle = Deg2Rad(angle) + angleNeckCommitted() + angleBodyCommitted();
+        global_angle = normalize_angle(angle);
+        M_focus_point = rcss::geom::Vector2D(pos().x, pos().y) + rcss::geom::polarVector2D(dist, global_angle);
         ++M_set_focus_count;
         M_set_focus_done = true;
     }
@@ -2393,10 +2391,13 @@ Player::update_set_focus_point_committed(){
     rcss::geom::Vector2D player_pos(pos().x, pos().y);
     M_focus_point_committed = this->M_focus_point;
     double dist_to_player = dist(player_pos, M_focus_point_committed);
-    double angle_to_player = (M_focus_point_committed - player_pos).getHead();
+    double angle_player_to_focus_point = (M_focus_point_committed - player_pos).getHead();
     dist_to_player = std::min(dist(M_focus_point_committed, player_pos), 40.0);
-    angle_to_player = NormalizeFocusAngle(angle_to_player,angleNeckCommitted() + angleBodyCommitted(), M_visible_angle);
-    M_focus_point_committed = player_pos + rcss::geom::polarVector2D(dist_to_player, angle_to_player);
+    double global_neck_angle = angleNeckCommitted() + angleBodyCommitted();
+    angle_player_to_focus_point = NormalizeFocusAngle(angle_player_to_focus_point,
+                                                      global_neck_angle,
+                                                      M_visible_angle);
+    M_focus_point_committed = player_pos + rcss::geom::polarVector2D(dist_to_player, angle_player_to_focus_point);
 }
 
 void
