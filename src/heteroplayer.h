@@ -84,6 +84,8 @@ private:
                   const double & max );
     void setDefault();
 
+    void setDefaultObservationParams();
+
     double M_player_speed_max;
     double M_stamina_inc_max;
     double M_player_decay;
