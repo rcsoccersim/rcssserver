@@ -134,13 +134,13 @@ private:
     double M_consumed_stamina;
 
     //
-    // body/neck angle
+    // body/neck angle/focus point
     //
-    double M_angle_body; //!< temporal body angle
+    double M_angle_body; //!< temporary body angle
     double M_angle_body_committed;
-    double M_angle_neck; //!< temporal neck angle
+    double M_angle_neck; //!< temporary neck angle
     double M_angle_neck_committed;
-    rcss::geom::Vector2D M_focus_point; //!< temporal neck angle
+    rcss::geom::Vector2D M_focus_point; //!< temporary focus point
     rcss::geom::Vector2D M_focus_point_committed;
     //
     // collision state
