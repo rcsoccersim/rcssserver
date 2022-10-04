@@ -122,18 +122,8 @@ HeteroPlayer::HeteroPlayer()
                                          PP.catchAreaLengthStretchMax() );
         M_catchable_area_l_stretch = tmp_delta;
 
-        double maximum_distant_in_pitch = sqrt(pow(ServerParam::PITCH_LENGTH, 2.0) + pow(ServerParam::PITCH_WIDTH, 2.0));
-        M_unum_far_length = 20.0;
-        M_unum_too_far_length = 40.0;
-        M_team_far_length = maximum_distant_in_pitch;  // was 40.0 updated by Nader Zare in 2022-10-13
-        M_team_too_far_length = maximum_distant_in_pitch;  // was 60.0 updated by Nader Zare in 2022-10-13
-        M_player_max_observation_length = maximum_distant_in_pitch;
-        M_ball_vel_far_length = 20;
-        M_ball_vel_too_far_length = 40;
-        M_ball_max_observation_length = maximum_distant_in_pitch;
-        M_flag_chg_far_length = 20;
-        M_flag_chg_too_far_length = 40;
-        M_flag_max_observation_length = maximum_distant_in_pitch;
+        setDefaultObservationParams();
+
         //
         double real_speed_max
             = ( SP.maxPower() * M_dash_power_rate * M_effort_max )
@@ -246,20 +236,25 @@ HeteroPlayer::setDefault()
     M_catchable_area_l_stretch = 1.0;
 
     // v??
-    double maximum_distant_in_pitch = sqrt(pow(ServerParam::PITCH_LENGTH, 2.0) + pow(ServerParam::PITCH_WIDTH, 2.0));
-    M_unum_far_length = 20.0;
-    M_unum_too_far_length = 40.0;
-    M_team_far_length = maximum_distant_in_pitch;  // was 40.0 updated by Nader Zare in 2022-10-13
-    M_team_too_far_length = maximum_distant_in_pitch;  // was 60.0 updated by Nader Zare in 2022-10-13
-    M_player_max_observation_length = maximum_distant_in_pitch;
-    M_ball_vel_far_length = 20;
-    M_ball_vel_too_far_length = 40;
-    M_ball_max_observation_length = maximum_distant_in_pitch;
-    M_flag_chg_far_length = 20;
-    M_flag_chg_too_far_length = 40;
-    M_flag_max_observation_length = maximum_distant_in_pitch;
+    setDefaultObservationParams();
 }
 
+void
+HeteroPlayer::setDefaultObservationParams()
+{
+    double maximum_dist_in_pitch = sqrt(pow(ServerParam::PITCH_LENGTH, 2.0) + pow(ServerParam::PITCH_WIDTH, 2.0));
+    M_unum_far_length = 20.0;
+    M_unum_too_far_length = 40.0;
+    M_team_far_length = maximum_dist_in_pitch;  // was 40.0 updated by Nader Zare in 2022-10-13
+    M_team_too_far_length = maximum_dist_in_pitch;  // was 60.0 updated by Nader Zare in 2022-10-13
+    M_player_max_observation_length = maximum_dist_in_pitch;
+    M_ball_vel_far_length = 20;
+    M_ball_vel_too_far_length = 40;
+    M_ball_max_observation_length = maximum_dist_in_pitch;
+    M_flag_chg_far_length = 20;
+    M_flag_chg_too_far_length = 40;
+    M_flag_max_observation_length = maximum_dist_in_pitch;
+}
 std::ostream &
 HeteroPlayer::print( std::ostream & o ) const
 {
