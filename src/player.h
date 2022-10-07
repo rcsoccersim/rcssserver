@@ -83,11 +83,6 @@ private:
     std::string M_fixed_short_name;
     std::string M_fixed_short_name_far;
 
-    double M_unum_far_length;
-    double M_unum_too_far_length;
-    double M_team_far_length;
-    double M_team_too_far_length;
-
 #ifdef NEW_QSTEP
     double dist_qstep_player; /* each Player quantize step of distance */
     double land_qstep_player; /* each Player quantize step of distance for landmark */
