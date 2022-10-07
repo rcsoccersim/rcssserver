@@ -29,7 +29,7 @@
 #include "pcomparser.h"
 #include "remoteclient.h"
 #include "serverparam.h"
-
+#include "heteroplayer.h"
 #include <string>
 
 class Stadium;
@@ -134,13 +134,14 @@ private:
     double M_consumed_stamina;
 
     //
-    // body/neck angle
+    // body/neck angle/focus point
     //
-    double M_angle_body; //!< temporal body angle
+    double M_angle_body; //!< temporary body angle
     double M_angle_body_committed;
-    double M_angle_neck; //!< temporal neck angle
+    double M_angle_neck; //!< temporary neck angle
     double M_angle_neck_committed;
-
+    rcss::geom::Vector2D M_focus_point; //!< temporary focus point
+    rcss::geom::Vector2D M_focus_point_committed;
     //
     // collision state
     //
@@ -153,6 +154,7 @@ private:
     //
     bool M_command_done;
     bool M_turn_neck_done;
+    bool M_set_focus_done;
     bool M_done_received; //pfr:SYNCH
 
     int M_goalie_catch_ban;
@@ -167,6 +169,7 @@ private:
     int M_catch_count;
     int M_move_count;
     int M_turn_neck_count;
+    int M_set_focus_count;
     int M_change_view_count;
     int M_say_count;
 
@@ -279,6 +282,7 @@ public:
     //
     void setPlayerType( const int );
     void substitute( const int );
+    const HeteroPlayer * playerType() const { return M_player_type; }
     int playerTypeId() const { return M_player_type_id; }
     bool substituted() const { return M_substituted; }
 
@@ -311,6 +315,7 @@ public:
 
     const double & angleBodyCommitted() const { return M_angle_body_committed; }
     const double & angleNeckCommitted() const { return M_angle_neck_committed; }
+    const rcss::geom::Vector2D & focusPointCommitted() const { return M_focus_point_committed; }
 
     void recoverAll();
     void recoverStaminaCapacity();
@@ -345,6 +350,7 @@ public:
     int catchCount() const { return M_catch_count; }
     int moveCount() const { return M_move_count; }
     int turnNeckCount() const { return M_turn_neck_count; }
+    int setFocusCount() const { return M_set_focus_count; }
     int changeViewCount() const { return M_change_view_count; }
     int sayCount() const { return M_say_count; }
 
@@ -427,6 +433,7 @@ private:
     void dash( double power, double dir ) override;
     void turn( double moment ) override;
     void turn_neck( double moment ) override;
+    void set_focus( double dist, double angle) override;
     void kick( double power, double dir ) override;
     void long_kick( double power, double dir ) override;
     void goalieCatch( double dir ) override;
@@ -448,7 +455,7 @@ private:
     void clang( int min, int max) override;
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode ) override;
     void synch_see() override;
-
+    void update_set_focus_point_committed();
 };
 
 #endif
