@@ -1037,6 +1037,65 @@ DispSenderLoggerV4::sendMsg( const BoardType board,
 /*!
 //===================================================================
 //
+//  CLASS: DispSenderLoggerV5
+//
+//  DESC: version 5 log format
+//
+//===================================================================
+*/
+
+
+DispSenderLoggerV5::DispSenderLoggerV5( const Params & params )
+        : DispSenderLoggerV4( params )
+{
+
+}
+
+DispSenderLoggerV5::~DispSenderLoggerV5()
+{
+
+}
+
+void
+DispSenderLoggerV5::sendShow()
+{
+    serializer().serializeShowBegin( transport(),
+                                     stadium().time(), stadium().stoppageTime() );
+
+    serializer().serializeBall( transport(),
+                                stadium().ball() );
+
+    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
+    {
+        serializer().serializePlayerBegin( transport(), *p );
+        serializer().serializePlayerPos( transport(), *p );
+        serializer().serializePlayerArm( transport(), *p );
+        serializer().serializePlayerViewMode( transport(), *p );
+        serializer().serializePlayerStamina( transport(), *p );
+        serializer().serializePlayerFocus( transport(), *p );
+        serializer().serializePlayerCounts( transport(), *p );
+        serializer().serializePlayerEnd( transport() );
+    }
+
+    serializer().serializeShowEnd( transport() );
+
+    transport() << '\n';
+}
+
+void
+DispSenderLoggerV5::sendMsg( const BoardType board,
+                             const char * msg )
+{
+    std::string str( msg );
+    std::replace( str.begin(), str.end(), '\n', ' ' );
+
+    transport() << "(msg " << stadium().time()
+                << ' ' << board << " \"" << str << "\")\n";
+}
+
+/*!
+//===================================================================
+//
 //  CLASS: DispSenderLoggerJSON
 //
 //  DESC: version 6 log format
@@ -1151,6 +1210,7 @@ RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3
 RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 4 );
 RegHolder vl5 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 5 );
 RegHolder vl6 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerJSON >, 6 );
+RegHolder vl7 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV5 >, 7 );
 
 }
 }

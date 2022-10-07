@@ -164,6 +164,35 @@ public:
 
 
 /*!
+  \class SerializerMonitorStdv4
+  \brief class of the version 4 serialization for monitors. Add the stamina capacity information.
+*/
+class SerializerMonitorStdv5
+        : public SerializerMonitorStdv4 {
+protected:
+
+    explicit
+    SerializerMonitorStdv5( const SerializerCommon::Ptr common );
+
+public:
+
+    virtual
+    ~SerializerMonitorStdv5() override;
+
+    static
+    const
+    Ptr create();
+
+    virtual
+    void serializePlayerCounts( std::ostream & os,
+                                const Player & player ) const override;
+    virtual
+    void serializePlayerPos( std::ostream & os,
+                             const Player & player ) const override;
+};
+
+
+/*!
   \class SerializerMonitorJSON
   \brief class of the version 5 serialization for monitors. (JSON format)
 */

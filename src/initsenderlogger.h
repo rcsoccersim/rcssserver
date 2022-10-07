@@ -342,6 +342,26 @@ public:
 
 };
 
+
+class InitSenderLoggerV7
+        : public InitSenderLoggerV5 {
+public:
+    InitSenderLoggerV7( const Params & params );
+
+protected:
+    InitSenderLoggerV7( const Params & params,
+                        const std::shared_ptr< InitSenderCommon > common );
+
+public:
+    virtual
+    ~InitSenderLoggerV7() override;
+
+    virtual
+    void sendHeader() override;
+
+};
+
+
 /*!
   \brief version 6 of the init sender for Logger (JSON format)
 */

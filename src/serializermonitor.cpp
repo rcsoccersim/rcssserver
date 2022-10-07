@@ -356,6 +356,71 @@ SerializerMonitorStdv4::serializePlayerStamina( std::ostream & os,
 /*
 //===================================================================
 //
+//  SerializerMonitorStdv5
+//
+//===================================================================
+*/
+
+SerializerMonitorStdv5::SerializerMonitorStdv5( const SerializerCommon::Ptr common )
+        : SerializerMonitorStdv4( common )
+{
+
+}
+
+SerializerMonitorStdv5::~SerializerMonitorStdv5()
+{
+
+}
+
+const
+SerializerMonitor::Ptr
+SerializerMonitorStdv5::create()
+{
+    SerializerCommon::Creator cre_common;
+    if ( ! SerializerCommon::factory().getCreator( cre_common, 18 ) )
+    {
+        return SerializerMonitor::Ptr();
+    }
+
+    SerializerMonitor::Ptr ptr( new SerializerMonitorStdv5( cre_common() ) );
+    return ptr;
+}
+
+void
+SerializerMonitorStdv5::serializePlayerCounts( std::ostream & os,
+                                               const Player & player ) const
+{
+    os << " (c "
+       << player.kickCount() << ' '
+       << player.dashCount() << ' '
+       << player.turnCount() << ' '
+       << player.catchCount() << ' '
+       << player.moveCount() << ' '
+       << player.turnNeckCount() << ' '
+       << player.changeViewCount() << ' '
+       << player.sayCount() << ' '
+       << player.tackleCount() << ' '
+       << player.arm().getCounter() << ' '
+       << player.attentiontoCount() << ' '
+       << player.setFocusCount() << ')';
+}
+
+void
+SerializerMonitorStdv5::serializePlayerPos( std::ostream & os,
+                                            const Player & player ) const
+{
+    os << ' ' << Quantize( player.pos().x, PREC )
+       << ' ' << Quantize( player.pos().y, PREC )
+       << ' ' << Quantize( player.vel().x, PREC )
+       << ' ' << Quantize( player.vel().y, PREC )
+       << ' ' << Quantize( Rad2Deg( player.angleBodyCommitted() ), DPREC )
+       << ' ' << Quantize( Rad2Deg( player.angleNeckCommitted() ), DPREC )
+       << ' ' << Quantize( player.focusPointCommitted().getX(), PREC )
+       << ' ' << Quantize( player.focusPointCommitted().getY(), PREC );
+}
+/*
+//===================================================================
+//
 //  SerializerMonitorJSON (JSON)
 //
 //===================================================================
@@ -871,6 +936,7 @@ RegHolder v2 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv1::cr
 RegHolder v3 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv3::create, 3 );
 RegHolder v4 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv4::create, 4 );
 RegHolder v5 = SerializerMonitor::factory().autoReg( &SerializerMonitorJSON::create, 5 );
+RegHolder v6 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv5::create, 6 );
 }
 
 }
