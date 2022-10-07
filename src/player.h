@@ -186,6 +186,9 @@ private:
     double M_long_kick_power;
     double M_long_kick_dir;
 
+    double M_wide_view_angle_noise_term;
+    double M_normal_view_angle_noise_term;
+    double M_narrow_view_angle_noise_term;
 private:
     // not used
     Player() = delete;
@@ -250,7 +253,12 @@ public:
     double distQStep() const
       {
 #ifndef NEW_QSTEP
-          return ServerParam::instance().quantizeStep();
+          double term = narrowViewAngleNoiseTerm();
+          if ( viewWidth() == rcss::pcom::VIEW_WIDTH::NORMAL)
+              term = normalViewAngleNoiseTerm();
+          else if ( viewWidth() == rcss::pcom::VIEW_WIDTH::WIDE)
+              term = wideViewAngleNoiseTerm();
+          return ServerParam::instance().quantizeStep() * term;
 #else
           return dist_qstep_player;
 #endif
@@ -259,7 +267,12 @@ public:
     double landDistQStep() const
       {
 #ifndef NEW_QSTEP
-          return ServerParam::instance().landmarkQuantizeStep();
+        double term = narrowViewAngleNoiseTerm();
+        if ( viewWidth() == rcss::pcom::VIEW_WIDTH::NORMAL)
+            term = normalViewAngleNoiseTerm();
+        else if ( viewWidth() == rcss::pcom::VIEW_WIDTH::WIDE)
+            term = wideViewAngleNoiseTerm();
+        return ServerParam::instance().landmarkQuantizeStep() * term;
 #else
           return land_qstep_player;
 #endif
@@ -268,7 +281,12 @@ public:
     double dirQStep() const
       {
 #ifndef NEW_QSTEP
-          return 0.1;
+          double term = narrowViewAngleNoiseTerm();
+          if ( viewWidth() == rcss::pcom::VIEW_WIDTH::NORMAL)
+              term = normalViewAngleNoiseTerm();
+          else if ( viewWidth() == rcss::pcom::VIEW_WIDTH::WIDE)
+              term = wideViewAngleNoiseTerm();
+          return 0.1 * term;
 #else
           return dir_qstep_player;
 #endif
@@ -306,6 +324,9 @@ public:
     bool highQuality() const { return M_high_quality; }
     const double & visibleAngle() const { return M_visible_angle; }
     rcss::pcom::VIEW_WIDTH viewWidth() const { return M_view_width; }
+    double wideViewAngleNoiseTerm() const { return M_wide_view_angle_noise_term; }
+    double normalViewAngleNoiseTerm() const { return M_normal_view_angle_noise_term; }
+    double narrowViewAngleNoiseTerm() const { return M_narrow_view_angle_noise_term; }
 
     //
     // audio sensor
