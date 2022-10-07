@@ -123,6 +123,20 @@ NormalizeNeckAngle( const double & p )
                         Deg2Rad( ServerParam::instance().maxNeckAngle() ) );
 }
 
+inline
+double
+NormalizeFocusAngle(const double & player_to_focus_point_angle, const double & global_neck_angle, const double & visible_angle)
+{
+    double min_angle = normalize_angle(global_neck_angle - visible_angle / 2.0);
+    double max_angle = normalize_angle(global_neck_angle + visible_angle / 2.0);
+    double diff = normalize_angle(global_neck_angle - player_to_focus_point_angle);
+    if ( std::abs(diff) < visible_angle / 2.0 )
+        return player_to_focus_point_angle;
+    if (std::abs(normalize_angle(min_angle - player_to_focus_point_angle))
+        < std::abs(normalize_angle(max_angle - player_to_focus_point_angle)))
+        return min_angle;
+    return max_angle;
+}
 } // end of no-name namespace
 
 
