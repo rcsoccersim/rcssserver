@@ -244,11 +244,6 @@ public:
     const std::string & fixedShortName() const { return M_fixed_short_name; }
     const std::string & fixedShortNameFar() const { return M_fixed_short_name_far; }
 
-    const double & unumFarLength() const { return M_unum_far_length; }
-    const double & unumTooFarLength() const { return M_unum_too_far_length; }
-    const double & teamFarLength() const { return M_team_far_length; }
-    const double & teamTooFarLength() const { return M_team_too_far_length; }
-
     double distQStep() const
       {
 #ifndef NEW_QSTEP
