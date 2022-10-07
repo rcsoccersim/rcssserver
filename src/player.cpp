@@ -1538,6 +1538,7 @@ Player::goalieCatch( double dir )
         mag -= SP.ballSize() + M_player_type->playerSize();
         new_pos.normalize( mag );
         M_pos += new_pos;
+        M_focus_point_committed = rcss::geom::Vector2D(M_pos.x, M_pos.y);
         M_angle_body = new_pos.th();
         M_vel = PVector();
 
@@ -1617,6 +1618,7 @@ Player::move( double x,
 
         M_pos.x = x * side();
         M_pos.y = y * side();
+        M_focus_point_committed = rcss::geom::Vector2D(M_pos.x, M_pos.y);
         M_stadium.collisions();
     }
     else if ( ( M_stadium.playmode() == PM_FreeKick_Left
@@ -1628,6 +1630,7 @@ Player::move( double x,
         {
             M_pos.x = x * side();
             M_pos.y = y * side();
+            M_focus_point_committed = rcss::geom::Vector2D(M_pos.x, M_pos.y);
             ++M_goalie_moves_since_catch;
         }
         else
