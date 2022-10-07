@@ -147,11 +147,6 @@ Player::Player( Stadium & stadium,
       M_unum( number ),
       M_goalie( false ),
       //
-      M_unum_far_length( 20.0 ),
-      M_unum_too_far_length( 40.0 ),
-      M_team_far_length( 40.0 ),
-      M_team_too_far_length( 60.0 ),
-      //
       M_clang_min_ver( 0 ),
       M_clang_max_ver( 0 ),
       //
@@ -189,6 +184,7 @@ Player::Player( Stadium & stadium,
       //
       M_command_done( false ),
       M_turn_neck_done( false ),
+      M_set_focus_done( false ),
       M_done_received( false ),
       //
       M_goalie_catch_ban( 0 ),
@@ -202,6 +198,7 @@ Player::Player( Stadium & stadium,
       M_catch_count( 0 ),
       M_move_count( 0 ),
       M_turn_neck_count( 0 ),
+      M_set_focus_count(0 ),
       M_change_view_count( 0 ),
       M_say_count( 0 ),
       M_arm( ServerParam::instance().pointToBan(),
@@ -210,7 +207,10 @@ Player::Player( Stadium & stadium,
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_foul_cycles( 0 ),
-      M_foul_count( 0 )
+      M_foul_count( 0 ),
+      M_wide_view_angle_noise_term( 3.0 ),
+      M_normal_view_angle_noise_term( 2.0 ),
+      M_narrow_view_angle_noise_term( 1.0 )
 {
     assert( team );
 
@@ -222,6 +222,8 @@ Player::Player( Stadium & stadium,
 
     M_pos.x = -( unum() * 3 * team->side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
+
+    M_focus_point = rcss::geom::Vector2D(M_pos.x, M_pos.y);
 
     setPlayerType( 0 );
     recoverAll();
@@ -410,6 +412,8 @@ Player::resetState()
     }
 
     M_state &= state;
+
+    M_focus_point = rcss::geom::Vector2D(M_pos.x, M_pos.y);
 }
 
 void
@@ -563,6 +567,20 @@ Player::parseCommand( const char * command )
             buf += n_read;
 
             turn_neck( moment );
+        }
+        else if ( ! std::strncmp( buf, "(set_focus ", 11 ) )
+        {
+            double dist = 0.0;
+            double angle = 0.0;
+            if ( std::sscanf( buf, " ( set_focus %lf %lf ) %n ",
+                              &dist, &angle, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            set_focus( dist, angle );
         }
         else if ( ! std::strncmp( buf, "(say ", 5 ) )
         {
@@ -1123,6 +1141,19 @@ Player::turn_neck( double moment )
                                            + NormalizeNeckMoment( moment ) );
         ++M_turn_neck_count;
         M_turn_neck_done = true;
+    }
+}
+
+void
+Player::set_focus( double dist, double angle )
+{
+    if ( ! M_set_focus_done )
+    {
+        double global_angle = Deg2Rad(angle) + angleNeckCommitted() + angleBodyCommitted();
+        global_angle = normalize_angle(angle);
+        M_focus_point = rcss::geom::Vector2D(pos().x, pos().y) + rcss::geom::polarVector2D(dist, global_angle);
+        ++M_set_focus_count;
+        M_set_focus_done = true;
     }
 }
 
@@ -2330,6 +2361,7 @@ Player::turnImpl()
     M_angle_neck_committed = this->M_angle_neck;
     M_vel.assign( 0.0, 0.0 );
     M_accel.assign( 0.0, 0.0 );
+    update_set_focus_point_committed();
 }
 
 void
@@ -2337,6 +2369,21 @@ Player::updateAngle()
 {
     M_angle_body_committed = this->M_angle_body;
     M_angle_neck_committed = this->M_angle_neck;
+    update_set_focus_point_committed();
+}
+
+void
+Player::update_set_focus_point_committed(){
+    rcss::geom::Vector2D player_pos(pos().x, pos().y);
+    M_focus_point_committed = this->M_focus_point;
+    double dist_to_player = dist(player_pos, M_focus_point_committed);
+    double angle_player_to_focus_point = (M_focus_point_committed - player_pos).getHead();
+    dist_to_player = std::min(dist(M_focus_point_committed, player_pos), 40.0);
+    double global_neck_angle = angleNeckCommitted() + angleBodyCommitted();
+    angle_player_to_focus_point = NormalizeFocusAngle(angle_player_to_focus_point,
+                                                      global_neck_angle,
+                                                      M_visible_angle);
+    M_focus_point_committed = player_pos + rcss::geom::polarVector2D(dist_to_player, angle_player_to_focus_point);
 }
 
 void
@@ -2575,6 +2622,8 @@ Player::resetCommandFlags()
     }
 
     M_turn_neck_done = false;
+
+    M_set_focus_done = false;
 
     M_done_received = false;
 }
