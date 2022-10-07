@@ -238,7 +238,7 @@ Player::Player( Stadium & stadium,
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
 
     M_focus_point = rcss::geom::Vector2D(M_pos.x, M_pos.y);
-
+    M_focus_point_committed = rcss::geom::Vector2D(M_pos.x, M_pos.y);
     setPlayerType( 0 );
     recoverAll();
 }
@@ -426,8 +426,6 @@ Player::resetState()
     }
 
     M_state &= state;
-
-    M_focus_point = rcss::geom::Vector2D(M_pos.x, M_pos.y);
 }
 
 void
@@ -459,7 +457,7 @@ Player::disable()
     M_vel.y = 0.0;
     M_accel.x = 0.0;
     M_accel.y = 0.0;
-
+    M_focus_point_committed = rcss::geom::Vector2D(M_pos.x, M_pos.y);
     if ( connected() )
     {
         RemoteClient::close();
@@ -2375,7 +2373,6 @@ Player::turnImpl()
     M_angle_neck_committed = this->M_angle_neck;
     M_vel.assign( 0.0, 0.0 );
     M_accel.assign( 0.0, 0.0 );
-    update_set_focus_point_committed();
 }
 
 void
@@ -2383,12 +2380,15 @@ Player::updateAngle()
 {
     M_angle_body_committed = this->M_angle_body;
     M_angle_neck_committed = this->M_angle_neck;
-    update_set_focus_point_committed();
 }
 
 void
-Player::update_set_focus_point_committed(){
+Player::updateFocusPoint()
+{
     rcss::geom::Vector2D player_pos(pos().x, pos().y);
+    if ( !M_set_focus_done )
+        M_focus_point = player_pos;
+
     M_focus_point_committed = this->M_focus_point;
     double dist_to_player = dist(player_pos, M_focus_point_committed);
     double angle_player_to_focus_point = (M_focus_point_committed - player_pos).getHead();
@@ -2684,6 +2684,7 @@ void
 Player::place( const PVector & location )
 {
     M_pos = location;
+    M_focus_point_committed = rcss::geom::Vector2D(M_pos.x, M_pos.y);
     M_vel.assign( 0.0, 0.0 );
     M_accel.assign( 0.0, 0.0 );
 }
@@ -2695,6 +2696,7 @@ Player::place( const PVector & pos,
                const PVector & accel )
 {
     M_pos = pos;
+    M_focus_point_committed = rcss::geom::Vector2D(M_pos.x, M_pos.y);
     M_angle_body = angle;
     M_angle_body_committed = angle;
     M_vel = vel;

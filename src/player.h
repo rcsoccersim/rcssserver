@@ -439,6 +439,8 @@ protected:
     virtual
     void updateAngle() override;
     virtual
+    void updateFocusPoint() override;
+    virtual
     void collidedWithPost() override;
     virtual
     double maxAccel() const override;

@@ -620,6 +620,7 @@ MPObject::_inc()
     }
 
     M_pos = new_pos;
+    updateFocusPoint();
     M_vel *= M_decay;
     M_accel *= 0.0;
 }
