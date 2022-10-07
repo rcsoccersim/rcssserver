@@ -1195,6 +1195,7 @@ RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitor
 RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
 RegHolder vm4 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 4 );
 RegHolder vm5 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorJSON >, 5 );
+RegHolder vm6 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 6 );
 
 
 template< typename Sender >
