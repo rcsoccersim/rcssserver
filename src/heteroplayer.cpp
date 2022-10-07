@@ -122,6 +122,8 @@ HeteroPlayer::HeteroPlayer()
                                          PP.catchAreaLengthStretchMax() );
         M_catchable_area_l_stretch = tmp_delta;
 
+        setDefaultObservationParams();
+
         //
         double real_speed_max
             = ( SP.maxPower() * M_dash_power_rate * M_effort_max )
@@ -232,8 +234,27 @@ HeteroPlayer::setDefault()
     M_kick_power_rate = SP.kickPowerRate();
     M_foul_detect_probability = SP.foulDetectProbability();
     M_catchable_area_l_stretch = 1.0;
+
+    // v18
+    setDefaultObservationParams();
 }
 
+void
+HeteroPlayer::setDefaultObservationParams()
+{
+    double maximum_dist_in_pitch = sqrt(pow(ServerParam::PITCH_LENGTH, 2.0) + pow(ServerParam::PITCH_WIDTH, 2.0));
+    M_unum_far_length = 20.0;
+    M_unum_too_far_length = 40.0;
+    M_team_far_length = maximum_dist_in_pitch;  // was 40.0 updated by Nader Zare in 2022-10-13
+    M_team_too_far_length = maximum_dist_in_pitch;  // was 60.0 updated by Nader Zare in 2022-10-13
+    M_player_max_observation_length = maximum_dist_in_pitch;
+    M_ball_vel_far_length = 20;
+    M_ball_vel_too_far_length = 40;
+    M_ball_max_observation_length = maximum_dist_in_pitch;
+    M_flag_chg_far_length = 20;
+    M_flag_chg_too_far_length = 40;
+    M_flag_max_observation_length = maximum_dist_in_pitch;
+}
 std::ostream &
 HeteroPlayer::print( std::ostream & o ) const
 {
@@ -255,7 +276,19 @@ HeteroPlayer::print( std::ostream & o ) const
         = ( ( playerSpeedMax() * ( 1 - playerDecay() ) )
             / dashPowerRate() )
         - staminaIncMax();
-    o << "\tPower Cons @ max vel = " << power_cons_at_max_vel << std::endl;
+    o << "\tPower Cons @ max vel = " << power_cons_at_max_vel << '\n';
+    o << "\tUnum Far Length = " << unumFarLength() << '\n';
+    o << "\tUnum Too Far Length = " << unumTooFarLength() << '\n';
+    o << "\tTeam Far Length = " << teamFarLength() << '\n';
+    o << "\tTeam Too Far Length = " << teamTooFarLength() << '\n';
+    o << "\tPlayer Max Observation Length = " << playerMaxObservationLength() << '\n';
+    o << "\tBall Vel Far Length = " << ballVelFarLength() << '\n';
+    o << "\tBall Vel Too Far Length = " << ballVelTooFarLength() << '\n';
+    o << "\tBall Max Observation Length = " << ballMaxObservationLength() << '\n';
+    o << "\tFlag Chg Far Length = " << flagChgFarLength() << '\n';
+    o << "\tFlag Chg Too Far Length = " << flagChgTooFarLength() << '\n';
+    o << "\tFlag Max Observation Length = " << flagMaxObservationLength() << std::endl;
+
     return o;
 }
 
@@ -281,6 +314,17 @@ HeteroPlayer::convertToStruct( int id ) const
     tmp.foul_detect_probability = htonl( static_cast< Int32 >( rint( ( foulDetectProbability() * SHOWINFO_SCALE2 ) ) ) );
     tmp.catchable_area_l_stretch = htonl( static_cast< Int32 >( rint( ( catchAreaLengthStretch() * SHOWINFO_SCALE2 ) ) ) );
 
+    tmp.unum_far_length = htonl( static_cast< Int32 >( rint( ( unumFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.unum_too_far_length = htonl( static_cast< Int32 >( rint( ( unumTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.team_far_length = htonl( static_cast< Int32 >( rint( ( teamFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.team_too_far_length = htonl( static_cast< Int32 >( rint( ( teamTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.player_max_observation_length = htonl( static_cast< Int32 >( rint( ( playerMaxObservationLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.ball_vel_far_length = htonl( static_cast< Int32 >( rint( ( ballVelFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.ball_vel_too_far_length = htonl( static_cast< Int32 >( rint( ( ballVelTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.ball_max_observation_length = htonl( static_cast< Int32 >( rint( ( ballMaxObservationLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.flag_chg_far_length = htonl( static_cast< Int32 >( rint( ( flagChgFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.flag_chg_too_far_length = htonl( static_cast< Int32 >( rint( ( flagChgTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
+    tmp.flag_max_observation_length = htonl( static_cast< Int32 >( rint( ( flagMaxObservationLength() * SHOWINFO_SCALE2 ) ) ) );
     return tmp;
 }
 
@@ -331,6 +375,23 @@ HeteroPlayer::printParamsSExp( std::ostream & o,
     to_sexp( o, "kick_power_rate", kickPowerRate() );
     to_sexp( o, "foul_detect_probability", foulDetectProbability() );
     to_sexp( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
+
+    if ( version < 18 )
+    {
+        return;
+    }
+
+    to_sexp( o, "unum_far_length", unumFarLength() );
+    to_sexp( o, "unum_too_far_length", unumTooFarLength() );
+    to_sexp( o, "team_far_length", teamFarLength() );
+    to_sexp( o, "team_too_far_length", teamTooFarLength() );
+    to_sexp( o, "player_max_observation_length", playerMaxObservationLength() );
+    to_sexp( o, "ball_vel_far_length", ballVelFarLength() );
+    to_sexp( o, "ball_vel_too_far_length", ballVelTooFarLength() );
+    to_sexp( o, "ball_max_observation_length", ballMaxObservationLength() );
+    to_sexp( o, "flag_chg_far_length", flagChgFarLength() );
+    to_sexp( o, "flag_chg_too_far_length", flagChgTooFarLength() );
+    to_sexp( o, "flag_max_observation_length", flagMaxObservationLength() );
 }
 
 
@@ -367,5 +428,30 @@ HeteroPlayer::printParamsJSON( std::ostream & o,
         to_json_member( o, "foul_detect_probability", foulDetectProbability() );
         o << ',';
         to_json_member( o, "catchable_area_l_stretch", catchAreaLengthStretch() );
+    }
+    if ( version >= 18 ) // 14 > ??
+    {
+        o << ",";
+        to_json_member( o, "unum_far_length", unumFarLength() );
+        o << ",";
+        to_json_member( o, "unum_too_far_length", unumTooFarLength() );
+        o << ",";
+        to_json_member( o, "team_far_length", teamFarLength() );
+        o << ",";
+        to_json_member( o, "team_too_far_length", teamTooFarLength() );
+        o << ",";
+        to_json_member( o, "player_max_observation_length", playerMaxObservationLength() );
+        o << ",";
+        to_json_member( o, "ball_vel_far_length", ballVelFarLength() );
+        o << ",";
+        to_json_member( o, "ball_vel_too_far_length", ballVelTooFarLength() );
+        o << ",";
+        to_json_member( o, "ball_max_observation_length", ballMaxObservationLength() );
+        o << ",";
+        to_json_member( o, "flag_chg_far_length", flagChgFarLength() );
+        o << ",";
+        to_json_member( o, "flag_chg_too_far_length", flagChgTooFarLength() );
+        o << ",";
+        to_json_member( o, "flag_max_observation_length", flagMaxObservationLength() );
     }
 }

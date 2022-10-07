@@ -58,6 +58,18 @@ public:
     double foulDetectProbability() const { return M_foul_detect_probability; }
     double catchAreaLengthStretch() const { return M_catchable_area_l_stretch; }
 
+    double unumFarLength() const { return M_unum_far_length; }
+    double unumTooFarLength() const { return M_unum_too_far_length; }
+    double teamFarLength() const { return M_team_far_length; }
+    double teamTooFarLength() const { return M_team_too_far_length; }
+    double playerMaxObservationLength() const { return M_player_max_observation_length; }
+    double ballVelFarLength() const { return M_ball_vel_far_length; }
+    double ballVelTooFarLength() const { return M_ball_vel_too_far_length; }
+    double ballMaxObservationLength() const { return M_ball_max_observation_length; }
+    double flagChgFarLength() const { return M_flag_chg_far_length; }
+    double flagChgTooFarLength() const { return M_flag_chg_too_far_length; }
+    double flagMaxObservationLength() const { return M_flag_max_observation_length; }
+
     std::ostream & print( std::ostream & o ) const;
 
     player_type_t convertToStruct( int id ) const;
@@ -71,6 +83,8 @@ private:
     double delta( const double & min,
                   const double & max );
     void setDefault();
+
+    void setDefaultObservationParams();
 
     double M_player_speed_max;
     double M_stamina_inc_max;
@@ -89,6 +103,18 @@ private:
     double M_foul_detect_probability;
     double M_catchable_area_l_stretch;
 
+    // v18
+    double M_unum_far_length;
+    double M_unum_too_far_length;
+    double M_team_far_length;
+    double M_team_too_far_length;
+    double M_player_max_observation_length;
+    double M_ball_vel_far_length;
+    double M_ball_vel_too_far_length;
+    double M_ball_max_observation_length;
+    double M_flag_chg_far_length;
+    double M_flag_chg_too_far_length;
+    double M_flag_max_observation_length;
 };
 
 inline
