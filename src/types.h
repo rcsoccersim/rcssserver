@@ -361,6 +361,18 @@ struct player_type_t {
     Int32 foul_detect_probability;
     Int32 catchable_area_l_stretch;
 
+    Int32 unum_far_length;
+    Int32 unum_too_far_length;
+    Int32 team_far_length;
+    Int32 team_too_far_length;
+    Int32 player_max_observation_length;
+    Int32 ball_vel_far_length;
+    Int32 ball_vel_too_far_length;
+    Int32 ball_max_observation_length;
+    Int32 flag_chg_far_length;
+    Int32 flag_chg_too_far_length;
+    Int32 flag_max_observation_length;
+
     // spare variables which are to be used for paramenter added in the future
     //Int32 sparelong1;  replaced by kick_power_rate
     //Int32 sparelong2;  replaced by foul_detect_probability
