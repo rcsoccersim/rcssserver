@@ -1681,7 +1681,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
-            M_visual_send_interval = 2;
+            M_visual_send_interval = 1;
         }
     }
     else if ( viewWidth == rcss::pcom::WIDE )
@@ -1694,7 +1694,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
-            M_visual_send_interval = 3;
+            M_visual_send_interval = 1;
         }
     }
     else
@@ -1757,7 +1757,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
-            M_visual_send_interval = 2;
+            M_visual_send_interval = 1;
         }
     }
     else if ( viewWidth == rcss::pcom::WIDE )
@@ -1770,7 +1770,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
-            M_visual_send_interval = 3;
+            M_visual_send_interval = 1;
         }
     }
     else
@@ -2217,11 +2217,11 @@ Player::synch_see()
         break;
     case rcss::pcom::NORMAL:
         M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
-        M_visual_send_interval = 2;
+        M_visual_send_interval = 1;
         break;
     case rcss::pcom::WIDE:
         M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
-        M_visual_send_interval = 3;
+        M_visual_send_interval = 1;
         break;
     default:
         return;
