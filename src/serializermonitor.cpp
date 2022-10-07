@@ -640,6 +640,10 @@ SerializerMonitorJSON::serializePlayerPos( std::ostream & os,
        << std::quoted( "body" ) << ':' << Quantize( Rad2Deg( player.angleBodyCommitted() ), DIR_PREC );
     os << ','
        << std::quoted( "neck" ) << ':' << Quantize( Rad2Deg( player.angleNeckCommitted() ), DIR_PREC );
+    os << ','
+       << std::quoted( "focusx" ) << ':' << Quantize( player.focusPointCommitted().getX(), POS_PREC )
+       << ','
+       << std::quoted( "focusy" ) << ':' << Quantize( player.focusPointCommitted().getY(), POS_PREC );
 }
 
 
@@ -775,6 +779,8 @@ SerializerMonitorJSON::serializePlayerCounts( std::ostream & os,
        << std::quoted( "pointto" ) << ':' << player.arm().getCounter()
        << ','
        << std::quoted( "attentionto" ) << ':' << player.attentiontoCount()
+       << ','
+       << std::quoted( "set_focus" ) << ':' << player.setFocusCount()
        << '}';
 #endif
 }
