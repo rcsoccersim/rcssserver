@@ -379,6 +379,32 @@ protected:
 
 };
 
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV18
+//
+//  DESC: version 18 of the sense body protocol. Added card info
+//
+//===================================================================
+*/
+
+class BodySenderPlayerV18
+    : public BodySenderPlayerV14
+{
+public:
+    BodySenderPlayerV18( const Params & params );
+
+    virtual
+    ~BodySenderPlayerV18() override;
+
+protected:
+    virtual
+    void sendBodyData() override;
+
+    virtual
+    void sendCounts() override;
+};
 }
 
 #endif
