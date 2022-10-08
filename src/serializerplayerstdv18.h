@@ -19,29 +19,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SERIALIZERPLAYERSTDV14_H
-#define SERIALIZERPLAYERSTDV14_H
+#ifndef SERIALIZERPLAYERSTDV18_H
+#define SERIALIZERPLAYERSTDV18_H
 
-#include "serializerplayerstdv13.h"
+#include "serializerplayerstdv14.h"
 
 namespace rcss {
 
-class SerializerPlayerStdv14
-    : public SerializerPlayerStdv13 {
+class SerializerPlayerStdv18
+    : public SerializerPlayerStdv14 {
 protected:
-    SerializerPlayerStdv14( const SerializerCommon::Ptr common );
+    SerializerPlayerStdv18( const SerializerCommon::Ptr common );
 
 public:
     virtual
-    ~SerializerPlayerStdv14() override;
+    ~SerializerPlayerStdv18() override;
 
     static
     const
     SerializerPlayer::Ptr create();
 
-
     virtual
-    void serializeFoul( std::ostream &,
+    void serializeFocusPoint( std::ostream &,
                         const Player & ) const override;
 
     virtual
@@ -55,10 +54,9 @@ public:
                                  const double &,
                                  const double &,
                                  const double &,
+                                 const double &,
+                                 const double &,
                                  const double & ) const override;
-    virtual
-    void serializeFSPlayerState( std::ostream &,
-                                 const Player & ) const override;
 };
 
 }

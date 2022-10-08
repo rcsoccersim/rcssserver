@@ -23,49 +23,36 @@
 #include <config.h>
 #endif
 
-#include "serializerplayerstdv14.h"
+#include "serializerplayerstdv18.h"
 
 #include "player.h"
 
 namespace rcss {
 
-SerializerPlayerStdv14::SerializerPlayerStdv14( const SerializerCommon::Ptr common )
-    : SerializerPlayerStdv13( common )
+SerializerPlayerStdv18::SerializerPlayerStdv18( const SerializerCommon::Ptr common )
+    : SerializerPlayerStdv14( common )
 {
 
 }
 
-SerializerPlayerStdv14::~SerializerPlayerStdv14()
+SerializerPlayerStdv18::~SerializerPlayerStdv18()
 {
 
 }
 
 void
-SerializerPlayerStdv14::serializeFoul( std::ostream & strm,
-                                       const Player & self ) const
+SerializerPlayerStdv18::serializeFocusPoint( std::ostream & strm,
+                                             const Player & self ) const
 {
-    strm << " (foul "
-         << " (charged " << self.foulCycles() << ')';
-
-    if ( self.hasRedCard() )
-    {
-        strm << " (card red)";
-    }
-    else if ( self.hasYellowCard() )
-    {
-        strm << " (card yellow)";
-
-    }
-    else
-    {
-        strm << " (card none)";
-    }
+    strm << " (focus_point "
+         << self.focusPointCommitted().getX() << " "
+         << self.focusPointCommitted().getY();
 
     strm << ')';
 }
 
 void
-SerializerPlayerStdv14::serializeFSPlayerBegin( std::ostream & strm,
+SerializerPlayerStdv18::serializeFSPlayerBegin( std::ostream & strm,
                                                 const char side,
                                                 const int unum,
                                                 const bool goalie,
@@ -75,7 +62,9 @@ SerializerPlayerStdv14::serializeFSPlayerBegin( std::ostream & strm,
                                                 const double & vel_x,
                                                 const double & vel_y,
                                                 const double & body_dir,
-                                                const double & neck_dir ) const
+                                                const double & neck_dir,
+                                                const double & focus_point_x,
+                                                const double & focus_point_y) const
 
 {
     strm << " ((p " << side
@@ -92,56 +81,27 @@ SerializerPlayerStdv14::serializeFSPlayerBegin( std::ostream & strm,
          << ' ' << vel_x
          << ' ' << vel_y
          << ' ' << body_dir
-         << ' ' << neck_dir;
+         << ' ' << neck_dir
+         << ' ' << focus_point_x
+         << ' ' << focus_point_y;
 }
-
-void
-SerializerPlayerStdv14::serializeFSPlayerState( std::ostream & strm,
-                                                const Player & player ) const
-{
-    if ( player.isTackling() )
-    {
-        strm << " t";
-    }
-    else if ( player.kicked() )
-    {
-        strm << " k";
-    }
-    else if ( player.foulCycles() > 0 )
-    {
-        strm << " f";
-    }
-
-    if ( player.hasRedCard() )
-    {
-        strm << " r";
-    }
-    else if ( player.hasYellowCard() )
-    {
-        strm << " y";
-    }
-}
-
 
 const
 SerializerPlayer::Ptr
-SerializerPlayerStdv14::create()
+SerializerPlayerStdv18::create()
 {
     SerializerCommon::Creator cre;
-    if ( ! SerializerCommon::factory().getCreator( cre, 14 ) )
+    if ( ! SerializerCommon::factory().getCreator( cre, 18 ) )
     {
         return SerializerPlayer::Ptr();
     }
 
-    SerializerPlayer::Ptr ptr( new SerializerPlayerStdv14( cre() ) );
+    SerializerPlayer::Ptr ptr( new SerializerPlayerStdv18( cre() ) );
     return ptr;
 }
 
 namespace {
-RegHolder v14 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 14 );
-RegHolder v15 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 15 );
-RegHolder v16 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 16 );
-RegHolder v17 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 17 );
+RegHolder v18 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv18::create, 18 );
 }
 
 }
