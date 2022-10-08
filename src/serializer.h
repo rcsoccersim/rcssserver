@@ -503,6 +503,34 @@ public:
                                 const int /* point_dir */ ) const
       { }
 
+    virtual
+    void serializeVisualPlayer( std::ostream &, /* strm */
+                                const Player &, /* player */
+                                const std::string &, /* name */
+                                const double &, /* dist */
+                                const int, /* dir */
+                                const double &, /* dist_chg */
+                                const double &, /* dir_chg */
+                                const int, /* body_dir */
+                                const int, /* head_dir */
+                                const double, /* focus_point_x */
+                                const double /* focus_point_y */) const
+    { }
+
+    virtual
+    void serializeVisualPlayer( std::ostream &, /* strm */
+                                const Player &, /* player */
+                                const std::string &, /* name */
+                                const double &, /* dist */
+                                const int, /* dir */
+                                const double &, /* dist_chg */
+                                const double &, /* dir_chg */
+                                const int, /* body_dir */
+                                const int, /* head_dir */
+                                const int, /* point_dir */
+                                const double, /* focus_point_x */
+                                const double /* focus_point_y */) const
+    { }
 
     virtual
     void serializeBodyBegin( std::ostream &,
@@ -674,6 +702,21 @@ public:
                                  const double & ) const
       { }
 
+    virtual
+    void serializeFSPlayerBegin( std::ostream &,
+                                 const char,
+                                 const int,
+                                 const bool,
+                                 const int,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double &,
+                                 const double & ) const
+    { }
     virtual
     void serializeFSPlayerArm( std::ostream &,
                                const double &,
