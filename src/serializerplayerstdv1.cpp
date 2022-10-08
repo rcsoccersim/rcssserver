@@ -175,6 +175,13 @@ SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
 }
 
 void
+SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
+                                            const int count_set_focus ) const
+{
+    strm << " (set_focus " << count_set_focus << ')';
+}
+
+void
 SerializerPlayerStdv1::serializeNeckAngle( std::ostream & strm,
                                            const int ang ) const
 {
