@@ -65,6 +65,17 @@ SerializerPlayerStdv14::serializeFoul( std::ostream & strm,
 }
 
 void
+SerializerPlayerStdv14::serializeFocusPoint( std::ostream & strm,
+                                             const Player & self ) const
+{
+    strm << " (focus_point "
+         << self.focusPointCommitted().getX() << " "
+         << self.focusPointCommitted().getY();
+
+    strm << ')';
+}
+
+void
 SerializerPlayerStdv14::serializeFSPlayerBegin( std::ostream & strm,
                                                 const char side,
                                                 const int unum,
@@ -142,6 +153,7 @@ RegHolder v14 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::cr
 RegHolder v15 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 15 );
 RegHolder v16 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 16 );
 RegHolder v17 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 17 );
+RegHolder v18 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv14::create, 18 );
 }
 
 }

@@ -45,6 +45,10 @@ public:
                         const Player & ) const override;
 
     virtual
+    void serializeFocusPoint( std::ostream &,
+                        const Player & ) const override;
+
+    virtual
     void serializeFSPlayerBegin( std::ostream &,
                                  const char,
                                  const int,
