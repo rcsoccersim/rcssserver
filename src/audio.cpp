@@ -984,6 +984,7 @@ RegHolder vp14 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlaye
 RegHolder vp15 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 15 );
 RegHolder vp16 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 16 );
 RegHolder vp17 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 17 );
+RegHolder vp18 = AudioSenderPlayer::factory().autoReg( &create< AudioSenderPlayerv8 >, 18 );
 
 template< typename Sender >
 AudioSender::Ptr
