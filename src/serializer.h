@@ -675,6 +675,19 @@ public:
       { }
 
     virtual
+    void serializeFSCounts( std::ostream &,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int,
+                            const int ) const
+    { }
+
+    virtual
     void serializeFSScore( std::ostream &,
                            const int,
                            const int ) const

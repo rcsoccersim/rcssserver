@@ -40,6 +40,18 @@ public:
     SerializerPlayer::Ptr create();
 
     virtual
+    void serializeFSCounts( std::ostream & strm,
+                            const int count_kick,
+                            const int count_dash,
+                            const int count_turn,
+                            const int count_catch,
+                            const int count_move,
+                            const int count_turn_neck,
+                            const int count_change_view,
+                            const int count_say,
+                            const int count_set_focus) const override;
+
+    virtual
     void serializeFocusPoint( std::ostream &,
                         const Player & ) const override;
 

@@ -41,6 +41,31 @@ SerializerPlayerStdv18::~SerializerPlayerStdv18()
 }
 
 void
+SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
+                                          const int count_kick,
+                                          const int count_dash,
+                                          const int count_turn,
+                                          const int count_catch,
+                                          const int count_move,
+                                          const int count_turn_neck,
+                                          const int count_change_view,
+                                          const int count_say,
+                                          const int count_set_focus) const
+{
+    strm << " (count "
+         << count_kick << ' '
+         << count_dash << ' '
+         << count_turn << ' '
+         << count_catch << ' '
+         << count_move << ' '
+         << count_turn_neck << ' '
+         << count_change_view << ' '
+         << count_say << ' '
+         << count_set_focus
+         << ')';
+}
+
+void
 SerializerPlayerStdv18::serializeFocusPoint( std::ostream & strm,
                                              const Player & self ) const
 {

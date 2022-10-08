@@ -505,6 +505,31 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
     serializer().serializeFSPlayerEnd( transport() );
 }
 
+void
+FullStateSenderPlayerV18::sendSelf()
+{
+    rcss::geom::Vector2D arm_vec;
+    self().arm().getRelDest( rcss::geom::Vector2D ( self().pos().x,
+                                                    self().pos().y ),
+                             self().angleBodyCommitted()
+                             + self().angleNeckCommitted(),
+                             arm_vec );
+    serializer().serializeFSCounts( transport(),
+                                    self().kickCount(),
+                                    self().dashCount(),
+                                    self().turnCount(),
+                                    self().catchCount(),
+                                    self().moveCount(),
+                                    self().turnNeckCount(),
+                                    self().changeViewCount(),
+                                    self().sayCount(),
+                                    self().setFocusCount());
+    serializer().serializeArm( transport(),
+                               self().arm().getCyclesTillMovable(),
+                               self().arm().getCyclesTillExpiry(),
+                               arm_vec.getMag(), Rad2IDegRound( arm_vec.getHead() ),
+                               self().arm().getCounter() );
+}
 /*!
 //===================================================================
 //
