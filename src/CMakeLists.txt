@@ -54,6 +54,7 @@ add_executable(RCSSServer
     serializercoachstdv8.cpp
     serializercoachstdv13.cpp
     serializercoachstdv14.cpp
+	serializercoachstdv18.cpp
     serializercommonstdv1.cpp
     serializercommonstdv7.cpp
     serializercommonstdv8.cpp
@@ -70,6 +71,7 @@ add_executable(RCSSServer
     serializerplayerstdv8.cpp
     serializerplayerstdv13.cpp
     serializerplayerstdv14.cpp
+	serializerplayerstdv18.cpp
     serverparam.cpp
     stadium.cpp
     stdoutsaver.cpp
