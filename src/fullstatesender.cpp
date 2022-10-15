@@ -480,8 +480,8 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
                                          p.vel().y,
                                          Rad2Deg( p.angleBodyCommitted() ),
                                          Rad2Deg( p.angleNeckCommitted() ),
-                                         p.focusPointCommitted().getX(),
-                                         p.focusPointCommitted().getY());
+                                         Rad2Deg( p.focusPointCommitted().getHead() ),
+                                         p.focusPointCommitted().getMag() );
 
     if ( p.arm().isPointing() )
     {

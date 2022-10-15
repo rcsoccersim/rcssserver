@@ -337,6 +337,14 @@ public:
     const double & angleBodyCommitted() const { return M_angle_body_committed; }
     const double & angleNeckCommitted() const { return M_angle_neck_committed; }
     const rcss::geom::Vector2D & focusPointCommitted() const { return M_focus_point_committed; }
+    rcss::geom::Vector2D focusPointCommittedGlobalPos() const {
+        rcss::geom::Vector2D focus_point_global_pos = focusPointCommitted();
+        focus_point_global_pos.setHead(normalize_angle(angleBodyCommitted() +
+                                                             angleNeckCommitted() +
+                                                             focus_point_global_pos.getHead()));
+        focus_point_global_pos += rcss::geom::Vector2D(pos().x, pos().y);
+        return focus_point_global_pos;
+    }
 
     void recoverAll();
     void recoverStaminaCapacity();
@@ -456,7 +464,7 @@ private:
     void dash( double power, double dir ) override;
     void turn( double moment ) override;
     void turn_neck( double moment ) override;
-    void set_focus( double dist, double angle) override;
+    void set_focus( double moment_dir, double moment_dist) override;
     void kick( double power, double dir ) override;
     void long_kick( double power, double dir ) override;
     void goalieCatch( double dir ) override;
