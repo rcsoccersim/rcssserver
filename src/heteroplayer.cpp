@@ -314,17 +314,6 @@ HeteroPlayer::convertToStruct( int id ) const
     tmp.foul_detect_probability = htonl( static_cast< Int32 >( rint( ( foulDetectProbability() * SHOWINFO_SCALE2 ) ) ) );
     tmp.catchable_area_l_stretch = htonl( static_cast< Int32 >( rint( ( catchAreaLengthStretch() * SHOWINFO_SCALE2 ) ) ) );
 
-    tmp.unum_far_length = htonl( static_cast< Int32 >( rint( ( unumFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.unum_too_far_length = htonl( static_cast< Int32 >( rint( ( unumTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.team_far_length = htonl( static_cast< Int32 >( rint( ( teamFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.team_too_far_length = htonl( static_cast< Int32 >( rint( ( teamTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.player_max_observation_length = htonl( static_cast< Int32 >( rint( ( playerMaxObservationLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.ball_vel_far_length = htonl( static_cast< Int32 >( rint( ( ballVelFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.ball_vel_too_far_length = htonl( static_cast< Int32 >( rint( ( ballVelTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.ball_max_observation_length = htonl( static_cast< Int32 >( rint( ( ballMaxObservationLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.flag_chg_far_length = htonl( static_cast< Int32 >( rint( ( flagChgFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.flag_chg_too_far_length = htonl( static_cast< Int32 >( rint( ( flagChgTooFarLength() * SHOWINFO_SCALE2 ) ) ) );
-    tmp.flag_max_observation_length = htonl( static_cast< Int32 >( rint( ( flagMaxObservationLength() * SHOWINFO_SCALE2 ) ) ) );
     return tmp;
 }
 
