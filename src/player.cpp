@@ -228,9 +228,9 @@ Player::Player( Stadium & stadium,
 {
     assert( team );
 
-    M_wide_view_angle_noise_term = (version() >= 18 ? 3 : 1);
-    M_normal_view_angle_noise_term = (version() >= 18 ? 2 : 1);
-    M_narrow_view_angle_noise_term = (version() >= 18 ? 1 : 1);
+    M_wide_view_angle_noise_term = (version() >= 18 ? 1 : 1);
+    M_normal_view_angle_noise_term = (version() >= 18 ? 0.75 : 1);
+    M_narrow_view_angle_noise_term = (version() >= 18 ? 0.5 : 1);
 
     M_enable = false;
 
