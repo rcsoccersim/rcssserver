@@ -513,8 +513,8 @@ public:
                                 const double &, /* dir_chg */
                                 const int, /* body_dir */
                                 const int, /* head_dir */
-                                const double, /* focus_point_x */
-                                const double /* focus_point_y */) const
+                                const int, /* focus_point_dir */
+                                const double /* focus_point_dist */) const
     { }
 
     virtual
@@ -527,9 +527,9 @@ public:
                                 const double &, /* dir_chg */
                                 const int, /* body_dir */
                                 const int, /* head_dir */
-                                const int, /* point_dir */
-                                const double, /* focus_point_x */
-                                const double /* focus_point_y */) const
+                                const int, /* focus_point_dir */
+                                const double, /* focus_point_dist */
+                                const int /* point_dir */) const
     { }
 
     virtual
