@@ -224,12 +224,13 @@ Player::Player( Stadium & stadium,
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_foul_cycles( 0 ),
-      M_foul_count( 0 ),
-      M_wide_view_angle_noise_term( 3.0 ),
-      M_normal_view_angle_noise_term( 2.0 ),
-      M_narrow_view_angle_noise_term( 1.0 )
+      M_foul_count( 0 )
 {
     assert( team );
+
+    M_wide_view_angle_noise_term = (version() >= 18 ? 3 : 1);
+    M_normal_view_angle_noise_term = (version() >= 18 ? 2 : 1);
+    M_narrow_view_angle_noise_term = (version() >= 18 ? 1 : 1);
 
     M_enable = false;
 
