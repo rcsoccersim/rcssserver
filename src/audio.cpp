@@ -1035,5 +1035,6 @@ RegHolder voc14 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSende
 RegHolder voc15 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 15 );
 RegHolder voc16 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 16 );
 RegHolder voc17 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 17 );
+RegHolder voc18 = AudioSenderOnlineCoach::factory().autoReg( &create< AudioSenderOnlineCoachv7 >, 18 );
 }
 }

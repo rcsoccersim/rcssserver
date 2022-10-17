@@ -54,6 +54,7 @@ add_executable(RCSSServer
     serializercoachstdv8.cpp
     serializercoachstdv13.cpp
     serializercoachstdv14.cpp
+	serializercoachstdv18.cpp
 	serializercommonstdv1.cpp
     serializercommonstdv7.cpp
     serializercommonstdv8.cpp
@@ -65,6 +66,7 @@ add_executable(RCSSServer
     serializeronlinecoachstdv8.cpp
     serializeronlinecoachstdv13.cpp
     serializeronlinecoachstdv14.cpp
+	serializeronlinecoachstdv18.cpp
     serializerplayerstdv1.cpp
     serializerplayerstdv7.cpp
     serializerplayerstdv8.cpp

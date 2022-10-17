@@ -328,6 +328,34 @@ protected:
     void serializePlayerLook( const Player & player ) override;
 };
 
+/*!
+//===================================================================
+//
+//  CLASS: VisualSenderCoachV18
+//
+//  DESC: added focus point information.
+//
+//===================================================================
+*/
+
+class VisualSenderCoachV18
+        : public VisualSenderCoachV13 {
+public:
+
+    VisualSenderCoachV18( const Params & params );
+
+    virtual
+    ~VisualSenderCoachV18();
+
+
+protected:
+
+    virtual
+    void serializePlayer( const Player & player ) override;
+
+    virtual
+    void serializePlayerLook( const Player & player ) override;
+};
 }
 
 #endif

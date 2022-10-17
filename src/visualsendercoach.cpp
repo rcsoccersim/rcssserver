@@ -340,6 +340,62 @@ VisualSenderCoachV13::serializePlayerLook( const Player & player )
 /*!
 //===================================================================
 //
+//  CLASS: VisualSenderCoachV18
+//
+//  DESC:
+//
+//===================================================================
+*/
+
+VisualSenderCoachV18::VisualSenderCoachV18( const Params & params )
+        : VisualSenderCoachV13( params )
+{
+
+}
+
+VisualSenderCoachV18::~VisualSenderCoachV18()
+{
+
+}
+
+void
+VisualSenderCoachV18::serializePlayer( const Player & player )
+{
+    if ( player.arm().isPointing() )
+    {
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
+                                            calcPlayerName( player ),
+                                            player.pos(),
+                                            player.vel(),
+                                            rad2Deg( player.angleBodyCommitted() ),
+                                            rad2Deg( player.angleNeckCommitted() ),
+                                            rad2Deg( player.focusPointCommitted().getHead()),
+                                            player.focusPointCommitted().getMag(),
+                                            calcPointDir( player ) );
+    }
+    else
+    {
+        serializer().serializeVisualPlayer( transport(),
+                                            player,
+                                            calcPlayerName( player ),
+                                            player.pos(),
+                                            player.vel(),
+                                            rad2Deg( player.angleBodyCommitted() ),
+                                            rad2Deg( player.angleNeckCommitted() ),
+                                            rad2Deg( player.focusPointCommitted().getHead()),
+                                            player.focusPointCommitted().getMag() );
+    }
+}
+
+void
+VisualSenderCoachV18::serializePlayerLook( const Player & player )
+{
+    VisualSenderCoachV13::serializePlayer( player );
+}
+/*!
+//===================================================================
+//
 //  Register senders for different versions
 //
 //===================================================================
@@ -370,6 +426,7 @@ RegHolder vc14 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoac
 RegHolder vc15 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 15 );
 RegHolder vc16 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 16 );
 RegHolder vc17 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV13 >, 17 );
+RegHolder vc18 = VisualSenderCoach::factory().autoReg( &create< VisualSenderCoachV18 >, 18 );
 }
 
 }
