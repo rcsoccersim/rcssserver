@@ -436,6 +436,7 @@ private:
     void dash( double power ) override;
     void dash( double power, double dir ) override;
     void turn( double moment ) override;
+    void turn_keep_vel( double moment ) override;
     void turn_neck( double moment ) override;
     void kick( double power, double dir ) override;
     void long_kick( double power, double dir ) override;

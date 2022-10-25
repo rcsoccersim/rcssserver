@@ -79,6 +79,7 @@ public:
     virtual void dash( double power ) = 0;
     virtual void dash( double power, double dir ) = 0;
     virtual void turn( double moment ) = 0;
+    virtual void turn_keep_vel( double moment ) = 0;
     virtual void turn_neck( double moment ) = 0;
     virtual void kick( double power, double dir ) = 0;
     virtual void long_kick( double power, double dir ) = 0;

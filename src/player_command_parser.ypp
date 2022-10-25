@@ -71,6 +71,7 @@ namespace
 
 %token RCSS_PCOM_DASH "dash"
 %token RCSS_PCOM_TURN "turn"
+%token RCSS_PCOM_TURN_KEEP_VEL "turn_keep_vel"
 %token RCSS_PCOM_TURN_NECK "turn_neck"
 %token RCSS_PCOM_KICK "kick"
 %token RCSS_PCOM_LONG_KICK "long_kick"
@@ -131,6 +132,7 @@ command_list : command
 
 command : dash_com
           | turn_com
+          | turn_keep_vel_com
           | turn_neck_com
           | kick_com
           | long_kick_com
@@ -164,6 +166,12 @@ dash_com : RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number RCSS_PCOM_RP
 turn_com : RCSS_PCOM_LP RCSS_PCOM_TURN floating_point_number RCSS_PCOM_RP
            {
              BUILDER.turn( $< m_double >3 );
+           }
+;
+
+turn_keep_vel_com : RCSS_PCOM_LP RCSS_PCOM_TURN_KEEP_VEL floating_point_number RCSS_PCOM_RP
+           {
+             BUILDER.turn_keep_vel( $< m_double >3 );
            }
 ;
 

@@ -537,6 +537,19 @@ Player::parseCommand( const char * command )
 
             turn( moment );
         }
+        else if ( ! std::strncmp( buf, "(turn_keep_vel ", 6 ) )
+        {
+            double moment = 0.0;
+            if ( std::sscanf( buf, " ( turn_keep_vel %lf ) %n ",
+                              &moment, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            turn_keep_vel( moment );
+        }
         else if ( ! std::strncmp( buf, "(dash ", 6 ) )
         {
             double power = 0.0, dir = 0.0;
@@ -1109,6 +1122,28 @@ Player::turn( double moment )
                                         + ( 1.0 + drand( -M_randp, M_randp ) )
                                         * NormalizeMoment( moment )
                                         / ( 1.0 + M_player_type->inertiaMoment() * vel().r() ) );
+        ++M_turn_count;
+        M_command_done = true;
+    }
+}
+
+void
+Player::turn_keep_vel(double moment)
+{
+    if ( ! M_command_done )
+    {
+        M_angle_body = normalize_angle( angleBodyCommitted()
+                                        + ( 1.0 + drand( -M_randp, M_randp ) )
+                                          * NormalizeMoment( moment )
+                                          / ( 1.0 + M_player_type->inertiaMoment() * vel().r() ) );
+        double new_body_vel_diff = Rad2Deg(normalize_angle(M_angle_body - M_vel.th()));
+        if (new_body_vel_diff < 90.0){
+            double vel_dir_change = new_body_vel_diff * new_body_vel_diff / 90.0;
+            if (new_body_vel_diff < 0){
+                vel_dir_change *= -1.0;
+            }
+            M_vel.rotate(Deg2Rad(new_body_vel_diff - vel_dir_change));
+        }
         ++M_turn_count;
         M_command_done = true;
     }
