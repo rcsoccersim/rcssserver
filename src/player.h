@@ -157,6 +157,8 @@ private:
     // command state
     //
     bool M_command_done;
+    bool M_dash_done;
+    bool M_turn_done;
     bool M_turn_neck_done;
     bool M_done_received; //pfr:SYNCH
 

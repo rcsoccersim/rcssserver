@@ -188,6 +188,8 @@ Player::Player( Stadium & stadium,
       M_post_collide( false ),
       //
       M_command_done( false ),
+      M_dash_done( false ),
+      M_turn_done( false ),
       M_turn_neck_done( false ),
       M_done_received( false ),
       //
@@ -1037,7 +1039,7 @@ void
 Player::dash( double power,
               double dir )
 {
-    if ( ! M_command_done )
+    if ( ! M_command_done || ( M_turn_done && ! M_dash_done ) )
     {
         const ServerParam & param = ServerParam::instance();
 
@@ -1096,6 +1098,7 @@ Player::dash( double power,
         M_dash_cycles = 1;
         ++M_dash_count;
         M_command_done = true;
+        M_dash_done = true;
     }
 }
 
@@ -1103,7 +1106,7 @@ Player::dash( double power,
 void
 Player::turn( double moment )
 {
-    if ( ! M_command_done )
+    if ( ! M_command_done || ( ! M_turn_done && M_dash_done ))
     {
         M_angle_body = normalize_angle( angleBodyCommitted()
                                         + ( 1.0 + drand( -M_randp, M_randp ) )
@@ -1111,6 +1114,7 @@ Player::turn( double moment )
                                         / ( 1.0 + M_player_type->inertiaMoment() * vel().r() ) );
         ++M_turn_count;
         M_command_done = true;
+        M_turn_done = true;
     }
 }
 
@@ -2572,6 +2576,8 @@ Player::resetCommandFlags()
          && foulCycles() == 0 )
     {
         M_command_done = false;
+        M_dash_done = false;
+        M_turn_done = false;
     }
 
     M_turn_neck_done = false;
