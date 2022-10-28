@@ -10,6 +10,8 @@ add_library(RCSS::ConfParser ALIAS RCSSConfParser)
 
 target_link_libraries(RCSSConfParser
   PUBLIC
+    Boost::filesystem
+  PRIVATE
     Boost::boost
 )
 
