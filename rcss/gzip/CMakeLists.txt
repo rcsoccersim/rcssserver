@@ -4,11 +4,6 @@ add_library(RCSSGZ SHARED
 )
 add_library(RCSS::GZ ALIAS RCSSGZ)
 
-target_link_libraries(RCSSGZ
-  PUBLIC
-    Boost::boost
-)
-
 target_compile_definitions(RCSSGZ
   PUBLIC
     HAVE_CONFIG_H
