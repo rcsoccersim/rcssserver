@@ -187,7 +187,8 @@ Player::Player( Stadium & stadium,
       M_player_collide( false ),
       M_post_collide( false ),
       //
-      M_command_done( false ),
+      M_bye_done( false ),
+      M_set_foul_charged_done( false ),
       M_turn_neck_done( false ),
       M_done_received( false ),
       //
@@ -222,6 +223,9 @@ Player::Player( Stadium & stadium,
 
     M_pos.x = -( unum() * 3 * team->side() );
     M_pos.y = - ServerParam::PITCH_WIDTH/2.0 - 3.0;
+
+    M_main_commands_done.clear();
+    setDefaultPossibleMainPairCommands();
 
     setPlayerType( 0 );
     recoverAll();
@@ -341,6 +345,41 @@ Player::init( const double ver,
     }
 
     return true;
+}
+
+bool Player::canProcessMainCommand(const MainCommandType & command_type)
+{
+
+    if ( M_bye_done || M_set_foul_charged_done)
+    {
+        return false;
+    }
+
+    if ( M_main_commands_done.size() == 2){
+        return false;
+    }
+
+    if ( M_main_commands_done.empty()){
+        return true;
+    }
+
+
+    auto pair_commands = std::make_pair(M_main_commands_done.at(0), command_type);
+    auto it = std::find_if( M_possible_commands_pairs.begin(), M_possible_commands_pairs.end(),
+                            [&pair_commands](const std::pair<MainCommandType, MainCommandType>& element)
+                            { return element.first == pair_commands.first &&
+                                     element.second == pair_commands.second;} );
+    if ( it != M_possible_commands_pairs.end() )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void Player::setDefaultPossibleMainPairCommands()
+{
+//    M_possible_commands_pairs.emplace_back(std::make_pair(MC_TURN, MC_DASH));
 }
 
 void
@@ -1037,7 +1076,7 @@ void
 Player::dash( double power,
               double dir )
 {
-    if ( ! M_command_done )
+    if ( canProcessMainCommand(MainCommandType::MC_DASH) )
     {
         const ServerParam & param = ServerParam::instance();
 
@@ -1095,7 +1134,7 @@ Player::dash( double power,
 
         M_dash_cycles = 1;
         ++M_dash_count;
-        M_command_done = true;
+        M_main_commands_done.push_back(MainCommandType::MC_DASH);
     }
 }
 
@@ -1103,14 +1142,14 @@ Player::dash( double power,
 void
 Player::turn( double moment )
 {
-    if ( ! M_command_done )
+    if ( canProcessMainCommand(MainCommandType::MC_TURN) )
     {
         M_angle_body = normalize_angle( angleBodyCommitted()
                                         + ( 1.0 + drand( -M_randp, M_randp ) )
                                         * NormalizeMoment( moment )
                                         / ( 1.0 + M_player_type->inertiaMoment() * vel().r() ) );
         ++M_turn_count;
-        M_command_done = true;
+        M_main_commands_done.push_back(MainCommandType::MC_TURN);
     }
 }
 
@@ -1130,12 +1169,12 @@ void
 Player::kick( double power,
               double dir )
 {
-    if ( M_command_done )
+    if ( !canProcessMainCommand(MainCommandType::MC_KICK) )
     {
         return;
     }
 
-    M_command_done = true;
+    M_main_commands_done.push_back(MainCommandType::MC_KICK);
     M_kick_cycles = 1;
 
     power = NormalizeKickPower( power );
@@ -1249,12 +1288,12 @@ Player::long_kick( double power,
 {
     return;
 
-    if ( M_command_done )
+    if ( canProcessMainCommand(MainCommandType::MC_LONG_KICK) )
     {
         return;
     }
 
-    M_command_done = true;
+    M_main_commands_done.push_back( MainCommandType::MC_LONG_KICK );
     M_kick_cycles = ServerParam::instance().longKickDelay() + 1;
 
     M_long_kick_power = NormalizeKickPower( power );
@@ -1347,14 +1386,14 @@ Player::doLongKick()
 void
 Player::goalieCatch( double dir )
 {
-    if ( M_command_done )
+    if ( !canProcessMainCommand(MainCommandType::MC_CATCH) )
     {
         return;
     }
 
     dir = NormalizeCatchAngle( dir );
 
-    M_command_done = true;
+    M_main_commands_done.push_back( MainCommandType::MC_CATCH );
     M_state |= CATCH;
 
     //pfr: we should only be able to catch in PlayOn mode
@@ -1553,7 +1592,7 @@ void
 Player::move( double x,
               double y )
 {
-    if ( M_command_done )
+    if ( !canProcessMainCommand( MainCommandType::MC_MOVE) )
     {
         return;
     }
@@ -1597,7 +1636,7 @@ Player::move( double x,
         return;
     }
 
-    M_command_done = true;
+    M_main_commands_done.push_back(MainCommandType::MC_MOVE);
     ++M_move_count;
 }
 
@@ -1762,7 +1801,7 @@ void
 Player::bye()
 {
     disable();
-    M_command_done = true;
+    M_bye_done = true;
 }
 
 void
@@ -1879,12 +1918,12 @@ void
 Player::tackle( double power_or_angle,
                 bool foul )
 {
-    if ( M_command_done )
+    if ( !canProcessMainCommand( MainCommandType::MC_TACKLE ) )
     {
         return;
     }
 
-    M_command_done = true;
+    M_main_commands_done.push_back( MainCommandType::MC_TACKLE );
     M_tackle_cycles = ServerParam::instance().tackleCycles();
     ++M_tackle_count;
 
@@ -2571,7 +2610,8 @@ Player::resetCommandFlags()
          && tackleCycles() == 0
          && foulCycles() == 0 )
     {
-        M_command_done = false;
+        M_main_commands_done.clear();
+        M_set_foul_charged_done = false;
     }
 
     M_turn_neck_done = false;
@@ -2583,7 +2623,7 @@ void
 Player::setFoulCharged()
 {
     M_foul_cycles = ServerParam::instance().foulCycles();
-    M_command_done = true;
+    M_set_foul_charged_done = true;
     M_state |= FOUL_CHARGED;
 }
 

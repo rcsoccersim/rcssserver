@@ -50,6 +50,15 @@ class Player
       public rcss::pcom::Builder
 {
 public:
+    enum MainCommandType {
+        MC_DASH,
+        MC_TURN,
+        MC_KICK,
+        MC_CATCH,
+        MC_MOVE,
+        MC_TACKLE,
+        MC_LONG_KICK
+    };
     const double VISIBLE_DISTANCE;
     const double VISIBLE_DISTANCE2;
 
@@ -156,7 +165,10 @@ private:
     //
     // command state
     //
-    bool M_command_done;
+    std::vector<MainCommandType> M_main_commands_done;
+    std::vector<std::pair<MainCommandType, MainCommandType>> M_possible_commands_pairs;
+    bool M_bye_done;
+    bool M_set_foul_charged_done;
     bool M_turn_neck_done;
     bool M_done_received; //pfr:SYNCH
 
@@ -192,7 +204,8 @@ private:
     // not used
     Player() = delete;
     const Player & operator=( const Player & ) = delete;
-
+    bool canProcessMainCommand(const MainCommandType & command_type);
+    void setDefaultPossibleMainPairCommands();
 public:
     Player( Stadium & stadium,
             Team * team,
