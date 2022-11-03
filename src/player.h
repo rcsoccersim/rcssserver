@@ -43,6 +43,54 @@ class BodyObserverPlayer;
 class FullStateObserver;
 }
 
+enum MainCommandType {
+    MC_DASH,
+    MC_TURN,
+    MC_KICK,
+    MC_CATCH,
+    MC_MOVE,
+    MC_TACKLE,
+    MC_LONG_KICK
+};
+
+class MainCommand
+{
+protected:
+    MainCommand(){}
+
+public:
+    MainCommandType M_type;
+    MainCommandType type()
+    {
+        return M_type;
+    }
+};
+
+class MainCommandDash: public MainCommand
+{
+public:
+    MainCommandDash(double power, double dir)
+    {
+        M_type = MainCommandType::MC_DASH;
+        M_power = power;
+        M_dir = dir;
+    }
+    double M_power;
+    double M_dir;
+};
+
+class MainCommandTurn: public MainCommand
+{
+public:
+    MainCommandTurn(double moment)
+    {
+        M_type = MainCommandType::MC_TURN;
+        M_moment = moment;
+    }
+    double M_moment;
+};
+
+
 class Player
     : public MPObject,
       public RemoteClient,
@@ -50,15 +98,7 @@ class Player
       public rcss::pcom::Builder
 {
 public:
-    enum MainCommandType {
-        MC_DASH,
-        MC_TURN,
-        MC_KICK,
-        MC_CATCH,
-        MC_MOVE,
-        MC_TACKLE,
-        MC_LONG_KICK
-    };
+
     const double VISIBLE_DISTANCE;
     const double VISIBLE_DISTANCE2;
 
@@ -165,6 +205,7 @@ private:
     //
     // command state
     //
+    std::vector<MainCommand*> M_stored_main_commands;
     std::vector<MainCommandType> M_main_commands_done;
     std::vector<std::pair<MainCommandType, MainCommandType>> M_possible_commands_pairs;
     bool M_bye_done;
@@ -358,7 +399,8 @@ public:
     // command state
     //
     bool doneReceived() const { return M_done_received; }
-
+    void applyDash(double power, double dir);
+    void applyTurn(double moment);
     bool kicked() const { return M_kick_cycles >= 0; }
     bool dashed() const { return M_dash_cycles >= 0; }
 
@@ -433,7 +475,10 @@ protected:
     virtual
     void turnImpl() override;
     virtual
-    void updateAngle() override;
+    void applyStoredCommands() override;
+    virtual
+    void updateAccelVelBall() override
+      { }
     virtual
     void collidedWithPost() override;
     virtual
@@ -445,6 +490,8 @@ private:
     bool parseCommand( const char * command );
     int parseEar( const char * command );
 
+
+    void updateAngle();
     /** PlayerCommands */
     void dash( double power ) override;
     void dash( double power, double dir ) override;

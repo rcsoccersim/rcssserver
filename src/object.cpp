@@ -475,8 +475,13 @@ MPObject::wind()
 void
 MPObject::_inc()
 {
-    updateAccelVel();
-    updateAngle();
+    // just be called for ball
+    updateAccelVelBall();
+
+    // just be called for players
+    // This function will call apply for stored commands.
+    // Also, updateAccelVel and updateAngle will be called in this function.
+    applyStoredCommands();
 
     M_vel += noise();
     M_vel += wind();

@@ -379,7 +379,10 @@ bool Player::canProcessMainCommand(const MainCommandType & command_type)
 
 void Player::setDefaultPossibleMainPairCommands()
 {
-//    M_possible_commands_pairs.emplace_back(std::make_pair(MC_TURN, MC_DASH));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MC_TURN, MC_DASH));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MC_DASH, MC_TURN));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MC_KICK, MC_TURN));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MC_KICK, MC_DASH));
 }
 
 void
@@ -1078,79 +1081,90 @@ Player::dash( double power,
 {
     if ( canProcessMainCommand(MainCommandType::MC_DASH) )
     {
-        const ServerParam & param = ServerParam::instance();
-
-        power = NormalizeDashPower( power );
-        dir = NormalizeDashAngle( dir );
-
-        if ( param.dashAngleStep() < EPS )
-        {
-            // players can dash in any direction.
-        }
-        else
-        {
-            // The dash direction is discretized by server::dash_angle_step
-            dir = param.dashAngleStep() * rint( dir / param.dashAngleStep() );
-        }
-
-        bool back_dash = power < 0.0;
-
-        double power_need = ( back_dash
-                              ? power * -2.0
-                              : power );
-        power_need = std::min( power_need, stamina() + M_player_type->extraStamina() );
-        M_stamina = std::max( 0.0, stamina() - power_need );
-
-        power = ( back_dash
-                  ? power_need / -2.0
-                  : power_need );
-
-        double dir_rate = ( std::fabs( dir ) > 90.0
-                            ? param.backDashRate() - ( ( param.backDashRate() - param.sideDashRate() )
-                                                       * ( 1.0 - ( std::fabs( dir ) - 90.0 ) / 90.0 ) )
-                            : param.sideDashRate() + ( ( 1.0 - param.sideDashRate() )
-                                                       * ( 1.0 - std::fabs( dir ) / 90.0 ) )
-                            );
-        dir_rate = rcss::bound( 0.0, dir_rate, 1.0 );
-
-        double effective_dash_power = std::fabs( effort()
-                                                 * power
-                                                 * dir_rate
-                                                 * M_player_type->dashPowerRate() );
-        if ( pos().y < 0.0 )
-        {
-            effective_dash_power /= ( side() == LEFT
-                                      ? param.slownessOnTopForLeft()
-                                      : param.slownessOnTopForRight() );
-        }
-
-        if ( back_dash )
-        {
-            dir += 180.0;
-        }
-
-        push( PVector::fromPolar( effective_dash_power,
-                                  normalize_angle( angleBodyCommitted() + Deg2Rad( dir ) ) ) );
-
-        M_dash_cycles = 1;
-        ++M_dash_count;
+        M_stored_main_commands.push_back(new MainCommandDash(power, dir));
         M_main_commands_done.push_back(MainCommandType::MC_DASH);
     }
 }
 
 
 void
+Player::applyDash(double power, double dir){
+    const ServerParam & param = ServerParam::instance();
+
+    power = NormalizeDashPower( power );
+    dir = NormalizeDashAngle( dir );
+
+    if ( param.dashAngleStep() < EPS )
+    {
+        // players can dash in any direction.
+    }
+    else
+    {
+        // The dash direction is discretized by server::dash_angle_step
+        dir = param.dashAngleStep() * rint( dir / param.dashAngleStep() );
+    }
+
+    bool back_dash = power < 0.0;
+
+    double power_need = ( back_dash
+                          ? power * -2.0
+                          : power );
+    power_need = std::min( power_need, stamina() + M_player_type->extraStamina() );
+    M_stamina = std::max( 0.0, stamina() - power_need );
+
+    power = ( back_dash
+              ? power_need / -2.0
+              : power_need );
+
+    double dir_rate = ( std::fabs( dir ) > 90.0
+                        ? param.backDashRate() - ( ( param.backDashRate() - param.sideDashRate() )
+                                                   * ( 1.0 - ( std::fabs( dir ) - 90.0 ) / 90.0 ) )
+                        : param.sideDashRate() + ( ( 1.0 - param.sideDashRate() )
+                                                   * ( 1.0 - std::fabs( dir ) / 90.0 ) )
+    );
+    dir_rate = rcss::bound( 0.0, dir_rate, 1.0 );
+
+    double effective_dash_power = std::fabs( effort()
+                                             * power
+                                             * dir_rate
+                                             * M_player_type->dashPowerRate() );
+    if ( pos().y < 0.0 )
+    {
+        effective_dash_power /= ( side() == LEFT
+                                  ? param.slownessOnTopForLeft()
+                                  : param.slownessOnTopForRight() );
+    }
+
+    if ( back_dash )
+    {
+        dir += 180.0;
+    }
+
+    push( PVector::fromPolar( effective_dash_power,
+                              normalize_angle( angleBodyCommitted() + Deg2Rad( dir ) ) ) );
+
+    M_dash_cycles = 1;
+    ++M_dash_count;
+}
+void
 Player::turn( double moment )
 {
     if ( canProcessMainCommand(MainCommandType::MC_TURN) )
     {
-        M_angle_body = normalize_angle( angleBodyCommitted()
-                                        + ( 1.0 + drand( -M_randp, M_randp ) )
-                                        * NormalizeMoment( moment )
-                                        / ( 1.0 + M_player_type->inertiaMoment() * vel().r() ) );
-        ++M_turn_count;
+        M_stored_main_commands.push_back(new MainCommandTurn(moment));
+
         M_main_commands_done.push_back(MainCommandType::MC_TURN);
     }
+}
+
+void
+Player::applyTurn(double moment)
+{
+    M_angle_body = normalize_angle( angleBodyCommitted()
+                                    + ( 1.0 + drand( -M_randp, M_randp ) )
+                                      * NormalizeMoment( moment )
+                                      / ( 1.0 + M_player_type->inertiaMoment() * vel().r() ) );
+    ++M_turn_count;
 }
 
 void
@@ -2369,6 +2383,32 @@ Player::turnImpl()
     M_angle_neck_committed = this->M_angle_neck;
     M_vel.assign( 0.0, 0.0 );
     M_accel.assign( 0.0, 0.0 );
+}
+
+void
+Player::applyStoredCommands()
+{
+    bool accel_vel_updated = false;
+    bool angle_updated = false;
+    for (const auto & command: M_stored_main_commands){
+        if (command->type() == MainCommandType::MC_DASH){
+            applyDash(static_cast<MainCommandDash*>(command)->M_power, static_cast<MainCommandDash*>(command)->M_dir);
+            updateAccelVel();
+            accel_vel_updated = true;
+        }
+        if (command->type() == MainCommandType::MC_TURN){
+            applyTurn(static_cast<MainCommandTurn*>(command)->M_moment);
+            updateAngle();
+            angle_updated = true;
+        }
+    }
+    if ( !accel_vel_updated )
+        updateAccelVel();
+    if ( !angle_updated )
+        updateAngle();
+    for (auto & command: M_stored_main_commands)
+        delete command;
+    M_stored_main_commands.clear();
 }
 
 void

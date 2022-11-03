@@ -601,7 +601,10 @@ protected:
     void turnImpl() = 0;
 
     virtual
-    void updateAngle() = 0;
+    void applyStoredCommands() = 0;
+
+    virtual
+    void updateAccelVelBall() = 0;
 
     virtual
     void collidedWithPost() = 0;
@@ -638,8 +641,14 @@ public:
       { }
 
     virtual
-    void updateAngle() override
+    void applyStoredCommands() override
       { }
+
+    virtual
+    void updateAccelVelBall() override
+    {
+        updateAccelVel();
+    }
 
     virtual
     void collidedWithPost() override
