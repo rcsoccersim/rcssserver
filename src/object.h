@@ -540,9 +540,13 @@ public:
       {
           turnImpl();
       }
+
+    void updateAccelVel();
+
 private:
     PVector noise();
     PVector wind();
+    PVector updateForCollisionWithPost();
 
 public:
     void moveTo( const PVector & pos )

@@ -475,30 +475,37 @@ MPObject::wind()
 void
 MPObject::_inc()
 {
-    if ( M_accel.x || M_accel.y )
-    {
-        double max_a = maxAccel();
-        double max_s = maxSpeed();
-
-        double tmp = M_accel.r();
-        if ( tmp > max_a )
-        {
-            M_accel *= ( max_a / tmp );
-        }
-
-        M_vel += M_accel;
-        tmp = M_vel.r();
-        if ( tmp > max_s )
-        {
-            M_vel *= ( max_s / tmp );
-        }
-    }
-
+    updateAccelVel();
     updateAngle();
 
     M_vel += noise();
     M_vel += wind();
 
+    M_pos = updateForCollisionWithPost();
+    M_vel *= M_decay;
+    M_accel *= 0.0;
+}
+
+// void MPObject::collide(MPObject& obj)
+// {
+//     double r = size + obj.size;
+//     PVector dif = (pos - obj.pos);
+//     double d = pos.distance(obj.pos);
+//     Angle th = fabs(dif.angle(vel));
+//     double l1 = d * cos(th);
+//     double h = d * sin(th);
+//     double cosp = h / r;
+//     double sinp = sqrt(1.0 - square(cosp));
+//     double l2 = r * sinp;
+//     PVector dv = vel;
+
+//     dv.normalize(-(l1 + l2));
+
+//     pos += dv;
+// }
+
+PVector
+MPObject::updateForCollisionWithPost(){
     CArea post = nearestPost( pos(), M_size );
 
     //      std::cout << "pos = " << pos << endl;
@@ -560,8 +567,8 @@ MPObject::_inc()
             && ( ( intersect( pos(), new_pos, post, inter ) )
                  || ( post != second_post
                       && ( second = intersect( pos(), new_pos, second_post, inter ) )
-                      )
                  )
+            )
             )
     {
         //         ++loop_count;
@@ -618,29 +625,30 @@ MPObject::_inc()
 
         collidedWithPost();
     }
-
-    M_pos = new_pos;
-    M_vel *= M_decay;
-    M_accel *= 0.0;
+    return new_pos;
 }
 
-// void MPObject::collide(MPObject& obj)
-// {
-//     double r = size + obj.size;
-//     PVector dif = (pos - obj.pos);
-//     double d = pos.distance(obj.pos);
-//     Angle th = fabs(dif.angle(vel));
-//     double l1 = d * cos(th);
-//     double h = d * sin(th);
-//     double cosp = h / r;
-//     double sinp = sqrt(1.0 - square(cosp));
-//     double l2 = r * sinp;
-//     PVector dv = vel;
+void
+MPObject::updateAccelVel(){
+    if ( M_accel.x || M_accel.y )
+    {
+        double max_a = maxAccel();
+        double max_s = maxSpeed();
 
-//     dv.normalize(-(l1 + l2));
+        double tmp = M_accel.r();
+        if ( tmp > max_a )
+        {
+            M_accel *= ( max_a / tmp );
+        }
 
-//     pos += dv;
-// }
+        M_vel += M_accel;
+        tmp = M_vel.r();
+        if ( tmp > max_s )
+        {
+            M_vel *= ( max_s / tmp );
+        }
+    }
+}
 
 
 void
