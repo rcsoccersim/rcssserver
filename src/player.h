@@ -43,24 +43,30 @@ class BodyObserverPlayer;
 class FullStateObserver;
 }
 
-enum MainCommandType {
-    MC_DASH,
-    MC_TURN,
-    MC_KICK,
-    MC_CATCH,
-    MC_MOVE,
-    MC_TACKLE,
-    MC_LONG_KICK
-};
 
 class MainCommand
 {
+public:
+    enum Type {
+        MC_DASH,
+        MC_TURN,
+        MC_KICK,
+        MC_CATCH,
+        MC_MOVE,
+        MC_TACKLE,
+        MC_LONG_KICK
+    };
+
+
 protected:
-    MainCommand(){}
+    MainCommand(){};
+    Type M_type;
+
 
 public:
-    MainCommandType M_type;
-    MainCommandType type()
+    virtual ~MainCommand()=default;
+
+    const Type& type() const
     {
         return M_type;
     }
@@ -68,26 +74,48 @@ public:
 
 class MainCommandDash: public MainCommand
 {
+
+private:
+    double M_power;
+    double M_dir;
+
 public:
     MainCommandDash(double power, double dir)
     {
-        M_type = MainCommandType::MC_DASH;
+        M_type = MainCommand::MC_DASH;
         M_power = power;
         M_dir = dir;
     }
-    double M_power;
-    double M_dir;
+
+    const double& power() const
+    {
+        return M_power;
+    }
+
+    const double& dir() const
+    {
+        return M_dir;
+    }
 };
 
 class MainCommandTurn: public MainCommand
 {
+
+private:
+    double M_moment;
+
+
 public:
     MainCommandTurn(double moment)
     {
-        M_type = MainCommandType::MC_TURN;
+        M_type = MainCommand::MC_TURN;
         M_moment = moment;
     }
-    double M_moment;
+
+    const double& moment() const
+    {
+        return M_moment;
+    }
 };
 
 
@@ -206,8 +234,8 @@ private:
     // command state
     //
     std::vector<MainCommand*> M_stored_main_commands;
-    std::vector<MainCommandType> M_main_commands_done;
-    std::vector<std::pair<MainCommandType, MainCommandType>> M_possible_commands_pairs;
+    std::vector<MainCommand::Type> M_main_commands_done;
+    std::vector<std::pair<MainCommand::Type, MainCommand::Type>> M_possible_commands_pairs;
     bool M_bye_done;
     bool M_set_foul_charged_done;
     bool M_turn_neck_done;
@@ -245,7 +273,7 @@ private:
     // not used
     Player() = delete;
     const Player & operator=( const Player & ) = delete;
-    bool canProcessMainCommand(const MainCommandType & command_type);
+    bool canProcessMainCommand(const MainCommand::Type & command_type);
     void setDefaultPossibleMainPairCommands();
 public:
     Player( Stadium & stadium,
