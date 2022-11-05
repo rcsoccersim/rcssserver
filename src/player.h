@@ -57,6 +57,7 @@ public:
         MC_LONG_KICK
     };
 
+    typedef std::shared_ptr<MainCommand> Ptr;
 
 protected:
     MainCommand(){};
@@ -233,7 +234,7 @@ private:
     //
     // command state
     //
-    std::vector<MainCommand*> M_stored_main_commands;
+    std::vector<MainCommand::Ptr> M_stored_main_commands;
     std::vector<MainCommand::Type> M_main_commands_done;
     std::vector<std::pair<MainCommand::Type, MainCommand::Type>> M_possible_commands_pairs;
     bool M_bye_done;

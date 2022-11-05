@@ -1081,7 +1081,7 @@ Player::dash( double power,
 {
     if ( canProcessMainCommand(MainCommand::MC_DASH) )
     {
-        M_stored_main_commands.push_back(new MainCommandDash(power, dir));
+        M_stored_main_commands.push_back(std::make_shared<MainCommandDash>(power, dir));
         M_main_commands_done.push_back(MainCommand::MC_DASH);
     }
 }
@@ -1151,7 +1151,7 @@ Player::turn( double moment )
 {
     if ( canProcessMainCommand(MainCommand::MC_TURN) )
     {
-        M_stored_main_commands.push_back(new MainCommandTurn(moment));
+        M_stored_main_commands.push_back(std::make_shared<MainCommandTurn>(moment));
 
         M_main_commands_done.push_back(MainCommand::MC_TURN);
     }
@@ -2392,13 +2392,13 @@ Player::applyStoredCommands()
     bool angle_updated = false;
     for (const auto & command: M_stored_main_commands){
         if (command->type() == MainCommand::MC_DASH){
-            const MainCommandDash* dash_command = dynamic_cast<const MainCommandDash*>(command);
+            const MainCommandDash* dash_command = dynamic_cast<const MainCommandDash*>(command.get());
             applyDash(dash_command->power(), dash_command->dir());
             updateAccelVel();
             accel_vel_updated = true;
         }
         if (command->type() == MainCommand::MC_TURN){
-            applyTurn(static_cast<MainCommandTurn*>(command)->moment());
+            applyTurn(dynamic_cast<MainCommandTurn*>(command.get())->moment());
             updateAngle();
             angle_updated = true;
         }
@@ -2407,8 +2407,6 @@ Player::applyStoredCommands()
         updateAccelVel();
     if ( !angle_updated )
         updateAngle();
-    for (auto & command: M_stored_main_commands)
-        delete command;
     M_stored_main_commands.clear();
 }
 
