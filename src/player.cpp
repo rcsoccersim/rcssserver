@@ -347,7 +347,7 @@ Player::init( const double ver,
     return true;
 }
 
-bool Player::canProcessMainCommand(const MainCommandType & command_type)
+bool Player::canProcessMainCommand(const MainCommand::Type & command_type)
 {
 
     if ( M_bye_done || M_set_foul_charged_done)
@@ -366,7 +366,7 @@ bool Player::canProcessMainCommand(const MainCommandType & command_type)
 
     auto pair_commands = std::make_pair(M_main_commands_done.at(0), command_type);
     auto it = std::find_if( M_possible_commands_pairs.begin(), M_possible_commands_pairs.end(),
-                            [&pair_commands](const std::pair<MainCommandType, MainCommandType>& element)
+                            [&pair_commands](const std::pair<MainCommand::Type, MainCommand::Type>& element)
                             { return element.first == pair_commands.first &&
                                      element.second == pair_commands.second;} );
     if ( it != M_possible_commands_pairs.end() )
@@ -379,10 +379,10 @@ bool Player::canProcessMainCommand(const MainCommandType & command_type)
 
 void Player::setDefaultPossibleMainPairCommands()
 {
-    M_possible_commands_pairs.emplace_back(std::make_pair(MC_TURN, MC_DASH));
-    M_possible_commands_pairs.emplace_back(std::make_pair(MC_DASH, MC_TURN));
-    M_possible_commands_pairs.emplace_back(std::make_pair(MC_KICK, MC_TURN));
-    M_possible_commands_pairs.emplace_back(std::make_pair(MC_KICK, MC_DASH));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MainCommand::MC_TURN, MainCommand::MC_DASH));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MainCommand::MC_DASH, MainCommand::MC_TURN));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MainCommand::MC_KICK, MainCommand::MC_TURN));
+    M_possible_commands_pairs.emplace_back(std::make_pair(MainCommand::MC_KICK, MainCommand::MC_DASH));
 }
 
 void
@@ -1079,10 +1079,10 @@ void
 Player::dash( double power,
               double dir )
 {
-    if ( canProcessMainCommand(MainCommandType::MC_DASH) )
+    if ( canProcessMainCommand(MainCommand::MC_DASH) )
     {
-        M_stored_main_commands.push_back(new MainCommandDash(power, dir));
-        M_main_commands_done.push_back(MainCommandType::MC_DASH);
+        M_stored_main_commands.push_back(std::make_shared<MainCommandDash>(power, dir));
+        M_main_commands_done.push_back(MainCommand::MC_DASH);
     }
 }
 
@@ -1149,11 +1149,11 @@ Player::applyDash(double power, double dir){
 void
 Player::turn( double moment )
 {
-    if ( canProcessMainCommand(MainCommandType::MC_TURN) )
+    if ( canProcessMainCommand(MainCommand::MC_TURN) )
     {
-        M_stored_main_commands.push_back(new MainCommandTurn(moment));
+        M_stored_main_commands.push_back(std::make_shared<MainCommandTurn>(moment));
 
-        M_main_commands_done.push_back(MainCommandType::MC_TURN);
+        M_main_commands_done.push_back(MainCommand::MC_TURN);
     }
 }
 
@@ -1183,12 +1183,12 @@ void
 Player::kick( double power,
               double dir )
 {
-    if ( !canProcessMainCommand(MainCommandType::MC_KICK) )
+    if ( !canProcessMainCommand(MainCommand::MC_KICK) )
     {
         return;
     }
 
-    M_main_commands_done.push_back(MainCommandType::MC_KICK);
+    M_main_commands_done.push_back(MainCommand::MC_KICK);
     M_kick_cycles = 1;
 
     power = NormalizeKickPower( power );
@@ -1302,12 +1302,12 @@ Player::long_kick( double power,
 {
     return;
 
-    if ( canProcessMainCommand(MainCommandType::MC_LONG_KICK) )
+    if ( canProcessMainCommand(MainCommand::MC_LONG_KICK) )
     {
         return;
     }
 
-    M_main_commands_done.push_back( MainCommandType::MC_LONG_KICK );
+    M_main_commands_done.push_back( MainCommand::MC_LONG_KICK );
     M_kick_cycles = ServerParam::instance().longKickDelay() + 1;
 
     M_long_kick_power = NormalizeKickPower( power );
@@ -1400,14 +1400,14 @@ Player::doLongKick()
 void
 Player::goalieCatch( double dir )
 {
-    if ( !canProcessMainCommand(MainCommandType::MC_CATCH) )
+    if ( !canProcessMainCommand(MainCommand::MC_CATCH) )
     {
         return;
     }
 
     dir = NormalizeCatchAngle( dir );
 
-    M_main_commands_done.push_back( MainCommandType::MC_CATCH );
+    M_main_commands_done.push_back( MainCommand::MC_CATCH );
     M_state |= CATCH;
 
     //pfr: we should only be able to catch in PlayOn mode
@@ -1606,7 +1606,7 @@ void
 Player::move( double x,
               double y )
 {
-    if ( !canProcessMainCommand( MainCommandType::MC_MOVE) )
+    if ( !canProcessMainCommand( MainCommand::MC_MOVE) )
     {
         return;
     }
@@ -1650,7 +1650,7 @@ Player::move( double x,
         return;
     }
 
-    M_main_commands_done.push_back(MainCommandType::MC_MOVE);
+    M_main_commands_done.push_back(MainCommand::MC_MOVE);
     ++M_move_count;
 }
 
@@ -1932,12 +1932,12 @@ void
 Player::tackle( double power_or_angle,
                 bool foul )
 {
-    if ( !canProcessMainCommand( MainCommandType::MC_TACKLE ) )
+    if ( !canProcessMainCommand( MainCommand::MC_TACKLE ) )
     {
         return;
     }
 
-    M_main_commands_done.push_back( MainCommandType::MC_TACKLE );
+    M_main_commands_done.push_back( MainCommand::MC_TACKLE );
     M_tackle_cycles = ServerParam::instance().tackleCycles();
     ++M_tackle_count;
 
@@ -2391,13 +2391,14 @@ Player::applyStoredCommands()
     bool accel_vel_updated = false;
     bool angle_updated = false;
     for (const auto & command: M_stored_main_commands){
-        if (command->type() == MainCommandType::MC_DASH){
-            applyDash(static_cast<MainCommandDash*>(command)->M_power, static_cast<MainCommandDash*>(command)->M_dir);
+        if (command->type() == MainCommand::MC_DASH){
+            const MainCommandDash* dash_command = dynamic_cast<const MainCommandDash*>(command.get());
+            applyDash(dash_command->power(), dash_command->dir());
             updateAccelVel();
             accel_vel_updated = true;
         }
-        if (command->type() == MainCommandType::MC_TURN){
-            applyTurn(static_cast<MainCommandTurn*>(command)->M_moment);
+        if (command->type() == MainCommand::MC_TURN){
+            applyTurn(dynamic_cast<MainCommandTurn*>(command.get())->moment());
             updateAngle();
             angle_updated = true;
         }
@@ -2406,8 +2407,6 @@ Player::applyStoredCommands()
         updateAccelVel();
     if ( !angle_updated )
         updateAngle();
-    for (auto & command: M_stored_main_commands)
-        delete command;
     M_stored_main_commands.clear();
 }
 
