@@ -224,13 +224,12 @@ Player::Player( Stadium & stadium,
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_foul_cycles( 0 ),
-      M_foul_count( 0 )
+      M_foul_count( 0 ),
+      M_wide_view_angle_noise_term( 1.0 ),
+      M_normal_view_angle_noise_term( 1.0 ),
+      M_narrow_view_angle_noise_term( 1.0 )
 {
     assert( team );
-
-    M_wide_view_angle_noise_term = (version() >= 18 ? 1 : 1);
-    M_normal_view_angle_noise_term = (version() >= 18 ? 0.75 : 1);
-    M_narrow_view_angle_noise_term = (version() >= 18 ? 0.5 : 1);
 
     M_enable = false;
 
@@ -356,6 +355,13 @@ Player::init( const double ver,
         std::cerr << "Error: Could not find serializer or sender for version "
                   << version() << std::endl;
         return false;
+    }
+
+    if ( version() >= 18 )
+    {
+        M_wide_view_angle_noise_term = 1.0;
+        M_normal_view_angle_noise_term = 0.75;
+        M_narrow_view_angle_noise_term = 0.5;
     }
 
     return true;
