@@ -1158,7 +1158,7 @@ Player::turn_neck( double moment )
 }
 
 void
-Player::set_focus( double moment_dir, double moment_dist )
+Player::set_focus( double moment_dist, double moment_dir )
 {
     if ( ! M_set_focus_done )
     {
