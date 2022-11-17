@@ -513,8 +513,8 @@ public:
                                 const double &, /* dir_chg */
                                 const int, /* body_dir */
                                 const int, /* head_dir */
-                                const int, /* focus_point_dir */
-                                const double /* focus_point_dist */) const
+                                const double, /* focus_point_dist */
+                                const int /* focus_point_dir */) const
     { }
 
     virtual
@@ -527,8 +527,8 @@ public:
                                 const double &, /* dir_chg */
                                 const int, /* body_dir */
                                 const int, /* head_dir */
-                                const int, /* focus_point_dir */
                                 const double, /* focus_point_dist */
+                                const int, /* focus_point_dir */
                                 const int /* point_dir */) const
     { }
 
@@ -935,8 +935,8 @@ public:
                                 const PVector &,
                                 const int,
                                 const int,
-                                const int,
-                                const double ) const
+                                const double,
+                                const int) const
     { }
 
     virtual
@@ -947,8 +947,8 @@ public:
                                 const PVector &,
                                 const int,
                                 const int,
-                                const int,
                                 const double,
+                                const int,
                                 const int ) const
     { }
     virtual
@@ -1130,8 +1130,8 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int focus_point_dir,
-                                const double focus_point_dist) const
+                                const double focus_point_dist,
+                                const int focus_point_dir) const
     {
         coachSerializer().serializeVisualPlayer( strm,
                                                  player,
@@ -1140,8 +1140,8 @@ public:
                                                  vel,
                                                  body,
                                                  neck,
-                                                 focus_point_dir,
-                                                 focus_point_dist);
+                                                 focus_point_dist,
+                                                 focus_point_dir);
     }
 
     void serializeVisualPlayer( std::ostream & strm,
@@ -1169,8 +1169,8 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int focus_point_dir,
                                 const double focus_point_dist,
+                                const int focus_point_dir,
                                 const int point_dir ) const
     {
         coachSerializer().serializeVisualPlayer( strm,
@@ -1180,8 +1180,8 @@ public:
                                                  vel,
                                                  body,
                                                  neck,
-                                                 focus_point_dir,
                                                  focus_point_dist,
+                                                 focus_point_dir,
                                                  point_dir );
     }
 

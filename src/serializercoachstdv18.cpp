@@ -48,16 +48,17 @@ SerializerCoachStdv18::serializeVisualPlayer( std::ostream & strm,
                                              const PVector & vel,
                                              const int body,
                                              const int neck,
-                                             const int focus_point_dir,
-                                             const double focus_point_dist) const
+                                             const double focus_point_dist,
+                                             const int focus_point_dir) const
 {
     strm << " (" << name
          << ' ' << pos.x << ' ' << pos.y
          << ' ' << vel.x << ' ' << vel.y
          << ' ' << body
          << ' ' << neck
-         << ' ' << focus_point_dir
-         << ' ' << focus_point_dist;
+         << ' ' << focus_point_dist
+         << ' ' << focus_point_dir;
+
     if ( player.isTackling() )
     {
         strm << " t";
@@ -91,8 +92,8 @@ SerializerCoachStdv18::serializeVisualPlayer( std::ostream & strm,
                                              const PVector & vel,
                                              const int body,
                                              const int neck,
-                                             const int focus_point_dir,
                                              const double focus_point_dist,
+                                             const int focus_point_dir,
                                              const int point_dir ) const
 {
     strm << " (" << name
@@ -100,8 +101,8 @@ SerializerCoachStdv18::serializeVisualPlayer( std::ostream & strm,
          << ' ' << vel.x << ' ' << vel.y
          << ' ' << body
          << ' ' << neck
-         << ' ' << focus_point_dir
          << ' ' << focus_point_dist
+         << ' ' << focus_point_dir
          << ' ' << point_dir;
     if ( player.isTackling() )
     {

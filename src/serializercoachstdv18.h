@@ -47,8 +47,8 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int focus_point_dir,
-                                const double focus_point_dist ) const override;
+                                const double focus_point_dist,
+                                const int focus_point_dir ) const override;
 
     virtual
     void serializeVisualPlayer( std::ostream & strm,
@@ -58,8 +58,8 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const int focus_point_dir,
                                 const double focus_point_dist,
+                                const int focus_point_dir,
                                 const int point_dir ) const override;
 };
 

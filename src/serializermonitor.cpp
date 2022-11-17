@@ -415,8 +415,8 @@ SerializerMonitorStdv5::serializePlayerPos( std::ostream & os,
        << ' ' << Quantize( player.vel().y, PREC )
        << ' ' << Quantize( Rad2Deg( player.angleBodyCommitted() ), DPREC )
        << ' ' << Quantize( Rad2Deg( player.angleNeckCommitted() ), DPREC )
-       << ' ' << Quantize( Rad2Deg( player.focusPointCommitted().getHead() ), PREC )
-       << ' ' << Quantize( player.focusPointCommitted().getMag(), PREC );
+       << ' ' << Quantize( player.focusPointCommitted().getMag(), PREC )
+       << ' ' << Quantize( Rad2Deg( player.focusPointCommitted().getHead() ), PREC );
 }
 /*
 //===================================================================
@@ -706,9 +706,9 @@ SerializerMonitorJSON::serializePlayerPos( std::ostream & os,
     os << ','
        << std::quoted( "neck" ) << ':' << Quantize( Rad2Deg( player.angleNeckCommitted() ), DIR_PREC );
     os << ','
-       << std::quoted( "focus_dir" ) << ':' << Quantize( Rad2Deg( player.focusPointCommitted().getHead() ), POS_PREC )
+       << std::quoted( "focus_dist" ) << ':' << Quantize( player.focusPointCommitted().getMag(), POS_PREC )
        << ','
-       << std::quoted( "focus_dist" ) << ':' << Quantize( player.focusPointCommitted().getMag(), POS_PREC );
+       << std::quoted( "focus_dir" ) << ':' << Quantize( Rad2Deg( player.focusPointCommitted().getHead() ), POS_PREC );
 }
 
 
