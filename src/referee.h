@@ -848,6 +848,8 @@ private:
     void logEpisode( const char *endCond );
 
     void resetField();
+
+    void ballInitialPosition( double & ballX, double & ballY );
 };
 
 /*--------------------------------------------------------*/

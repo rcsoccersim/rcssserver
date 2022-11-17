@@ -3076,14 +3076,49 @@ KeepawayRef::resetField()
 
             p->place( PVector( x, y ) );
         }
-    }
+    }    
+    
+    // Randomize the position of the ball (at least 3 keepers are assumed, 
+    // consistent with the original keepaway implementation).
+    double ballX;
+    double ballY;
 
-    M_stadium.placeBall( NEUTRAL,
-                         PVector( -ServerParam::instance().keepAwayLength() * 0.5 + 4.0,
-                                  -ServerParam::instance().keepAwayWidth() * 0.5 + 4.0 ) );
+    KeepawayRef::ballInitialPosition(ballX, ballY);
+
+    M_stadium.placeBall( NEUTRAL, PVector(ballX, ballY) );
     M_stadium.recoveryPlayers();
 
     M_take_time = 0;
+}
+
+void
+KeepawayRef::ballInitialPosition( double & ballX, double & ballY )
+{
+    const double L = ServerParam::instance().keepAwayLength();
+    const double W = ServerParam::instance().keepAwayWidth();
+
+    const int quadrant = irand(3);
+    const int m = 4; // margin
+
+    // Randomly sample a position in the 1st, 2nd or 4th quadrant, leaving a safety margin of 4 units.
+    // This approach allows for uniform exploration of all quadrants.
+    switch(quadrant){
+    case 0: // quadrant 1
+        ballX = drand(m, L/2 - m);
+        ballY = drand(-W/2 + m, -m);
+        break;
+    case 1: // quadrant 2
+        ballX = drand(-L/2 + m, -m);
+        ballY = drand(-W/2 + m, -m);
+        break;
+    case 2: // quadrant 4
+        ballX = drand(m, L/2 - m);
+        ballY = drand(m, W/2 - m);
+        break;
+    default:
+        std::cout << "Error: unkown quadrant: " << quadrant << std::endl;
+        break;
+    }
 }
 
 
