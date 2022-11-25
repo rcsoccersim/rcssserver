@@ -402,7 +402,7 @@ SerializerMonitorStdv5::serializePlayerCounts( std::ostream & os,
        << player.tackleCount() << ' '
        << player.arm().getCounter() << ' '
        << player.attentiontoCount() << ' '
-       << player.setFocusCount() << ')';
+       << player.changeFocusCount() << ')';
 }
 
 void
@@ -845,7 +845,7 @@ SerializerMonitorJSON::serializePlayerCounts( std::ostream & os,
        << ','
        << std::quoted( "attentionto" ) << ':' << player.attentiontoCount()
        << ','
-       << std::quoted( "set_focus" ) << ':' << player.setFocusCount()
+       << std::quoted( "change_focus" ) << ':' << player.changeFocusCount()
        << '}';
 #endif
 }

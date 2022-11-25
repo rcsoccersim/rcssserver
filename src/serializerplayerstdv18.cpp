@@ -50,7 +50,7 @@ SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
                                           const int count_turn_neck,
                                           const int count_change_view,
                                           const int count_say,
-                                          const int count_set_focus) const
+                                          const int count_change_focus) const
 {
     strm << " (count "
          << count_kick << ' '
@@ -61,7 +61,7 @@ SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
          << count_turn_neck << ' '
          << count_change_view << ' '
          << count_say << ' '
-         << count_set_focus
+         << count_change_focus
          << ')';
 }
 

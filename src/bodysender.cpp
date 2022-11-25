@@ -433,7 +433,7 @@ BodySenderPlayerV18::sendCounts()
 {
     BodySenderPlayerV7::sendCounts();
     serializer().serializeBodyCounts( transport(),
-                                      self().setFocusCount() );
+                                      self().changeFocusCount() );
 }
 
 namespace bodysender {

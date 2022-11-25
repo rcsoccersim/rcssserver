@@ -201,7 +201,7 @@ Player::Player( Stadium & stadium,
       //
       M_command_done( false ),
       M_turn_neck_done( false ),
-      M_set_focus_done( false ),
+      M_change_focus_done( false ),
       M_done_received( false ),
       //
       M_goalie_catch_ban( 0 ),
@@ -215,7 +215,7 @@ Player::Player( Stadium & stadium,
       M_catch_count( 0 ),
       M_move_count( 0 ),
       M_turn_neck_count( 0 ),
-      M_set_focus_count(0 ),
+      M_change_focus_count(0 ),
       M_change_view_count( 0 ),
       M_say_count( 0 ),
       M_arm( ServerParam::instance().pointToBan(),
@@ -587,11 +587,11 @@ Player::parseCommand( const char * command )
 
             turn_neck( moment );
         }
-        else if ( ! std::strncmp( buf, "(set_focus ", 11 ) )
+        else if ( ! std::strncmp( buf, "(change_focus ", 11 ) )
         {
             double dist = 0.0;
             double angle = 0.0;
-            if ( std::sscanf( buf, " ( set_focus %lf %lf ) %n ",
+            if ( std::sscanf( buf, " ( change_focus %lf %lf ) %n ",
                               &dist, &angle, &n_read ) != 1 )
             {
                 std::cerr << "Error parsing >" << buf << "<\n";
@@ -599,7 +599,7 @@ Player::parseCommand( const char * command )
             }
             buf += n_read;
 
-            set_focus( dist, angle );
+            change_focus( dist, angle );
         }
         else if ( ! std::strncmp( buf, "(say ", 5 ) )
         {
@@ -1164,15 +1164,15 @@ Player::turn_neck( double moment )
 }
 
 void
-Player::set_focus( double moment_dist, double moment_dir )
+Player::change_focus( double moment_dist, double moment_dir )
 {
-    if ( ! M_set_focus_done )
+    if ( ! M_change_focus_done )
     {
         double mag = rcss::bound(0.0, focusPointCommitted().getMag() + moment_dist, 40.0);
         double head = normalize_angle(focusPointCommitted().getHead() + normalize_angle(Deg2Rad(moment_dir)));
         M_focus_point = rcss::geom::polarVector2D(mag, head);
-        ++M_set_focus_count;
-        M_set_focus_done = true;
+        ++M_change_focus_count;
+        M_change_focus_done = true;
     }
 }
 
@@ -2635,7 +2635,7 @@ Player::resetCommandFlags()
 
     M_turn_neck_done = false;
 
-    M_set_focus_done = false;
+    M_change_focus_done = false;
 
     M_done_received = false;
 }

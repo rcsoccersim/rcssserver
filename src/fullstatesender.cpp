@@ -523,7 +523,7 @@ FullStateSenderPlayerV18::sendSelf()
                                     self().turnNeckCount(),
                                     self().changeViewCount(),
                                     self().sayCount(),
-                                    self().setFocusCount());
+                                    self().changeFocusCount());
     serializer().serializeArm( transport(),
                                self().arm().getCyclesTillMovable(),
                                self().arm().getCyclesTillExpiry(),

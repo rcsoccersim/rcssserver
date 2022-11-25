@@ -118,7 +118,7 @@ public:
 
     virtual
     void serializeBodyCounts( std::ostream & strm,
-                              const int count_set_focus ) const override;
+                              const int count_change_focus ) const override;
 
     virtual
     void serializeNeckAngle( std::ostream & strm,

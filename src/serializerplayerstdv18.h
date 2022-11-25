@@ -49,7 +49,7 @@ public:
                             const int count_turn_neck,
                             const int count_change_view,
                             const int count_say,
-                            const int count_set_focus) const override;
+                            const int count_change_focus) const override;
 
     virtual
     void serializeFocusPoint( std::ostream &,

@@ -176,9 +176,9 @@ SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
 
 void
 SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
-                                            const int count_set_focus ) const
+                                            const int count_change_focus ) const
 {
-    strm << " (set_focus " << count_set_focus << ')';
+    strm << " (change_focus " << count_change_focus << ')';
 }
 
 void

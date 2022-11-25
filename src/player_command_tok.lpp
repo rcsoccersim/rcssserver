@@ -54,7 +54,7 @@ EXP  ({REAL}|{INT})[eE]{INT}
 dash { return RCSS_PCOM_DASH; }
 turn { return RCSS_PCOM_TURN; }
 turn_neck { return RCSS_PCOM_TURN_NECK; }
-set_focus { return RCSS_PCOM_SET_FOCUS; }
+change_focus { return RCSS_PCOM_CHANGE_FOCUS; }
 kick { return RCSS_PCOM_KICK; }
 long_kick { return RCSS_PCOM_LONG_KICK; }
 catch { return RCSS_PCOM_CATCH; }

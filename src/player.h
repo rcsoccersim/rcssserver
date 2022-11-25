@@ -154,7 +154,7 @@ private:
     //
     bool M_command_done;
     bool M_turn_neck_done;
-    bool M_set_focus_done;
+    bool M_change_focus_done;
     bool M_done_received; //pfr:SYNCH
 
     int M_goalie_catch_ban;
@@ -169,7 +169,7 @@ private:
     int M_catch_count;
     int M_move_count;
     int M_turn_neck_count;
-    int M_set_focus_count;
+    int M_change_focus_count;
     int M_change_view_count;
     int M_say_count;
 
@@ -379,7 +379,7 @@ public:
     int catchCount() const { return M_catch_count; }
     int moveCount() const { return M_move_count; }
     int turnNeckCount() const { return M_turn_neck_count; }
-    int setFocusCount() const { return M_set_focus_count; }
+    int changeFocusCount() const { return M_change_focus_count; }
     int changeViewCount() const { return M_change_view_count; }
     int sayCount() const { return M_say_count; }
 
@@ -464,7 +464,7 @@ private:
     void dash( double power, double dir ) override;
     void turn( double moment ) override;
     void turn_neck( double moment ) override;
-    void set_focus( double moment_dir, double moment_dist) override;
+    void change_focus( double moment_dist, double moment_dir) override;
     void kick( double power, double dir ) override;
     void long_kick( double power, double dir ) override;
     void goalieCatch( double dir ) override;
@@ -486,7 +486,6 @@ private:
     void clang( int min, int max) override;
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode ) override;
     void synch_see() override;
-    void update_set_focus_point_committed();
 };
 
 #endif
