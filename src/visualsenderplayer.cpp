@@ -244,7 +244,7 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
 //    const double quant_dist
 //            = calcQuantDist( un_quant_dist, self().landDistQStep() );
     const double quant_dist = calcQuantDistByFocusPoint( un_quant_dist,
-                                                         flag.pos().distance(self().focusPointCommittedGlobalPos()),
+                                                         flag.pos().distance( self().focusPoint() ),
                                                          self().landDistQStep() );
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
             && un_quant_dist < self().playerType()->flagMaxObservationLength() )
@@ -321,7 +321,7 @@ VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
 //                                             self().distQStep() );
 
     const double quant_dist = calcQuantDistByFocusPoint( un_quant_dist,
-                                                         ball.pos().distance(self().focusPointCommittedGlobalPos()),
+                                                         ball.pos().distance( self().focusPoint() ),
                                                          self().distQStep() );
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && un_quant_dist < self().playerType()->ballMaxObservationLength())
@@ -433,7 +433,7 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
 //    const double quant_dist = calcQuantDist( un_quant_dist,
 //                                             self().distQStep() );
     const double quant_dist = calcQuantDistByFocusPoint( un_quant_dist,
-                                                         player.pos().distance(self().focusPointCommittedGlobalPos()),
+                                                         player.pos().distance( self().focusPoint() ),
                                                          self().distQStep() );
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && un_quant_dist < self().playerType()->playerMaxObservationLength())

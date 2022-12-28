@@ -140,8 +140,10 @@ private:
     double M_angle_body_committed;
     double M_angle_neck; //!< temporary neck angle
     double M_angle_neck_committed;
-    rcss::geom::Vector2D M_focus_point; //!< temporary focus point
-    rcss::geom::Vector2D M_focus_point_committed;
+    double M_focus_dist; //!< distance to the focus point from the center of the player
+    double M_focus_dir; //!< direction to the focus point relative to the neck angle
+    PVector M_focus_point; //!< the global focus position on the pitch
+
     //
     // collision state
     //
@@ -154,7 +156,6 @@ private:
     //
     bool M_command_done;
     bool M_turn_neck_done;
-    bool M_change_focus_done;
     bool M_done_received; //pfr:SYNCH
 
     int M_goalie_catch_ban;
@@ -334,17 +335,18 @@ public:
     void decrementHearCapacity( const Player & sender );
     bool canHearFullFrom( const Player & sender ) const;
 
+    //
+    // body/sensor state
+    //
     const double & angleBodyCommitted() const { return M_angle_body_committed; }
     const double & angleNeckCommitted() const { return M_angle_neck_committed; }
-    const rcss::geom::Vector2D & focusPointCommitted() const { return M_focus_point_committed; }
-    rcss::geom::Vector2D focusPointCommittedGlobalPos() const {
-        rcss::geom::Vector2D focus_point_global_pos = focusPointCommitted();
-        focus_point_global_pos.setHead(normalize_angle(angleBodyCommitted() +
-                                                             angleNeckCommitted() +
-                                                             focus_point_global_pos.getHead()));
-        focus_point_global_pos += rcss::geom::Vector2D(pos().x, pos().y);
-        return focus_point_global_pos;
-    }
+    double focusDist() const { return M_focus_dist; }
+    double focusDir() const { return M_focus_dir; }
+    const PVector & focusPoint() const { return M_focus_point; }
+
+    //
+    // update stamina
+    //
 
     void recoverAll();
     void recoverStaminaCapacity();
@@ -352,7 +354,7 @@ public:
     void updateCapacity();
 
     //
-    // stamina
+    // stamina state
     //
     const double & stamina() const { return M_stamina; }
     const double & recovery() const { return M_recovery; }
@@ -447,8 +449,6 @@ protected:
     virtual
     void updateAngle() override;
     virtual
-    void updateFocusPoint() override;
-    virtual
     void collidedWithPost() override;
     virtual
     double maxAccel() const override;
@@ -456,6 +456,9 @@ protected:
     double maxSpeed() const override;
 
 private:
+
+    void updateFocusPoint();
+
     bool parseCommand( const char * command );
     int parseEar( const char * command );
 

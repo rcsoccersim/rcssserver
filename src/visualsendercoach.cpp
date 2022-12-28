@@ -370,8 +370,8 @@ VisualSenderCoachV18::serializePlayer( const Player & player )
                                             player.vel(),
                                             rad2Deg( player.angleBodyCommitted() ),
                                             rad2Deg( player.angleNeckCommitted() ),
-                                            player.focusPointCommitted().getMag(),
-                                            rad2Deg( player.focusPointCommitted().getHead()),
+                                            player.focusDist(),
+                                            rad2Deg( player.focusDir() ),
                                             calcPointDir( player ) );
     }
     else
@@ -383,8 +383,8 @@ VisualSenderCoachV18::serializePlayer( const Player & player )
                                             player.vel(),
                                             rad2Deg( player.angleBodyCommitted() ),
                                             rad2Deg( player.angleNeckCommitted() ),
-                                            player.focusPointCommitted().getMag(),
-                                            rad2Deg( player.focusPointCommitted().getHead()) );
+                                            player.focusDist(),
+                                            rad2Deg( player.focusDir() ) );
     }
 }
 

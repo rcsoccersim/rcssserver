@@ -611,9 +611,6 @@ protected:
     void updateAngle() = 0;
 
     virtual
-    void updateFocusPoint() = 0;
-
-    virtual
     void collidedWithPost() = 0;
 
     virtual
@@ -650,10 +647,6 @@ public:
     virtual
     void updateAngle() override
       { }
-
-    virtual
-    void updateFocusPoint() override
-    { }
 
     virtual
     void collidedWithPost() override
