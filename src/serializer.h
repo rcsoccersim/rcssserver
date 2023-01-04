@@ -1130,8 +1130,8 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const double focus_point_dist,
-                                const int focus_point_dir) const
+                                const double /*focus_point_dist*/,
+                                const int /*focus_point_dir*/) const
     {
         coachSerializer().serializeVisualPlayer( strm,
                                                  player,
@@ -1139,9 +1139,7 @@ public:
                                                  pos,
                                                  vel,
                                                  body,
-                                                 neck,
-                                                 focus_point_dist,
-                                                 focus_point_dir);
+                                                 neck );
     }
 
     void serializeVisualPlayer( std::ostream & strm,
@@ -1169,8 +1167,8 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const double focus_point_dist,
-                                const int focus_point_dir,
+                                const double /*focus_point_dist*/,
+                                const int /*focus_point_dir*/,
                                 const int point_dir ) const
     {
         coachSerializer().serializeVisualPlayer( strm,
@@ -1180,8 +1178,6 @@ public:
                                                  vel,
                                                  body,
                                                  neck,
-                                                 focus_point_dist,
-                                                 focus_point_dir,
                                                  point_dir );
     }
 
