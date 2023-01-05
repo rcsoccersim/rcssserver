@@ -504,35 +504,6 @@ public:
       { }
 
     virtual
-    void serializeVisualPlayer( std::ostream &, /* strm */
-                                const Player &, /* player */
-                                const std::string &, /* name */
-                                const double &, /* dist */
-                                const int, /* dir */
-                                const double &, /* dist_chg */
-                                const double &, /* dir_chg */
-                                const int, /* body_dir */
-                                const int, /* head_dir */
-                                const double, /* focus_point_dist */
-                                const int /* focus_point_dir */) const
-    { }
-
-    virtual
-    void serializeVisualPlayer( std::ostream &, /* strm */
-                                const Player &, /* player */
-                                const std::string &, /* name */
-                                const double &, /* dist */
-                                const int, /* dir */
-                                const double &, /* dist_chg */
-                                const double &, /* dir_chg */
-                                const int, /* body_dir */
-                                const int, /* head_dir */
-                                const double, /* focus_point_dist */
-                                const int, /* focus_point_dir */
-                                const int /* point_dir */) const
-    { }
-
-    virtual
     void serializeBodyBegin( std::ostream &,
                              const int ) const
       { }
