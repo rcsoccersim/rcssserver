@@ -396,71 +396,6 @@ public:
                << ')';
       }
 
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const int point_dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir
-               << ' ' << point_dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const double & dist_chg,
-                                const double & dir_chg,
-                                const int body_dir,
-                                const int head_dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir
-               << ' ' << dist_chg << ' ' << dir_chg
-               << ' ' << body_dir << ' ' << head_dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const double & dist_chg,
-                                const double & dir_chg,
-                                const int body_dir,
-                                const int head_dir,
-                                const int point_dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir
-               << ' ' << dist_chg << ' ' << dir_chg
-               << ' ' << body_dir << ' ' << head_dir
-               << ' ' << point_dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-
     virtual
     void serializeVisualPlayer( std::ostream &, /* strm */
                                 const Player &, /* player */
@@ -922,6 +857,7 @@ public:
                                 const int,
                                 const int ) const
     { }
+
     virtual
     void serializeOKEye( std::ostream &,
                          const bool ) const
