@@ -202,6 +202,7 @@ public:
 
     bool init( const double ver,
                const bool goalie );
+    void initObservationMode();
     bool setSenders();
 
     void setEnable();
