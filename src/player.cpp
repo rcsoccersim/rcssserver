@@ -125,18 +125,22 @@ NormalizeNeckAngle( const double & p )
 
 inline
 double
-NormalizeFocusAngle(const double & focus_dir_to_neck, const double & visible_angle)
+NormalizeFocusAngle( const double & focus_dir_to_neck,
+                     const double & visible_angle )
 {
-    double min_angle = normalize_angle(- visible_angle / 2.0);
-    double max_angle = normalize_angle(visible_angle / 2.0);
-    double diff = normalize_angle(focus_dir_to_neck);
-    if ( std::abs(diff) < visible_angle / 2.0 )
+    const double half_angle = visible_angle * 0.5;
+
+    if ( std::abs( normalize_angle( focus_dir_to_neck ) ) < half_angle )
+    {
         return focus_dir_to_neck;
-    if (std::abs(normalize_angle(min_angle - focus_dir_to_neck))
-        < std::abs(normalize_angle(max_angle - focus_dir_to_neck)))
-        return min_angle;
-    return max_angle;
+    }
+
+    return ( std::abs( normalize_angle( -half_angle - focus_dir_to_neck ) )
+             < std::abs( normalize_angle( half_angle - focus_dir_to_neck ) ) )
+        ? -half_angle
+        : half_angle;
 }
+
 } // end of no-name namespace
 
 
@@ -192,8 +196,7 @@ Player::Player( Stadium & stadium,
       M_angle_neck( 0.0 ),
       M_angle_neck_committed( 0.0 ),
       //
-      M_focus_point( rcss::geom::polarVector2D(0.0, 0.0) ),
-      M_focus_point_committed( rcss::geom::Vector2D(0.0, 0.0) ),
+      M_focus_point( 0.0, 0.0 ),
       //
       M_ball_collide( false ),
       M_player_collide( false ),
@@ -201,7 +204,6 @@ Player::Player( Stadium & stadium,
       //
       M_command_done( false ),
       M_turn_neck_done( false ),
-      M_change_focus_done( false ),
       M_done_received( false ),
       //
       M_goalie_catch_ban( 0 ),
@@ -242,6 +244,7 @@ Player::Player( Stadium & stadium,
 
     setPlayerType( 0 );
     recoverAll();
+    updateFocusPoint();
 }
 
 Player::~Player()
@@ -1166,14 +1169,15 @@ Player::turn_neck( double moment )
 void
 Player::change_focus( double moment_dist, double moment_dir )
 {
-    if ( ! M_change_focus_done )
-    {
-        double mag = rcss::bound(0.0, focusPointCommitted().getMag() + moment_dist, 40.0);
-        double head = normalize_angle(focusPointCommitted().getHead() + normalize_angle(Deg2Rad(moment_dir)));
-        M_focus_point = rcss::geom::polarVector2D(mag, head);
-        ++M_change_focus_count;
-        M_change_focus_done = true;
-    }
+    M_focus_dist = rcss::bound( 0.0,
+                                M_focus_dist + moment_dist,
+                                40.0 );
+    M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
+                               normalize_angle( M_focus_dir + moment_dir ),
+                               +M_visible_angle * 0.5 );
+    updateFocusPoint();
+
+    ++M_change_focus_count;
 }
 
 void
@@ -2394,8 +2398,8 @@ Player::updateAngle()
 void
 Player::updateFocusPoint()
 {
-    M_focus_point_committed = this->M_focus_point;
-    M_focus_point_committed.setHead(NormalizeFocusAngle(M_focus_point_committed.getHead(), M_visible_angle));
+    const double focus_angle = normalize_angle( angleBodyCommitted() + angleNeckCommitted() + focusDir() );
+    M_focus_point = pos() + PVector::fromPolar( focusDist(), focus_angle );
 }
 
 void
@@ -2634,8 +2638,6 @@ Player::resetCommandFlags()
     }
 
     M_turn_neck_done = false;
-
-    M_change_focus_done = false;
 
     M_done_received = false;
 }
