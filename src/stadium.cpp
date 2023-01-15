@@ -628,6 +628,7 @@ Stadium::initPlayer( const char * teamname,
 
     player->setEnforceDedicatedPort( version >= 8.0 );
     player->sendInit();
+    player->initObservationMode();
 
     return player;
 }

@@ -360,15 +360,23 @@ Player::init( const double ver,
         return false;
     }
 
+    return true;
+}
+
+
+void
+Player::initObservationMode()
+{
     if ( version() >= 18 )
     {
+        synch_see();
+
         M_wide_view_angle_noise_term = 1.0;
         M_normal_view_angle_noise_term = 0.75;
         M_narrow_view_angle_noise_term = 0.5;
     }
-
-    return true;
 }
+
 
 void
 Player::setPlayerType( const int id )
