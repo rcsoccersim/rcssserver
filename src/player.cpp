@@ -165,6 +165,11 @@ Player::Player( Stadium & stadium,
       M_unum( number ),
       M_goalie( false ),
       //
+      M_unum_far_length( 20.0 ),
+      M_unum_too_far_length( 40.0 ),
+      M_team_far_length( 40.0 ),
+      M_team_too_far_length( 60.0 ),
+      //
       M_clang_min_ver( 0 ),
       M_clang_max_ver( 0 ),
       //

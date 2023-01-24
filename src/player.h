@@ -83,6 +83,11 @@ private:
     std::string M_fixed_short_name;
     std::string M_fixed_short_name_far;
 
+    double M_unum_far_length;
+    double M_unum_too_far_length;
+    double M_team_far_length;
+    double M_team_too_far_length;
+
 #ifdef NEW_QSTEP
     double dist_qstep_player; /* each Player quantize step of distance */
     double land_qstep_player; /* each Player quantize step of distance for landmark */
@@ -251,6 +256,11 @@ public:
     const std::string & fixedNameFar() const { return M_fixed_name_far; }
     const std::string & fixedShortName() const { return M_fixed_short_name; }
     const std::string & fixedShortNameFar() const { return M_fixed_short_name_far; }
+
+    const double & unumFarLength() const { return M_unum_far_length; }
+    const double & unumTooFarLength() const { return M_unum_too_far_length; }
+    const double & teamFarLength() const { return M_team_far_length; }
+    const double & teamTooFarLength() const { return M_team_too_far_length; }
 
     double distQStep() const
       {
