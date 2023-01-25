@@ -613,33 +613,23 @@ public:
                                  const int,
                                  const bool,
                                  const int,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double & ) const
+                                 const double & /* x */,
+                                 const double & /* y */,
+                                 const double & /* vx */,
+                                 const double & /* vy */ ,
+                                 const double & /* body */ ,
+                                 const double & /* neck */ ) const
       { }
 
     virtual
-    void serializeFSPlayerBegin( std::ostream &,
-                                 const char,
-                                 const int,
-                                 const bool,
-                                 const int,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double & ) const
-    { }
+    void serializeFSPlayerFocus( std::ostream &,
+                                 const Player & ) const
+      { }
+
     virtual
     void serializeFSPlayerArm( std::ostream &,
-                               const double &,
-                               const double & ) const
+                               const double & /* point_dist */,
+                               const double & /* point_dir */ ) const
       { }
 
     virtual

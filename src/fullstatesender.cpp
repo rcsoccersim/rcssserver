@@ -479,9 +479,9 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
                                          p.vel().x,
                                          p.vel().y,
                                          Rad2Deg( p.angleBodyCommitted() ),
-                                         Rad2Deg( p.angleNeckCommitted() ),
-                                         p.focusDist(),
-                                         Rad2Deg( p.focusDir() ) );
+                                         Rad2Deg( p.angleNeckCommitted() ) );
+
+    serializer().serializeFSPlayerFocus( transport(), p );
 
     if ( p.arm().isPointing() )
     {

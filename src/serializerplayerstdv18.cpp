@@ -70,45 +70,19 @@ SerializerPlayerStdv18::serializeFocusPoint( std::ostream & strm,
                                              const Player & self ) const
 {
     strm << " (focus_point "
-         << self.focusPointCommitted().getMag()<< " "
-         << Rad2Deg( self.focusPointCommitted().getHead() );
+         << self.focusDist()<< " "
+         << Rad2Deg( self.focusDir() );
 
     strm << ')';
 }
 
 void
-SerializerPlayerStdv18::serializeFSPlayerBegin( std::ostream & strm,
-                                                const char side,
-                                                const int unum,
-                                                const bool goalie,
-                                                const int type,
-                                                const double & x,
-                                                const double & y,
-                                                const double & vel_x,
-                                                const double & vel_y,
-                                                const double & body_dir,
-                                                const double & neck_dir,
-                                                const double & focus_point_dist,
-                                                const double & focus_point_dir ) const
+SerializerPlayerStdv18::serializeFSPlayerFocus( std::ostream & strm,
+                                                const Player & p ) const
 
 {
-    strm << " ((p " << side
-         << ' ' << unum;
-
-    if ( goalie )
-    {
-        strm << " g";
-    }
-
-    strm << ' ' << type // hetro player type
-         << ") " << x
-         << ' ' << y
-         << ' ' << vel_x
-         << ' ' << vel_y
-         << ' ' << body_dir
-         << ' ' << neck_dir
-         << ' ' << focus_point_dist
-         << ' ' << focus_point_dir;
+    strm << ' ' << p.focusDist()
+         << ' ' << Rad2Deg( p.focusDir() );
 }
 
 const

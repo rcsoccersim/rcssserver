@@ -53,6 +53,7 @@ rcssserver_SOURCES = \
 	serializerplayerstdv8.cpp \
 	serializerplayerstdv13.cpp \
 	serializerplayerstdv14.cpp \
+	serializerplayerstdv18.cpp \
 	serverparam.cpp \
 	stadium.cpp \
 	stdoutsaver.cpp \
@@ -124,6 +125,7 @@ noinst_HEADERS = \
 	serializerplayerstdv8.h \
 	serializerplayerstdv13.h \
 	serializerplayerstdv14.h \
+	serializerplayerstdv18.h \
 	serializermonitor.h \
 	serverparam.h \
 	stadium.h \

@@ -52,23 +52,12 @@ public:
                             const int count_change_focus) const override;
 
     virtual
-    void serializeFocusPoint( std::ostream &,
-                        const Player & ) const override;
+    void serializeFocusPoint( std::ostream & strm,
+                              const Player & self ) const override;
 
     virtual
-    void serializeFSPlayerBegin( std::ostream &,
-                                 const char,
-                                 const int,
-                                 const bool,
-                                 const int,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double & ) const override;
+    void serializeFSPlayerFocus( std::ostream & strm,
+                                 const Player & p ) const override;
 };
 
 }
