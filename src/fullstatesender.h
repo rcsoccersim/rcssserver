@@ -315,8 +315,7 @@ public:
     ~FullStateSenderPlayerV18() override;
 
 protected:
-    virtual
-    void sendSelf() override;
+
     virtual
     void sendPlayer( const Player & p ) override;
 };

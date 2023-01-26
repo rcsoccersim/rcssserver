@@ -50,30 +50,48 @@ SerializerPlayerStdv18::serializeBodyCounts( std::ostream & strm,
     strm << " (change_focus " << self.changeFocusCount() << ')';
 }
 
+
 void
 SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
-                                          const int count_kick,
-                                          const int count_dash,
-                                          const int count_turn,
-                                          const int count_catch,
-                                          const int count_move,
-                                          const int count_turn_neck,
-                                          const int count_change_view,
-                                          const int count_say,
-                                          const int count_change_focus) const
+                                           const Player & self ) const
 {
     strm << " (count "
-         << count_kick << ' '
-         << count_dash << ' '
-         << count_turn << ' '
-         << count_catch << ' '
-         << count_move << ' '
-         << count_turn_neck << ' '
-         << count_change_view << ' '
-         << count_say << ' '
-         << count_change_focus
-         << ')';
+         << self.kickCount() << ' '
+         << self.dashCount() << ' '
+         << self.turnCount() << ' '
+         << self.catchCount() << ' '
+         << self.moveCount() << ' '
+         << self.turnNeckCount() << ' '
+         << self.changeViewCount() << ' '
+         << self.sayCount() << ' '
+         << self.changeFocusCount() << ')';
 }
+
+
+// void
+// SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
+//                                           const int count_kick,
+//                                           const int count_dash,
+//                                           const int count_turn,
+//                                           const int count_catch,
+//                                           const int count_move,
+//                                           const int count_turn_neck,
+//                                           const int count_change_view,
+//                                           const int count_say,
+//                                           const int count_change_focus) const
+// {
+//     strm << " (count "
+//          << count_kick << ' '
+//          << count_dash << ' '
+//          << count_turn << ' '
+//          << count_catch << ' '
+//          << count_move << ' '
+//          << count_turn_neck << ' '
+//          << count_change_view << ' '
+//          << count_say << ' '
+//          << count_change_focus
+//          << ')';
+// }
 
 void
 SerializerPlayerStdv18::serializeFocusPoint( std::ostream & strm,

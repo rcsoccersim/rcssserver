@@ -555,28 +555,33 @@ public:
 
     virtual
     void serializeFSCounts( std::ostream &,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int ) const
+                            const Player & ) const
       { }
 
-    virtual
-    void serializeFSCounts( std::ostream &,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int ) const
-    { }
+    // virtual
+    // void serializeFSCounts( std::ostream &,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int ) const
+    //   { }
+
+    // virtual
+    // void serializeFSCounts( std::ostream &,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int ) const
+    // { }
 
     virtual
     void serializeFSScore( std::ostream &,
