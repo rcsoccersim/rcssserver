@@ -40,6 +40,16 @@ SerializerPlayerStdv18::~SerializerPlayerStdv18()
 
 }
 
+
+void
+SerializerPlayerStdv18::serializeBodyCounts( std::ostream & strm,
+                                             const Player & self ) const
+{
+    SerializerPlayerStdv14::serializeBodyCounts( strm, self );
+
+    strm << " (change_focus " << self.changeFocusCount() << ')';
+}
+
 void
 SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
                                           const int count_kick,

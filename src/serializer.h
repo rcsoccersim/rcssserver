@@ -473,23 +473,8 @@ public:
 
     virtual
     void serializeBodyCounts( std::ostream &,
-                              const int,
-                              const int,
-                              const int,
-                              const int ) const
+                              const Player & ) const
       { }
-
-    virtual
-    void serializeBodyCounts( std::ostream &,
-                              const int,
-                              const int,
-                              const int ) const
-      { }
-
-    virtual
-    void serializeBodyCounts( std::ostream &,
-                              const int ) const
-    { }
 
     virtual
     void serializeNeckAngle( std::ostream &,

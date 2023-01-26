@@ -40,6 +40,10 @@ public:
     SerializerPlayer::Ptr create();
 
     virtual
+    void serializeBodyCounts( std::ostream &,
+                              const Player & ) const override;
+
+    virtual
     void serializeFSCounts( std::ostream & strm,
                             const int count_kick,
                             const int count_dash,

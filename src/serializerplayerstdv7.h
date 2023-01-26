@@ -111,6 +111,10 @@ public:
                                 const int unum,
                                 const int type ) const;
 
+    virtual
+    void serializeBodyCounts( std::ostream &,
+                              const Player & ) const override;
+
 };
 
 }

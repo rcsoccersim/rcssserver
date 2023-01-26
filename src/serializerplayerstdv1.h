@@ -105,20 +105,7 @@ public:
 
     virtual
     void serializeBodyCounts( std::ostream & strm,
-                              const int count_kick,
-                              const int count_dash,
-                              const int count_turn,
-                              const int count_say ) const override;
-
-    virtual
-    void serializeBodyCounts( std::ostream & strm,
-                              const int count_catch,
-                              const int count_move,
-                              const int count_change_view ) const override;
-
-    virtual
-    void serializeBodyCounts( std::ostream & strm,
-                              const int count_change_focus ) const override;
+                              const Player & self ) const override;
 
     virtual
     void serializeNeckAngle( std::ostream & strm,

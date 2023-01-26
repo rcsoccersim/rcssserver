@@ -25,6 +25,8 @@
 
 #include "serializerplayerstdv7.h"
 
+#include "player.h"
+
 #include <rcss/clang/clangmsg.h>
 
 namespace rcss {
@@ -167,6 +169,17 @@ SerializerPlayerStdv7::serializeChangePlayer( std::ostream & strm,
     strm << "(change_player_type "
          << unum << ' ' << type << ')';
 }
+
+void
+SerializerPlayerStdv7::serializeBodyCounts( std::ostream & strm,
+                                            const Player & self ) const
+{
+    SerializerPlayerStdv1::serializeBodyCounts( strm, self );
+    strm << " (catch " << self.catchCount() << ')'
+         << " (move " << self.moveCount() << ')'
+         << " (change_view " << self.changeViewCount() << ')';
+}
+
 
 const
 SerializerPlayer::Ptr
