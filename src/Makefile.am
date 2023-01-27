@@ -49,6 +49,7 @@ rcssserver_SOURCES = \
 	serializeronlinecoachstdv13.cpp \
 	serializeronlinecoachstdv14.cpp \
 	serializerplayerstdv1.cpp \
+	serializerplayerstdv5.cpp \
 	serializerplayerstdv7.cpp \
 	serializerplayerstdv8.cpp \
 	serializerplayerstdv13.cpp \
@@ -121,6 +122,7 @@ noinst_HEADERS = \
 	serializeronlinecoachstdv13.h \
 	serializeronlinecoachstdv14.h \
 	serializerplayerstdv1.h \
+	serializerplayerstdv5.h \
 	serializerplayerstdv7.h \
 	serializerplayerstdv8.h \
 	serializerplayerstdv13.h \

@@ -200,13 +200,6 @@ SerializerPlayerStdv1::serializeNeckAngle( std::ostream & strm,
 }
 
 void
-SerializerPlayerStdv1::serializeNeckCount( std::ostream & strm,
-                                           const int count_turn_neck ) const
-{
-    strm << " (turn_neck " << count_turn_neck << ')';
-}
-
-void
 SerializerPlayerStdv1::serializeArm( std::ostream & strm,
                                      const int movable_cycles,
                                      const int expires_cycles,

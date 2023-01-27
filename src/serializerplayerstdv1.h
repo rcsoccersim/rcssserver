@@ -112,10 +112,6 @@ public:
                              const int ang ) const override;
 
     virtual
-    void serializeNeckCount( std::ostream & strm,
-                        const int count_turn_neck ) const override;
-
-    virtual
     void serializeArm( std::ostream & strm,
                        const int movable_cycles,
                        const int expires_cycles,

@@ -190,14 +190,6 @@ BodySenderPlayerV5::sendNeck()
                                      ang );
 }
 
-// void
-// BodySenderPlayerV5::sendCounts()
-// {
-//     BodySenderPlayerV1::sendCounts();
-//     serializer().serializeNeckCount( transport(),
-//                                      self().turnNeckCount() );
-// }
-
 /*!
 //===================================================================
 //

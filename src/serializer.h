@@ -482,11 +482,6 @@ public:
       { }
 
     virtual
-    void serializeNeckCount( std::ostream &,
-                             const int ) const
-      { }
-
-    virtual
     void serializeArm( std::ostream &,
                        const int,
                        const int,

@@ -32,7 +32,7 @@
 namespace rcss {
 
 SerializerPlayerStdv7::SerializerPlayerStdv7( const SerializerCommon::Ptr common )
-    : SerializerPlayerStdv1( common )
+    : SerializerPlayerStdv5( common )
 {
 
 }
@@ -174,7 +174,7 @@ void
 SerializerPlayerStdv7::serializeBodyCounts( std::ostream & strm,
                                             const Player & self ) const
 {
-    SerializerPlayerStdv1::serializeBodyCounts( strm, self );
+    SerializerPlayerStdv5::serializeBodyCounts( strm, self );
     strm << " (catch " << self.catchCount() << ')'
          << " (move " << self.moveCount() << ')'
          << " (change_view " << self.changeViewCount() << ')';
