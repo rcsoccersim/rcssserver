@@ -482,8 +482,6 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
                                          Rad2Deg( p.angleBodyCommitted() ),
                                          Rad2Deg( p.angleNeckCommitted() ) );
 
-    serializer().serializeFSPlayerFocus( transport(), p );
-
     if ( p.arm().isPointing() )
     {
         rcss::geom::Vector2D arm_vec;
@@ -494,6 +492,8 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
                                            arm_vec.getMag(),
                                            arm_vec.getHead() );
     }
+
+    serializer().serializeFSPlayerFocus( transport(), p );
 
     serializer().serializeFSPlayerStamina( transport(),
                                            p.stamina(),

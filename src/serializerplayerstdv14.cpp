@@ -44,7 +44,7 @@ void
 SerializerPlayerStdv14::serializeFoul( std::ostream & strm,
                                        const Player & self ) const
 {
-    strm << " (foul "
+    strm << " (foul"
          << " (charged " << self.foulCycles() << ')';
 
     if ( self.hasRedCard() )

@@ -1,13 +1,12 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializerplayerstdv14.h
-                  Class for serializing data to std v14 players
+                            serializerplayerstdv18.h
+                  Class for serializing data to std v18 players
                              -------------------
-    begin                : 2009-10-26
-    copyright            : (C) 2009 by The RoboCup Soccer Server
+    begin                : 2022-10-08
+    copyright            : (C) 2022 by The RoboCup Soccer Server
                            Maintenance Group.
-    email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
 
 /***************************************************************************
@@ -65,6 +64,7 @@ public:
     virtual
     void serializeFSPlayerFocus( std::ostream & strm,
                                  const Player & p ) const override;
+
 };
 
 }
