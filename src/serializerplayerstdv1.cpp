@@ -448,8 +448,6 @@ RegHolder v1 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::crea
 RegHolder v2 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 2 );
 RegHolder v3 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 3 );
 RegHolder v4 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 4 );
-RegHolder v5 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 5 );
-RegHolder v6 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 6 );
 }
 
 }

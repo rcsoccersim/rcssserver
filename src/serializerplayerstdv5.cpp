@@ -65,6 +65,8 @@ SerializerPlayerStdv5::create()
 
 namespace {
 RegHolder v5 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv5::create, 5 );
+RegHolder v6 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv5::create, 6 );
+
 }
 
 }

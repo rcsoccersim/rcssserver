@@ -1010,6 +1010,7 @@ RegHolder vc14 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv
 RegHolder vc15 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 15 );
 RegHolder vc16 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 16 );
 RegHolder vc17 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 17 );
+RegHolder vc18 = AudioSenderCoach::factory().autoReg( &create< AudioSenderCoachv7 >, 18 );
 
 template< typename Sender >
 AudioSender::Ptr
