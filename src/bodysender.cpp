@@ -152,11 +152,12 @@ BodySenderPlayerV1::sendNeck()
 void
 BodySenderPlayerV1::sendCounts()
 {
-    serializer().serializeBodyCounts( transport(),
-                                      self().kickCount(),
-                                      self().dashCount(),
-                                      self().turnCount(),
-                                      self().sayCount() );
+    serializer().serializeBodyCounts( transport(), self() );
+    // serializer().serializeBodyCounts( transport(),
+    //                                   self().kickCount(),
+    //                                   self().dashCount(),
+    //                                   self().turnCount(),
+    //                                   self().sayCount() );
 }
 
 /*!
@@ -187,14 +188,6 @@ BodySenderPlayerV5::sendNeck()
     int ang = Rad2IDeg( self().angleNeckCommitted() );
     serializer().serializeNeckAngle( transport(),
                                      ang );
-}
-
-void
-BodySenderPlayerV5::sendCounts()
-{
-    BodySenderPlayerV1::sendCounts();
-    serializer().serializeNeckCount( transport(),
-                                     self().turnNeckCount() );
 }
 
 /*!
@@ -249,16 +242,6 @@ BodySenderPlayerV7::BodySenderPlayerV7( const Params & params )
 BodySenderPlayerV7::~BodySenderPlayerV7()
 {
 
-}
-
-void
-BodySenderPlayerV7::sendCounts()
-{
-    BodySenderPlayerV6::sendCounts();
-    serializer().serializeBodyCounts( transport(),
-                                      self().catchCount(),
-                                      self().moveCount(),
-                                      self().changeViewCount() );
 }
 
 /*!
@@ -426,14 +409,6 @@ BodySenderPlayerV18::sendBodyData()
 {
     BodySenderPlayerV14::sendBodyData();
     serializer().serializeFocusPoint( transport(), self() );
-}
-
-void
-BodySenderPlayerV18::sendCounts()
-{
-    BodySenderPlayerV7::sendCounts();
-    serializer().serializeBodyCounts( transport(),
-                                      self().changeFocusCount() );
 }
 
 namespace bodysender {

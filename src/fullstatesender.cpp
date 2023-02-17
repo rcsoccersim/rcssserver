@@ -293,15 +293,16 @@ FullStateSenderPlayerV8::sendSelf()
                              self().angleBodyCommitted()
                              + self().angleNeckCommitted(),
                              arm_vec );
-    serializer().serializeFSCounts( transport(),
-                                    self().kickCount(),
-                                    self().dashCount(),
-                                    self().turnCount(),
-                                    self().catchCount(),
-                                    self().moveCount(),
-                                    self().turnNeckCount(),
-                                    self().changeViewCount(),
-                                    self().sayCount() );
+    serializer().serializeFSCounts( transport(), self() );
+    // serializer().serializeFSCounts( transport(),
+    //                                 self().kickCount(),
+    //                                 self().dashCount(),
+    //                                 self().turnCount(),
+    //                                 self().catchCount(),
+    //                                 self().moveCount(),
+    //                                 self().turnNeckCount(),
+    //                                 self().changeViewCount(),
+    //                                 self().sayCount() );
     serializer().serializeArm( transport(),
                                self().arm().getCyclesTillMovable(),
                                self().arm().getCyclesTillExpiry(),
@@ -479,9 +480,7 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
                                          p.vel().x,
                                          p.vel().y,
                                          Rad2Deg( p.angleBodyCommitted() ),
-                                         Rad2Deg( p.angleNeckCommitted() ),
-                                         p.focusDist(),
-                                         Rad2Deg( p.focusDir() ) );
+                                         Rad2Deg( p.angleNeckCommitted() ) );
 
     if ( p.arm().isPointing() )
     {
@@ -494,6 +493,8 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
                                            arm_vec.getHead() );
     }
 
+    serializer().serializeFSPlayerFocus( transport(), p );
+
     serializer().serializeFSPlayerStamina( transport(),
                                            p.stamina(),
                                            p.effort(),
@@ -505,31 +506,6 @@ FullStateSenderPlayerV18::sendPlayer( const Player & p )
     serializer().serializeFSPlayerEnd( transport() );
 }
 
-void
-FullStateSenderPlayerV18::sendSelf()
-{
-    rcss::geom::Vector2D arm_vec;
-    self().arm().getRelDest( rcss::geom::Vector2D ( self().pos().x,
-                                                    self().pos().y ),
-                             self().angleBodyCommitted()
-                             + self().angleNeckCommitted(),
-                             arm_vec );
-    serializer().serializeFSCounts( transport(),
-                                    self().kickCount(),
-                                    self().dashCount(),
-                                    self().turnCount(),
-                                    self().catchCount(),
-                                    self().moveCount(),
-                                    self().turnNeckCount(),
-                                    self().changeViewCount(),
-                                    self().sayCount(),
-                                    self().changeFocusCount());
-    serializer().serializeArm( transport(),
-                               self().arm().getCyclesTillMovable(),
-                               self().arm().getCyclesTillExpiry(),
-                               arm_vec.getMag(), Rad2IDegRound( arm_vec.getHead() ),
-                               self().arm().getCounter() );
-}
 /*!
 //===================================================================
 //

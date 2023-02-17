@@ -197,8 +197,6 @@ protected:
     virtual
     void sendCounts();
 
-public:
-
 };
 
 /*!
@@ -225,8 +223,6 @@ protected:
     virtual
     void sendNeck() override;
 
-    virtual
-    void sendCounts() override;
 };
 
 /*!
@@ -272,10 +268,6 @@ public:
 
     virtual
     ~BodySenderPlayerV7() override;
-
-protected:
-    virtual
-    void sendCounts() override;
 
 };
 
@@ -402,8 +394,6 @@ protected:
     virtual
     void sendBodyData() override;
 
-    virtual
-    void sendCounts() override;
 };
 }
 

@@ -333,7 +333,7 @@ public:
 
     virtual
     void serializeVisualBegin( std::ostream &,
-                               const int ) const
+                               const int /*time*/ ) const
       { }
 
     virtual
@@ -473,31 +473,11 @@ public:
 
     virtual
     void serializeBodyCounts( std::ostream &,
-                              const int,
-                              const int,
-                              const int,
-                              const int ) const
+                              const Player & ) const
       { }
-
-    virtual
-    void serializeBodyCounts( std::ostream &,
-                              const int,
-                              const int,
-                              const int ) const
-      { }
-
-    virtual
-    void serializeBodyCounts( std::ostream &,
-                              const int ) const
-    { }
 
     virtual
     void serializeNeckAngle( std::ostream &,
-                             const int ) const
-      { }
-
-    virtual
-    void serializeNeckCount( std::ostream &,
                              const int ) const
       { }
 
@@ -570,28 +550,33 @@ public:
 
     virtual
     void serializeFSCounts( std::ostream &,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int ) const
+                            const Player & ) const
       { }
 
-    virtual
-    void serializeFSCounts( std::ostream &,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int ) const
-    { }
+    // virtual
+    // void serializeFSCounts( std::ostream &,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int ) const
+    //   { }
+
+    // virtual
+    // void serializeFSCounts( std::ostream &,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int ) const
+    // { }
 
     virtual
     void serializeFSScore( std::ostream &,
@@ -613,33 +598,23 @@ public:
                                  const int,
                                  const bool,
                                  const int,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double & ) const
+                                 const double & /* x */,
+                                 const double & /* y */,
+                                 const double & /* vx */,
+                                 const double & /* vy */ ,
+                                 const double & /* body */ ,
+                                 const double & /* neck */ ) const
       { }
 
     virtual
-    void serializeFSPlayerBegin( std::ostream &,
-                                 const char,
-                                 const int,
-                                 const bool,
-                                 const int,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double & ) const
-    { }
+    void serializeFSPlayerFocus( std::ostream &,
+                                 const Player & ) const
+      { }
+
     virtual
     void serializeFSPlayerArm( std::ostream &,
-                               const double &,
-                               const double & ) const
+                               const double & /* point_dist */,
+                               const double & /* point_dir */ ) const
       { }
 
     virtual
@@ -752,7 +727,7 @@ public:
 
     virtual
     void serializeVisualBegin( std::ostream &,
-                               const int ) const
+                               const int /*time*/ ) const
       { }
 
     virtual
@@ -811,52 +786,26 @@ public:
                                 const bool ) const
       { }
 
-
     virtual
     void serializeVisualPlayer( std::ostream &,
                                 const Player &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int ) const
+                                const std::string & /*name*/,
+                                const PVector & /*pos*/,
+                                const PVector & /*vel*/,
+                                const int /*body*/,
+                                const int /*neck*/ ) const
       { }
 
     virtual
     void serializeVisualPlayer( std::ostream &,
                                 const Player &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int,
-                                const int ) const
+                                const std::string & /*name*/,
+                                const PVector & /*pos*/,
+                                const PVector & /*vel*/,
+                                const int /*body*/,
+                                const int /*neck*/,
+                                const int /*point_dir*/) const
       { }
-
-    virtual
-    void serializeVisualPlayer( std::ostream &,
-                                const Player &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int,
-                                const double,
-                                const int) const
-    { }
-
-    virtual
-    void serializeVisualPlayer( std::ostream &,
-                                const Player &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int,
-                                const double,
-                                const int,
-                                const int ) const
-    { }
 
     virtual
     void serializeOKEye( std::ostream &,
@@ -1037,25 +986,6 @@ public:
                                 const PVector & vel,
                                 const int body,
                                 const int neck,
-                                const double /*focus_point_dist*/,
-                                const int /*focus_point_dir*/) const
-    {
-        coachSerializer().serializeVisualPlayer( strm,
-                                                 player,
-                                                 name,
-                                                 pos,
-                                                 vel,
-                                                 body,
-                                                 neck );
-    }
-
-    void serializeVisualPlayer( std::ostream & strm,
-                                const Player & player,
-                                const std::string & name,
-                                const PVector & pos,
-                                const PVector & vel,
-                                const int body,
-                                const int neck,
                                 const int point_dir ) const
       {
           coachSerializer().serializeVisualPlayer( strm,
@@ -1067,27 +997,6 @@ public:
                                                    neck,
                                                    point_dir );
       }
-    void serializeVisualPlayer( std::ostream & strm,
-                                const Player & player,
-                                const std::string & name,
-                                const PVector & pos,
-                                const PVector & vel,
-                                const int body,
-                                const int neck,
-                                const double /*focus_point_dist*/,
-                                const int /*focus_point_dir*/,
-                                const int point_dir ) const
-    {
-        coachSerializer().serializeVisualPlayer( strm,
-                                                 player,
-                                                 name,
-                                                 pos,
-                                                 vel,
-                                                 body,
-                                                 neck,
-                                                 point_dir );
-    }
-
 
 };
 

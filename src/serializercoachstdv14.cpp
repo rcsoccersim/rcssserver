@@ -138,6 +138,7 @@ RegHolder v14 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::crea
 RegHolder v15 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::create, 15 );
 RegHolder v16 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::create, 16 );
 RegHolder v17 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::create, 17 );
+RegHolder v18 = SerializerCoach::factory().autoReg( &SerializerCoachStdv14::create, 18 );
 }
 
 }

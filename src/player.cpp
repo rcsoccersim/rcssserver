@@ -165,6 +165,11 @@ Player::Player( Stadium & stadium,
       M_unum( number ),
       M_goalie( false ),
       //
+      M_unum_far_length( 20.0 ),
+      M_unum_too_far_length( 40.0 ),
+      M_team_far_length( 40.0 ),
+      M_team_too_far_length( 60.0 ),
+      //
       M_clang_min_ver( 0 ),
       M_clang_max_ver( 0 ),
       //
@@ -1181,7 +1186,7 @@ Player::change_focus( double moment_dist, double moment_dir )
                                 M_focus_dist + moment_dist,
                                 40.0 );
     M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
-                               normalize_angle( M_focus_dir + moment_dir ),
+                               normalize_angle( M_focus_dir + Deg2Rad( moment_dir ) ),
                                +M_visible_angle * 0.5 );
     updateFocusPoint();
 

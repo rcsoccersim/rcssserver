@@ -1,13 +1,12 @@
 // -*-c++-*-
 
 /***************************************************************************
-                         serializeronlinecoachstdv18.h
-               Class for serializing data to std v18 online coaches
+                            serializerplayerstdv5.h
+                  Class for serializing data to std v5 players
                              -------------------
-    begin                : 2009-10-26
-    copyright            : (C) 2009 by The RoboCup Soccer Server
+    begin                : 2023-01-27
+    copyright            : (C) 2023 by The RoboCup Soccer Server
                            Maintenance Group.
-    email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
 
 /***************************************************************************
@@ -19,27 +18,34 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SERIALIZERONLINECOACHSTDV18_H
-#define SERIALIZERONLINECOACHSTDV18_H
 
-#include "serializeronlinecoachstdv14.h"
+#ifndef SERIALIZERPLAYERSTDV5_H
+#define SERIALIZERPLAYERSTDV5_H
+
+#include "serializerplayerstdv1.h"
 
 namespace rcss {
 
-class SerializerOnlineCoachStdv18
-        : public SerializerOnlineCoachStdv14 {
+class SerializerPlayerStdv5
+    : public SerializerPlayerStdv1 {
 protected:
-    SerializerOnlineCoachStdv18( const SerializerCommon::Ptr common,
-                                 const SerializerCoach::Ptr coach );
+    explicit
+    SerializerPlayerStdv5( const SerializerCommon::Ptr common );
 
 public:
     virtual
-    ~SerializerOnlineCoachStdv18() override;
+    ~SerializerPlayerStdv5() override;
 
     static
-    const Ptr create();
+    const
+    Ptr create();
+
+    virtual
+    void serializeBodyCounts( std::ostream &,
+                              const Player & ) const override;
 
 };
+
 }
 
 #endif

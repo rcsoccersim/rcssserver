@@ -1,13 +1,12 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializerplayerstdv14.h
-                  Class for serializing data to std v14 players
+                            serializerplayerstdv18.h
+                  Class for serializing data to std v18 players
                              -------------------
-    begin                : 2009-10-26
-    copyright            : (C) 2009 by The RoboCup Soccer Server
+    begin                : 2022-10-08
+    copyright            : (C) 2022 by The RoboCup Soccer Server
                            Maintenance Group.
-    email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
 
 /***************************************************************************
@@ -40,35 +39,32 @@ public:
     SerializerPlayer::Ptr create();
 
     virtual
+    void serializeBodyCounts( std::ostream &,
+                              const Player & ) const override;
+
+    virtual
     void serializeFSCounts( std::ostream & strm,
-                            const int count_kick,
-                            const int count_dash,
-                            const int count_turn,
-                            const int count_catch,
-                            const int count_move,
-                            const int count_turn_neck,
-                            const int count_change_view,
-                            const int count_say,
-                            const int count_change_focus) const override;
+                            const Player & self ) const override;
+    // virtual
+    // void serializeFSCounts( std::ostream & strm,
+    //                         const int count_kick,
+    //                         const int count_dash,
+    //                         const int count_turn,
+    //                         const int count_catch,
+    //                         const int count_move,
+    //                         const int count_turn_neck,
+    //                         const int count_change_view,
+    //                         const int count_say,
+    //                         const int count_change_focus) const override;
 
     virtual
-    void serializeFocusPoint( std::ostream &,
-                        const Player & ) const override;
+    void serializeFocusPoint( std::ostream & strm,
+                              const Player & self ) const override;
 
     virtual
-    void serializeFSPlayerBegin( std::ostream &,
-                                 const char,
-                                 const int,
-                                 const bool,
-                                 const int,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double & ) const override;
+    void serializeFSPlayerFocus( std::ostream & strm,
+                                 const Player & p ) const override;
+
 };
 
 }

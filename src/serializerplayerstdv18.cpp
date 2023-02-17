@@ -1,13 +1,12 @@
 // -*-c++-*-
 
 /***************************************************************************
-                            serializerplayerstdv14.cpp
+                            serializerplayerstdv18.cpp
                   Class for serializing data to std v14 players
                              -------------------
-    begin                : 2009-10-26
-    copyright            : (C) 2009 by The RoboCup Soccer Server
+    begin                : 2022-10-08
+    copyright            : (C) 2023 by The RoboCup Soccer Server
                            Maintenance Group.
-    email                : sserver-admin@lists.sourceforge.net
 ***************************************************************************/
 
 /***************************************************************************
@@ -40,75 +39,79 @@ SerializerPlayerStdv18::~SerializerPlayerStdv18()
 
 }
 
+
+void
+SerializerPlayerStdv18::serializeBodyCounts( std::ostream & strm,
+                                             const Player & self ) const
+{
+    SerializerPlayerStdv14::serializeBodyCounts( strm, self );
+
+    strm << " (change_focus " << self.changeFocusCount() << ')';
+}
+
+
 void
 SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
-                                          const int count_kick,
-                                          const int count_dash,
-                                          const int count_turn,
-                                          const int count_catch,
-                                          const int count_move,
-                                          const int count_turn_neck,
-                                          const int count_change_view,
-                                          const int count_say,
-                                          const int count_change_focus) const
+                                           const Player & self ) const
 {
     strm << " (count "
-         << count_kick << ' '
-         << count_dash << ' '
-         << count_turn << ' '
-         << count_catch << ' '
-         << count_move << ' '
-         << count_turn_neck << ' '
-         << count_change_view << ' '
-         << count_say << ' '
-         << count_change_focus
-         << ')';
+         << self.kickCount() << ' '
+         << self.dashCount() << ' '
+         << self.turnCount() << ' '
+         << self.catchCount() << ' '
+         << self.moveCount() << ' '
+         << self.turnNeckCount() << ' '
+         << self.changeViewCount() << ' '
+         << self.sayCount() << ' '
+         << self.changeFocusCount() << ')';
 }
+
+
+// void
+// SerializerPlayerStdv18::serializeFSCounts( std::ostream & strm,
+//                                           const int count_kick,
+//                                           const int count_dash,
+//                                           const int count_turn,
+//                                           const int count_catch,
+//                                           const int count_move,
+//                                           const int count_turn_neck,
+//                                           const int count_change_view,
+//                                           const int count_say,
+//                                           const int count_change_focus) const
+// {
+//     strm << " (count "
+//          << count_kick << ' '
+//          << count_dash << ' '
+//          << count_turn << ' '
+//          << count_catch << ' '
+//          << count_move << ' '
+//          << count_turn_neck << ' '
+//          << count_change_view << ' '
+//          << count_say << ' '
+//          << count_change_focus
+//          << ')';
+// }
 
 void
 SerializerPlayerStdv18::serializeFocusPoint( std::ostream & strm,
                                              const Player & self ) const
 {
     strm << " (focus_point "
-         << self.focusPointCommitted().getMag()<< " "
-         << Rad2Deg( self.focusPointCommitted().getHead() );
+         << self.focusDist()<< " "
+         << Rad2Deg( self.focusDir() );
 
     strm << ')';
 }
 
 void
-SerializerPlayerStdv18::serializeFSPlayerBegin( std::ostream & strm,
-                                                const char side,
-                                                const int unum,
-                                                const bool goalie,
-                                                const int type,
-                                                const double & x,
-                                                const double & y,
-                                                const double & vel_x,
-                                                const double & vel_y,
-                                                const double & body_dir,
-                                                const double & neck_dir,
-                                                const double & focus_point_dist,
-                                                const double & focus_point_dir ) const
+SerializerPlayerStdv18::serializeFSPlayerFocus( std::ostream & strm,
+                                                const Player & p ) const
 
 {
-    strm << " ((p " << side
-         << ' ' << unum;
-
-    if ( goalie )
-    {
-        strm << " g";
-    }
-
-    strm << ' ' << type // hetro player type
-         << ") " << x
-         << ' ' << y
-         << ' ' << vel_x
-         << ' ' << vel_y
-         << ' ' << body_dir
-         << ' ' << neck_dir
-         << ' ' << focus_point_dist
-         << ' ' << focus_point_dir;
+    strm << " (focus_point "
+         << p.focusDist() << ' '
+         << Rad2Deg( p.focusDir() )
+         << ')';
 }
 
 const
