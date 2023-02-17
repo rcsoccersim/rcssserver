@@ -1186,7 +1186,7 @@ Player::change_focus( double moment_dist, double moment_dir )
                                 M_focus_dist + moment_dist,
                                 40.0 );
     M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
-                               normalize_angle( M_focus_dir + moment_dir ),
+                               normalize_angle( M_focus_dir + Deg2Rad( moment_dir ) ),
                                +M_visible_angle * 0.5 );
     updateFocusPoint();
 
