@@ -1803,6 +1803,11 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
     M_view_width = viewWidth;
     M_high_quality = true;
 
+    M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
+                               M_focus_dir,
+                               +M_visible_angle * 0.5 );
+    updateFocusPoint();
+
     ++M_change_view_count;
 }
 
