@@ -379,8 +379,9 @@ RegHolder v1 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV
 RegHolder v2 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV2 >, 2 );
 RegHolder v3 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 3 );
 RegHolder v4 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 4 );
-RegHolder v5 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorJSON >, 5 );
-RegHolder v6 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 6 );
+RegHolder v5 = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorV3 >, 5 );
+RegHolder vjson = InitSenderMonitor::factory().autoReg( &create< InitSenderMonitorJSON >, -1 );
+
 }
 
 }

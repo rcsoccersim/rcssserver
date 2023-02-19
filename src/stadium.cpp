@@ -2802,7 +2802,7 @@ Stadium::parseMonitorInit( const char * message,
         }
         std::cout << "A new (v" << ver << ") monitor connected." << std::endl;
 
-        mon->setEnforceDedicatedPort( ver >= 2.0 );
+        mon->setEnforceDedicatedPort( ver < 0 || ver >= 2.0 );
         M_monitors.push_back( mon );
 
         // send server parameter information to monitor

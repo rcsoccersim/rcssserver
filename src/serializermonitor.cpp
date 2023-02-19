@@ -946,8 +946,9 @@ RegHolder v1 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv1::cr
 RegHolder v2 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv1::create, 2 );
 RegHolder v3 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv3::create, 3 );
 RegHolder v4 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv4::create, 4 );
-RegHolder v5 = SerializerMonitor::factory().autoReg( &SerializerMonitorJSON::create, 5 );
-RegHolder v6 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv5::create, 6 );
+RegHolder v5 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv5::create, 5 );
+RegHolder vjson = SerializerMonitor::factory().autoReg( &SerializerMonitorJSON::create, -1 );
+
 }
 
 }
