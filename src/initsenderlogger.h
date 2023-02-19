@@ -343,18 +343,18 @@ public:
 };
 
 
-class InitSenderLoggerV7
+class InitSenderLoggerV6
         : public InitSenderLoggerV5 {
 public:
-    InitSenderLoggerV7( const Params & params );
+    InitSenderLoggerV6( const Params & params );
 
 protected:
-    InitSenderLoggerV7( const Params & params,
+    InitSenderLoggerV6( const Params & params,
                         const std::shared_ptr< InitSenderCommon > common );
 
 public:
     virtual
-    ~InitSenderLoggerV7() override;
+    ~InitSenderLoggerV6() override;
 
     virtual
     void sendHeader() override;

@@ -480,33 +480,33 @@ InitSenderLoggerV5::sendHeader()
 //===================================================================
 */
 
-InitSenderLoggerV7::InitSenderLoggerV7( const Params & params )
-        : InitSenderLoggerV5( params,
-                              std::shared_ptr< InitSenderCommon >
-                                      ( new InitSenderCommonV8( params.M_transport,
-                                                                params.M_serializer,
-                                                                params.M_stadium,
-                                                                999,  // accept all parameters
-                                                                true ) ) ) // new line
+InitSenderLoggerV6::InitSenderLoggerV6( const Params & params )
+    : InitSenderLoggerV5( params,
+                          std::shared_ptr< InitSenderCommon >
+                          ( new InitSenderCommonV8( params.M_transport,
+                                                    params.M_serializer,
+                                                    params.M_stadium,
+                                                    999,  // accept all parameters
+                                                    true ) ) ) // new line
 {
     // The version of the common sender has to be "8".
     // The client version is set to "999" in order to send all parameters.
 }
 
-InitSenderLoggerV7::InitSenderLoggerV7( const Params & params,
+InitSenderLoggerV6::InitSenderLoggerV6( const Params & params,
                                         const std::shared_ptr< InitSenderCommon > common )
-        : InitSenderLoggerV5( params, common )
+    : InitSenderLoggerV5( params, common )
 {
 
 }
 
-InitSenderLoggerV7::~InitSenderLoggerV7()
+InitSenderLoggerV6::~InitSenderLoggerV6()
 {
 
 }
 
 void
-InitSenderLoggerV7::sendHeader()
+InitSenderLoggerV6::sendHeader()
 {
     transport() << "ULG6" << std::endl;
 }
@@ -610,8 +610,10 @@ RegHolder vl2 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV2
 RegHolder vl3 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV3 >, 3 );
 RegHolder vl4 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV4 >, 4 );
 RegHolder vl5 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV5 >, 5 );
-RegHolder vl6 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerJSON >, 6 );
-RegHolder vl7 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV7 >, 7 );
+RegHolder vl7 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV6 >, 6 );
+
+RegHolder vljson = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerJSON >, -1 );
+
 }
 
 }
