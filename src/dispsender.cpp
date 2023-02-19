@@ -486,6 +486,7 @@ DispSenderMonitorV3::sendShow()
         serializer().serializePlayerPos( ostr, *p );
         serializer().serializePlayerArm( ostr, *p );
         serializer().serializePlayerViewMode( ostr, *p );
+        serializer().serializePlayerFocusPoint( ostr, *p );
         serializer().serializePlayerStamina( ostr, *p );
         serializer().serializePlayerFocus( ostr, *p );
         serializer().serializePlayerCounts( ostr, *p );
@@ -512,15 +513,15 @@ DispSenderMonitorV3::sendMsg( const BoardType board,
 }
 
 
-// /*!
-// //===================================================================
-// //
-// //  CLASS: DispSenderMonitorJSON
-// //
-// //  DESC: version 5 of display protocol.
-// //
-// //===================================================================
-// */
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderMonitorJSON
+//
+//  DESC: JSON protocol.
+//
+//===================================================================
+*/
 
 DispSenderMonitorJSON::DispSenderMonitorJSON( const Params & params )
     : DispSenderMonitor( params )
@@ -585,6 +586,7 @@ DispSenderMonitorJSON::sendShow()
         serializer().serializePlayerPos( ostr, *p );
         serializer().serializePlayerArm( ostr, *p );
         serializer().serializePlayerViewMode( ostr, *p );
+        serializer().serializePlayerFocusPoint( ostr, *p );
         serializer().serializePlayerStamina( ostr, *p );
         serializer().serializePlayerFocus( ostr, *p );
         //serializer().serializePlayerCounts( ostr, *p );
@@ -1098,7 +1100,7 @@ DispSenderLoggerV5::sendMsg( const BoardType board,
 //
 //  CLASS: DispSenderLoggerJSON
 //
-//  DESC: version 6 log format
+//  DESC: JSON log format
 //
 //===================================================================
 */

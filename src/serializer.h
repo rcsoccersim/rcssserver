@@ -1090,6 +1090,10 @@ public:
                                   const Player & ) const
       { }
     virtual
+    void serializePlayerFocusPoint( std::ostream &,
+                                    const Player & ) const
+      { }
+    virtual
     void serializePlayerStamina( std::ostream &,
                                  const Player & ) const
       { }
