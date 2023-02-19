@@ -1013,6 +1013,7 @@ DispSenderLoggerV4::sendShow()
         serializer().serializePlayerPos( transport(), *p );
         serializer().serializePlayerArm( transport(), *p );
         serializer().serializePlayerViewMode( transport(), *p );
+        serializer().serializePlayerFocusPoint( transport(), *p );
         serializer().serializePlayerStamina( transport(), *p );
         serializer().serializePlayerFocus( transport(), *p );
         serializer().serializePlayerCounts( transport(), *p );
@@ -1035,65 +1036,6 @@ DispSenderLoggerV4::sendMsg( const BoardType board,
                 << ' ' << board << " \"" << str << "\")\n";
 }
 
-
-/*!
-//===================================================================
-//
-//  CLASS: DispSenderLoggerV5
-//
-//  DESC: version 5 log format
-//
-//===================================================================
-*/
-
-
-DispSenderLoggerV5::DispSenderLoggerV5( const Params & params )
-        : DispSenderLoggerV4( params )
-{
-
-}
-
-DispSenderLoggerV5::~DispSenderLoggerV5()
-{
-
-}
-
-void
-DispSenderLoggerV5::sendShow()
-{
-    serializer().serializeShowBegin( transport(),
-                                     stadium().time(), stadium().stoppageTime() );
-
-    serializer().serializeBall( transport(),
-                                stadium().ball() );
-
-    for ( Stadium::PlayerCont::const_reference p : stadium().players() )
-    {
-        serializer().serializePlayerBegin( transport(), *p );
-        serializer().serializePlayerPos( transport(), *p );
-        serializer().serializePlayerArm( transport(), *p );
-        serializer().serializePlayerViewMode( transport(), *p );
-        serializer().serializePlayerStamina( transport(), *p );
-        serializer().serializePlayerFocus( transport(), *p );
-        serializer().serializePlayerCounts( transport(), *p );
-        serializer().serializePlayerEnd( transport() );
-    }
-
-    serializer().serializeShowEnd( transport() );
-
-    transport() << '\n';
-}
-
-void
-DispSenderLoggerV5::sendMsg( const BoardType board,
-                             const char * msg )
-{
-    std::string str( msg );
-    std::replace( str.begin(), str.end(), '\n', ' ' );
-
-    transport() << "(msg " << stadium().time()
-                << ' ' << board << " \"" << str << "\")\n";
-}
 
 /*!
 //===================================================================
@@ -1196,8 +1138,8 @@ RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitor
 RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
 RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
 RegHolder vm4 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 4 );
-RegHolder vm5 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorJSON >, 5 );
-RegHolder vm6 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 6 );
+RegHolder vm5 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 5 );
+RegHolder vmjson = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorJSON >, -1 );
 
 
 template< typename Sender >
@@ -1212,8 +1154,8 @@ RegHolder vl2 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV2
 RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 3 );
 RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 4 );
 RegHolder vl5 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 5 );
-RegHolder vl6 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerJSON >, 6 );
-RegHolder vl7 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV5 >, 7 );
+RegHolder vl6 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 6 );
+RegHolder vljson = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerJSON >, -1 );
 
 }
 }

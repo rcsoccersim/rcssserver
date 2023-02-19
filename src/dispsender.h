@@ -531,27 +531,6 @@ public:
 };
 
 /*!
-  \class DispSenderLoggerV5
-  \brief class for the log version 5
- */
-class DispSenderLoggerV5
-        : public DispSenderLoggerV4 {
-public:
-
-    DispSenderLoggerV5( const Params & params );
-
-    virtual
-    ~DispSenderLoggerV5() override;
-
-    virtual
-    void sendShow() override;
-
-    virtual
-    void sendMsg( const BoardType board,
-                  const char * msg ) override;
-
-};
-/*!
   \class DispSenderLoggerV6
   \brief class for the log version 6 (JSON format)
  */

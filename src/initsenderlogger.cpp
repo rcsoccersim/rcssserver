@@ -475,7 +475,7 @@ InitSenderLoggerV5::sendHeader()
 /*
 //===================================================================
 //
-//  InitSenderLoggerV5
+//  InitSenderLoggerV6
 //
 //===================================================================
 */
@@ -508,7 +508,7 @@ InitSenderLoggerV7::~InitSenderLoggerV7()
 void
 InitSenderLoggerV7::sendHeader()
 {
-    transport() << "ULG7" << std::endl;
+    transport() << "ULG6" << std::endl;
 }
 
 /*
@@ -545,7 +545,7 @@ InitSenderLoggerJSON::~InitSenderLoggerJSON()
 void
 InitSenderLoggerJSON::sendHeader()
 {
-    transport() << "ULG6\n";
+    transport() << "JSON\n";
     transport() << "[\n";
 
     transport() << '{'
