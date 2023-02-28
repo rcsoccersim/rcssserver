@@ -406,17 +406,12 @@ SerializerMonitorStdv5::serializePlayerCounts( std::ostream & os,
 }
 
 void
-SerializerMonitorStdv5::serializePlayerPos( std::ostream & os,
-                                            const Player & player ) const
+SerializerMonitorStdv5::serializePlayerFocusPoint( std::ostream & os,
+                                                   const Player & player ) const
 {
-    os << ' ' << Quantize( player.pos().x, PREC )
-       << ' ' << Quantize( player.pos().y, PREC )
-       << ' ' << Quantize( player.vel().x, PREC )
-       << ' ' << Quantize( player.vel().y, PREC )
-       << ' ' << Quantize( Rad2Deg( player.angleBodyCommitted() ), DPREC )
-       << ' ' << Quantize( Rad2Deg( player.angleNeckCommitted() ), DPREC )
-       << ' ' << Quantize( player.focusDist(), PREC )
-       << ' ' << Quantize( Rad2Deg( player.focusDir() ), PREC );
+    os << " (fp "
+       << Quantize( player.focusDist(), PREC ) << ' '
+       << Quantize( Rad2Deg( player.focusDir() ), PREC ) << ')';
 }
 /*
 //===================================================================
@@ -705,10 +700,6 @@ SerializerMonitorJSON::serializePlayerPos( std::ostream & os,
        << std::quoted( "body" ) << ':' << Quantize( Rad2Deg( player.angleBodyCommitted() ), DIR_PREC );
     os << ','
        << std::quoted( "neck" ) << ':' << Quantize( Rad2Deg( player.angleNeckCommitted() ), DIR_PREC );
-    os << ','
-       << std::quoted( "focus_dist" ) << ':' << Quantize( player.focusDist(), POS_PREC )
-       << ','
-       << std::quoted( "focus_dir" ) << ':' << Quantize( Rad2Deg( player.focusDir() ), POS_PREC );
 }
 
 
@@ -751,6 +742,26 @@ void SerializerMonitorJSON::serializePlayerViewMode( std::ostream & os,
 
 
 void
+SerializerMonitorJSON::serializePlayerFocusPoint( std::ostream & os,
+                                                  const Player & player ) const
+{
+    os << ',';
+#ifdef USE_FLAT_STYLE
+    os << std::quoted( "fdist" ) << ':' << Quantize( player.focusDist(), POS_PREC )
+       << ','
+       << std::quoted( "fdir" ) << ':' << Quantize( Rad2Deg( player.focusDir() ), DIR_PREC );
+#else
+    os << std::quoted( "focus_point" ) << ':'
+       << '{'
+       << std::quoted( "dist" ) << ':' << Quantize( player.focusDist(), POS_PREC )
+       << ','
+       << std::quoted( "dir" ) << ':' << Quantize( Rad2Deg( player.focusDir() ), DIR_PREC );
+       << '}';
+#endif
+}
+
+
+void
 SerializerMonitorJSON::serializePlayerStamina( std::ostream & os,
                                                const Player & player ) const
 {
@@ -785,7 +796,7 @@ void SerializerMonitorJSON::serializePlayerFocus( std::ostream & os,
          && player.getFocusTarget() )
     {
         os << ',';
-#if 1
+#ifdef USE_FLAT_STYLE
         os << std::quoted( "fside" ) << ':' << std::quoted( to_string( player.getFocusTarget()->side() ) )
            << ','
            << std::quoted( "fnum" ) << ':' << player.getFocusTarget()->unum();
@@ -935,8 +946,9 @@ RegHolder v1 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv1::cr
 RegHolder v2 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv1::create, 2 );
 RegHolder v3 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv3::create, 3 );
 RegHolder v4 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv4::create, 4 );
-RegHolder v5 = SerializerMonitor::factory().autoReg( &SerializerMonitorJSON::create, 5 );
-RegHolder v6 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv5::create, 6 );
+RegHolder v5 = SerializerMonitor::factory().autoReg( &SerializerMonitorStdv5::create, 5 );
+RegHolder vjson = SerializerMonitor::factory().autoReg( &SerializerMonitorJSON::create, -1 );
+
 }
 
 }

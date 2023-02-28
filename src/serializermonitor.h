@@ -164,8 +164,8 @@ public:
 
 
 /*!
-  \class SerializerMonitorStdv4
-  \brief class of the version 4 serialization for monitors. Add the stamina capacity information.
+  \class SerializerMonitorStdv5
+  \brief class of the version 5 serialization for monitors. Add the focus point information.
 */
 class SerializerMonitorStdv5
         : public SerializerMonitorStdv4 {
@@ -187,8 +187,8 @@ public:
     void serializePlayerCounts( std::ostream & os,
                                 const Player & player ) const override;
     virtual
-    void serializePlayerPos( std::ostream & os,
-                             const Player & player ) const override;
+    void serializePlayerFocusPoint( std::ostream & os,
+                                    const Player & player ) const override;
 };
 
 
@@ -266,6 +266,10 @@ public:
     virtual
     void serializePlayerViewMode( std::ostream & os,
                                   const Player & player ) const override;
+
+    virtual
+    void serializePlayerFocusPoint( std::ostream & os,
+                                    const Player & player ) const override;
 
     virtual
     void serializePlayerStamina( std::ostream & os,

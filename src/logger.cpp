@@ -164,11 +164,9 @@ Logger::setSenders( const Stadium & stadium )
     }
 
     int log_version = ServerParam::instance().gameLogVersion();
-    int monitor_version = log_version - 1;
-    if ( log_version == REC_OLD_VERSION )
-    {
-        monitor_version = 1;
-    }
+    int monitor_version = ( log_version == REC_OLD_VERSION ? 1
+                            : log_version == REC_VERSION_JSON ? REC_VERSION_JSON
+                            : log_version - 1 );
 
     rcss::SerializerMonitor::Creator ser_cre;
     if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre, monitor_version ) )
