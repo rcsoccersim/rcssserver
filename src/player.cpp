@@ -201,6 +201,8 @@ Player::Player( Stadium & stadium,
       M_angle_neck( 0.0 ),
       M_angle_neck_committed( 0.0 ),
       //
+      M_focus_dist( 0.0 ),
+      M_focus_dir( 0.0 ),
       M_focus_point( 0.0, 0.0 ),
       //
       M_ball_collide( false ),
