@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
+AC_PREREQ([2.69])
 LT_PREREQ([2.2])
 AC_INIT([RCSSServer],[17.0.1],[https://github.com/rcsoccersim/],[rcssserver])
 
@@ -70,12 +70,9 @@ AC_STRUCT_TM
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
 
 AC_CHECK_TYPES([socklen_t], [], [], [
-#include <sys/types.h>
-#include <sys/socket.h>
-])
-AC_CHECK_TYPES([size_t], [], [], [
 #include <sys/types.h>
 #include <sys/socket.h>
 ])
@@ -108,7 +105,7 @@ AC_CHECK_FUNCS([memset], [], [
   exit 1
 ])
 AC_CHECK_FUNCS([floor gethostbyname gettimeofday inet_ntoa memset mkdir pow rint])
-AC_CHECK_FUNCS([socket sqrt strdup strerror])
+AC_CHECK_FUNCS([select socket sqrt strdup strerror])
 
 ##################################################
 # check flex
@@ -191,7 +188,7 @@ AC_SUBST(LIBTOOL_DEPS)
 # check C++
 ##################################################
 
-AX_CXX_COMPILE_STDCXX_14(noext)
+AX_CXX_COMPILE_STDCXX_17(noext)
 
 ##################################################
 # check boost
