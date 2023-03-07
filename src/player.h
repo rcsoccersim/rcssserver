@@ -29,7 +29,7 @@
 #include "pcomparser.h"
 #include "remoteclient.h"
 #include "serverparam.h"
-
+#include "heteroplayer.h"
 #include <string>
 
 class Stadium;
@@ -139,12 +139,15 @@ private:
     double M_consumed_stamina;
 
     //
-    // body/neck angle
+    // body/neck angle/focus point
     //
-    double M_angle_body; //!< temporal body angle
+    double M_angle_body; //!< temporary body angle
     double M_angle_body_committed;
-    double M_angle_neck; //!< temporal neck angle
+    double M_angle_neck; //!< temporary neck angle
     double M_angle_neck_committed;
+    double M_focus_dist; //!< distance to the focus point from the center of the player
+    double M_focus_dir; //!< direction to the focus point relative to the neck angle
+    PVector M_focus_point; //!< the global focus position on the pitch
 
     //
     // collision state
@@ -172,6 +175,7 @@ private:
     int M_catch_count;
     int M_move_count;
     int M_turn_neck_count;
+    int M_change_focus_count;
     int M_change_view_count;
     int M_say_count;
 
@@ -188,6 +192,9 @@ private:
     double M_long_kick_power;
     double M_long_kick_dir;
 
+    double M_wide_view_angle_noise_term;
+    double M_normal_view_angle_noise_term;
+    double M_narrow_view_angle_noise_term;
 private:
     // not used
     Player() = delete;
@@ -201,6 +208,7 @@ public:
 
     bool init( const double ver,
                const bool goalie );
+    void initObservationMode();
     bool setSenders();
 
     void setEnable();
@@ -257,7 +265,12 @@ public:
     double distQStep() const
       {
 #ifndef NEW_QSTEP
-          return ServerParam::instance().quantizeStep();
+          double term = narrowViewAngleNoiseTerm();
+          if ( viewWidth() == rcss::pcom::VIEW_WIDTH::NORMAL)
+              term = normalViewAngleNoiseTerm();
+          else if ( viewWidth() == rcss::pcom::VIEW_WIDTH::WIDE)
+              term = wideViewAngleNoiseTerm();
+          return ServerParam::instance().quantizeStep() * term;
 #else
           return dist_qstep_player;
 #endif
@@ -266,7 +279,12 @@ public:
     double landDistQStep() const
       {
 #ifndef NEW_QSTEP
-          return ServerParam::instance().landmarkQuantizeStep();
+        double term = narrowViewAngleNoiseTerm();
+        if ( viewWidth() == rcss::pcom::VIEW_WIDTH::NORMAL)
+            term = normalViewAngleNoiseTerm();
+        else if ( viewWidth() == rcss::pcom::VIEW_WIDTH::WIDE)
+            term = wideViewAngleNoiseTerm();
+        return ServerParam::instance().landmarkQuantizeStep() * term;
 #else
           return land_qstep_player;
 #endif
@@ -275,7 +293,12 @@ public:
     double dirQStep() const
       {
 #ifndef NEW_QSTEP
-          return 0.1;
+          double term = narrowViewAngleNoiseTerm();
+          if ( viewWidth() == rcss::pcom::VIEW_WIDTH::NORMAL)
+              term = normalViewAngleNoiseTerm();
+          else if ( viewWidth() == rcss::pcom::VIEW_WIDTH::WIDE)
+              term = wideViewAngleNoiseTerm();
+          return 0.1 * term;
 #else
           return dir_qstep_player;
 #endif
@@ -289,6 +312,7 @@ public:
     //
     void setPlayerType( const int );
     void substitute( const int );
+    const HeteroPlayer * playerType() const { return M_player_type; }
     int playerTypeId() const { return M_player_type_id; }
     bool substituted() const { return M_substituted; }
 
@@ -312,6 +336,9 @@ public:
     bool highQuality() const { return M_high_quality; }
     const double & visibleAngle() const { return M_visible_angle; }
     rcss::pcom::VIEW_WIDTH viewWidth() const { return M_view_width; }
+    double wideViewAngleNoiseTerm() const { return M_wide_view_angle_noise_term; }
+    double normalViewAngleNoiseTerm() const { return M_normal_view_angle_noise_term; }
+    double narrowViewAngleNoiseTerm() const { return M_narrow_view_angle_noise_term; }
 
     //
     // audio sensor
@@ -319,8 +346,18 @@ public:
     void decrementHearCapacity( const Player & sender );
     bool canHearFullFrom( const Player & sender ) const;
 
+    //
+    // body/sensor state
+    //
     const double & angleBodyCommitted() const { return M_angle_body_committed; }
     const double & angleNeckCommitted() const { return M_angle_neck_committed; }
+    double focusDist() const { return M_focus_dist; }
+    double focusDir() const { return M_focus_dir; }
+    const PVector & focusPoint() const { return M_focus_point; }
+
+    //
+    // update stamina
+    //
 
     void recoverAll();
     void recoverStaminaCapacity();
@@ -328,7 +365,7 @@ public:
     void updateCapacity();
 
     //
-    // stamina
+    // stamina state
     //
     const double & stamina() const { return M_stamina; }
     const double & recovery() const { return M_recovery; }
@@ -355,6 +392,7 @@ public:
     int catchCount() const { return M_catch_count; }
     int moveCount() const { return M_move_count; }
     int turnNeckCount() const { return M_turn_neck_count; }
+    int changeFocusCount() const { return M_change_focus_count; }
     int changeViewCount() const { return M_change_view_count; }
     int sayCount() const { return M_say_count; }
 
@@ -429,6 +467,9 @@ protected:
     double maxSpeed() const override;
 
 private:
+
+    void updateFocusPoint();
+
     bool parseCommand( const char * command );
     int parseEar( const char * command );
 
@@ -437,6 +478,7 @@ private:
     void dash( double power, double dir ) override;
     void turn( double moment ) override;
     void turn_neck( double moment ) override;
+    void change_focus( double moment_dist, double moment_dir) override;
     void kick( double power, double dir ) override;
     void long_kick( double power, double dir ) override;
     void goalieCatch( double dir ) override;
@@ -458,7 +500,6 @@ private:
     void clang( int min, int max) override;
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode ) override;
     void synch_see() override;
-
 };
 
 #endif

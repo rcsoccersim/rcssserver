@@ -201,8 +201,8 @@ const int REC_VERSION_3 = 3;
 const int REC_VERSION_4 = 4;
 const int REC_VERSION_5 = 5;
 const int REC_VERSION_6 = 6;
-const int REC_VERSION_JSON = REC_VERSION_6;
-const int DEFAULT_REC_VERSION = REC_VERSION_5;
+const int REC_VERSION_JSON = -1;
+const int DEFAULT_REC_VERSION = REC_VERSION_6;
 
 enum DispInfoMode {
     NO_INFO = 0,

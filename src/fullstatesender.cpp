@@ -293,15 +293,16 @@ FullStateSenderPlayerV8::sendSelf()
                              self().angleBodyCommitted()
                              + self().angleNeckCommitted(),
                              arm_vec );
-    serializer().serializeFSCounts( transport(),
-                                    self().kickCount(),
-                                    self().dashCount(),
-                                    self().turnCount(),
-                                    self().catchCount(),
-                                    self().moveCount(),
-                                    self().turnNeckCount(),
-                                    self().changeViewCount(),
-                                    self().sayCount() );
+    serializer().serializeFSCounts( transport(), self() );
+    // serializer().serializeFSCounts( transport(),
+    //                                 self().kickCount(),
+    //                                 self().dashCount(),
+    //                                 self().turnCount(),
+    //                                 self().catchCount(),
+    //                                 self().moveCount(),
+    //                                 self().turnNeckCount(),
+    //                                 self().changeViewCount(),
+    //                                 self().sayCount() );
     serializer().serializeArm( transport(),
                                self().arm().getCyclesTillMovable(),
                                self().arm().getCyclesTillExpiry(),
@@ -445,6 +446,69 @@ FullStateSenderPlayerV13::sendPlayer( const Player & p )
 /*!
 //===================================================================
 //
+//  CLASS: FullStateSenderPlayerV18
+//
+//  DESC: version 13 of the full state protocol. The focus point
+//   information are added.
+//
+//===================================================================
+*/
+
+FullStateSenderPlayerV18::FullStateSenderPlayerV18( const Params & params )
+    : FullStateSenderPlayerV13( params )
+{
+
+}
+
+    FullStateSenderPlayerV18::~FullStateSenderPlayerV18()
+{
+
+}
+
+
+void
+FullStateSenderPlayerV18::sendPlayer( const Player & p )
+{
+    char side = ( p.team()->side() == LEFT ? 'l' : 'r' );
+    serializer().serializeFSPlayerBegin( transport(),
+                                         side,
+                                         p.unum(),
+                                         p.isGoalie(),
+                                         p.playerTypeId(),
+                                         p.pos().x,
+                                         p.pos().y,
+                                         p.vel().x,
+                                         p.vel().y,
+                                         Rad2Deg( p.angleBodyCommitted() ),
+                                         Rad2Deg( p.angleNeckCommitted() ) );
+
+    if ( p.arm().isPointing() )
+    {
+        rcss::geom::Vector2D arm_vec;
+        p.arm().getRelDest( rcss::geom::Vector2D( p.pos().x, p.pos().y ),
+                            p.angleBodyCommitted() + p.angleNeckCommitted(),
+                            arm_vec );
+        serializer().serializeFSPlayerArm( transport(),
+                                           arm_vec.getMag(),
+                                           arm_vec.getHead() );
+    }
+
+    serializer().serializeFSPlayerFocus( transport(), p );
+
+    serializer().serializeFSPlayerStamina( transport(),
+                                           p.stamina(),
+                                           p.effort(),
+                                           p.recovery(),
+                                           p.staminaCapacity() );
+
+    serializer().serializeFSPlayerState( transport(), p );
+
+    serializer().serializeFSPlayerEnd( transport() );
+}
+
+/*!
+//===================================================================
+//
 //  Register senders for different versions
 //
 //===================================================================
@@ -476,6 +540,7 @@ RegHolder vp14 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSen
 RegHolder vp15 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV13 >, 15 );
 RegHolder vp16 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV13 >, 16 );
 RegHolder vp17 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV13 >, 17 );
+RegHolder vp18 = FullStateSenderPlayer::factory().autoReg( &create< FullStateSenderPlayerV18 >, 18 );
 }
 
 }

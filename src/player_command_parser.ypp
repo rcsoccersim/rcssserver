@@ -72,6 +72,7 @@ namespace
 %token RCSS_PCOM_DASH "dash"
 %token RCSS_PCOM_TURN "turn"
 %token RCSS_PCOM_TURN_NECK "turn_neck"
+%token RCSS_PCOM_CHANGE_FOCUS "change_focus"
 %token RCSS_PCOM_KICK "kick"
 %token RCSS_PCOM_LONG_KICK "long_kick"
 %token RCSS_PCOM_CATCH "catch"
@@ -132,6 +133,7 @@ command_list : command
 command : dash_com
           | turn_com
           | turn_neck_com
+          | change_focus_com
           | kick_com
           | long_kick_com
           | catch_com
@@ -170,6 +172,12 @@ turn_com : RCSS_PCOM_LP RCSS_PCOM_TURN floating_point_number RCSS_PCOM_RP
 turn_neck_com : RCSS_PCOM_LP RCSS_PCOM_TURN_NECK floating_point_number RCSS_PCOM_RP
                 {
                   BUILDER.turn_neck( $< m_double >3 );
+                }
+;
+
+change_focus_com : RCSS_PCOM_LP RCSS_PCOM_CHANGE_FOCUS floating_point_number floating_point_number RCSS_PCOM_RP
+                {
+                  BUILDER.change_focus( $< m_double >3, $< m_double >4 );
                 }
 ;
 

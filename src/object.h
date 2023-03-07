@@ -53,6 +53,7 @@
 #include <memory>
 #include <iostream>
 #include <cmath>
+#include <rcss/vector.h>
 
 /*
  *===================================================================
@@ -148,6 +149,16 @@ public:
     double distance( const PVector & orig ) const
       {
           return ( PVector( *this ) -= orig ).r();
+      }
+
+    double distance2 ( const rcss::geom::Vector2D & orig) const
+      {
+          return std::pow(this->x - orig.getX(), 2) + std::pow(this->y - orig.getY(), 2);
+      }
+
+    double distance ( const rcss::geom::Vector2D & orig) const
+      {
+          return std::sqrt(this->distance2(orig));
       }
 
     const PVector & rotate( const double ang )
