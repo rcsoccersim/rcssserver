@@ -24,8 +24,7 @@
 
 #include <rcss/parser.h>
 
-#include <boost/filesystem/path.hpp>
-
+#include <filesystem>
 #include <string>
 #include <list>
 
@@ -62,10 +61,10 @@ public:
                 const std::string & name );
 
     /// for parsing a file
-    bool parse( const boost::filesystem::path & name );
+    bool parse( const std::filesystem::path & name );
 
     /// for parsing a file and creating it if it doesn't exist
-    bool parseCreateConf( const boost::filesystem::path & conf_name,
+    bool parseCreateConf( const std::filesystem::path & conf_name,
                           const std::string & module_name );
 
 private:

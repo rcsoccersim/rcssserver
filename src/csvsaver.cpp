@@ -27,15 +27,14 @@
 
 #include "utility.h"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-
 #include <rcss/conf/builder.hpp>
 #include <rcss/conf/parser.hpp>
 
 #include <fstream>
+#include <filesystem>
 #include <cerrno>
 #include <ctime>
+#include <cassert>
 
 #ifdef __CYGWIN__
 // cygwin is not win32
@@ -94,10 +93,10 @@ CSVSaverParam::init( rcss::conf::Builder * parent )
         conf_dir = env_conf_dir;
     }
 
-    boost::filesystem::path conf_path;
+    std::filesystem::path conf_path;
     try
     {
-        conf_path = boost::filesystem::path( tildeExpand( conf_dir ) );
+        conf_path = tildeExpand( conf_dir );
         conf_path /= "CSVSaver.conf";
     }
     catch ( std::exception & e )
@@ -199,11 +198,11 @@ void
 CSVSaver::openResultsFile()
 {
     bool new_file = false;
-    boost::filesystem::path file_path;
+    std::filesystem::path file_path;
     try
     {
-        file_path = boost::filesystem::path( tildeExpand( CSVSaverParam::instance().filename() ) );
-        new_file = ! boost::filesystem::exists( file_path );
+        file_path = tildeExpand( CSVSaverParam::instance().filename() );
+        new_file = ! std::filesystem::exists( file_path );
     }
     catch ( std::exception & e )
     {

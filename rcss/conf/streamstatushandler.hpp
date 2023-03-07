@@ -78,7 +78,7 @@ public:
     virtual
     void loadFailed( const std::string & libname,
                      const std::string & error,
-                     const std::vector< boost::filesystem::path > & avail,
+                     const std::vector< std::filesystem::path > & avail,
                      const std::string & name,
                      int lineno );
 private:
