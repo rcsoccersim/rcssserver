@@ -35,10 +35,6 @@
 
 #include <boost/version.hpp>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/filesystem/exception.hpp>
-
 // #define BOOST_SPIRIT_DEBUG
 #if BOOST_VERSION >= 103800
 #  include <boost/spirit/include/classic.hpp>
@@ -229,22 +225,22 @@ Parser::parse( std::istream & strm,
 }
 
 bool
-Parser::parse( const boost::filesystem::path & file )
+Parser::parse( const std::filesystem::path & file )
 {
     return rcss::Parser::parse( file );
 }
 
 bool
-Parser::parseCreateConf( const boost::filesystem::path & conf_name,
+Parser::parseCreateConf( const std::filesystem::path & conf_name,
                          const std::string & module_name )
 {
     std::string native_path = conf_name.string();
 
-    boost::filesystem::ifstream conf( conf_name );
+    std::ifstream conf( conf_name );
     if ( ! conf.is_open() )
     {
         m_builder.creatingConfFile( native_path );
-        boost::filesystem::ofstream new_conf( conf_name );
+        std::ofstream new_conf( conf_name );
         if ( new_conf.is_open() )
         {
             m_builder.createConfFile( new_conf, module_name );
@@ -301,17 +297,17 @@ bool
 Parser::include( const char * begin,
                  const char * end )
 {
-    std::string incname = cleanString( begin, end );
-    boost::filesystem::path path;
+    const std::string incname = cleanString( begin, end );
+    std::filesystem::path path;
     try
     {
-        path = boost::filesystem::path( incname );
+        path = incname;
     }
     catch ( ... )
     {
         try
         {
-            path = boost::filesystem::path( incname );
+            path = incname;
         }
         catch ( const std::exception & e )
         {
@@ -323,7 +319,7 @@ Parser::include( const char * begin,
         }
     }
 
-    boost::filesystem::path full_name;
+    std::filesystem::path full_name;
     if ( path.has_root_directory() )
     {
         full_name = path;
@@ -335,13 +331,13 @@ Parser::include( const char * begin,
              || curr_path == "cmd line args"
              || curr_path == "anonymous stream" )
         {
-            full_name = boost::filesystem::absolute( path );
+            full_name = std::filesystem::absolute( path );
         }
         else
         {
             try
             {
-                boost::filesystem::path branch( curr_path );
+                std::filesystem::path branch( curr_path );
                 branch = branch.parent_path();
                 full_name = branch / path;
             }
@@ -368,11 +364,11 @@ Parser::include( const char * begin,
         }
     }
 
-    if ( boost::filesystem::exists( full_name ) )
+    if ( std::filesystem::exists( full_name ) )
     {
-        if ( ! boost::filesystem::is_directory( full_name ) )
+        if ( ! std::filesystem::is_directory( full_name ) )
         {
-            boost::filesystem::ifstream strm( full_name );
+            std::ifstream strm( full_name );
             if ( strm.is_open() && strm.good() )
             {
                 bool rval = parse( strm,

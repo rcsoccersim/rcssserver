@@ -108,7 +108,7 @@ StatusHandler::includeFailed( const std::string &,
 void
 StatusHandler::loadFailed( const std::string &,
                            const std::string &,
-                           const std::vector< boost::filesystem::path > &,
+                           const std::vector< std::filesystem::path > &,
                            const std::string &,
                            int )
 {

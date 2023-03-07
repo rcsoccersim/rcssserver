@@ -3,7 +3,7 @@ version: 2
 defaults: &defaults
   working_directory: /home/circleci/rcssserver
   docker:
-    - image: ubuntu:xenial
+    - image: ubuntu-2004
 
 jobs:
   build:
@@ -16,10 +16,10 @@ jobs:
           command: apt-get update
       - run:
           name: Install dependencies
-          command: apt-get install g++ build-essential libboost-all-dev bison flex -y
+          command: apt-get install build-essential flex bison libboost-all-dev -y
       - run:
           name: Install autotools libraries
-          command: apt-get install autoconf -y
+          command: apt-get install autoconf automake libtool -y
       - run:
           name: Generate configure file
           command: |

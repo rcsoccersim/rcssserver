@@ -46,9 +46,7 @@
 #include <rcss/conf/paramsetter.hpp>
 #include <rcss/conf/paramgetter.hpp>
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/convenience.hpp>
-
+#include <filesystem>
 #include <algorithm>
 #include <string>
 #include <iostream>
@@ -70,6 +68,10 @@
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h> /* needed for htonl, htons, ... */
 #endif
+#endif
+
+#ifndef RCSS_WIN
+#include <unistd.h> // close()
 #endif
 
 namespace {
@@ -417,12 +419,12 @@ ServerParam::init( const int & argc,
 //             }
 //         }
 
-    boost::filesystem::path conf_path;
+    std::filesystem::path conf_path;
     try
     {
-        conf_path = boost::filesystem::path( tildeExpand( conf_dir ) );
-        if ( ! boost::filesystem::exists( conf_path )
-             && ! boost::filesystem::create_directories( conf_path ) )
+        conf_path = tildeExpand( conf_dir );
+        if ( ! std::filesystem::exists( conf_path )
+             && ! std::filesystem::create_directories( conf_path ) )
         {
             std::cerr << "Could not read or create config directory " << conf_path << std::endl;
             instance().clear();
@@ -505,8 +507,8 @@ void
 ServerParam::convertOldConf( const std::string & new_conf )
 {
 #ifndef RCSS_WIN
-    if ( std::system( ( "ls " + tildeExpand( OLD_SERVER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
-         && std::system( ( "ls " + tildeExpand( new_conf ) + " > /dev/null 2>&1" ).c_str() ) != 0
+    if ( std::filesystem::exists( tildeExpand( OLD_SERVER_CONF ) )
+         && ! std::filesystem::exists( tildeExpand( new_conf ) )
          && std::system( "which awk > /dev/null 2>&1" ) == 0 )
     {
         std::cout << "Trying to convert old configuration file '"
