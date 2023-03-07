@@ -1,3 +1,46 @@
+[18.0.0]
+  * Update to C++17.
+
+  * New command:
+    - "(change_focus DIST_MOMENT DIR_MOMENT)"
+      All version players can use this command. If the command is
+	  accepted, that player's focus point is moved according to the
+	  given parameters. Details are described below.
+
+  * Change the version number of JSON-based monitor protocol to -1.
+    And, change the header line of JSON-based game log to "JSON". If
+    the value of server::game_log_version is -1, the content of the
+    recorded game log is a JSON array except for the header line.
+
+  * Introduce a new observation model.
+
+    When the players connect with version 18 or higher, the vision
+    sensor automatically enters the synchronous mode. In addition,
+    players with version 18 or higher receive a see message every
+    cycle, regardless of their view width. Instead, the noise in the
+    observed information varies with the view width. When the
+    observation information is serialized, the quantize step parameter
+    is multiplied by the noise term parameter, which depends on the
+    view width.
+
+	The concept of focus points is introduced. The focus point
+	represents a position inside a player's view angle, and can be up
+	to 40.0 meters away from the player's position. The focus point
+	affects the visual sensor noise model, with the noise of observed
+	objects increasing as the distance  between the focus point and
+	the object increases.
+
+    The initial position of the focus point is the player's position,
+    and if a player does not change the focus point position, the
+    server visual noise model behaves as in server v17. However, a
+    player can change the position of the focus point by sending a
+    **change_focus** command. This command takes two parameters,
+    *dist_moment* and *dir_moment*, and changes the position of the
+    focus point relative to the player's neck angle.
+
+    See the user manual for more information on the new observation
+    model.
+
 [17.0.1]
   * Fix build problems caused by missing headers.
 
