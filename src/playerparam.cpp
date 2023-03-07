@@ -230,8 +230,8 @@ void
 PlayerParam::convertOldConf( const std::string & new_conf )
 {
 #ifndef RCSS_WIN
-    if ( std::system( ( "ls " + tildeExpand( PlayerParam::OLD_PLAYER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
-         && std::system( ( "ls " + tildeExpand( new_conf ) + " > /dev/null 2>&1" ).c_str() ) != 0
+    if ( std::filesystem::exists( tildeExpand( PlayerParam::OLD_PLAYER_CONF ) )
+         && ! std::filesystem::exists( tildeExpand( new_conf ) )
          && std::system( "which awk > /dev/null 2>&1" ) == 0 )
     {
         std::cout << "Trying to convert old configuration file '"
