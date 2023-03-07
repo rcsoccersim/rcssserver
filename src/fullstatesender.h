@@ -294,6 +294,32 @@ protected:
     void sendPlayer( const Player & p ) override;
 };
 
+/*!
+//===================================================================
+//
+//  CLASS: FullStateSenderPlayerV18
+//
+//  DESC: version 18 of the full state protocol. The focus point or
+//  information are added.
+//
+//===================================================================
+*/
+
+class FullStateSenderPlayerV18
+    : public FullStateSenderPlayerV13
+{
+public:
+    FullStateSenderPlayerV18( const Params & );
+
+    virtual
+    ~FullStateSenderPlayerV18() override;
+
+protected:
+
+    virtual
+    void sendPlayer( const Player & p ) override;
+};
+
 
 }
 

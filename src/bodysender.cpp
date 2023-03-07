@@ -152,11 +152,12 @@ BodySenderPlayerV1::sendNeck()
 void
 BodySenderPlayerV1::sendCounts()
 {
-    serializer().serializeBodyCounts( transport(),
-                                      self().kickCount(),
-                                      self().dashCount(),
-                                      self().turnCount(),
-                                      self().sayCount() );
+    serializer().serializeBodyCounts( transport(), self() );
+    // serializer().serializeBodyCounts( transport(),
+    //                                   self().kickCount(),
+    //                                   self().dashCount(),
+    //                                   self().turnCount(),
+    //                                   self().sayCount() );
 }
 
 /*!
@@ -187,14 +188,6 @@ BodySenderPlayerV5::sendNeck()
     int ang = Rad2IDeg( self().angleNeckCommitted() );
     serializer().serializeNeckAngle( transport(),
                                      ang );
-}
-
-void
-BodySenderPlayerV5::sendCounts()
-{
-    BodySenderPlayerV1::sendCounts();
-    serializer().serializeNeckCount( transport(),
-                                     self().turnNeckCount() );
 }
 
 /*!
@@ -249,16 +242,6 @@ BodySenderPlayerV7::BodySenderPlayerV7( const Params & params )
 BodySenderPlayerV7::~BodySenderPlayerV7()
 {
 
-}
-
-void
-BodySenderPlayerV7::sendCounts()
-{
-    BodySenderPlayerV6::sendCounts();
-    serializer().serializeBodyCounts( transport(),
-                                      self().catchCount(),
-                                      self().moveCount(),
-                                      self().changeViewCount() );
 }
 
 /*!
@@ -400,7 +383,33 @@ BodySenderPlayerV14::sendBodyData()
     serializer().serializeFoul( transport(), self() );
 }
 
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV14
+//
+//  DESC: version 14 of the sense body protocol. Added foul charged & card info
+//
+//===================================================================
+*/
 
+BodySenderPlayerV18::BodySenderPlayerV18( const Params & params )
+    : BodySenderPlayerV14( params )
+{
+
+}
+
+BodySenderPlayerV18::~BodySenderPlayerV18()
+{
+
+}
+
+void
+BodySenderPlayerV18::sendBodyData()
+{
+    BodySenderPlayerV14::sendBodyData();
+    serializer().serializeFocusPoint( transport(), self() );
+}
 
 namespace bodysender {
 
@@ -428,6 +437,7 @@ RegHolder vp14 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV
 RegHolder vp15 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 15 );
 RegHolder vp16 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 16 );
 RegHolder vp17 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV14 >, 17 );
+RegHolder vp18 = BodySenderPlayer::factory().autoReg( &create< BodySenderPlayerV18 >, 18 );
 }
 
 }

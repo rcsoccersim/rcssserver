@@ -628,6 +628,7 @@ Stadium::initPlayer( const char * teamname,
 
     player->setEnforceDedicatedPort( version >= 8.0 );
     player->sendInit();
+    player->initObservationMode();
 
     return player;
 }
@@ -2799,9 +2800,17 @@ Stadium::parseMonitorInit( const char * message,
             delete mon;
             return true;
         }
-        std::cout << "A new (v" << ver << ") monitor connected." << std::endl;
 
-        mon->setEnforceDedicatedPort( ver >= 2.0 );
+        if ( ver < 0 )
+        {
+            std::cout << "A new (json) monitor connected." << std::endl;
+        }
+        else
+        {
+            std::cout << "A new (v" << ver << ") monitor connected." << std::endl;
+        }
+
+        mon->setEnforceDedicatedPort( ver < 0 || ver >= 2.0 );
         M_monitors.push_back( mon );
 
         // send server parameter information to monitor

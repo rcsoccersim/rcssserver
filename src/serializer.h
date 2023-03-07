@@ -333,7 +333,7 @@ public:
 
     virtual
     void serializeVisualBegin( std::ostream &,
-                               const int ) const
+                               const int /*time*/ ) const
       { }
 
     virtual
@@ -396,71 +396,6 @@ public:
                << ')';
       }
 
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const int point_dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir
-               << ' ' << point_dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const double & dist_chg,
-                                const double & dir_chg,
-                                const int body_dir,
-                                const int head_dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir
-               << ' ' << dist_chg << ' ' << dir_chg
-               << ' ' << body_dir << ' ' << head_dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-    void serializeVisualObject( std::ostream & strm,
-                                const std::string & name,
-                                const double & dist,
-                                const int dir,
-                                const double & dist_chg,
-                                const double & dir_chg,
-                                const int body_dir,
-                                const int head_dir,
-                                const int point_dir,
-                                const bool tackling ) const
-      {
-          strm << " (" << name << ' ' << dist << ' ' << dir
-               << ' ' << dist_chg << ' ' << dir_chg
-               << ' ' << body_dir << ' ' << head_dir
-               << ' ' << point_dir;
-          if ( tackling )
-              strm << " t";
-          strm << ')';
-      }
-
-
     virtual
     void serializeVisualPlayer( std::ostream &, /* strm */
                                 const Player &, /* player */
@@ -503,7 +438,6 @@ public:
                                 const int /* point_dir */ ) const
       { }
 
-
     virtual
     void serializeBodyBegin( std::ostream &,
                              const int ) const
@@ -539,26 +473,11 @@ public:
 
     virtual
     void serializeBodyCounts( std::ostream &,
-                              const int,
-                              const int,
-                              const int,
-                              const int ) const
-      { }
-
-    virtual
-    void serializeBodyCounts( std::ostream &,
-                              const int,
-                              const int,
-                              const int ) const
+                              const Player & ) const
       { }
 
     virtual
     void serializeNeckAngle( std::ostream &,
-                             const int ) const
-      { }
-
-    virtual
-    void serializeNeckCount( std::ostream &,
                              const int ) const
       { }
 
@@ -605,6 +524,11 @@ public:
       { }
 
     virtual
+    void serializeFocusPoint( std::ostream &,
+                              const Player & ) const
+      { }
+
+    virtual
     void serializeFSBegin( std::ostream &,
                            const int ) const
       { }
@@ -626,15 +550,33 @@ public:
 
     virtual
     void serializeFSCounts( std::ostream &,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int,
-                            const int ) const
+                            const Player & ) const
       { }
+
+    // virtual
+    // void serializeFSCounts( std::ostream &,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int ) const
+    //   { }
+
+    // virtual
+    // void serializeFSCounts( std::ostream &,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int,
+    //                         const int ) const
+    // { }
 
     virtual
     void serializeFSScore( std::ostream &,
@@ -656,18 +598,23 @@ public:
                                  const int,
                                  const bool,
                                  const int,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double &,
-                                 const double & ) const
+                                 const double & /* x */,
+                                 const double & /* y */,
+                                 const double & /* vx */,
+                                 const double & /* vy */ ,
+                                 const double & /* body */ ,
+                                 const double & /* neck */ ) const
+      { }
+
+    virtual
+    void serializeFSPlayerFocus( std::ostream &,
+                                 const Player & ) const
       { }
 
     virtual
     void serializeFSPlayerArm( std::ostream &,
-                               const double &,
-                               const double & ) const
+                               const double & /* point_dist */,
+                               const double & /* point_dir */ ) const
       { }
 
     virtual
@@ -780,7 +727,7 @@ public:
 
     virtual
     void serializeVisualBegin( std::ostream &,
-                               const int ) const
+                               const int /*time*/ ) const
       { }
 
     virtual
@@ -839,28 +786,26 @@ public:
                                 const bool ) const
       { }
 
-
     virtual
     void serializeVisualPlayer( std::ostream &,
                                 const Player &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int ) const
+                                const std::string & /*name*/,
+                                const PVector & /*pos*/,
+                                const PVector & /*vel*/,
+                                const int /*body*/,
+                                const int /*neck*/ ) const
       { }
 
     virtual
     void serializeVisualPlayer( std::ostream &,
                                 const Player &,
-                                const std::string &,
-                                const PVector &,
-                                const PVector &,
-                                const int,
-                                const int,
-                                const int ) const
+                                const std::string & /*name*/,
+                                const PVector & /*pos*/,
+                                const PVector & /*vel*/,
+                                const int /*body*/,
+                                const int /*neck*/,
+                                const int /*point_dir*/) const
       { }
-
 
     virtual
     void serializeOKEye( std::ostream &,
@@ -1053,7 +998,6 @@ public:
                                                    point_dir );
       }
 
-
 };
 
 
@@ -1144,6 +1088,10 @@ public:
     virtual
     void serializePlayerViewMode( std::ostream &,
                                   const Player & ) const
+      { }
+    virtual
+    void serializePlayerFocusPoint( std::ostream &,
+                                    const Player & ) const
       { }
     virtual
     void serializePlayerStamina( std::ostream &,

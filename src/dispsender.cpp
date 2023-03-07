@@ -486,6 +486,7 @@ DispSenderMonitorV3::sendShow()
         serializer().serializePlayerPos( ostr, *p );
         serializer().serializePlayerArm( ostr, *p );
         serializer().serializePlayerViewMode( ostr, *p );
+        serializer().serializePlayerFocusPoint( ostr, *p );
         serializer().serializePlayerStamina( ostr, *p );
         serializer().serializePlayerFocus( ostr, *p );
         serializer().serializePlayerCounts( ostr, *p );
@@ -512,15 +513,15 @@ DispSenderMonitorV3::sendMsg( const BoardType board,
 }
 
 
-// /*!
-// //===================================================================
-// //
-// //  CLASS: DispSenderMonitorJSON
-// //
-// //  DESC: version 5 of display protocol.
-// //
-// //===================================================================
-// */
+/*!
+//===================================================================
+//
+//  CLASS: DispSenderMonitorJSON
+//
+//  DESC: JSON protocol.
+//
+//===================================================================
+*/
 
 DispSenderMonitorJSON::DispSenderMonitorJSON( const Params & params )
     : DispSenderMonitor( params )
@@ -585,6 +586,7 @@ DispSenderMonitorJSON::sendShow()
         serializer().serializePlayerPos( ostr, *p );
         serializer().serializePlayerArm( ostr, *p );
         serializer().serializePlayerViewMode( ostr, *p );
+        serializer().serializePlayerFocusPoint( ostr, *p );
         serializer().serializePlayerStamina( ostr, *p );
         serializer().serializePlayerFocus( ostr, *p );
         //serializer().serializePlayerCounts( ostr, *p );
@@ -1011,6 +1013,7 @@ DispSenderLoggerV4::sendShow()
         serializer().serializePlayerPos( transport(), *p );
         serializer().serializePlayerArm( transport(), *p );
         serializer().serializePlayerViewMode( transport(), *p );
+        serializer().serializePlayerFocusPoint( transport(), *p );
         serializer().serializePlayerStamina( transport(), *p );
         serializer().serializePlayerFocus( transport(), *p );
         serializer().serializePlayerCounts( transport(), *p );
@@ -1039,7 +1042,7 @@ DispSenderLoggerV4::sendMsg( const BoardType board,
 //
 //  CLASS: DispSenderLoggerJSON
 //
-//  DESC: version 6 log format
+//  DESC: JSON log format
 //
 //===================================================================
 */
@@ -1135,7 +1138,8 @@ RegHolder vm1 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitor
 RegHolder vm2 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV2 >, 2 );
 RegHolder vm3 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 3 );
 RegHolder vm4 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 4 );
-RegHolder vm5 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorJSON >, 5 );
+RegHolder vm5 = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorV3 >, 5 );
+RegHolder vmjson = DispSenderMonitor::factory().autoReg( &create< DispSenderMonitorJSON >, -1 );
 
 
 template< typename Sender >
@@ -1150,7 +1154,8 @@ RegHolder vl2 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV2
 RegHolder vl3 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV3 >, 3 );
 RegHolder vl4 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 4 );
 RegHolder vl5 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 5 );
-RegHolder vl6 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerJSON >, 6 );
+RegHolder vl6 = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerV4 >, 6 );
+RegHolder vljson = DispSenderLogger::factory().autoReg( &create< DispSenderLoggerJSON >, -1 );
 
 }
 }
