@@ -1,3 +1,13 @@
+2023-03-07  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+	* CMakeLists.txt:
+	* NEWS:
+	* configure.ac:
+	- update a major version number. Official release 18.0.0
+	- update to C++17.
+	- introduce a new observation model.
+	- change the version number of JSON-based monitor protocol.
+
 2022-04-03  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
 	* CMakeLists.txt:
