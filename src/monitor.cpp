@@ -104,7 +104,8 @@ Monitor::parseMsg( char * msg,
     char * str = msg;
     if ( str[ len - 1 ] != 0 )
     {
-        if ( version() >= 2.0 )
+        if ( version() < 0
+             || version() >= 2.0 )
         {
             sendMsg( MSG_BOARD,
                      "(warning message_not_null_terminated)" );

@@ -24,7 +24,7 @@ librcssclangparser_la_SOURCES = \
 	region.cpp \
 	rule.cpp
 
-librcssclangparser_la_LDFLAGS = -version-info 3:0:1
+librcssclangparser_la_LDFLAGS = -version-info 18:0:0
 #    Changed from 2.0.0 to 3.0.1 at 9.3.5 for addition of buildCondList
 #
 #    1. Start with version information of `0:0:0' for each libtool library.

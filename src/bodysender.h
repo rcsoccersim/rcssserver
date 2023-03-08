@@ -197,8 +197,6 @@ protected:
     virtual
     void sendCounts();
 
-public:
-
 };
 
 /*!
@@ -225,8 +223,6 @@ protected:
     virtual
     void sendNeck() override;
 
-    virtual
-    void sendCounts() override;
 };
 
 /*!
@@ -272,10 +268,6 @@ public:
 
     virtual
     ~BodySenderPlayerV7() override;
-
-protected:
-    virtual
-    void sendCounts() override;
 
 };
 
@@ -379,6 +371,30 @@ protected:
 
 };
 
+/*!
+//===================================================================
+//
+//  CLASS: BodySenderPlayerV18
+//
+//  DESC: version 18 of the sense body protocol. Added card info
+//
+//===================================================================
+*/
+
+class BodySenderPlayerV18
+    : public BodySenderPlayerV14
+{
+public:
+    BodySenderPlayerV18( const Params & params );
+
+    virtual
+    ~BodySenderPlayerV18() override;
+
+protected:
+    virtual
+    void sendBodyData() override;
+
+};
 }
 
 #endif

@@ -205,17 +205,23 @@ public:
 private:
     void sendFlag( const PObject & obj )
       {
-          (this->*M_send_flag)( obj );
+          self().highQuality()
+              ? sendHighFlag( obj )
+              : sendLowFlag( obj );
       }
 
     void sendBall( const MPObject & obj )
       {
-          (this->*M_send_ball)( obj );
+          self().highQuality()
+              ? sendHighBall( obj )
+              : sendLowBall( obj );
       }
 
     void sendPlayer( const Player & obj )
       {
-          (this->*M_send_player)( obj );
+          self().highQuality()
+              ? sendHighPlayer( obj )
+              : sendLowPlayer( obj );
       }
 
     void serializeLine( const std::string & name,
@@ -223,8 +229,9 @@ private:
                         const double & sight_2_line_ang,
                         const double & player_2_line )
       {
-          (this->*M_serialize_line)( name, dir,
-                                     sight_2_line_ang, player_2_line );
+          self().highQuality()
+              ? serializeHighLine( name, dir, sight_2_line_ang, player_2_line )
+              : serializeLowLine( name, dir, sight_2_line_ang, player_2_line );
       }
 
     void sendFlags();
@@ -235,16 +242,23 @@ private:
 
     void sendLines();
 
+protected:
+    virtual
     void sendLowFlag( const PObject & flag );
 
+    virtual
     void sendHighFlag( const PObject & flag );
 
+    virtual
     void sendLowBall( const MPObject & ball );
 
+    virtual
     void sendHighBall( const MPObject & ball );
 
+    virtual
     void sendLowPlayer( const Player & player );
 
+    virtual
     void sendHighPlayer( const Player & player );
 
     bool sendLine( const PObject & line );
@@ -270,6 +284,8 @@ private:
           return rad2Deg( rad_dir );
       }
 
+private:
+
     double calcLineRadDir( const double & line_normal ) const
       {
           return normalize_angle( line_normal
@@ -285,6 +301,7 @@ private:
               return calcDegDir( sight_2_line_ang + M_PI*0.5 );
       }
 
+protected:
     double calcUnQuantDist( const PObject & obj ) const
       {
           return self().pos().distance( obj.pos() );
@@ -380,14 +397,6 @@ protected:
               : obj.fixedNameFar();
       }
 
-private:
-    void (VisualSenderPlayerV1::*M_send_flag)( const PObject & );
-    void (VisualSenderPlayerV1::*M_send_ball)( const MPObject & );
-    void (VisualSenderPlayerV1::*M_send_player)( const Player & );
-    void (VisualSenderPlayerV1::*M_serialize_line)( const std::string &,
-                                                    const int,
-                                                    const double &,
-                                                    const double & );
 };
 
 /*!
@@ -618,6 +627,50 @@ public:
 
     virtual
     ~VisualSenderPlayerV13();
+
+};
+
+
+/*!
+//===================================================================
+//
+//  CLASS: VisualSensorPlayerV18
+//
+//  DESC: Class for the version 13 visual protocol.  This version
+//        introduced the focus point.
+//
+//===================================================================
+*/
+
+class VisualSenderPlayerV18
+    : public VisualSenderPlayerV13 {
+public:
+    VisualSenderPlayerV18( const Params & params );
+
+    virtual
+    ~VisualSenderPlayerV18();
+
+protected:
+
+    virtual
+    void sendLowFlag( const PObject & flag ) override;
+    virtual
+    void sendHighFlag( const PObject & flag ) override;
+
+    virtual
+    void sendLowBall( const MPObject & ball ) override;
+    virtual
+    void sendHighBall( const MPObject & ball ) override;
+
+    virtual
+    void sendLowPlayer( const Player & player ) override;
+    virtual
+    void sendHighPlayer( const Player & player ) override;
+
+    virtual
+    double calcQuantDistFocusPoint( const PObject & obj,
+                                    const double unquant_dist,
+                                    const double q_step );
 
 };
 

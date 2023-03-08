@@ -22,12 +22,12 @@
 #ifndef SERIALIZERPLAYERSTDV7_H
 #define SERIALIZERPLAYERSTDV7_H
 
-#include "serializerplayerstdv1.h"
+#include "serializerplayerstdv5.h"
 
 namespace rcss {
 
 class SerializerPlayerStdv7
-    : public SerializerPlayerStdv1 {
+    : public SerializerPlayerStdv5 {
 protected:
     explicit
     SerializerPlayerStdv7( const SerializerCommon::Ptr common );
@@ -110,6 +110,10 @@ public:
     void serializeChangePlayer( std::ostream & strm,
                                 const int unum,
                                 const int type ) const;
+
+    virtual
+    void serializeBodyCounts( std::ostream &,
+                              const Player & ) const override;
 
 };
 

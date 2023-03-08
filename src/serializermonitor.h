@@ -164,6 +164,35 @@ public:
 
 
 /*!
+  \class SerializerMonitorStdv5
+  \brief class of the version 5 serialization for monitors. Add the focus point information.
+*/
+class SerializerMonitorStdv5
+        : public SerializerMonitorStdv4 {
+protected:
+
+    explicit
+    SerializerMonitorStdv5( const SerializerCommon::Ptr common );
+
+public:
+
+    virtual
+    ~SerializerMonitorStdv5() override;
+
+    static
+    const
+    Ptr create();
+
+    virtual
+    void serializePlayerCounts( std::ostream & os,
+                                const Player & player ) const override;
+    virtual
+    void serializePlayerFocusPoint( std::ostream & os,
+                                    const Player & player ) const override;
+};
+
+
+/*!
   \class SerializerMonitorJSON
   \brief class of the version 5 serialization for monitors. (JSON format)
 */
@@ -237,6 +266,10 @@ public:
     virtual
     void serializePlayerViewMode( std::ostream & os,
                                   const Player & player ) const override;
+
+    virtual
+    void serializePlayerFocusPoint( std::ostream & os,
+                                    const Player & player ) const override;
 
     virtual
     void serializePlayerStamina( std::ostream & os,

@@ -71,8 +71,8 @@ target_compile_options(RCSSCLangParser
 
 set_target_properties(RCSSCLangParser
   PROPERTIES
-    SOVERSION 2
-    VERSION 2.1.0
+    SOVERSION 18
+    VERSION 18.0.0
     LIBRARY_OUTPUT_NAME "rcssclangparser"
 )
 

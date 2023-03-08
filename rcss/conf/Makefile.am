@@ -7,7 +7,7 @@ librcssconfparser_la_SOURCES = \
 	statushandler.cpp \
 	streamstatushandler.cpp
 
-librcssconfparser_la_LDFLAGS = -version-info 3:0:0
+librcssconfparser_la_LDFLAGS = -version-info 18:0:0
 #    1. Start with version information of `0:0:0' for each libtool library.
 #
 #    2. Update the version information only immediately before a public

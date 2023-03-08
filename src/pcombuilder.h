@@ -80,6 +80,7 @@ public:
     virtual void dash( double power, double dir ) = 0;
     virtual void turn( double moment ) = 0;
     virtual void turn_neck( double moment ) = 0;
+    virtual void change_focus( double moment_dist, double moment_dir ) = 0;
     virtual void kick( double power, double dir ) = 0;
     virtual void long_kick( double power, double dir ) = 0;
     virtual void goalieCatch( double dir ) = 0;

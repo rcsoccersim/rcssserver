@@ -54,7 +54,7 @@ add_executable(RCSSServer
     serializercoachstdv8.cpp
     serializercoachstdv13.cpp
     serializercoachstdv14.cpp
-    serializercommonstdv1.cpp
+	serializercommonstdv1.cpp
     serializercommonstdv7.cpp
     serializercommonstdv8.cpp
     serializercommonjson.cpp
@@ -66,10 +66,12 @@ add_executable(RCSSServer
     serializeronlinecoachstdv13.cpp
     serializeronlinecoachstdv14.cpp
     serializerplayerstdv1.cpp
+    serializerplayerstdv5.cpp
     serializerplayerstdv7.cpp
     serializerplayerstdv8.cpp
     serializerplayerstdv13.cpp
     serializerplayerstdv14.cpp
+	serializerplayerstdv18.cpp
     serverparam.cpp
     stadium.cpp
     stdoutsaver.cpp
@@ -92,7 +94,7 @@ target_link_libraries(RCSSServer
     RCSS::ConfParser
     RCSS::Net
     RCSS::GZ
-    Boost::filesystem
+#    Boost::filesystem
     ZLIB::ZLIB
 	)
 

@@ -40,13 +40,12 @@
 #include <rcss/conf/parser.hpp>
 #include <rcss/conf/builder.hpp>
 
-#include <boost/filesystem/path.hpp>
-
 #include <string>
 #include <iostream>
+#include <filesystem>
 #include <cerrno>
 #include <cassert>
-
+#include <cstdlib>
 
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h> /* needed for htonl, htons, ... */
@@ -63,6 +62,10 @@
 #ifdef HAVE_WINSOCK2_H
 #include <winsock2.h> /* needed for htonl, htons, ... */
 #endif
+#endif
+
+#ifndef RCSS_WIN
+#include <unistd.h> // close()
 #endif
 
 namespace {
@@ -180,11 +183,11 @@ PlayerParam::init( rcss::conf::Builder * parent )
         conf_dir = env_conf_dir;
     }
 
-    boost::filesystem::path conf_path;
+    std::filesystem::path conf_path;
     try
     {
 
-        conf_path = boost::filesystem::path( tildeExpand( conf_dir ) );
+        conf_path = tildeExpand( conf_dir );
         conf_path /= PlayerParam::PLAYER_CONF;
     }
     catch ( std::exception & e )
@@ -227,8 +230,8 @@ void
 PlayerParam::convertOldConf( const std::string & new_conf )
 {
 #ifndef RCSS_WIN
-    if ( std::system( ( "ls " + tildeExpand( PlayerParam::OLD_PLAYER_CONF ) + " > /dev/null 2>&1" ).c_str() ) == 0
-         && std::system( ( "ls " + tildeExpand( new_conf ) + " > /dev/null 2>&1" ).c_str() ) != 0
+    if ( std::filesystem::exists( tildeExpand( PlayerParam::OLD_PLAYER_CONF ) )
+         && ! std::filesystem::exists( tildeExpand( new_conf ) )
          && std::system( "which awk > /dev/null 2>&1" ) == 0 )
     {
         std::cout << "Trying to convert old configuration file '"

@@ -123,6 +123,24 @@ NormalizeNeckAngle( const double & p )
                         Deg2Rad( ServerParam::instance().maxNeckAngle() ) );
 }
 
+inline
+double
+NormalizeFocusAngle( const double & focus_dir_to_neck,
+                     const double & visible_angle )
+{
+    const double half_angle = visible_angle * 0.5;
+
+    if ( std::abs( normalize_angle( focus_dir_to_neck ) ) < half_angle )
+    {
+        return focus_dir_to_neck;
+    }
+
+    return ( std::abs( normalize_angle( -half_angle - focus_dir_to_neck ) )
+             < std::abs( normalize_angle( half_angle - focus_dir_to_neck ) ) )
+        ? -half_angle
+        : half_angle;
+}
+
 } // end of no-name namespace
 
 
@@ -183,6 +201,10 @@ Player::Player( Stadium & stadium,
       M_angle_neck( 0.0 ),
       M_angle_neck_committed( 0.0 ),
       //
+      M_focus_dist( 0.0 ),
+      M_focus_dir( 0.0 ),
+      M_focus_point( 0.0, 0.0 ),
+      //
       M_ball_collide( false ),
       M_player_collide( false ),
       M_post_collide( false ),
@@ -202,6 +224,7 @@ Player::Player( Stadium & stadium,
       M_catch_count( 0 ),
       M_move_count( 0 ),
       M_turn_neck_count( 0 ),
+      M_change_focus_count(0 ),
       M_change_view_count( 0 ),
       M_say_count( 0 ),
       M_arm( ServerParam::instance().pointToBan(),
@@ -210,7 +233,10 @@ Player::Player( Stadium & stadium,
       M_tackle_cycles( 0 ),
       M_tackle_count( 0 ),
       M_foul_cycles( 0 ),
-      M_foul_count( 0 )
+      M_foul_count( 0 ),
+      M_wide_view_angle_noise_term( 1.0 ),
+      M_normal_view_angle_noise_term( 1.0 ),
+      M_narrow_view_angle_noise_term( 1.0 )
 {
     assert( team );
 
@@ -225,6 +251,7 @@ Player::Player( Stadium & stadium,
 
     setPlayerType( 0 );
     recoverAll();
+    updateFocusPoint();
 }
 
 Player::~Player()
@@ -343,6 +370,21 @@ Player::init( const double ver,
     return true;
 }
 
+
+void
+Player::initObservationMode()
+{
+    if ( version() >= 18 )
+    {
+        synch_see();
+
+        M_wide_view_angle_noise_term = 1.0;
+        M_normal_view_angle_noise_term = 0.75;
+        M_narrow_view_angle_noise_term = 0.5;
+    }
+}
+
+
 void
 Player::setPlayerType( const int id )
 {
@@ -441,7 +483,6 @@ Player::disable()
     M_vel.y = 0.0;
     M_accel.x = 0.0;
     M_accel.y = 0.0;
-
     if ( connected() )
     {
         RemoteClient::close();
@@ -563,6 +604,20 @@ Player::parseCommand( const char * command )
             buf += n_read;
 
             turn_neck( moment );
+        }
+        else if ( ! std::strncmp( buf, "(change_focus ", 11 ) )
+        {
+            double dist = 0.0;
+            double angle = 0.0;
+            if ( std::sscanf( buf, " ( change_focus %lf %lf ) %n ",
+                              &dist, &angle, &n_read ) != 1 )
+            {
+                std::cerr << "Error parsing >" << buf << "<\n";
+                return false;
+            }
+            buf += n_read;
+
+            change_focus( dist, angle );
         }
         else if ( ! std::strncmp( buf, "(say ", 5 ) )
         {
@@ -1127,6 +1182,20 @@ Player::turn_neck( double moment )
 }
 
 void
+Player::change_focus( double moment_dist, double moment_dir )
+{
+    M_focus_dist = rcss::bound( 0.0,
+                                M_focus_dist + moment_dist,
+                                40.0 );
+    M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
+                               normalize_angle( M_focus_dir + Deg2Rad( moment_dir ) ),
+                               +M_visible_angle * 0.5 );
+    updateFocusPoint();
+
+    ++M_change_focus_count;
+}
+
+void
 Player::kick( double power,
               double dir )
 {
@@ -1623,7 +1692,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 2.0 / 3.0 ); // == sim_step / send_step
-            M_visual_send_interval = 1;
+            M_visual_send_interval = (version() >= 18 ? 1 : 1);
         }
     }
     else if ( viewWidth == rcss::pcom::NORMAL )
@@ -1636,7 +1705,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
-            M_visual_send_interval = 2;
+            M_visual_send_interval = (version() >= 18 ? 1 : 2);
         }
     }
     else if ( viewWidth == rcss::pcom::WIDE )
@@ -1649,7 +1718,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth,
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
-            M_visual_send_interval = 3;
+            M_visual_send_interval = (version() >= 18 ? 1 : 3);
         }
     }
     else
@@ -1699,7 +1768,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 2.0 / 3.0 ); // == sim_step / send_step
-            M_visual_send_interval = 1;
+            M_visual_send_interval = (version() >= 18 ? 1 : 1);
         }
     }
     else if ( viewWidth == rcss::pcom::NORMAL )
@@ -1712,7 +1781,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
-            M_visual_send_interval = 2;
+            M_visual_send_interval = (version() >= 18 ? 1 : 2);
         }
     }
     else if ( viewWidth == rcss::pcom::WIDE )
@@ -1725,7 +1794,7 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
         else
         {
             M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
-            M_visual_send_interval = 3;
+            M_visual_send_interval = (version() >= 18 ? 1 : 3);
         }
     }
     else
@@ -1735,6 +1804,11 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
 
     M_view_width = viewWidth;
     M_high_quality = true;
+
+    M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
+                               M_focus_dir,
+                               +M_visible_angle * 0.5 );
+    updateFocusPoint();
 
     ++M_change_view_count;
 }
@@ -2168,15 +2242,15 @@ Player::synch_see()
     switch ( M_view_width ) {
     case rcss::pcom::NARROW:
         M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 2.0 / 3.0 ); // == sim_step / send_step
-        M_visual_send_interval = 1;
+        M_visual_send_interval = (version() >= 18 ? 1 : 1);
         break;
     case rcss::pcom::NORMAL:
         M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 4.0 / 3.0 ); // == 2 * sim_step / send_step
-        M_visual_send_interval = 2;
+        M_visual_send_interval = (version() >= 18 ? 1 : 2);
         break;
     case rcss::pcom::WIDE:
         M_visible_angle = DEFAULT_VISIBLE_ANGLE * ( 6.0 / 3.0 ); // == 3 * sim_step / send_step
-        M_visual_send_interval = 3;
+        M_visual_send_interval = (version() >= 18 ? 1 : 3);
         break;
     default:
         return;
@@ -2328,6 +2402,7 @@ Player::turnImpl()
 {
     M_angle_body_committed = this->M_angle_body;
     M_angle_neck_committed = this->M_angle_neck;
+    updateFocusPoint();
     M_vel.assign( 0.0, 0.0 );
     M_accel.assign( 0.0, 0.0 );
 }
@@ -2337,6 +2412,14 @@ Player::updateAngle()
 {
     M_angle_body_committed = this->M_angle_body;
     M_angle_neck_committed = this->M_angle_neck;
+    updateFocusPoint();
+}
+
+void
+Player::updateFocusPoint()
+{
+    const double focus_angle = normalize_angle( angleBodyCommitted() + angleNeckCommitted() + focusDir() );
+    M_focus_point = pos() + PVector::fromPolar( focusDist(), focus_angle );
 }
 
 void

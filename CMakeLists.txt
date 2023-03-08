@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5.1)
 
-project(RCSSServer VERSION 17.0.1)
+project(RCSSServer VERSION 18.0.0)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -18,7 +18,8 @@ if(ZLIB_FOUND)
 endif()
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+#find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(Boost COMPONENTS system REQUIRED)
 
 include(GNUInstallDirs)
 include(CheckIncludeFileCXX)

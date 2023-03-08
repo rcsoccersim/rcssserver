@@ -41,12 +41,10 @@
 
 #include "serializercommonstdv8.h"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/convenience.hpp>
-
 #include <rcss/clang/clangmsg.h>
 #include <rcss/gzip/gzfstream.hpp>
 
+#include <filesystem>
 #include <sstream>
 
 namespace {
@@ -164,11 +162,9 @@ Logger::setSenders( const Stadium & stadium )
     }
 
     int log_version = ServerParam::instance().gameLogVersion();
-    int monitor_version = log_version - 1;
-    if ( log_version == REC_OLD_VERSION )
-    {
-        monitor_version = 1;
-    }
+    int monitor_version = ( log_version == REC_OLD_VERSION ? 1
+                            : log_version == REC_VERSION_JSON ? REC_VERSION_JSON
+                            : log_version - 1 );
 
     rcss::SerializerMonitor::Creator ser_cre;
     if ( ! rcss::SerializerMonitor::factory().getCreator( ser_cre, monitor_version ) )
@@ -266,9 +262,9 @@ Logger::openGameLog( const Stadium & stadium )
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path game_log( ServerParam::instance().gameLogDir() );
-        if ( ! boost::filesystem::exists( game_log )
-             && ! boost::filesystem::create_directories( game_log ) )
+        std::filesystem::path game_log( ServerParam::instance().gameLogDir() );
+        if ( ! std::filesystem::exists( game_log )
+             && ! std::filesystem::create_directories( game_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": can't create game log directory " << game_log << std::endl;
@@ -354,9 +350,9 @@ Logger::openTextLog()
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path text_log( ServerParam::instance().textLogDir() );
-        if ( ! boost::filesystem::exists( text_log )
-             && ! boost::filesystem::create_directories( text_log ) )
+        std::filesystem::path text_log( ServerParam::instance().textLogDir() );
+        if ( ! std::filesystem::exists( text_log )
+             && ! std::filesystem::create_directories( text_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": can't create text log directory " << text_log << std::endl;
@@ -426,9 +422,9 @@ Logger::openKawayLog()
     // create the log directory & file path string
     try
     {
-        boost::filesystem::path kaway_log( ServerParam::instance().kawayLogDir() );
-        if ( ! boost::filesystem::exists( kaway_log )
-             && ! boost::filesystem::create_directories( kaway_log ) )
+        std::filesystem::path kaway_log( ServerParam::instance().kawayLogDir() );
+        if ( ! std::filesystem::exists( kaway_log )
+             && ! std::filesystem::create_directories( kaway_log ) )
         {
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": can't create keepaway log directory " << kaway_log << std::endl;

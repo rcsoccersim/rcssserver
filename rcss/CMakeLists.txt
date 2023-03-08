@@ -25,7 +25,7 @@ target_include_directories(RCSSBase
 
 target_link_libraries(RCSSBase
   INTERFACE
-    Boost::filesystem
+#    Boost::filesystem
 )
 
 #install(TARGETS RCSSBase

@@ -22,12 +22,10 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/fstream.hpp>
-
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 namespace rcss {
 
@@ -70,15 +68,15 @@ public:
           return doParse( strm, errstrm );
       }
 
-    bool parse( const boost::filesystem::path & file )
+    bool parse( const std::filesystem::path & file )
       {
           return parse( file, std::cerr );
       }
 
-    bool parse( const boost::filesystem::path & file,
+    bool parse( const std::filesystem::path & file,
                 std::ostream & errstrm )
       {
-          boost::filesystem::ifstream strm( file );
+          std::ifstream strm( file );
 
           if( ! strm.is_open() )
           {

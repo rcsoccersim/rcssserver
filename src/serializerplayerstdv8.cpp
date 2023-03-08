@@ -219,25 +219,40 @@ SerializerPlayerStdv8::serializeFSPlayerStamina( std::ostream & strm,
 
 void
 SerializerPlayerStdv8::serializeFSCounts( std::ostream & strm,
-                                          const int count_kick,
-                                          const int count_dash,
-                                          const int count_turn,
-                                          const int count_catch,
-                                          const int count_move,
-                                          const int count_turn_neck,
-                                          const int count_change_view,
-                                          const int count_say ) const
+                                          const Player & self ) const
 {
     strm << " (count "
-         << count_kick << ' '
-         << count_dash << ' '
-         << count_turn << ' '
-         << count_catch << ' '
-         << count_move << ' '
-         << count_turn_neck << ' '
-         << count_change_view << ' '
-         << count_say << ')';
+         << self.kickCount() << ' '
+         << self.dashCount() << ' '
+         << self.turnCount() << ' '
+         << self.catchCount() << ' '
+         << self.moveCount() << ' '
+         << self.turnNeckCount() << ' '
+         << self.changeViewCount() << ' '
+         << self.sayCount() << ')';
 }
+
+// void
+// SerializerPlayerStdv8::serializeFSCounts( std::ostream & strm,
+//                                           const int count_kick,
+//                                           const int count_dash,
+//                                           const int count_turn,
+//                                           const int count_catch,
+//                                           const int count_move,
+//                                           const int count_turn_neck,
+//                                           const int count_change_view,
+//                                           const int count_say ) const
+// {
+//     strm << " (count "
+//          << count_kick << ' '
+//          << count_dash << ' '
+//          << count_turn << ' '
+//          << count_catch << ' '
+//          << count_move << ' '
+//          << count_turn_neck << ' '
+//          << count_change_view << ' '
+//          << count_say << ')';
+// }
 
 void
 SerializerPlayerStdv8::serializeServerParamBegin( std::ostream & strm ) const

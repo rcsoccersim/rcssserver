@@ -26,6 +26,7 @@
 #include "serializerplayerstdv1.h"
 
 #include "param.h"
+#include "player.h"
 
 #include <rcss/clang/clangmsg.h>
 
@@ -152,40 +153,50 @@ SerializerPlayerStdv1::serializeBodyVelocity( std::ostream & strm,
 
 void
 SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
-                                            const int count_kick,
-                                            const int count_dash,
-                                            const int count_turn,
-                                            const int count_say ) const
+                                            const Player & self ) const
 {
-    strm << " (kick " << count_kick << ')'
-         << " (dash " << count_dash << ')'
-         << " (turn " << count_turn << ')'
-         << " (say " << count_say << ')';
+    strm << " (kick " << self.kickCount() << ')'
+         << " (dash " << self.dashCount() << ')'
+         << " (turn " << self.turnCount() << ')'
+         << " (say " << self.sayCount() << ')';
 }
 
-void
-SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
-                                            const int count_catch,
-                                            const int count_move,
-                                            const int count_change_view ) const
-{
-    strm << " (catch " << count_catch << ')'
-         << " (move " << count_move << ')'
-         << " (change_view " << count_change_view << ')';
-}
+// void
+// SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
+//                                             const int count_kick,
+//                                             const int count_dash,
+//                                             const int count_turn,
+//                                             const int count_say ) const
+// {
+//     strm << " (kick " << count_kick << ')'
+//          << " (dash " << count_dash << ')'
+//          << " (turn " << count_turn << ')'
+//          << " (say " << count_say << ')';
+// }
+
+// void
+// SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
+//                                             const int count_catch,
+//                                             const int count_move,
+//                                             const int count_change_view ) const
+// {
+//     strm << " (catch " << count_catch << ')'
+//          << " (move " << count_move << ')'
+//          << " (change_view " << count_change_view << ')';
+// }
+
+// void
+// SerializerPlayerStdv1::serializeBodyCounts( std::ostream & strm,
+//                                             const int count_change_focus ) const
+// {
+//     strm << " (change_focus " << count_change_focus << ')';
+// }
 
 void
 SerializerPlayerStdv1::serializeNeckAngle( std::ostream & strm,
                                            const int ang ) const
 {
     strm << " (head_angle " << ang << ')';
-}
-
-void
-SerializerPlayerStdv1::serializeNeckCount( std::ostream & strm,
-                                           const int count_turn_neck ) const
-{
-    strm << " (turn_neck " << count_turn_neck << ')';
 }
 
 void
@@ -437,8 +448,6 @@ RegHolder v1 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::crea
 RegHolder v2 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 2 );
 RegHolder v3 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 3 );
 RegHolder v4 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 4 );
-RegHolder v5 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 5 );
-RegHolder v6 = SerializerPlayer::factory().autoReg( &SerializerPlayerStdv1::create, 6 );
 }
 
 }
