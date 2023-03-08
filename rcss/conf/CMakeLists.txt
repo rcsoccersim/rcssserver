@@ -10,7 +10,7 @@ add_library(RCSS::ConfParser ALIAS RCSSConfParser)
 
 target_link_libraries(RCSSConfParser
   PUBLIC
-    Boost::filesystem
+#    Boost::filesystem
   PRIVATE
     Boost::boost
 )
@@ -33,8 +33,8 @@ target_compile_options(RCSSConfParser
 
 set_target_properties(RCSSConfParser
   PROPERTIES
-    SOVERSION 3
-    VERSION 3.0.0
+    SOVERSION 18
+    VERSION 18.0.0
     LIBRARY_OUTPUT_NAME "rcssconfparser"
 )
 

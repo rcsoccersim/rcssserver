@@ -94,7 +94,7 @@ target_link_libraries(RCSSServer
     RCSS::ConfParser
     RCSS::Net
     RCSS::GZ
-    Boost::filesystem
+#    Boost::filesystem
     ZLIB::ZLIB
 	)
 
