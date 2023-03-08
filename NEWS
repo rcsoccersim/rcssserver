@@ -4,8 +4,8 @@
   * New command:
     - "(change_focus DIST_MOMENT DIR_MOMENT)"
       All version players can use this command. If the command is
-	  accepted, that player's focus point is moved according to the
-	  given parameters. Details are described below.
+      accepted, that player's focus point is moved according to the
+      given parameters. Details are described below.
 
   * Change the version number of JSON-based monitor protocol to -1.
     And, change the header line of JSON-based game log to "JSON". If
@@ -23,12 +23,12 @@
     is multiplied by the noise term parameter, which depends on the
     view width.
 
-	The concept of focus points is introduced. The focus point
-	represents a position inside a player's view angle, and can be up
-	to 40.0 meters away from the player's position. The focus point
-	affects the visual sensor noise model, with the noise of observed
-	objects increasing as the distance  between the focus point and
-	the object increases.
+    The concept of focus points is introduced. The focus point
+    represents a position inside a player's view angle, and can be up
+    to 40.0 meters away from the player's position. The focus point
+    affects the visual sensor noise model, with the noise of observed
+    objects increasing as the distance  between the focus point and
+    the object increases.
 
     The initial position of the focus point is the player's position,
     and if a player does not change the focus point position, the
