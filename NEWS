@@ -1,3 +1,7 @@
+[18.1.0]
+  * Revert the message frequency and the noise model of the visual
+    information. Now, these settings are same as 17.0.1.
+
 [18.0.0]
   * Update to C++17.
 
@@ -15,13 +19,7 @@
   * Introduce a new observation model.
 
     When the players connect with version 18 or higher, the vision
-    sensor automatically enters the synchronous mode. In addition,
-    players with version 18 or higher receive a see message every
-    cycle, regardless of their view width. Instead, the noise in the
-    observed information varies with the view width. When the
-    observation information is serialized, the quantize step parameter
-    is multiplied by the noise term parameter, which depends on the
-    view width.
+    sensor automatically enters the synchronous mode.
 
     The concept of focus points is introduced. The focus point
     represents a position inside a player's view angle, and can be up
