@@ -147,7 +147,6 @@ private:
     double M_angle_neck_committed;
     double M_focus_dist; //!< distance to the focus point from the center of the player
     double M_focus_dir; //!< direction to the focus point relative to the neck angle
-    PVector M_focus_point; //!< the global focus position on the pitch
 
     //
     // collision state
@@ -353,7 +352,7 @@ public:
     const double & angleNeckCommitted() const { return M_angle_neck_committed; }
     double focusDist() const { return M_focus_dist; }
     double focusDir() const { return M_focus_dir; }
-    const PVector & focusPoint() const { return M_focus_point; }
+    PVector focusPoint() const;
 
     //
     // update stamina
@@ -467,8 +466,6 @@ protected:
     double maxSpeed() const override;
 
 private:
-
-    void updateFocusPoint();
 
     bool parseCommand( const char * command );
     int parseEar( const char * command );

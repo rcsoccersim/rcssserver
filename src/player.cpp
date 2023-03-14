@@ -203,7 +203,6 @@ Player::Player( Stadium & stadium,
       //
       M_focus_dist( 0.0 ),
       M_focus_dir( 0.0 ),
-      M_focus_point( 0.0, 0.0 ),
       //
       M_ball_collide( false ),
       M_player_collide( false ),
@@ -251,7 +250,6 @@ Player::Player( Stadium & stadium,
 
     setPlayerType( 0 );
     recoverAll();
-    updateFocusPoint();
 }
 
 Player::~Player()
@@ -1191,7 +1189,6 @@ Player::change_focus( double moment_dist, double moment_dir )
     M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
                                normalize_angle( M_focus_dir + Deg2Rad( moment_dir ) ),
                                +M_visible_angle * 0.5 );
-    updateFocusPoint();
 
     ++M_change_focus_count;
 }
@@ -1815,7 +1812,6 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
     M_focus_dir = rcss::bound( -M_visible_angle * 0.5,
                                M_focus_dir,
                                +M_visible_angle * 0.5 );
-    updateFocusPoint();
 
     ++M_change_view_count;
 }
@@ -2412,7 +2408,6 @@ Player::turnImpl()
 {
     M_angle_body_committed = this->M_angle_body;
     M_angle_neck_committed = this->M_angle_neck;
-    updateFocusPoint();
     M_vel.assign( 0.0, 0.0 );
     M_accel.assign( 0.0, 0.0 );
 }
@@ -2422,14 +2417,6 @@ Player::updateAngle()
 {
     M_angle_body_committed = this->M_angle_body;
     M_angle_neck_committed = this->M_angle_neck;
-    updateFocusPoint();
-}
-
-void
-Player::updateFocusPoint()
-{
-    const double focus_angle = normalize_angle( angleBodyCommitted() + angleNeckCommitted() + focusDir() );
-    M_focus_point = pos() + PVector::fromPolar( focusDist(), focus_angle );
 }
 
 void
@@ -2490,6 +2477,12 @@ Player::canHearFullFrom( const Player & sender ) const
     }
 }
 
+PVector
+Player::focusPoint() const
+{
+    return pos() + PVector::fromPolar( focusDist(),
+                                       normalize_angle( angleBodyCommitted() + angleNeckCommitted() + focusDir() ) );
+}
 
 void
 Player::recoverAll()
