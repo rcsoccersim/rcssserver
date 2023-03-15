@@ -1,3 +1,11 @@
+2023-03-15  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+	* CMakeLists.txt:
+	* NEWS:
+	* configure.ac:
+	- update a point version number. Official release 18.1.1.
+	- Fix a problem in which the focus point is sometimes not updated.
+
 2023-03-14  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
 	* CMakeLists.txt:
