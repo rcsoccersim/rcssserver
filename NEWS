@@ -1,3 +1,6 @@
+[18.1.1]
+  * Fix a problem in which the focus point is sometimes not updated.
+
 [18.1.0]
   * Revert the message frequency and the noise model of the visual
     information. Now, these settings are same as 17.0.1.
