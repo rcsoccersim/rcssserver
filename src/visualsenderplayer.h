@@ -131,6 +131,10 @@ protected:
           M_sendcnt = 0;
       }
 
+    virtual
+    void updateCache()
+      { }
+
 };
 
 
@@ -644,6 +648,9 @@ public:
 
 class VisualSenderPlayerV18
     : public VisualSenderPlayerV13 {
+private:
+    PVector M_focus_point;
+
 public:
     VisualSenderPlayerV18( const Params & params );
 
@@ -651,6 +658,9 @@ public:
     ~VisualSenderPlayerV18();
 
 protected:
+
+    virtual
+    void updateCache() override;
 
     virtual
     void sendLowFlag( const PObject & flag ) override;
@@ -671,7 +681,6 @@ protected:
     double calcQuantDistFocusPoint( const PObject & obj,
                                     const double unquant_dist,
                                     const double q_step );
-
 };
 
 }

@@ -106,6 +106,8 @@ VisualSenderPlayerV1::sendVisual()
         return;
     }
 
+    updateCache();
+
     serializer().serializeVisualBegin( transport(), stadium().time() );
     sendFlags();
     sendBalls();
@@ -1035,7 +1037,8 @@ VisualSenderPlayerV13::~VisualSenderPlayerV13()
 */
 
 VisualSenderPlayerV18::VisualSenderPlayerV18( const Params & params )
-    : VisualSenderPlayerV13( params )
+    : VisualSenderPlayerV13( params ),
+      M_focus_point( 0.0, 0.0 )
 {
 
 }
@@ -1044,6 +1047,14 @@ VisualSenderPlayerV18::~VisualSenderPlayerV18()
 {
 
 }
+
+
+void
+VisualSenderPlayerV18::updateCache()
+{
+    M_focus_point = self().focusPoint();
+}
+
 
 void
 VisualSenderPlayerV18::sendLowFlag( const PObject & flag )
@@ -1314,12 +1325,11 @@ VisualSenderPlayerV18::calcQuantDistFocusPoint( const PObject & obj,
                                                 const double unquant_dist,
                                                 const double qstep )
 {
-    const double dist_focus_point = obj.pos().distance( self().focusPoint() );
+    const double dist_focus_point = obj.pos().distance( M_focus_point );
     const double quant_dist_focus_point = calcQuantDist( dist_focus_point, qstep );
 
     return std::max( 0.0, unquant_dist - ( dist_focus_point - quant_dist_focus_point ) );
 }
-
 
 /*!
 //===================================================================
