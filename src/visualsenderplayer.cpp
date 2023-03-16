@@ -1156,7 +1156,7 @@ VisualSenderPlayerV18::sendHighBall( const MPObject & ball )
                                                        un_quant_dist,
                                                        self().distQStep() );
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && un_quant_dist < self().playerType()->ballMaxObservationLength())
+         && un_quant_dist < self().playerType()->ballMaxObservationLength() )
     {
         double prob = 0.0;
         if ( self().playerType()->ballVelTooFarLength() > self().playerType()->ballVelFarLength() )
@@ -1325,10 +1325,10 @@ VisualSenderPlayerV18::calcQuantDistFocusPoint( const PObject & obj,
                                                 const double unquant_dist,
                                                 const double qstep )
 {
-    const double dist_focus_point = obj.pos().distance( M_focus_point );
-    const double quant_dist_focus_point = calcQuantDist( dist_focus_point, qstep );
+    const double unquant_dist_focus_point = obj.pos().distance( M_focus_point );
+    const double quant_dist_focus_point = std::exp( Quantize( std::log( unquant_dist_focus_point + EPS ), qstep ) );
 
-    return std::max( 0.0, unquant_dist - ( dist_focus_point - quant_dist_focus_point ) );
+    return Quantize( std::max( 0.0, unquant_dist - ( unquant_dist_focus_point - quant_dist_focus_point ) ), 0.1 );
 }
 
 /*!
