@@ -1,3 +1,11 @@
+2023-03-17  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+	* CMakeLists.txt:
+	* NEWS:
+	* configure.ac:
+	- update a point version number. Official release 18.1.2.
+	- Fix a problem of v18 observation noise model.
+
 2023-03-15  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
 	* CMakeLists.txt:
