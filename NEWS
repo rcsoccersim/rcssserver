@@ -1,3 +1,8 @@
+[18.1.2]
+  * Fix a problem of v18 observation noise model. Quantized distance
+    values affected by the focus point are now rounded to one decimal
+	place.
+
 [18.1.1]
   * Fix a problem in which the focus point is sometimes not updated.
 
