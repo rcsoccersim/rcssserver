@@ -3737,34 +3737,8 @@ PenaltyRef::penalty_check_score()
               << M_stadium.teamRight().penaltyPoint()
               << ((M_cur_pen_taker == RIGHT) ? "*" : " ") << " after "
               << M_pen_nr_taken << " penalties." << std::endl;
-
-    // if both players have taken more than nr_kicks penalties -> check for winner
-    if ( M_pen_nr_taken > 2 * ServerParam::instance().penNrKicks() )
-    {
-        if( M_pen_nr_taken % 2 == 0
-            && ( M_stadium.teamLeft().penaltyPoint()
-                 != M_stadium.teamRight().penaltyPoint() ) )
-        {
-            std::cerr << "Final score: "
-                      << M_stadium.teamLeft().penaltyPoint() << "-"
-                      << M_stadium.teamRight().penaltyPoint() << std::endl;
-            if ( M_stadium.teamLeft().penaltyPoint()
-                 > M_stadium.teamRight().penaltyPoint() )
-            {
-                M_stadium.sendRefereeAudio( "penalty_winner_l" );
-            }
-            else
-            {
-                M_stadium.sendRefereeAudio( "penalty_winner_r" );
-            }
-            //M_stadium.changePlayMode( PM_TimeOver );
-            M_timeover = true;
-        }
-    }
     // if both players have taken nr_kicks and max_extra_kicks penalties -> quit
-    else if ( M_pen_nr_taken > 2 * ( ServerParam::instance().penMaxExtraKicks()
-                                     + ServerParam::instance().penNrKicks() )
-              )
+    if (M_pen_nr_taken > 2 * (ServerParam::instance().penMaxExtraKicks() + ServerParam::instance().penNrKicks()))
     {
         std::cerr << "Final score: "
                   << M_stadium.teamLeft().penaltyPoint() << "-"
@@ -3790,6 +3764,29 @@ PenaltyRef::penalty_check_score()
         }
         //M_stadium.changePlayMode( PM_TimeOver );
         M_timeover = true;
+    }
+    // if both players have taken more than nr_kicks penalties -> check for winner
+    else if ( M_pen_nr_taken > 2 * ServerParam::instance().penNrKicks() )
+    {
+        if( M_pen_nr_taken % 2 == 0
+            && ( M_stadium.teamLeft().penaltyPoint()
+                 != M_stadium.teamRight().penaltyPoint() ) )
+        {
+            std::cerr << "Final score: "
+                      << M_stadium.teamLeft().penaltyPoint() << "-"
+                      << M_stadium.teamRight().penaltyPoint() << std::endl;
+            if ( M_stadium.teamLeft().penaltyPoint()
+                 > M_stadium.teamRight().penaltyPoint() )
+            {
+                M_stadium.sendRefereeAudio( "penalty_winner_l" );
+            }
+            else
+            {
+                M_stadium.sendRefereeAudio( "penalty_winner_r" );
+            }
+            //M_stadium.changePlayMode( PM_TimeOver );
+            M_timeover = true;
+        }
     }
     // during normal kicks, check whether one team cannot win anymore
     else
