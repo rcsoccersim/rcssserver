@@ -1,3 +1,9 @@
+[18.1.3]
+  * Fix an issue in the penalty shootouts referee. If both teams
+  	score the same when finishing all extended trials, the penalty
+	shootouts referee will not end the game and the simulator will
+	get stuck. Thanks go to Omid Amini for providing the patch.
+
 [18.1.2]
   * Fix a problem of v18 observation noise model. Quantized distance
     values affected by the focus point are now rounded to one decimal
