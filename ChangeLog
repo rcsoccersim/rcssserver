@@ -1,3 +1,12 @@
+2023-04-29  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+	* CMakeLists.txt:
+	* NEWS:
+	* configure.ac:
+	- update a point version number. Official release 18.1.3.
+	- Fix an issue in PenaltyRef. Thanks go to Omid Amini for
+	providing the patch.
+
 2023-03-17  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
 	* CMakeLists.txt:
