@@ -19,7 +19,7 @@ endif()
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 #find_package(Boost COMPONENTS system filesystem REQUIRED)
-find_package(Boost COMPONENTS system REQUIRED)
+find_package(Boost 1.44.0 COMPONENTS system REQUIRED)
 
 include(GNUInstallDirs)
 include(CheckIncludeFileCXX)
