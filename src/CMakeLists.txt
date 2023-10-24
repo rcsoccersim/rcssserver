@@ -37,6 +37,7 @@ add_executable(RCSSServer
     initsenderonlinecoach.cpp
     initsenderplayer.cpp
     landmarkreader.cpp
+	leg.cpp
     logger.cpp
     main.cpp
     monitor.cpp
@@ -94,7 +95,6 @@ target_link_libraries(RCSSServer
     RCSS::ConfParser
     RCSS::Net
     RCSS::GZ
-#    Boost::filesystem
     ZLIB::ZLIB
 	)
 
