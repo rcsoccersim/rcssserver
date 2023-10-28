@@ -23,7 +23,6 @@
 #include <config.h>
 #endif
 
-#include <random>
 
 #include "visualsenderplayer.h"
 
@@ -1507,10 +1506,7 @@ VisualSenderPlayerV18::calcGaussianDist( const double actual_dist,
 {
     const double std_dev = actual_dist * noise_rate + focus_dist * focus_noise_rate;
 
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(actual_dist, std_dev);
-
-    return std::max(0.0, distribution(generator));
+    return std::max(0.0, ndrand(actual_dist, std_dev));
 }
 
 double 
@@ -1521,10 +1517,8 @@ VisualSenderPlayerV18::calcGaussianChangeDist( const double actual_dist_change,
                                                const double focus_noise_rate) const
 {
     const double std_dev = (actual_dist * noise_rate + focus_dist * focus_noise_rate) * actual_dist_change;
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(actual_dist_change, std_dev);
 
-    return distribution(generator);
+    return ndrand(actual_dist_change, std_dev);
 }
 
 double 
@@ -1535,10 +1529,8 @@ VisualSenderPlayerV18::calcGaussianChangeDir( const double actual_dir_change,
                                               const double focus_noise_rate) const
 {
     const double std_dev = actual_dist * noise_rate + focus_dist * focus_noise_rate;
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution(actual_dir_change, std_dev);
 
-    return distribution(generator);
+    return ndrand(actual_dir_change, std_dev);
 }
 
 void

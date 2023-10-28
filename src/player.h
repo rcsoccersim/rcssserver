@@ -336,12 +336,12 @@ public:
 
     double changeDistNoiseRate() const
       {
-        return 0.00075;
+        return 0.0075;
       }
 
     double changeDistFocusDistNoiseRate() const
       {
-        return 0.00075;
+        return 0.0075;
       }
 
     int clangMinVer() const { return M_clang_min_ver; }
