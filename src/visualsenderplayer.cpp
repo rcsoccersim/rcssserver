@@ -1425,8 +1425,12 @@ VisualSenderPlayerV18::calcQuantDistFocusPoint( const PObject & obj,
 {
     const double unquant_dist_focus_point = obj.pos().distance( M_focus_point );
     const double quant_dist_focus_point = std::exp( Quantize( std::log( unquant_dist_focus_point + EPS ), qstep ) );
+    const double quant_dist = std::exp( Quantize( std::log( qstep + EPS ), qstep ) );
 
-    return Quantize( std::max( 0.0, unquant_dist - ( unquant_dist_focus_point - quant_dist_focus_point ) ), 0.1 );
+    const double observed_dist = std::max( 0.0, 
+                                           unquant_dist - ( ( unquant_dist_focus_point - quant_dist_focus_point ) + ( unquant_dist - quant_dist ) ) / 2.0 );
+
+    return Quantize( observed_dist, 0.1 );
 }
 
 void
