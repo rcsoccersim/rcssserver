@@ -331,7 +331,7 @@ public:
 
     double changeDirFocusDistNoiseRate() const
       {
-        return 0.0125;  
+        return 0.0125;
       }
 
     double changeDistNoiseRate() const
@@ -379,8 +379,8 @@ public:
     double wideViewAngleNoiseTerm() const { return M_wide_view_angle_noise_term; }
     double normalViewAngleNoiseTerm() const { return M_normal_view_angle_noise_term; }
     double narrowViewAngleNoiseTerm() const { return M_narrow_view_angle_noise_term; }
-    bool gaussianSee() const { return M_gaussian_see; }
-    
+    bool isGaussianSee() const { return M_gaussian_see; }
+
     //
     // audio sensor
     //
