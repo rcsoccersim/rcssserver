@@ -210,21 +210,21 @@ private:
     void sendFlag( const PObject & obj )
       {
           self().highQuality()
-              ? self().gaussianSee() ? sendGaussianFlag( obj ) : sendHighFlag( obj )
+              ? self().isGaussianSee() ? sendGaussianFlag( obj ) : sendHighFlag( obj )
               : sendLowFlag( obj );
       }
 
     void sendBall( const MPObject & obj )
       {
           self().highQuality()
-              ? self().gaussianSee() ? sendGaussianBall( obj ) : sendHighBall( obj )
+              ? self().isGaussianSee() ? sendGaussianBall( obj ) : sendHighBall( obj )
               : sendLowBall( obj );
       }
 
     void sendPlayer( const Player & obj )
       {
           self().highQuality()
-              ? self().gaussianSee() ? sendGaussianPlayer( obj ) : sendHighPlayer( obj )
+              ? self().isGaussianSee() ? sendGaussianPlayer( obj ) : sendHighPlayer( obj )
               : sendLowPlayer( obj );
       }
 
@@ -728,7 +728,7 @@ protected:
                           const double & actual_dist,
                           const double & focus_dist,
                           double & dist_chg,
-                          double & dir_chg ) const;                                    
+                          double & dir_chg ) const;
 };
 
 }

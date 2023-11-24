@@ -2274,10 +2274,8 @@ Player::synch_see()
 void
 Player::gaussian_see()
 {
-    if (version() >= 18.0){
-        M_gaussian_see = true;
-        send( "(ok gaussian_see)" );
-    }
+    M_gaussian_see = true;
+    send( "(ok gaussian_see)" );
 }
 
 void
