@@ -1130,9 +1130,9 @@ VisualSenderPlayerV18::sendGaussianFlag( const PObject & flag )
 {
     const double ang = calcRadDir( flag );
     const double actual_dist = calcUnQuantDist( flag );
-    const double focus_dist = flag.pos().distance( self().focusPoint() );
+    const double focus_dist = flag.pos().distance( M_focus_point );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().landDistNoiseRate(), 
+                                                self().landDistNoiseRate(),
                                                 self().landFocusDistNoiseRate());
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
@@ -1250,9 +1250,9 @@ VisualSenderPlayerV18::sendGaussianBall( const MPObject & ball )
 {
     const double ang = calcRadDir( ball );
     const double actual_dist = calcUnQuantDist( ball );
-    const double focus_dist = ball.pos().distance( self().focusPoint() );
+    const double focus_dist = ball.pos().distance( M_focus_point );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().distNoiseRate(), 
+                                                self().distNoiseRate(),
                                                 self().focusDistNoiseRate());
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && actual_dist < self().playerType()->ballMaxObservationLength() )
@@ -1427,7 +1427,7 @@ VisualSenderPlayerV18::calcQuantDistFocusPoint( const PObject & obj,
     const double quant_dist_focus_point = std::exp( Quantize( std::log( unquant_dist_focus_point + EPS ), qstep ) );
     const double quant_dist = std::exp( Quantize( std::log( qstep + EPS ), qstep ) );
 
-    const double observed_dist = std::max( 0.0, 
+    const double observed_dist = std::max( 0.0,
                                            unquant_dist - ( ( unquant_dist_focus_point - quant_dist_focus_point ) + ( unquant_dist - quant_dist ) ) / 2.0 );
 
     return Quantize( observed_dist, 0.1 );
@@ -1438,9 +1438,9 @@ VisualSenderPlayerV18::sendGaussianPlayer( const Player & player )
 {
     const double ang = calcRadDir( player );
     const double actual_dist = self().pos().distance( player.pos() );
-    const double focus_dist = player.pos().distance( self().focusPoint() );
+    const double focus_dist = player.pos().distance( M_focus_point );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().distNoiseRate(), 
+                                                self().distNoiseRate(),
                                                 self().focusDistNoiseRate());
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
@@ -1513,7 +1513,7 @@ VisualSenderPlayerV18::calcGaussianDist( const double actual_dist,
     return std::max(0.0, ndrand(actual_dist, std_dev));
 }
 
-double 
+double
 VisualSenderPlayerV18::calcGaussianChangeDist( const double actual_dist_change,
                                                const double actual_dist,
                                                const double focus_dist,
@@ -1525,7 +1525,7 @@ VisualSenderPlayerV18::calcGaussianChangeDist( const double actual_dist_change,
     return ndrand(actual_dist_change, std_dev);
 }
 
-double 
+double
 VisualSenderPlayerV18::calcGaussianChangeDir( const double actual_dir_change,
                                               const double actual_dist,
                                               const double focus_dist,
@@ -1558,13 +1558,13 @@ VisualSenderPlayerV18::calcGaussianVel( const PVector & obj_vel,
 
         dir_chg = ( dir_chg == 0.0
                     ? 0.0
-                    : calcGaussianChangeDir( dir_chg, actual_dist, focus_dist, 
-                                             self().changeDirNoiseRate(), 
+                    : calcGaussianChangeDir( dir_chg, actual_dist, focus_dist,
+                                             self().changeDirNoiseRate(),
                                              self().changeDirFocusDistNoiseRate() ) );
         dist_chg = ( dist_chg == 0.0
                      ? 0.0
-                     : calcGaussianChangeDist( dist_chg, actual_dist, focus_dist, 
-                                               self().changeDistNoiseRate(), 
+                     : calcGaussianChangeDist( dist_chg, actual_dist, focus_dist,
+                                               self().changeDistNoiseRate(),
                                                self().changeDistFocusDistNoiseRate() ) );
     }
     else
