@@ -254,9 +254,7 @@ protected:
     void sendHighFlag( const PObject & flag );
 
     virtual
-    void sendGaussianFlag( const PObject & flag ){
-        sendHighFlag(flag);
-    }
+    void sendGaussianFlag( const PObject & flag );
 
     virtual
     void sendLowBall( const MPObject & ball );
@@ -265,9 +263,7 @@ protected:
     void sendHighBall( const MPObject & ball );
 
     virtual
-    void sendGaussianBall( const MPObject & ball ){
-        sendHighBall(ball);
-    }
+    void sendGaussianBall( const MPObject & ball );
 
     virtual
     void sendLowPlayer( const Player & player );
@@ -276,9 +272,7 @@ protected:
     void sendHighPlayer( const Player & player );
 
     virtual
-    void sendGaussianPlayer( const Player & player ){
-        sendHighPlayer(player);
-    }
+    void sendGaussianPlayer( const Player & player );
 
     bool sendLine( const PObject & line );
 
@@ -357,6 +351,33 @@ protected:
           return std::bernoulli_distribution( prob )( DefaultRNG::instance() );
       }
 
+    virtual
+    double calcGaussianDist( const double actual_dist,
+                             const double focus_dist,
+                             const double noise_rate,
+                             const double focus_noise_rate );
+
+    virtual
+    double calcGaussianChangeDist( const double actual_dist_change,
+                                   const double actual_dist,
+                                   const double focus_actual_dist,
+                                   const double noise_rate,
+                                   const double focus_noise_rate) const;
+
+    virtual
+    double calcGaussianChangeDir( const double actual_dir_change,
+                                  const double actual_dist,
+                                  const double focus_actual_dist,
+                                  const double noise_rate,
+                                  const double focus_noise_rate) const;
+
+    virtual
+    void calcGaussianVel( const PVector & obj_vel,
+                          const PVector & obj_pos,
+                          const double & actual_dist,
+                          const double & focus_dist,
+                          double & dist_chg,
+                          double & dir_chg ) const;
 protected:
     virtual
     void serializePlayer( const Player & player,
@@ -702,33 +723,6 @@ protected:
     double calcQuantDistFocusPoint( const PObject & obj,
                                     const double unquant_dist,
                                     const double q_step );
-    virtual
-    double calcGaussianDist( const double actual_dist,
-                             const double focus_dist,
-                             const double noise_rate,
-                             const double focus_noise_rate );
-
-    virtual
-    double calcGaussianChangeDist( const double actual_dist_change,
-                                   const double actual_dist,
-                                   const double focus_actual_dist,
-                                   const double noise_rate,
-                                   const double focus_noise_rate) const;
-
-    virtual
-    double calcGaussianChangeDir( const double actual_dir_change,
-                                  const double actual_dist,
-                                  const double focus_actual_dist,
-                                  const double noise_rate,
-                                  const double focus_noise_rate) const;
-
-    virtual
-    void calcGaussianVel( const PVector & obj_vel,
-                          const PVector & obj_pos,
-                          const double & actual_dist,
-                          const double & focus_dist,
-                          double & dist_chg,
-                          double & dir_chg ) const;
 };
 
 }
