@@ -82,6 +82,9 @@ private:
 
     int M_sendcnt;
 
+protected:
+    PVector M_focus_point;
+
 public:
     typedef std::shared_ptr< VisualSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const VisualSenderPlayer::Params & );
@@ -133,8 +136,33 @@ protected:
 
     virtual
     void updateCache()
-      { }
+      { 
+        M_focus_point = self().pos();
+      }
 
+    virtual
+    double calcProbForFlag(double dist) const
+      {
+          return ( ( dist - self().unumFarLength() ) / ( self().unumTooFarLength() - self().unumFarLength() ) );
+      }
+
+    virtual
+    double calcProbForBall(double dist) const
+      {
+          return calcProbForFlag(dist);
+      }
+
+    virtual
+    double calcTeamProbForPlayer(double dist) const
+      {
+          return ( ( dist - self().teamFarLength() ) / ( self().teamTooFarLength() - self().teamFarLength() ) );
+      }
+
+    virtual
+    double calcUnumProbForPlayer(double dist) const
+      {
+          return calcProbForFlag(dist);
+      }
 };
 
 
@@ -336,6 +364,19 @@ protected:
                                                qstep ) ), 0.1 );
       }
 
+    double calcQuantDistFocusPoint( const PObject & obj,
+                                    const double unquant_dist,
+                                    const double qstep )
+      {
+          const double unquant_dist_focus_point = obj.pos().distance( M_focus_point );
+          const double quant_dist_focus_point = std::exp( Quantize( std::log( unquant_dist_focus_point + EPS ), qstep ) );
+          const double quant_dist = std::exp( Quantize( std::log( unquant_dist + EPS ), qstep ) );
+
+          const double observed_dist = std::max( 0.0,
+                                                unquant_dist - ( ( unquant_dist_focus_point - quant_dist_focus_point ) + ( unquant_dist - quant_dist ) ) / 2.0 );
+
+          return Quantize( observed_dist, 0.1 );
+      }
 
     void calcVel( const PVector & obj_vel,
                   const PVector & obj_pos,
@@ -684,8 +725,6 @@ public:
 
 class VisualSenderPlayerV18
     : public VisualSenderPlayerV13 {
-private:
-    PVector M_focus_point;
 
 public:
     VisualSenderPlayerV18( const Params & params );
@@ -699,30 +738,50 @@ protected:
     void updateCache() override;
 
     virtual
-    void sendLowFlag( const PObject & flag ) override;
-    virtual
-    void sendHighFlag( const PObject & flag ) override;
-    virtual
-    void sendGaussianFlag( const PObject & flag );
+    double calcProbForFlag(double dist) const override
+      {
+          double prob = 0;
+          if ( self().playerType()->flagChgTooFarLength() > self().playerType()->flagChgFarLength() )
+          {
+	            prob = ( ( dist - self().playerType()->flagChgFarLength() ) 
+                      / ( self().playerType()->flagChgTooFarLength() - self().playerType()->flagChgFarLength() ) );
+          }
+          return prob;
+      }
 
     virtual
-    void sendLowBall( const MPObject & ball ) override;
+    double calcProbForBall(double dist) const override
+      {
+          double prob = 0;
+          if ( self().playerType()->ballVelTooFarLength() > self().playerType()->ballVelFarLength() )
+          {
+              prob = ( ( dist - self().playerType()->ballVelFarLength() )
+                      / ( self().playerType()->ballVelTooFarLength() - self().playerType()->ballVelFarLength() ) );
+          }
+          return prob;
+      }
+    
     virtual
-    void sendHighBall( const MPObject & ball ) override;
-    virtual
-    void sendGaussianBall( const MPObject & ball );
+    double calcTeamProbForPlayer(double dist) const override
+      {
+          double prob = 0;
+          if ( self().playerType()->teamTooFarLength() > self().playerType()->teamFarLength() )
+          {
+            prob = ( ( dist - self().playerType()->teamFarLength() ) / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
+          }
+          return prob;
+      }
 
     virtual
-    void sendLowPlayer( const Player & player ) override;
-    virtual
-    void sendHighPlayer( const Player & player ) override;
-    virtual
-    void sendGaussianPlayer( const Player & player );
-
-    virtual
-    double calcQuantDistFocusPoint( const PObject & obj,
-                                    const double unquant_dist,
-                                    const double q_step );
+    double calcUnumProbForPlayer(double dist) const override
+      {
+          double prob = 0;
+          if ( self().playerType()->unumTooFarLength() > self().playerType()->unumFarLength() )
+          {
+              prob = ( ( dist - self().playerType()->unumFarLength() ) / ( self().playerType()->unumTooFarLength() - self().playerType()->unumFarLength() ) );				
+          }
+          return prob;
+      }
 };
 
 }
