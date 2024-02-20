@@ -106,15 +106,17 @@ Leg::dash( const double power,
                                                                    * ( 1.0 - std::fabs( dir ) / 90.0 ) ),
                                         0.0,
                                         1.0 );
-    const double accel_magnitude = std::fabs( M_player.effort()
-                                              * actual_power
-                                              * dir_rate
-                                              * M_player.playerType()->dashPowerRate() )
-        / ( M_player.pos().y < 0.0
-            ? ( M_player.side() == LEFT
-                ? param.slownessOnTopForLeft()
-                : param.slownessOnTopForRight() )
-            : 1.0 );
+    double accel_magnitude = std::fabs( M_player.effort()
+                                        * actual_power
+                                        * dir_rate
+                                        * M_player.playerType()->dashPowerRate() );
+
+    if ( M_player.pos().y < 0.0 )
+    {
+        accel_magnitude /= ( M_player.side() == LEFT
+                             ? param.slownessOnTopForLeft()
+                             : param.slownessOnTopForRight() );
+    }
 
     const double accel_dir = ( back_dash
                                ? normalized_dir + 180.0

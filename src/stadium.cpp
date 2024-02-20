@@ -794,6 +794,7 @@ Stadium::step()
     //
     for ( PlayerCont::reference p : M_players )
     {
+        p->applyLegsEffect();
         p->resetCommandFlags();
         p->incArmAge();
     }

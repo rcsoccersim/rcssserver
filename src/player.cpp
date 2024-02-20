@@ -226,6 +226,8 @@ Player::Player( Stadium & stadium,
       M_change_focus_count(0 ),
       M_change_view_count( 0 ),
       M_say_count( 0 ),
+      M_left_leg( *this ),
+      M_right_leg( *this ),
       M_arm( ServerParam::instance().pointToBan(),
              ServerParam::instance().pointToDuration() ),
       M_attentionto_count( 0 ),
@@ -1151,6 +1153,56 @@ Player::dash( double power,
         ++M_dash_count;
         M_command_done = true;
     }
+}
+
+
+void
+Player::dashLeftLeg( double power,
+                     double dir )
+{
+    if ( M_left_leg.commandDone() )
+    {
+        return;
+    }
+
+    M_left_leg.dash( power, dir );
+    M_stamina = std::max( 0.0, stamina() - M_left_leg.consumedStamina() );
+
+    M_dash_cycles = 1;
+    M_command_done = true;
+}
+
+void
+Player::dashRightLeg( double power,
+                      double dir )
+{
+    if ( M_right_leg.commandDone() )
+    {
+        return;
+    }
+
+    M_right_leg.dash( power, dir );
+    M_stamina = std::max( 0.0, stamina() - M_right_leg.consumedStamina() );
+
+    M_dash_cycles = 1;
+    M_command_done = true;
+}
+
+void
+Player::applyLegsEffect()
+{
+    const PVector body_unit = PVector::fromPolar( 1.0, angleBodyCommitted() );
+    const PVector vel_l = vel() + M_left_leg.accel();
+    const PVector vel_r = vel() + M_right_leg.accel();
+    const double vel_l_body = body_unit.x * vel_l.x + body_unit.y * vel_l.y;
+    const double vel_r_body = body_unit.x * vel_r.x + body_unit.y * vel_r.y;
+
+    const double omega = ( vel_r_body - vel_l_body ) / ( M_player_type->playerSize() * 2.0 );
+    const PVector new_vel = ( vel_r + vel_l ) /= 2.0;
+
+    push( new_vel - vel() );
+    M_angle_body = normalize_angle( angleBodyCommitted()
+                                    + ( 1.0 + drand( -M_randp, M_randp ) ) * omega );
 }
 
 
@@ -2663,6 +2715,9 @@ Player::resetCommandFlags()
     M_turn_neck_done = false;
 
     M_done_received = false;
+
+    M_left_leg.resetCommand();
+    M_right_leg.resetCommand();
 }
 
 void
