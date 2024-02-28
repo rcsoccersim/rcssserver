@@ -378,7 +378,11 @@ public:
     // leg
     //
     void applyLegsEffect();
+private:
+    void applyDashEffect();
+    //void applyKickEffect();
 
+public:
     //
     // arm
     //
@@ -474,6 +478,7 @@ protected:
     double maxSpeed() const override;
 
 private:
+
 
     bool parseCommand( const char * command );
     int parseEar( const char * command );

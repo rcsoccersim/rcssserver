@@ -34,8 +34,14 @@ private:
 
     bool M_command_done;
 
-    PVector M_accel;
-    double M_consumed_stamina;
+    double M_kick_power;
+    double M_kick_dir;
+
+    double M_dash_power;
+    double M_dash_dir;
+
+    // PVector M_accel;
+    // double M_consumed_stamina;
 
     Leg() = delete;
     Leg( const Leg & ) = delete;
@@ -47,23 +53,41 @@ public:
 
     void resetCommand();
 
+    void kick( const double power,
+               const double dir );
+
+    void turn();
+
+    void dash( const double power,
+               const double dir );
+
+
     bool commandDone() const
       {
           return M_command_done;
       }
 
-    void dash( const double power,
-               const double dir );
-
-    const PVector & accel() const
+    double kickPower() const
       {
-          return M_accel;
+          return M_kick_power;
       }
 
-    double consumedStamina() const
+    double kickDir() const
       {
-          return M_consumed_stamina;
+          return M_kick_dir;
       }
+
+    double dashPower() const
+      {
+          return M_dash_power;
+      }
+
+    double dashDir() const
+      {
+          return M_dash_dir;
+      }
+
+    PVector calcDashAccel( const double consumed_stamina ) const;
 };
 
 #endif

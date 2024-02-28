@@ -1166,9 +1166,9 @@ Player::dashLeftLeg( double power,
     }
 
     M_left_leg.dash( power, dir );
-    M_stamina = std::max( 0.0, stamina() - M_left_leg.consumedStamina() );
 
     M_dash_cycles = 1;
+    ++M_dash_count;
     M_command_done = true;
 }
 
@@ -1182,18 +1182,46 @@ Player::dashRightLeg( double power,
     }
 
     M_right_leg.dash( power, dir );
-    M_stamina = std::max( 0.0, stamina() - M_right_leg.consumedStamina() );
 
     M_dash_cycles = 1;
+    ++M_dash_count;
     M_command_done = true;
 }
 
 void
 Player::applyLegsEffect()
 {
+    applyDashEffect();
+    // applyKickEffect();
+}
+
+
+void
+Player::applyDashEffect()
+{
+    double left_power = M_left_leg.dashPower();
+    double right_power = M_right_leg.dashPower();
+
+    double left_consumed_stamina = ( left_power < 0.0 ? -left_power : left_power * 0.5 );
+    double right_consumed_stamina = ( right_power < 0.0 ? -right_power : right_power * 0.5 );
+    double consumed_stamina = left_consumed_stamina + right_consumed_stamina;
+    if ( consumed_stamina < 1.0e-5 )
+    {
+        // no dash
+        return;
+    }
+
+    consumed_stamina = std::min( consumed_stamina, stamina() + M_player_type->extraStamina() );
+
+    left_consumed_stamina = consumed_stamina * left_consumed_stamina / ( left_consumed_stamina + right_consumed_stamina );
+    right_consumed_stamina = consumed_stamina * right_consumed_stamina / ( left_consumed_stamina + right_consumed_stamina );
+
+    const PVector left_accel = M_left_leg.calcDashAccel( left_consumed_stamina );
+    const PVector right_accel = M_right_leg.calcDashAccel( right_consumed_stamina );
+
     const PVector body_unit = PVector::fromPolar( 1.0, angleBodyCommitted() );
-    const PVector vel_l = vel() + M_left_leg.accel();
-    const PVector vel_r = vel() + M_right_leg.accel();
+    const PVector vel_l = vel() + left_accel;
+    const PVector vel_r = vel() + right_accel;
     const double vel_l_body = body_unit.x * vel_l.x + body_unit.y * vel_l.y;
     const double vel_r_body = body_unit.x * vel_r.x + body_unit.y * vel_r.y;
 
@@ -1203,14 +1231,23 @@ Player::applyLegsEffect()
     push( new_vel - vel() );
     M_angle_body = normalize_angle( angleBodyCommitted()
                                     + ( 1.0 + drand( -M_randp, M_randp ) ) * omega );
+    M_stamina = std::max( 0.0, stamina() - consumed_stamina );
 }
 
+// void
+// Player::applyKickEffect()
+// {
+//     // TBD
+// }
 
 void
 Player::turn( double moment )
 {
     if ( ! M_command_done )
     {
+        M_left_leg.turn();
+        M_right_leg.turn();
+
         M_angle_body = normalize_angle( angleBodyCommitted()
                                         + ( 1.0 + drand( -M_randp, M_randp ) )
                                         * NormalizeMoment( moment )
