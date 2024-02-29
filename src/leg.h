@@ -53,6 +53,8 @@ public:
 
     void resetCommand();
 
+    void move();
+
     void kick( const double power,
                const double dir );
 
@@ -60,6 +62,8 @@ public:
 
     void dash( const double power,
                const double dir );
+
+    void tackle();
 
 
     bool commandDone() const

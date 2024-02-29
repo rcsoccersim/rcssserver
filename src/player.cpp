@@ -1095,6 +1095,10 @@ Player::dash( double power,
 {
     if ( ! M_command_done )
     {
+#if 1
+        dashLeftLeg( power, dir );
+        dashRightLeg( power, dir );
+#else
         const ServerParam & param = ServerParam::instance();
 
         power = NormalizeDashPower( power );
@@ -1152,6 +1156,7 @@ Player::dash( double power,
         M_dash_cycles = 1;
         ++M_dash_count;
         M_command_done = true;
+#endif
     }
 }
 
@@ -1168,7 +1173,7 @@ Player::dashLeftLeg( double power,
     M_left_leg.dash( power, dir );
 
     M_dash_cycles = 1;
-    ++M_dash_count;
+    //++M_dash_count;
     M_command_done = true;
 }
 
@@ -1184,7 +1189,7 @@ Player::dashRightLeg( double power,
     M_right_leg.dash( power, dir );
 
     M_dash_cycles = 1;
-    ++M_dash_count;
+    //++M_dash_count;
     M_command_done = true;
 }
 
@@ -1232,6 +1237,8 @@ Player::applyDashEffect()
     M_angle_body = normalize_angle( angleBodyCommitted()
                                     + ( 1.0 + drand( -M_randp, M_randp ) ) * omega );
     M_stamina = std::max( 0.0, stamina() - consumed_stamina );
+
+    ++M_dash_count;
 }
 
 // void
@@ -1753,6 +1760,8 @@ Player::move( double x,
         return;
     }
 
+    M_left_leg.move();
+    M_right_leg.move();
     M_command_done = true;
     ++M_move_count;
 }
@@ -2049,6 +2058,9 @@ Player::tackle( double power_or_angle,
     {
         return;
     }
+
+    M_left_leg.tackle();
+    M_right_leg.tackle();
 
     M_command_done = true;
     M_tackle_cycles = ServerParam::instance().tackleCycles();

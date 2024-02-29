@@ -83,6 +83,16 @@ Leg::resetCommand()
     M_dash_dir = 0.0;
 }
 
+void
+Leg::move()
+{
+    if ( M_command_done )
+    {
+        return;
+    }
+
+    M_command_done = true;
+}
 
 void
 Leg::kick( const double power,
@@ -165,6 +175,16 @@ Leg::dash( const double power,
     // M_command_done = true;
 }
 
+void
+Leg::tackle()
+{
+    if ( M_command_done )
+    {
+        return;
+    }
+
+    M_command_done = true;
+}
 
 PVector
 Leg::calcDashAccel( const double consumed_stamina ) const
