@@ -133,36 +133,6 @@ protected:
       {
           M_sendcnt = 0;
       }
-
-    virtual
-    void updateCache()
-      { 
-        M_focus_point = self().pos();
-      }
-
-    virtual
-    double calcProbForFlag(double dist) const
-      {
-          return ( ( dist - self().unumFarLength() ) / ( self().unumTooFarLength() - self().unumFarLength() ) );
-      }
-
-    virtual
-    double calcProbForBall(double dist) const
-      {
-          return calcProbForFlag(dist);
-      }
-
-    virtual
-    double calcTeamProbForPlayer(double dist) const
-      {
-          return ( ( dist - self().teamFarLength() ) / ( self().teamTooFarLength() - self().teamFarLength() ) );
-      }
-
-    virtual
-    double calcUnumProbForPlayer(double dist) const
-      {
-          return calcProbForFlag(dist);
-      }
 };
 
 
@@ -223,6 +193,10 @@ public:
 
 class VisualSenderPlayerV1
     : public VisualSenderPlayer {
+private:
+
+    PVector M_cached_focus_point;
+
 public:
 
     VisualSenderPlayerV1( const Params & params );
@@ -275,6 +249,52 @@ private:
     void sendLines();
 
 protected:
+
+    const PVector & cachedFocusPoint() const
+      {
+          return M_cached_focus_point;
+      }
+
+    void setCachedFocusPoint( const PVector & pos )
+      {
+          M_cached_focus_point = pos;
+      }
+
+    virtual
+    void updateCache()
+      {
+          setCachedFocusPoint( self().pos() );
+      }
+
+    double calcNoVelProb( const double dist ) const
+      {
+          return ( ( dist - self().unumFarLength() ) / ( self().unumTooFarLength() - self().unumFarLength() ) );
+      }
+
+    virtual
+    double calcNoFlagVelProb( const double dist ) const
+      {
+          return calcNoVelProb( dist );
+      }
+
+    virtual
+    double calcNoBallVelProb( const double dist ) const
+      {
+          return calcNoVelProb( dist );
+      }
+
+    virtual
+    double calcNoTeamProb( const double dist ) const
+      {
+          return ( ( dist - self().teamFarLength() ) / ( self().teamTooFarLength() - self().teamFarLength() ) );
+      }
+
+    virtual
+    double calcNoUnumProb( const double dist ) const
+      {
+          return calcNoVelProb( dist );
+      }
+
     virtual
     void sendLowFlag( const PObject & flag );
 
@@ -368,7 +388,7 @@ protected:
                                     const double unquant_dist,
                                     const double qstep )
       {
-          const double unquant_dist_focus_point = obj.pos().distance( M_focus_point );
+          const double unquant_dist_focus_point = obj.pos().distance( cachedFocusPoint() );
           const double quant_dist_focus_point = std::exp( Quantize( std::log( unquant_dist_focus_point + EPS ), qstep ) );
           const double quant_dist = std::exp( Quantize( std::log( unquant_dist + EPS ), qstep ) );
 
@@ -738,49 +758,31 @@ protected:
     void updateCache() override;
 
     virtual
-    double calcProbForFlag(double dist) const override
+    double calcNoFlagVelProb( double dist ) const override
       {
-          double prob = 0;
-          if ( self().playerType()->flagChgTooFarLength() > self().playerType()->flagChgFarLength() )
-          {
-	            prob = ( ( dist - self().playerType()->flagChgFarLength() ) 
-                      / ( self().playerType()->flagChgTooFarLength() - self().playerType()->flagChgFarLength() ) );
-          }
-          return prob;
+          return ( ( dist - self().playerType()->flagChgFarLength() )
+                   / ( self().playerType()->flagChgTooFarLength() - self().playerType()->flagChgFarLength() ) );
       }
 
     virtual
-    double calcProbForBall(double dist) const override
+    double calcNoBallVelProb( double dist ) const override
       {
-          double prob = 0;
-          if ( self().playerType()->ballVelTooFarLength() > self().playerType()->ballVelFarLength() )
-          {
-              prob = ( ( dist - self().playerType()->ballVelFarLength() )
-                      / ( self().playerType()->ballVelTooFarLength() - self().playerType()->ballVelFarLength() ) );
-          }
-          return prob;
-      }
-    
-    virtual
-    double calcTeamProbForPlayer(double dist) const override
-      {
-          double prob = 0;
-          if ( self().playerType()->teamTooFarLength() > self().playerType()->teamFarLength() )
-          {
-            prob = ( ( dist - self().playerType()->teamFarLength() ) / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
-          }
-          return prob;
+          return ( ( dist - self().playerType()->ballVelFarLength() )
+                   / ( self().playerType()->ballVelTooFarLength() - self().playerType()->ballVelFarLength() ) );
       }
 
     virtual
-    double calcUnumProbForPlayer(double dist) const override
+    double calcNoTeamProb( double dist ) const override
       {
-          double prob = 0;
-          if ( self().playerType()->unumTooFarLength() > self().playerType()->unumFarLength() )
-          {
-              prob = ( ( dist - self().playerType()->unumFarLength() ) / ( self().playerType()->unumTooFarLength() - self().playerType()->unumFarLength() ) );				
-          }
-          return prob;
+          return ( ( dist - self().playerType()->teamFarLength() )
+                   / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
+      }
+
+    virtual
+    double calcNoUnumProb( double dist ) const override
+      {
+          return ( ( dist - self().playerType()->unumFarLength() )
+                   / ( self().playerType()->unumTooFarLength() - self().playerType()->unumFarLength() ) );
       }
 };
 
