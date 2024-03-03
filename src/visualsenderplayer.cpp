@@ -54,7 +54,7 @@ VisualSenderPlayer::VisualSenderPlayer( const Params & params )
       M_self( params.M_self ),
       M_stadium( params.M_stadium ),
       M_sendcnt( 0 ),
-      M_focus_point( 0.0, 0.0 )
+      M_cached_focus_point( 0.0, 0.0 )
 {
     //std::cerr << "create VisualSenderPlayer" << std::endl;
 }
@@ -236,7 +236,7 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && un_quant_dist < self().playerType()->flagMaxObservationLength() )
     {
-        double prob = calcProbForFlag(quant_dist);
+        double prob = calcNoFlagVelProb( quant_dist );
 
         if ( decide( prob ) )
         {
@@ -274,7 +274,7 @@ VisualSenderPlayerV1::sendGaussianFlag( const PObject & flag )
     const double ang = calcRadDir( flag );
     const double actual_dist = calcUnQuantDist( flag );
     // Focus point is player position for version < 18
-    const double focus_dist = flag.pos().distance( M_focus_point );
+    const double focus_dist = flag.pos().distance( cachedFocusPoint() );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
                                                 self().landDistNoiseRate(),
                                                 self().landFocusDistNoiseRate());
@@ -282,7 +282,7 @@ VisualSenderPlayerV1::sendGaussianFlag( const PObject & flag )
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && actual_dist < self().playerType()->flagMaxObservationLength() )
     {
-        double prob = calcProbForFlag(noisy_dist);
+        double prob = calcNoFlagVelProb( noisy_dist );
 
         if ( decide( prob ) )
         {
@@ -348,7 +348,7 @@ VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && un_quant_dist < self().playerType()->ballMaxObservationLength() )
     {
-        double prob = calcProbForBall(quant_dist);
+        double prob = calcNoBallVelProb( quant_dist );
 
         if ( decide( prob ) )
         {
@@ -385,14 +385,14 @@ VisualSenderPlayerV1::sendGaussianBall( const MPObject & ball )
 {
     const double ang = calcRadDir( ball );
     const double actual_dist = calcUnQuantDist( ball );
-    const double focus_dist = ball.pos().distance( M_focus_point );
+    const double focus_dist = ball.pos().distance( cachedFocusPoint() );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
                                                 self().distNoiseRate(),
                                                 self().focusDistNoiseRate());
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && actual_dist < self().playerType()->ballMaxObservationLength() )
     {
-        double prob = calcProbForBall(noisy_dist);
+        double prob = calcNoBallVelProb( noisy_dist );
 
         if ( decide( prob ) )
         {
@@ -435,7 +435,7 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
     {
         const double quant_dist = calcQuantDist( un_quant_dist,
                                                  self().distQStep() );
-        double prob = calcTeamProbForPlayer(quant_dist);
+        double prob = calcNoTeamProb( quant_dist );
 
         if ( decide( prob ) )
         {
@@ -445,7 +445,7 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
         }
         else
         {
-            prob = calcUnumProbForPlayer(quant_dist);
+            prob = calcNoUnumProb( quant_dist );
 
             if ( decide( prob ) )
             {
@@ -481,7 +481,7 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && un_quant_dist < self().playerType()->playerMaxObservationLength() )
     {
-        double prob = calcTeamProbForPlayer(quant_dist);
+        double prob = calcNoTeamProb( quant_dist );
 
         if ( decide( prob ) )
         {
@@ -493,7 +493,7 @@ VisualSenderPlayerV1::sendHighPlayer( const Player & player )
         }
         else
         {
-            prob = calcUnumProbForPlayer(quant_dist);
+            prob = calcNoUnumProb( quant_dist );
 
             if ( decide( prob ) )
             {
@@ -532,7 +532,7 @@ VisualSenderPlayerV1::sendGaussianPlayer( const Player & player )
 {
     const double ang = calcRadDir( player );
     const double actual_dist = self().pos().distance( player.pos() );
-    const double focus_dist = player.pos().distance( M_focus_point );
+    const double focus_dist = player.pos().distance( cachedFocusPoint() );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
                                                 self().distNoiseRate(),
                                                 self().focusDistNoiseRate());
@@ -540,7 +540,7 @@ VisualSenderPlayerV1::sendGaussianPlayer( const Player & player )
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && actual_dist < self().playerType()->playerMaxObservationLength() )
     {
-        double prob = calcTeamProbForPlayer(noisy_dist);
+        double prob = calcNoTeamProb( noisy_dist );
 
         if ( decide( prob ) )
         {
@@ -552,7 +552,7 @@ VisualSenderPlayerV1::sendGaussianPlayer( const Player & player )
         }
         else
         {
-            prob = calcUnumProbForPlayer(noisy_dist);
+            prob = calcNoUnumProb( noisy_dist );
 
             if ( decide( prob ) )
             {
@@ -734,8 +734,8 @@ VisualSenderPlayerV1::calcVel( const PVector & obj_vel,
         etmp /= un_quant_dist;
 
         dist_chg = vtmp.x * etmp.x + vtmp.y * etmp.y;
-//         dir_chg = RAD2DEG * ( vtmp.y * etmp.x
-//                               - vtmp.x * etmp.y ) / un_quant_dist;
+        //         dir_chg = RAD2DEG * ( vtmp.y * etmp.x
+        //                               - vtmp.x * etmp.y ) / un_quant_dist;
         dir_chg = vtmp.y * etmp.x - vtmp.x * etmp.y;
         dir_chg /= un_quant_dist;
         dir_chg *= RAD2DEG;
@@ -782,46 +782,46 @@ VisualSenderPlayerV1::serializePlayer( const Player &,
 
 double
 VisualSenderPlayerV1::calcGaussianDist( const double actual_dist,
-                                         const double focus_dist,
-                                         const double noise_rate,
-                                         const double focus_noise_rate )
+                                        const double focus_dist,
+                                        const double noise_rate,
+                                        const double focus_noise_rate )
 {
     const double std_dev = actual_dist * noise_rate + focus_dist * focus_noise_rate;
 
-    return std::max(0.0, ndrand(actual_dist, std_dev));
+    return std::max( 0.0, ndrand( actual_dist, std_dev ) );
 }
 
 double
 VisualSenderPlayerV1::calcGaussianChangeDist( const double actual_dist_change,
-                                               const double actual_dist,
-                                               const double focus_dist,
-                                               const double noise_rate,
-                                               const double focus_noise_rate) const
+                                              const double actual_dist,
+                                              const double focus_dist,
+                                              const double noise_rate,
+                                              const double focus_noise_rate ) const
 {
     const double std_dev = (actual_dist * noise_rate + focus_dist * focus_noise_rate) * actual_dist_change;
 
-    return ndrand(actual_dist_change, std_dev);
+    return ndrand( actual_dist_change, std_dev );
 }
 
 double
 VisualSenderPlayerV1::calcGaussianChangeDir( const double actual_dir_change,
-                                              const double actual_dist,
-                                              const double focus_dist,
-                                              const double noise_rate,
-                                              const double focus_noise_rate) const
+                                             const double actual_dist,
+                                             const double focus_dist,
+                                             const double noise_rate,
+                                             const double focus_noise_rate ) const
 {
     const double std_dev = actual_dist * noise_rate + focus_dist * focus_noise_rate;
 
-    return ndrand(actual_dir_change, std_dev);
+    return ndrand( actual_dir_change, std_dev );
 }
 
 void
 VisualSenderPlayerV1::calcGaussianVel( const PVector & obj_vel,
-                                        const PVector & obj_pos,
-                                        const double & actual_dist,
-                                        const double & focus_dist,
-                                        double& dist_chg,
-                                        double& dir_chg ) const
+                                       const PVector & obj_pos,
+                                       const double & actual_dist,
+                                       const double & focus_dist,
+                                       double& dist_chg,
+                                       double& dir_chg ) const
 {
     if ( actual_dist != 0.0 )
     {
@@ -1064,8 +1064,8 @@ VisualSenderPlayerV8::calcPointDir( const Player & player )
         // of this range.
         double sigma = self().pos().distance( player.pos() )
             / self().playerType()->teamTooFarLength();
-            //            / 60.0; // this should be replaced by the line below.
-            //        //        / ServerParam::instance().getTeamTooFarLength ();
+        //            / 60.0; // this should be replaced by the line below.
+        //        //        / ServerParam::instance().getTeamTooFarLength ();
         sigma = std::pow( sigma, 4 ); // 4 should be parameterized
         // sigma is now a range between 0 and 1.0
 
@@ -1250,7 +1250,7 @@ VisualSenderPlayerV18::~VisualSenderPlayerV18()
 void
 VisualSenderPlayerV18::updateCache()
 {
-    M_focus_point = self().focusPoint();
+    setCachedFocusPoint( self().focusPoint() );
 }
 
 /*!
