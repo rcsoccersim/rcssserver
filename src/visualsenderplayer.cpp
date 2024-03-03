@@ -735,8 +735,8 @@ VisualSenderPlayerV1::calcVel( const PVector & obj_vel,
         etmp /= un_quant_dist;
 
         dist_chg = vtmp.x * etmp.x + vtmp.y * etmp.y;
-//         dir_chg = RAD2DEG * ( vtmp.y * etmp.x
-//                               - vtmp.x * etmp.y ) / un_quant_dist;
+        //         dir_chg = RAD2DEG * ( vtmp.y * etmp.x
+        //                               - vtmp.x * etmp.y ) / un_quant_dist;
         dir_chg = vtmp.y * etmp.x - vtmp.x * etmp.y;
         dir_chg /= un_quant_dist;
         dir_chg *= RAD2DEG;
@@ -783,9 +783,9 @@ VisualSenderPlayerV1::serializePlayer( const Player &,
 
 double
 VisualSenderPlayerV1::calcGaussianDist( const double actual_dist,
-                                         const double focus_dist,
-                                         const double noise_rate,
-                                         const double focus_noise_rate )
+                                        const double focus_dist,
+                                        const double noise_rate,
+                                        const double focus_noise_rate )
 {
     const double std_dev = actual_dist * noise_rate + focus_dist * focus_noise_rate;
 
@@ -794,10 +794,10 @@ VisualSenderPlayerV1::calcGaussianDist( const double actual_dist,
 
 double
 VisualSenderPlayerV1::calcGaussianChangeDist( const double actual_dist_change,
-                                               const double actual_dist,
-                                               const double focus_dist,
-                                               const double noise_rate,
-                                               const double focus_noise_rate) const
+                                              const double actual_dist,
+                                              const double focus_dist,
+                                              const double noise_rate,
+                                              const double focus_noise_rate ) const
 {
     const double std_dev = (actual_dist * noise_rate + focus_dist * focus_noise_rate) * actual_dist_change;
 
@@ -806,10 +806,10 @@ VisualSenderPlayerV1::calcGaussianChangeDist( const double actual_dist_change,
 
 double
 VisualSenderPlayerV1::calcGaussianChangeDir( const double actual_dir_change,
-                                              const double actual_dist,
-                                              const double focus_dist,
-                                              const double noise_rate,
-                                              const double focus_noise_rate) const
+                                             const double actual_dist,
+                                             const double focus_dist,
+                                             const double noise_rate,
+                                             const double focus_noise_rate ) const
 {
     const double std_dev = actual_dist * noise_rate + focus_dist * focus_noise_rate;
 
@@ -818,11 +818,11 @@ VisualSenderPlayerV1::calcGaussianChangeDir( const double actual_dir_change,
 
 void
 VisualSenderPlayerV1::calcGaussianVel( const PVector & obj_vel,
-                                        const PVector & obj_pos,
-                                        const double & actual_dist,
-                                        const double & focus_dist,
-                                        double& dist_chg,
-                                        double& dir_chg ) const
+                                       const PVector & obj_pos,
+                                       const double & actual_dist,
+                                       const double & focus_dist,
+                                       double& dist_chg,
+                                       double& dir_chg ) const
 {
     if ( actual_dist != 0.0 )
     {
@@ -1065,8 +1065,8 @@ VisualSenderPlayerV8::calcPointDir( const Player & player )
         // of this range.
         double sigma = self().pos().distance( player.pos() )
             / self().playerType()->teamTooFarLength();
-            //            / 60.0; // this should be replaced by the line below.
-            //        //        / ServerParam::instance().getTeamTooFarLength ();
+        //            / 60.0; // this should be replaced by the line below.
+        //        //        / ServerParam::instance().getTeamTooFarLength ();
         sigma = std::pow( sigma, 4 ); // 4 should be parameterized
         // sigma is now a range between 0 and 1.0
 
