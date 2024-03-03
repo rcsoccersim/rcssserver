@@ -83,7 +83,7 @@ private:
     int M_sendcnt;
 
 protected:
-    PVector M_focus_point;
+    PVector M_cached_focus_point;
 
 public:
     typedef std::shared_ptr< VisualSenderPlayer > Ptr;
@@ -132,6 +132,16 @@ protected:
     void resetSendCount()
       {
           M_sendcnt = 0;
+      }
+
+    const PVector & cachedFocusPoint() const
+      {
+          return M_cached_focus_point;
+      }
+
+    void setCachedFocusPoint( const PVector & pos )
+      {
+          M_cached_focus_point = pos;
       }
 };
 
@@ -193,10 +203,6 @@ public:
 
 class VisualSenderPlayerV1
     : public VisualSenderPlayer {
-private:
-
-    PVector M_cached_focus_point;
-
 public:
 
     VisualSenderPlayerV1( const Params & params );
@@ -249,16 +255,6 @@ private:
     void sendLines();
 
 protected:
-
-    const PVector & cachedFocusPoint() const
-      {
-          return M_cached_focus_point;
-      }
-
-    void setCachedFocusPoint( const PVector & pos )
-      {
-          M_cached_focus_point = pos;
-      }
 
     virtual
     void updateCache()

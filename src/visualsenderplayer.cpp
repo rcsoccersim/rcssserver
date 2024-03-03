@@ -54,7 +54,7 @@ VisualSenderPlayer::VisualSenderPlayer( const Params & params )
       M_self( params.M_self ),
       M_stadium( params.M_stadium ),
       M_sendcnt( 0 ),
-      M_focus_point( 0.0, 0.0 )
+      M_cached_focus_point( 0.0, 0.0 )
 {
     //std::cerr << "create VisualSenderPlayer" << std::endl;
 }
@@ -84,8 +84,7 @@ VisualSenderPlayer::~VisualSenderPlayer()
 */
 
 VisualSenderPlayerV1::VisualSenderPlayerV1( const Params & params )
-    : VisualSenderPlayer( params ),
-      M_cached_focus_point( 0.0, 0.0 )
+    : VisualSenderPlayer( params )
 {
 
 }
