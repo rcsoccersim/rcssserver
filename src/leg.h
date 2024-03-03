@@ -29,19 +29,26 @@ class Player;
   \todo inherits an abstract actuator class
 */
 class Leg {
+public:
+    enum CommandType {
+        MOVE,
+        DASH,
+        TURN,
+        KICK,
+        TACKLE,
+        NONE
+    };
+
 private:
     const Player & M_player;
 
-    bool M_command_done;
+    CommandType M_command_type;
 
     double M_kick_power;
     double M_kick_dir;
 
     double M_dash_power;
     double M_dash_dir;
-
-    // PVector M_accel;
-    // double M_consumed_stamina;
 
     Leg() = delete;
     Leg( const Leg & ) = delete;
@@ -68,7 +75,12 @@ public:
 
     bool commandDone() const
       {
-          return M_command_done;
+          return M_command_type != NONE;
+      }
+
+    CommandType commandType() const
+      {
+          return M_command_type;
       }
 
     double kickPower() const

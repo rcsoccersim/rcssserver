@@ -1204,6 +1204,14 @@ Player::applyLegsEffect()
 void
 Player::applyDashEffect()
 {
+    if ( M_left_leg.commandType() != Leg::DASH
+         && M_right_leg.commandType() != Leg::DASH )
+    {
+        return;
+    }
+
+    ++M_dash_count;
+
     double left_power = M_left_leg.dashPower();
     double right_power = M_right_leg.dashPower();
 
@@ -1212,7 +1220,7 @@ Player::applyDashEffect()
     double consumed_stamina = left_consumed_stamina + right_consumed_stamina;
     if ( consumed_stamina < 1.0e-5 )
     {
-        // no dash
+        // no dash effect
         return;
     }
 
@@ -1237,8 +1245,6 @@ Player::applyDashEffect()
     M_angle_body = normalize_angle( angleBodyCommitted()
                                     + ( 1.0 + drand( -M_randp, M_randp ) ) * omega );
     M_stamina = std::max( 0.0, stamina() - consumed_stamina );
-
-    ++M_dash_count;
 }
 
 // void
