@@ -276,8 +276,8 @@ VisualSenderPlayerV1::sendGaussianFlag( const PObject & flag )
     // Focus point is player position for version < 18
     const double focus_dist = flag.pos().distance( cachedFocusPoint() );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().landDistNoiseRate(),
-                                                self().landFocusDistNoiseRate());
+                                                self().playerType()->landDistNoiseRate(),
+                                                self().playerType()->landFocusDistNoiseRate());
     const double actual_deg_dir = calcDegDirDouble( ang );
     const int noisy_deg_dir = calcDegDir( ang );
 
@@ -390,8 +390,8 @@ VisualSenderPlayerV1::sendGaussianBall( const MPObject & ball )
     const double actual_dist = calcUnQuantDist( ball );
     const double focus_dist = ball.pos().distance( cachedFocusPoint() );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().distNoiseRate(),
-                                                self().focusDistNoiseRate());
+                                                self().playerType()->distNoiseRate(),
+                                                self().playerType()->focusDistNoiseRate());
     const double actual_deg_dir = calcDegDirDouble( ang );
     const int noisy_deg_dir = calcDegDir( ang );
 
@@ -541,8 +541,8 @@ VisualSenderPlayerV1::sendGaussianPlayer( const Player & player )
     const double actual_dist = self().pos().distance( player.pos() );
     const double focus_dist = player.pos().distance( cachedFocusPoint() );
     const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().distNoiseRate(),
-                                                self().focusDistNoiseRate());
+                                                self().playerType()->distNoiseRate(),
+                                                self().playerType()->focusDistNoiseRate());
 
     const double actual_deg_dir = calcDegDirDouble( ang );
     const int noisy_deg_dir = calcDegDir( ang );

@@ -155,6 +155,11 @@ public:
     double catchAreaLengthStretchMin() const { return M_catchable_area_l_stretch_min; }
     double catchAreaLengthStretchMax() const { return M_catchable_area_l_stretch_max; }
 
+    double distNoiseRate() const { return M_dist_noise_rate; }
+    double focusDistNoiseRate() const { return M_focus_dist_noise_rate; }
+    double landDistNoiseRate() const { return M_land_dist_noise_rate; }
+    double landFocusDistNoiseRate() const { return M_land_focus_dist_noise_rate; }
+    
     bool getInt( const std::string & param,
                  int & value ) const;
 
@@ -212,6 +217,12 @@ private:
     static const double DEFAULT_CATCHABLE_AREA_L_STRETCH_MIN;
     static const double DEFAULT_CATCHABLE_AREA_L_STRETCH_MAX;
 
+    // v19
+    static const double DEFAULT_DIST_NOISE_RATE;
+    static const double DEFAULT_FOCUS_DIST_NOISE_RATE;
+    static const double DEFAULT_LAND_DIST_NOISE_RATE;
+    static const double DEFAULT_LAND_FOCUS_DIST_NOISE_RATE;
+
     int M_player_types;
     int M_subs_max;
     int M_pt_max;
@@ -253,6 +264,12 @@ private:
     //bool M_allow_default_goalie;
     double M_catchable_area_l_stretch_min;
     double M_catchable_area_l_stretch_max;
+
+    // v19
+    double M_dist_noise_rate;
+    double M_focus_dist_noise_rate;
+    double M_land_dist_noise_rate;
+    double M_land_focus_dist_noise_rate;
 };
 
 #endif

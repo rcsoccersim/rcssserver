@@ -304,26 +304,6 @@ public:
 #endif
       }
 
-    double distNoiseRate() const
-      {
-        return 0.0125;
-      }
-
-    double focusDistNoiseRate() const
-      {
-        return 0.0125;
-      }
-
-    double landDistNoiseRate() const
-      {
-        return 0.00125;
-      }
-
-    double landFocusDistNoiseRate() const
-      {
-        return 0.00125;
-      }
-
     int clangMinVer() const { return M_clang_min_ver; }
     int clangMaxVer() const { return M_clang_max_ver; }
 

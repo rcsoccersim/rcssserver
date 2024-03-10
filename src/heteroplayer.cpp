@@ -124,6 +124,8 @@ HeteroPlayer::HeteroPlayer()
 
         setDefaultObservationParams();
 
+        setDefaultGaussianObservationParams();
+
         //
         double real_speed_max
             = ( SP.maxPower() * M_dash_power_rate * M_effort_max )
@@ -237,6 +239,9 @@ HeteroPlayer::setDefault()
 
     // v18
     setDefaultObservationParams();
+
+    // v19
+    setDefaultGaussianObservationParams();
 }
 
 void
@@ -256,6 +261,18 @@ HeteroPlayer::setDefaultObservationParams()
     M_flag_chg_too_far_length = 40.0;
     M_flag_max_observation_length = maximum_dist_in_pitch;
 }
+
+void
+HeteroPlayer::setDefaultGaussianObservationParams()
+{
+    const PlayerParam & PP = PlayerParam::instance();
+
+    M_dist_noise_rate = PP.distNoiseRate();
+    M_focus_dist_noise_rate = PP.focusDistNoiseRate();
+    M_land_dist_noise_rate = PP.landDistNoiseRate();
+    M_land_focus_dist_noise_rate = PP.landFocusDistNoiseRate();
+}
+
 std::ostream &
 HeteroPlayer::print( std::ostream & o ) const
 {
@@ -288,8 +305,12 @@ HeteroPlayer::print( std::ostream & o ) const
     o << "\tBall Max Observation Length = " << ballMaxObservationLength() << '\n';
     o << "\tFlag Chg Far Length = " << flagChgFarLength() << '\n';
     o << "\tFlag Chg Too Far Length = " << flagChgTooFarLength() << '\n';
-    o << "\tFlag Max Observation Length = " << flagMaxObservationLength() << std::endl;
-
+    o << "\tFlag Max Observation Length = " << flagMaxObservationLength() << '\n';
+    o << "\tDist Noise Rate = " << distNoiseRate() << '\n';
+    o << "\tFocus Dist Noise Rate = " << focusDistNoiseRate() << '\n';
+    o << "\tLand Dist Noise Rate = " << landDistNoiseRate() << '\n';
+    o << "\tLand Focus Dist Noise Rate = " << landFocusDistNoiseRate() << std::endl;
+    
     return o;
 }
 
@@ -382,6 +403,16 @@ HeteroPlayer::printParamsSExp( std::ostream & o,
     to_sexp( o, "flag_chg_far_length", flagChgFarLength() );
     to_sexp( o, "flag_chg_too_far_length", flagChgTooFarLength() );
     to_sexp( o, "flag_max_observation_length", flagMaxObservationLength() );
+
+    if ( version < 19 )
+    {
+        return;
+    }
+
+    to_sexp( o, "dist_noise_rate", distNoiseRate() );
+    to_sexp( o, "focus_dist_noise_rate", focusDistNoiseRate() );
+    to_sexp( o, "land_dist_noise_rate", landDistNoiseRate() );
+    to_sexp( o, "land_focus_dist_noise_rate", landFocusDistNoiseRate() );
 }
 
 
@@ -443,5 +474,16 @@ HeteroPlayer::printParamsJSON( std::ostream & o,
         to_json_member( o, "flag_chg_too_far_length", flagChgTooFarLength() );
         o << ",";
         to_json_member( o, "flag_max_observation_length", flagMaxObservationLength() );
+    }
+    if ( version >= 19 )
+    {
+        o << ",";
+        to_json_member( o, "dist_noise_rate", distNoiseRate() );
+        o << ",";
+        to_json_member( o, "focus_dist_noise_rate", focusDistNoiseRate() );
+        o << ",";
+        to_json_member( o, "land_dist_noise_rate", landDistNoiseRate() );
+        o << ",";
+        to_json_member( o, "land_focus_dist_noise_rate", landFocusDistNoiseRate() );
     }
 }
