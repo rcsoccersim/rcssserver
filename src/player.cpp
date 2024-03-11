@@ -1238,12 +1238,17 @@ Player::applyDashEffect()
     const double vel_l_body = body_unit.x * vel_l.x + body_unit.y * vel_l.y;
     const double vel_r_body = body_unit.x * vel_r.x + body_unit.y * vel_r.y;
 
-    const double omega = ( vel_l_body - vel_r_body ) / ( M_player_type->playerSize() * 2.0 );
     const PVector new_vel = ( vel_r + vel_l ) /= 2.0;
-
     push( new_vel - vel() );
-    M_angle_body = normalize_angle( angleBodyCommitted()
-                                    + ( 1.0 + drand( -M_randp, M_randp ) ) * omega );
+
+    if ( M_left_leg.commandType() == Leg::DASH
+         && M_left_leg.commandType() == Leg::DASH )
+    {
+        const double omega = ( vel_l_body - vel_r_body ) / ( M_player_type->playerSize() * 2.0 );
+        M_angle_body = normalize_angle( angleBodyCommitted()
+                                        + ( 1.0 + drand( -M_randp, M_randp ) ) * omega );
+    }
+
     M_stamina = std::max( 0.0, stamina() - consumed_stamina );
 }
 
