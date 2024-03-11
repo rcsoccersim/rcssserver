@@ -265,12 +265,12 @@ HeteroPlayer::setDefaultObservationParams()
 void
 HeteroPlayer::setDefaultGaussianObservationParams()
 {
-    const PlayerParam & PP = PlayerParam::instance();
+    const ServerParam & SP = ServerParam::instance();
 
-    M_dist_noise_rate = PP.distNoiseRate();
-    M_focus_dist_noise_rate = PP.focusDistNoiseRate();
-    M_land_dist_noise_rate = PP.landDistNoiseRate();
-    M_land_focus_dist_noise_rate = PP.landFocusDistNoiseRate();
+    M_dist_noise_rate = SP.distNoiseRate();
+    M_focus_dist_noise_rate = SP.focusDistNoiseRate();
+    M_land_dist_noise_rate = SP.landDistNoiseRate();
+    M_land_focus_dist_noise_rate = SP.landFocusDistNoiseRate();
 }
 
 std::ostream &

@@ -341,10 +341,6 @@ protected:
           return rad2Deg( rad_dir );
       }
 
-    double calcDegDirDouble( const double & rad_dir ) const
-      {
-          return rad2DegDouble( rad_dir );
-      }
 private:
 
     double calcLineRadDir( const double & line_normal ) const
@@ -424,17 +420,13 @@ protected:
                                    const double noisy_dist) const;
 
     virtual
-    double calcGaussianChangeDir( const double actual_dir_change,
-                                  const double actual_dir,
-                                  const double noisy_dir) const;
+    double calcGaussianChangeDir( const double actual_dir_change) const;
 
     virtual
     void calcGaussianVel( const PVector & obj_vel,
                           const PVector & obj_pos,
                           const double & actual_dist,
                           const double & noisy_dist,
-                          const double & actual_dir, 
-                          const double & noisy_dir,
                           double & dist_chg,
                           double & dir_chg ) const;
 protected:
@@ -456,12 +448,6 @@ protected:
     int rad2Deg( const double & rad ) const
       {
           return Rad2IDeg( rad );
-      }
-
-    virtual
-    double rad2DegDouble( const double & rad ) const
-      {
-          return Rad2Deg( rad );
       }
 
     virtual

@@ -383,6 +383,11 @@ constexpr double MIN_CATCH_ANGLE = -90.0;
 const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
 
+const double ServerParam::DIST_NOISE_RATE = 0.0125;
+const double ServerParam::FOCUS_DIST_NOISE_RATE = 0.0125;
+const double ServerParam::LAND_DIST_NOISE_RATE = 0.00125;
+const double ServerParam::LAND_FOCUS_DIST_NOISE_RATE = 0.00125;
+
 ServerParam &
 ServerParam::instance()
 {
@@ -951,7 +956,11 @@ ServerParam::addParams()
     // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
     // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
 
-
+    // v19
+    addParam( "dist_noise_rate", M_dist_noise_rate, "", 19 );
+    addParam( "focus_dist_noise_rate", M_focus_dist_noise_rate, "", 19 );
+    addParam( "land_dist_noise_rate", M_land_dist_noise_rate, "", 19 );
+    addParam( "land_focus_dist_noise_rate", M_land_focus_dist_noise_rate, "", 19 );
 }
 
 void
@@ -1464,6 +1473,11 @@ ServerParam::setDefaults()
     M_kickable_area = M_player_size + M_kickable_margin + M_ball_size;
     M_control_radius_width = M_control_radius - M_player_size;
 
+    // 19.0.0
+    M_dist_noise_rate = DIST_NOISE_RATE;
+    M_focus_dist_noise_rate = FOCUS_DIST_NOISE_RATE;
+    M_land_dist_noise_rate = LAND_DIST_NOISE_RATE;
+    M_land_focus_dist_noise_rate = LAND_FOCUS_DIST_NOISE_RATE;
 //     std::string module_dir = S_MODULE_DIR;
 //     for ( std::string::size_type pos = module_dir.find( "//" );
 //           pos != std::string::npos;

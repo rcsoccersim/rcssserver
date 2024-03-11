@@ -139,12 +139,6 @@ const double PlayerParam::DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR = 0.0;
 const double PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MIN = 1.0;
 const double PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MAX = 1.3;
 
-// v19
-const double PlayerParam::DEFAULT_DIST_NOISE_RATE = 0.0125;
-const double PlayerParam::DEFAULT_FOCUS_DIST_NOISE_RATE =0.0125;
-const double PlayerParam::DEFAULT_LAND_DIST_NOISE_RATE = 0.00125;
-const double PlayerParam::DEFAULT_LAND_FOCUS_DIST_NOISE_RATE = 0.00125;
-
 PlayerParam &
 PlayerParam::instance( rcss::conf::Builder * parent )
 {
@@ -342,10 +336,6 @@ PlayerParam::addParams()
     //addParam( "allow_default_goalie", M_allow_default_goalie, "", 14 );
     addParam( "catchable_area_l_stretch_min", M_catchable_area_l_stretch_min, "", 14 );
     addParam( "catchable_area_l_stretch_max", M_catchable_area_l_stretch_max, "", 14 );
-    addParam( "dist_noise_rate", M_dist_noise_rate, "", 19 );
-    addParam( "focus_dist_noise_rate", M_focus_dist_noise_rate, "", 19 );
-    addParam( "land_dist_noise_rate", M_land_dist_noise_rate, "", 19 );
-    addParam( "land_focus_dist_noise_rate", M_land_focus_dist_noise_rate, "", 19 );
 }
 
 void
@@ -392,11 +382,6 @@ PlayerParam::setDefaults()
     //M_allow_default_goalie = true;
     M_catchable_area_l_stretch_min = PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MIN;
     M_catchable_area_l_stretch_max = PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MAX;
-
-    M_dist_noise_rate = PlayerParam::DEFAULT_DIST_NOISE_RATE;
-    M_focus_dist_noise_rate = PlayerParam::DEFAULT_FOCUS_DIST_NOISE_RATE;
-    M_land_dist_noise_rate = PlayerParam::DEFAULT_LAND_DIST_NOISE_RATE;
-    M_land_focus_dist_noise_rate = PlayerParam::DEFAULT_LAND_FOCUS_DIST_NOISE_RATE;
 }
 
 player_params_t
@@ -443,12 +428,6 @@ PlayerParam::convertToStruct() const
 
     tmp.allow_mult_default_type = htons( static_cast< Int16 >( allowMultDefaultType() ) );
     //tmp.allow_default_goalie = htons( static_cast< Int16 >( allowDefaultGoalie() ) );
-
-    // TODO: add noise rate params to player_params_t
-    // tmp.dist_noise_rate = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * distNoiseRate() ) ) ) );
-    // tmp.focus_dist_noise_rate = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * focusDistNoiseRate() ) ) ) );
-    // tmp.land_dist_noise_rate = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * landDistNoiseRate() ) ) ) );
-    // tmp.land_focus_dist_noise_rate = htonl( static_cast< Int32 >( roundint( ( SHOWINFO_SCALE2 * landFocusDistNoiseRate() ) ) ) );
 
     return tmp;
 }
