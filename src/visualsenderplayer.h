@@ -750,8 +750,8 @@ protected:
     virtual
     double calcNoFlagVelProb( double dist ) const override
       {
-          return ( ( dist - self().playerType()->flagChgFarLength() )
-                   / ( self().playerType()->flagChgTooFarLength() - self().playerType()->flagChgFarLength() ) );
+          return ( ( dist - self().playerType()->landVelFarLength() )
+                   / ( self().playerType()->landVelTooFarLength() - self().playerType()->landVelFarLength() ) );
       }
 
     virtual

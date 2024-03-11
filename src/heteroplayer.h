@@ -66,9 +66,9 @@ public:
     double ballVelFarLength() const { return M_ball_vel_far_length; }
     double ballVelTooFarLength() const { return M_ball_vel_too_far_length; }
     double ballMaxObservationLength() const { return M_ball_max_observation_length; }
-    double flagChgFarLength() const { return M_flag_chg_far_length; }
-    double flagChgTooFarLength() const { return M_flag_chg_too_far_length; }
-    double flagMaxObservationLength() const { return M_flag_max_observation_length; }
+    double landVelFarLength() const { return M_land_vel_far_length; }
+    double landVelTooFarLength() const { return M_land_vel_too_far_length; }
+    double landMaxObservationLength() const { return M_flag_max_observation_length; }
 
     double distNoiseRate() const { return M_dist_noise_rate; }
     double focusDistNoiseRate() const { return M_focus_dist_noise_rate; }
@@ -119,8 +119,8 @@ private:
     double M_ball_vel_far_length;
     double M_ball_vel_too_far_length;
     double M_ball_max_observation_length;
-    double M_flag_chg_far_length;
-    double M_flag_chg_too_far_length;
+    double M_land_vel_far_length;
+    double M_land_vel_too_far_length;
     double M_flag_max_observation_length;
 
     // v19

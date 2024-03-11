@@ -211,7 +211,7 @@ VisualSenderPlayerV1::sendLowFlag( const PObject & flag )
     const double un_quant_dist = calcUnQuantDist( flag );
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && un_quant_dist < self().playerType()->flagMaxObservationLength() )
+         && un_quant_dist < self().playerType()->landMaxObservationLength() )
     {
         serializer().serializeVisualObject( transport(),
                                             calcName( flag ),
@@ -234,7 +234,7 @@ VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
     const double quant_dist = calcQuantDistFocusPoint( flag, un_quant_dist, self().landDistQStep() );
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && un_quant_dist < self().playerType()->flagMaxObservationLength() )
+         && un_quant_dist < self().playerType()->landMaxObservationLength() )
     {
         double prob = calcNoFlagVelProb( quant_dist );
 
@@ -281,7 +281,7 @@ VisualSenderPlayerV1::sendGaussianFlag( const PObject & flag )
     const int noisy_deg_dir = calcDegDir( ang );
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && actual_dist < self().playerType()->flagMaxObservationLength() )
+         && actual_dist < self().playerType()->landMaxObservationLength() )
     {
         double prob = calcNoFlagVelProb( noisy_dist );
 

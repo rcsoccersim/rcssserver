@@ -257,8 +257,8 @@ HeteroPlayer::setDefaultObservationParams()
     M_ball_vel_far_length = 20.0;
     M_ball_vel_too_far_length = 40.0;
     M_ball_max_observation_length = maximum_dist_in_pitch;
-    M_flag_chg_far_length = 20.0;
-    M_flag_chg_too_far_length = 40.0;
+    M_land_vel_far_length = 20.0;
+    M_land_vel_too_far_length = 40.0;
     M_flag_max_observation_length = maximum_dist_in_pitch;
 }
 
@@ -303,9 +303,9 @@ HeteroPlayer::print( std::ostream & o ) const
     o << "\tBall Vel Far Length = " << ballVelFarLength() << '\n';
     o << "\tBall Vel Too Far Length = " << ballVelTooFarLength() << '\n';
     o << "\tBall Max Observation Length = " << ballMaxObservationLength() << '\n';
-    o << "\tFlag Chg Far Length = " << flagChgFarLength() << '\n';
-    o << "\tFlag Chg Too Far Length = " << flagChgTooFarLength() << '\n';
-    o << "\tFlag Max Observation Length = " << flagMaxObservationLength() << '\n';
+    o << "\tFlag Chg Far Length = " << landVelFarLength() << '\n';
+    o << "\tFlag Chg Too Far Length = " << landVelTooFarLength() << '\n';
+    o << "\tFlag Max Observation Length = " << landMaxObservationLength() << '\n';
     o << "\tDist Noise Rate = " << distNoiseRate() << '\n';
     o << "\tFocus Dist Noise Rate = " << focusDistNoiseRate() << '\n';
     o << "\tLand Dist Noise Rate = " << landDistNoiseRate() << '\n';
@@ -400,9 +400,9 @@ HeteroPlayer::printParamsSExp( std::ostream & o,
     to_sexp( o, "ball_vel_far_length", ballVelFarLength() );
     to_sexp( o, "ball_vel_too_far_length", ballVelTooFarLength() );
     to_sexp( o, "ball_max_observation_length", ballMaxObservationLength() );
-    to_sexp( o, "flag_chg_far_length", flagChgFarLength() );
-    to_sexp( o, "flag_chg_too_far_length", flagChgTooFarLength() );
-    to_sexp( o, "flag_max_observation_length", flagMaxObservationLength() );
+    to_sexp( o, "flag_chg_far_length", landVelFarLength() );
+    to_sexp( o, "flag_chg_too_far_length", landVelTooFarLength() );
+    to_sexp( o, "flag_max_observation_length", landMaxObservationLength() );
 
     if ( version < 19 )
     {
@@ -469,11 +469,11 @@ HeteroPlayer::printParamsJSON( std::ostream & o,
         o << ",";
         to_json_member( o, "ball_max_observation_length", ballMaxObservationLength() );
         o << ",";
-        to_json_member( o, "flag_chg_far_length", flagChgFarLength() );
+        to_json_member( o, "flag_chg_far_length", landVelFarLength() );
         o << ",";
-        to_json_member( o, "flag_chg_too_far_length", flagChgTooFarLength() );
+        to_json_member( o, "flag_chg_too_far_length", landVelTooFarLength() );
         o << ",";
-        to_json_member( o, "flag_max_observation_length", flagMaxObservationLength() );
+        to_json_member( o, "flag_max_observation_length", landMaxObservationLength() );
     }
     if ( version >= 19 )
     {
