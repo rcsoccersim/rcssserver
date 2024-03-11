@@ -383,6 +383,7 @@ constexpr double MIN_CATCH_ANGLE = -90.0;
 const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
 
+// 19.0.0
 const double ServerParam::DIST_NOISE_RATE = 0.0125;
 const double ServerParam::FOCUS_DIST_NOISE_RATE = 0.0125;
 const double ServerParam::LAND_DIST_NOISE_RATE = 0.00125;
