@@ -139,7 +139,6 @@ const double PlayerParam::DEFAULT_FOUL_DETECT_PROBABILITY_DELTA_FACTOR = 0.0;
 const double PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MIN = 1.0;
 const double PlayerParam::DEFAULT_CATCHABLE_AREA_L_STRETCH_MAX = 1.3;
 
-
 PlayerParam &
 PlayerParam::instance( rcss::conf::Builder * parent )
 {

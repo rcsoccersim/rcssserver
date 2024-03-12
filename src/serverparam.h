@@ -346,6 +346,12 @@ private:
     static const double LONG_KICK_POWER_FACTOR;
     static const int LONG_KICK_DELAY;
 
+    // 19.0.0
+    static const double DIST_NOISE_RATE;
+    static const double FOCUS_DIST_NOISE_RATE;
+    static const double LAND_DIST_NOISE_RATE;
+    static const double LAND_FOCUS_DIST_NOISE_RATE;
+
     double M_goal_width; /* goal width */
     double M_inertia_moment; /* intertia moment for turn */
     double M_player_size; /* player size */
@@ -625,6 +631,12 @@ private:
     // XXX
     double M_long_kick_power_factor;
     int M_long_kick_delay;
+
+    // 19.0.0
+    double M_dist_noise_rate;
+    double M_focus_dist_noise_rate;
+    double M_land_dist_noise_rate;
+    double M_land_focus_dist_noise_rate;
 
 private:
 
@@ -984,6 +996,11 @@ public:
     double longKickPowerFactor() const { return M_long_kick_power_factor; }
     int longKickDelay() const { return M_long_kick_delay; }
 
+    // v19
+    double distNoiseRate() const { return M_dist_noise_rate; }
+    double focusDistNoiseRate() const { return M_focus_dist_noise_rate; }
+    double landDistNoiseRate() const { return M_land_dist_noise_rate; }
+    double landFocusDistNoiseRate() const { return M_land_focus_dist_noise_rate; }
 };
 
 #endif

@@ -417,22 +417,16 @@ protected:
     virtual
     double calcGaussianChangeDist( const double actual_dist_change,
                                    const double actual_dist,
-                                   const double focus_actual_dist,
-                                   const double noise_rate,
-                                   const double focus_noise_rate) const;
+                                   const double noisy_dist) const;
 
     virtual
-    double calcGaussianChangeDir( const double actual_dir_change,
-                                  const double actual_dist,
-                                  const double focus_actual_dist,
-                                  const double noise_rate,
-                                  const double focus_noise_rate) const;
+    double calcGaussianChangeDir( const double actual_dir_change) const;
 
     virtual
     void calcGaussianVel( const PVector & obj_vel,
                           const PVector & obj_pos,
                           const double & actual_dist,
-                          const double & focus_dist,
+                          const double & noisy_dist,
                           double & dist_chg,
                           double & dir_chg ) const;
 protected:
@@ -756,8 +750,8 @@ protected:
     virtual
     double calcNoFlagVelProb( double dist ) const override
       {
-          return ( ( dist - self().playerType()->flagChgFarLength() )
-                   / ( self().playerType()->flagChgTooFarLength() - self().playerType()->flagChgFarLength() ) );
+          return ( ( dist - self().playerType()->landVelFarLength() )
+                   / ( self().playerType()->landVelTooFarLength() - self().playerType()->landVelFarLength() ) );
       }
 
     virtual
