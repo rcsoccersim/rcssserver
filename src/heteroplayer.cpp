@@ -389,6 +389,7 @@ void
 HeteroPlayer::printParamsJSON( std::ostream & o,
                                const unsigned int version ) const
 {
+    o << ',';
     to_json_member( o, "player_speed_max", playerSpeedMax() );
     o << ',';
     to_json_member( o, "stamina_inc_max",  staminaIncMax() );

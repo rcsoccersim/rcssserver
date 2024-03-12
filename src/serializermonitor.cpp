@@ -421,8 +421,6 @@ SerializerMonitorStdv5::serializePlayerFocusPoint( std::ostream & os,
 //===================================================================
 */
 
-#define USE_FLAT_STYLE
-
 SerializerMonitorJSON::SerializerMonitorJSON( const SerializerCommon::Ptr common )
     : SerializerMonitor( common )
 {
@@ -473,8 +471,6 @@ time_to_json( std::ostream & os,
         os << std::quoted( "stime" ) << ':' << stime;
     }
 }
-
-#ifdef USE_FLAT_STYLE
 
 void
 team_to_json( std::ostream & os,
@@ -529,16 +525,16 @@ SerializerMonitorJSON::serializeTeam( std::ostream & os,
                                        const Team & team_l,
                                        const Team & team_r ) const
 {
+    os << '{'; // begin team
+    os << std::quoted( "team" ) << ':';
+
     os << '{';
-    os << std::quoted( "type" ) << ':' << std::quoted( "team" );
-
-    os << ',';
     time_to_json( os, time, stime );
-
     os << ',';
     teams_to_json( os, team_l, team_r );
-
     os << '}';
+
+    os << '}'; // end team
 }
 
 
@@ -548,13 +544,13 @@ SerializerMonitorJSON::serializePlayMode( std::ostream & os,
                                            const PlayMode pmode ) const
 {
     os << '{';
-    os << std::quoted( "type" ) << ':' << std::quoted( "playmode" );
+    os << std::quoted( "playmode" ) << ':';
 
-    os << ',';
+    os << '{';
     time_to_json( os, time, stime );
-
     os << ',';
     serializePlayModeId( os, pmode );
+    os << '}';
 
     os << '}';
 }
@@ -565,9 +561,9 @@ SerializerMonitorJSON::serializeShowBegin( std::ostream & os,
                                             const int time, const int stime ) const
 {
     os << '{';
-    os << std::quoted( "type" ) << ':'  << std::quoted( "show" );
+    os << std::quoted( "show" ) << ':';
 
-    os << ',';
+    os << '{';
     time_to_json( os, time, stime );
 }
 
@@ -575,6 +571,7 @@ SerializerMonitorJSON::serializeShowBegin( std::ostream & os,
 void
 SerializerMonitorJSON::serializeShowEnd( std::ostream & os ) const
 {
+    os << '}';
     os << '}';
 }
 
@@ -600,22 +597,6 @@ SerializerMonitorJSON::serializeScore( std::ostream & os,
 namespace {
 constexpr double POS_PREC = 0.0001;
 constexpr double DIR_PREC = 0.001;
-
-#else
-void
-vec_to_json( std::ostream & os,
-             const std::string & name,
-             const double x,
-             const double y )
-{
-    os << std::quoted( name ) << ':'
-       << '{'
-       << std::quoted( "x" ) << ':' << Quantize( x, POS_PREC )
-       << ','
-       << std::quoted( "y" ) << ':' << Quantize( y, POS_PREC )
-       << '}';
-}
-#endif
 }
 
 void
@@ -624,7 +605,6 @@ SerializerMonitorJSON::serializeBall( std::ostream & os,
 {
     os << std::quoted( "ball" ) << ':'
        << '{';
-#ifdef USE_FLAT_STYLE
     os << std::quoted( "x" ) << ':' << Quantize( ball.pos().x, POS_PREC )
        << ','
        << std::quoted( "y" ) << ':' << Quantize( ball.pos().y, POS_PREC )
@@ -632,11 +612,6 @@ SerializerMonitorJSON::serializeBall( std::ostream & os,
        << std::quoted( "vx" ) << ':' << Quantize( ball.vel().x, POS_PREC )
        << ','
        << std::quoted( "vy" ) << ':' << Quantize( ball.vel().y, POS_PREC );
-#else
-    vec_to_json( os, "pos", ball.pos().x, ball.pos().x );
-    os << ',';
-    vec_to_json( os, "vel", ball.vel().x, ball.vel().x );
-#endif
     os << '}';
 
 }
@@ -680,7 +655,6 @@ void
 SerializerMonitorJSON::serializePlayerPos( std::ostream & os,
                                             const Player & player ) const
 {
-#ifdef USE_FLAT_STYLE
     os << ','
        << std::quoted( "x" ) << ':' << Quantize( player.pos().x, POS_PREC )
        << ','
@@ -689,12 +663,6 @@ SerializerMonitorJSON::serializePlayerPos( std::ostream & os,
        << std::quoted( "vx" ) << ':' << Quantize( player.vel().x, POS_PREC )
        << ','
        << std::quoted( "vy" ) << ':' << Quantize( player.vel().y, POS_PREC );
-#else
-    os << ',';
-    vec_to_json( os, "pos", player.pos().x, player.pos().y );
-    os << ',';
-    vec_to_json( os, "vel", player.vel().x, player.vel().y );
-#endif
 
     os << ','
        << std::quoted( "body" ) << ':' << Quantize( Rad2Deg( player.angleBodyCommitted() ), DIR_PREC );
@@ -709,15 +677,10 @@ SerializerMonitorJSON::serializePlayerArm( std::ostream & os,
 {
     if ( player.arm().isPointing() )
     {
-#ifdef USE_FLAT_STYLE
         os << ','
            << std::quoted( "px" ) << ':' << Quantize( player.arm().dest().getX(), POS_PREC )
            << ','
            << std::quoted( "py" ) << ':' << Quantize( player.arm().dest().getY(), POS_PREC );
-#else
-        os << ',';
-        vec_to_json( os, "arm", player.arm().dest().getX(), player.arm().dest().getY() );
-#endif
     }
 }
 
@@ -725,19 +688,10 @@ SerializerMonitorJSON::serializePlayerArm( std::ostream & os,
 void SerializerMonitorJSON::serializePlayerViewMode( std::ostream & os,
                                                       const Player & player ) const
 {
-    os << ',';
-#ifdef USE_FLAT_STYLE
-    os << std::quoted( "vq" ) << ':' << std::quoted( player.highQuality() ? "h" : "l" )
+    os << ','
+       << std::quoted( "vq" ) << ':' << std::quoted( player.highQuality() ? "h" : "l" )
        << ','
        << std::quoted( "vw" ) << ':' << Quantize( Rad2Deg( player.visibleAngle() ), DIR_PREC );
-#else
-    os << std::quoted( "view" ) << ':'
-       << '{'
-       << std::quoted( "q" ) << ':' << std::quoted( player.highQuality() ? "h" : "l" )
-       << ','
-       << std::quoted( "w" ) << ':' << Quantize( Rad2Deg( player.visibleAngle() ), DIR_PREC )
-       << '}';
-#endif
 }
 
 
@@ -746,18 +700,9 @@ SerializerMonitorJSON::serializePlayerFocusPoint( std::ostream & os,
                                                   const Player & player ) const
 {
     os << ',';
-#ifdef USE_FLAT_STYLE
     os << std::quoted( "fdist" ) << ':' << Quantize( player.focusDist(), POS_PREC )
        << ','
        << std::quoted( "fdir" ) << ':' << Quantize( Rad2Deg( player.focusDir() ), DIR_PREC );
-#else
-    os << std::quoted( "focus_point" ) << ':'
-       << '{'
-       << std::quoted( "dist" ) << ':' << Quantize( player.focusDist(), POS_PREC )
-       << ','
-       << std::quoted( "dir" ) << ':' << Quantize( Rad2Deg( player.focusDir() ), DIR_PREC );
-       << '}';
-#endif
 }
 
 
@@ -765,27 +710,14 @@ void
 SerializerMonitorJSON::serializePlayerStamina( std::ostream & os,
                                                const Player & player ) const
 {
-    os << ',';
-#ifdef USE_FLAT_STYLE
-    os << std::quoted( "stamina" ) << ':' << player.stamina()
+    os << ','
+       << std::quoted( "stamina" ) << ':' << player.stamina()
        << ','
        << std::quoted( "effort" ) << ':' << player.effort()
        << ','
        << std::quoted( "recovery" ) << ':' << player.recovery()
        << ','
        << std::quoted( "capacity" ) << ':' << player.staminaCapacity();
-#else
-    os << std::quoted( "stamina" ) << ':'
-       << '{';
-    os << std::quoted( "v" ) << ':' << player.stamina()
-       << ','
-       << std::quoted( "e" ) << ':' << player.effort()
-       << ','
-       << std::quoted( "r" ) << ':' << player.recovery()
-       << ','
-       << std::quoted( "c" ) << ':' << player.staminaCapacity();
-    os << '}';
-#endif
 }
 
 
@@ -795,19 +727,10 @@ void SerializerMonitorJSON::serializePlayerFocus( std::ostream & os,
     if ( player.isEnabled()
          && player.getFocusTarget() )
     {
-        os << ',';
-#ifdef USE_FLAT_STYLE
-        os << std::quoted( "fside" ) << ':' << std::quoted( to_string( player.getFocusTarget()->side() ) )
+        os << ','
+           << std::quoted( "fside" ) << ':' << std::quoted( to_string( player.getFocusTarget()->side() ) )
            << ','
            << std::quoted( "fnum" ) << ':' << player.getFocusTarget()->unum();
-#else
-        os << std::quoted( "focus" ) << ':'
-           << '{'
-           << std::quoted( "s" ) << ':' << std::quoted( to_string( player.getFocusTarget()->side() ) )
-           << ','
-           << std::quoted( "n" ) << ':' << player.getFocusTarget()->unum()
-           << '}';
-#endif
     }
 }
 
@@ -817,23 +740,9 @@ SerializerMonitorJSON::serializePlayerCounts( std::ostream & os,
                                                const Player & player ) const
 
 {
-    os << ',';
-    os << std::quoted( "count" ) << ':'
-#if 0
-       << '[' << player.kickCount()
-       << ',' << player.dashCount()
-       << ',' << player.turnCount()
-       << ',' << player.catchCount()
-       << ',' << player.moveCount()
-       << ',' << player.turnNeckCount()
-       << ',' << player.changeViewCount()
-       << ',' << player.sayCount()
-       << ',' << player.tackleCount()
-       << ',' << player.arm().getCounter()
-       << ',' << player.attentiontoCount()
-       << ']';
-#else
-       << '{'
+    os << ','
+       << std::quoted( "count" ) << ':'
+       << '{' // begin object
        << std::quoted( "kick" ) << ':' << player.kickCount()
        << ','
        << std::quoted( "dash" ) << ':' << player.dashCount()
@@ -857,8 +766,7 @@ SerializerMonitorJSON::serializePlayerCounts( std::ostream & os,
        << std::quoted( "attentionto" ) << ':' << player.attentiontoCount()
        << ','
        << std::quoted( "change_focus" ) << ':' << player.changeFocusCount()
-       << '}';
-#endif
+       << '}'; // end object
 }
 
 
@@ -876,24 +784,16 @@ SerializerMonitorJSON::serializeTeamGraphic( std::ostream & os,
     }
 
     os << '{'
-       << std::quoted( "type" ) << ':' << std::quoted( "team_graphic" );
+       << std::quoted( "team_graphic" ) << ':';
 
-    os << ',';
+    os << '{'; // begin body
+
     os << std::quoted( "side" ) << ':' << std::quoted( to_string( side ) );
 
     os << ',';
-#ifdef USE_FLAT_STYLE
     os << std::quoted( "x" ) << ':' << x
        << ','
        << std::quoted( "y" ) << ':' << y;
-#else
-    os << std::quoted( "index" ) << ':'
-       << '{'
-       << std::quoted( "x" ) << ':' << x
-       << ','
-       << std::quoted( "y" ) << ':' << y
-       << '}';
-#endif
 
     os << ',';
     os << std::quoted( "xpm" ) << ':'
@@ -908,7 +808,9 @@ SerializerMonitorJSON::serializeTeamGraphic( std::ostream & os,
     }
     os << ']'; // end xpm array
 
-    os << '}';
+    os << '}'; // end body
+
+    os << '}'; // end team_graphic
 }
 
 void
@@ -918,9 +820,9 @@ SerializerMonitorJSON::serializeMsg( std::ostream & os,
                                      const char * msg ) const
 {
     os << '{'
-       << std::quoted( "type" ) << ':' << std::quoted( "msg" );
+       << std::quoted( "msg" ) << ':';
 
-    os << ',';
+    os << '{'; // begin object
     time_to_json( os, time, stime );
 
     os << ',';
@@ -928,6 +830,8 @@ SerializerMonitorJSON::serializeMsg( std::ostream & os,
 
     os << ',';
     os << std::quoted( "message" ) << ':' << std::quoted( msg );
+
+    os << '}'; // end object
 
     os << '}';
 

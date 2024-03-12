@@ -545,21 +545,22 @@ InitSenderLoggerJSON::~InitSenderLoggerJSON()
 void
 InitSenderLoggerJSON::sendHeader()
 {
-    transport() << "JSON\n";
+    //transport() << "JSON\n";
     transport() << "[\n";
 
+    // transport() << '{'
+    //             << std::quoted( "type" ) << ':' << std::quoted( "header" );
+
     transport() << '{'
-                << std::quoted( "type" ) << ':' << std::quoted( "header" );
+                << std::quoted( "version" ) << ':' << std::quoted( VERSION )
+                << "}";
 
-    transport() << ','
-                << std::quoted( "version" ) << ':' << std::quoted( VERSION );
-
+    transport() << ",\n";
     const std::time_t t = stadium().getStartTime();
-    transport() << ','
+    transport() << '{'
                 << std::quoted( "timestamp" ) << ':'
-                << '"' << std::put_time( std::localtime( &t ), "%FT%T%z" ) << '"';
-
-    transport() << '}';
+                << '"' << std::put_time( std::localtime( &t ), "%FT%T%z" ) << '"'
+                << '}';
 }
 
 
