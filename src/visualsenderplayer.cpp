@@ -31,6 +31,268 @@
 
 namespace rcss {
 
+/**
+ * @class NoisyObservation
+ * @brief Represents a noisy observation made by an observer player.
+ *
+ * This class provides a base interface for calculating distances, and velocities
+ * for noisy observations. It is meant to be inherited by specific observation classes.
+ */
+class NoisyObservation {
+private:
+    const Player & M_observer;
+
+protected:
+    NoisyObservation() = delete;
+
+    /**
+     * @brief Constructs a NoisyObservation object.
+     *
+     * This constructor initializes a NoisyObservation object with the given player.
+     *
+     * @param player The player object to observe.
+     */
+    explicit
+    NoisyObservation( const Player & player )
+        : M_observer( player )
+      { }
+
+    const Player & observer() const
+      {
+          return M_observer;
+      }
+
+public:
+    virtual
+    ~NoisyObservation() = default;
+
+    /**
+     * Calculates the noisy distance between the observer and the target movable object.
+     *
+     * @param actual_dist The actual distance between the observer and the target movable object.
+     * @param focus_dist The focus distance between the focus point and the target movable object.
+     * @return The calculated noisy distance.
+     */
+    virtual
+    double calcDist( const double actual_dist,
+                     const double focus_dist ) const = 0;
+    /**
+     * Calculates the noisy distance between the observer and the target landmark object.
+     *
+     * @param actual_dist The actual distance between the observer and the target landmark object.
+     * @param focus_dist The focus distance between the focus point and the target landmark object.
+     * @return The calculated noisy distance.
+     */
+    virtual
+    double calcDistLandmark( const double actual_dist,
+                             const double focus_dist ) const = 0;
+
+    /**
+     * Calculates the change in distance and direction based on the object's velocity, position, actual distance, and noisy distance.
+     *
+     * @param obj_vel The velocity of the target object.
+     * @param obj_pos The position of the target object.
+     * @param actual_dist The actual distance between the observer and the target object.
+     * @param noisy_dist The noisy distance between the observer and the target object.
+     * @param dist_chg Pointer to a variable that will store the calculated change in distance.
+     * @param dir_chg Pointer to a variable that will store the calculated change in direction.
+     */
+    virtual
+    void calcVel( const PVector & obj_vel,
+                  const PVector & obj_pos,
+                  const double actual_dist,
+                  const double noisy_dist,
+                  double * dist_chg,
+                  double * dir_chg ) const = 0;
+
+};
+
+/**
+ * @class QuantizeObservation
+ * @brief A class that represents a quantized observation of a player.
+ *
+ * This class is derived from the NoisyObservation class and provides methods for calculating
+ * quantized distances and velocities based on actual distances and positions.
+ */
+class QuantizeObservation
+    : public NoisyObservation {
+private:
+
+protected:
+    QuantizeObservation() = delete;
+
+public:
+    explicit
+    QuantizeObservation( const Player & player )
+        : NoisyObservation( player )
+      { }
+
+    virtual
+    ~QuantizeObservation() = default;
+
+private:
+
+    /**
+     * Calculates the observed distance based on the actual distance, focus distance, and quantization step.
+     *
+     * @param actual_dist The actual distance.
+     * @param focus_dist The focus distance.
+     * @param qstep The quantization step used for quantizing the distances.
+     * @return The observed distance calculated based on the given parameters.
+     */
+    double calcDistImpl( const double actual_dist,
+                         const double focus_dist,
+                         const double qstep ) const
+      {
+          const double quant_dist = std::exp( Quantize( std::log( actual_dist + EPS ), qstep ) );
+          const double quant_focus_dist = std::exp( Quantize( std::log( focus_dist + EPS ), qstep ) );
+          const double observed_dist = std::max( 0.0,
+                                                 actual_dist - ( ( focus_dist - quant_focus_dist ) + ( actual_dist - quant_dist ) ) / 2.0 );
+
+          return Quantize( observed_dist, 0.1 );
+      }
+
+public:
+    double calcDist( const double actual_dist,
+                     const double focus_dist ) const override
+      {
+          return calcDistImpl( actual_dist, focus_dist, observer().distQStep() );
+      }
+
+    double calcDistLandmark( const double actual_dist,
+                             const double focus_dist ) const override
+      {
+          return calcDistImpl( actual_dist, focus_dist, observer().landDistQStep() );
+      }
+
+    void calcVel( const PVector & obj_vel,
+                  const PVector & obj_pos,
+                  const double actual_dist,
+                  const double noisy_dist,
+                  double * dist_chg,
+                  double * dir_chg ) const override
+      {
+          if ( actual_dist != 0.0 )
+          {
+              const PVector vtmp = obj_vel - observer().vel();
+              const PVector etmp = ( obj_pos - observer().pos() ) /= actual_dist;
+
+              *dist_chg = vtmp.x * etmp.x + vtmp.y * etmp.y;
+              //         dir_chg = RAD2DEG * ( vtmp.y * etmp.x
+              //                               - vtmp.x * etmp.y ) / actual_dist;
+              *dir_chg = vtmp.y * etmp.x - vtmp.x * etmp.y;
+              *dir_chg /= actual_dist;
+              *dir_chg *= RAD2DEG;
+
+              *dir_chg = ( *dir_chg == 0.0
+                           ? 0.0
+                           : Quantize( *dir_chg, observer().dirQStep() ) );
+              *dist_chg = noisy_dist * Quantize( *dist_chg / actual_dist, 0.02 );
+          }
+          else
+          {
+              *dir_chg = 0.0;
+              *dist_chg = 0.0;
+          }
+      }
+};
+
+
+/**
+ * @class GaussianObservation
+ * @brief Represents a Gaussian observation model for player observations.
+ *
+ * The GaussianObservation class is a concrete implementation of the NoisyObservation class.
+ * It calculates the noisy distance and velocity changes based on the actual distance and focus distance.
+ * The noise rates are determined by the player's type.
+ */
+class GaussianObservation
+    : public NoisyObservation {
+private:
+
+    GaussianObservation() = delete;
+
+public:
+    explicit
+    GaussianObservation( const Player & player )
+        : NoisyObservation( player )
+      { }
+
+
+    virtual
+    ~GaussianObservation() = default;
+
+private:
+    /**
+     * Calculates the distance with noise based on the actual distance, focus distance,
+     * distance noise rate, and focus distance noise rate.
+     *
+     * @param actual_dist The actual distance.
+     * @param focus_dist The focus distance.
+     * @param dist_noise_rate The distance noise rate.
+     * @param focus_dist_noise_rate The focus distance noise rate.
+     * @return he observed distance calculated based on the given parameters.
+     */
+    double calcDistImpl( const double actual_dist,
+                         const double focus_dist,
+                         const double dist_noise_rate,
+                         const double focus_dist_noise_rate ) const
+      {
+          const double std_dev = actual_dist * dist_noise_rate + focus_dist * focus_dist_noise_rate;
+
+          return std::max( 0.0, ndrand( actual_dist, std_dev ) );
+      }
+
+public:
+    double calcDist( const double actual_dist,
+                     const double focus_dist ) const override
+      {
+          return calcDistImpl( actual_dist,
+                               focus_dist,
+                               observer().playerType()->distNoiseRate(),
+                               observer().playerType()->focusDistNoiseRate() );
+      }
+
+    double calcDistLandmark( const double actual_dist,
+                             const double focus_dist ) const override
+      {
+          return calcDistImpl( actual_dist,
+                               focus_dist,
+                               observer().playerType()->landDistNoiseRate(),
+                               observer().playerType()->landFocusDistNoiseRate() );
+      }
+
+    void calcVel( const PVector & obj_vel,
+                  const PVector & obj_pos,
+                  const double actual_dist,
+                  const double noisy_dist,
+                  double * dist_chg,
+                  double * dir_chg ) const override
+      {
+          if ( actual_dist != 0.0 )
+          {
+              const PVector vtmp = obj_vel - observer().vel();
+              PVector etmp = ( obj_pos - observer().pos() ) /= actual_dist;
+
+              *dist_chg = vtmp.x * etmp.x + vtmp.y * etmp.y;
+              *dir_chg = vtmp.y * etmp.x - vtmp.x * etmp.y;
+              *dir_chg /= actual_dist;
+              *dir_chg *= RAD2DEG;
+
+              *dir_chg = ( *dir_chg == 0.0
+                           ? 0.0
+                           : Quantize( *dir_chg, observer().dirQStep() ) );
+              *dist_chg += ( noisy_dist - actual_dist );
+          }
+          else
+          {
+              *dir_chg = 0.0;
+              *dist_chg = 0.0;
+          }
+      }
+};
+
+
 /*!
 //===================================================================
 //
@@ -54,8 +316,10 @@ VisualSenderPlayer::VisualSenderPlayer( const Params & params )
       M_self( params.M_self ),
       M_stadium( params.M_stadium ),
       M_sendcnt( 0 ),
+      M_noisy_observation( new QuantizeObservation( M_self ) ),
       M_cached_focus_point( 0.0, 0.0 )
 {
+
     //std::cerr << "create VisualSenderPlayer" << std::endl;
 }
 
@@ -106,6 +370,11 @@ VisualSenderPlayerV1::sendVisual()
     else
     {
         return;
+    }
+
+    if ( self().isGaussianSee() )
+    {
+        M_noisy_observation = std::shared_ptr< const NoisyObservation >( new GaussianObservation( self() ) );
     }
 
     updateCache();
@@ -229,79 +498,28 @@ void
 VisualSenderPlayerV1::sendHighFlag( const PObject & flag )
 {
     const double ang = calcRadDir( flag );
-    const double un_quant_dist = calcUnQuantDist( flag );
-    // Focus point is player position for version < 18
-    const double quant_dist = calcQuantDistFocusPoint( flag, un_quant_dist, self().landDistQStep() );
+    const double actual_dist = calcUnQuantDist( flag );
+    const double noisy_dist = calcNoisyDistLandmark( flag, actual_dist );
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && un_quant_dist < self().playerType()->landMaxObservationLength() )
+         && actual_dist < self().playerType()->landMaxObservationLength() )
     {
-        double prob = calcNoFlagVelProb( quant_dist );
-
-        if ( decide( prob ) )
+        if ( decide( calcNoFlagVelProb( noisy_dist ) ) )
         {
             serializer().serializeVisualObject( transport(),
                                                 calcName( flag ),
-                                                quant_dist,
+                                                noisy_dist,
                                                 calcDegDir( ang ) );
         }
         else
         {
             double dist_chg, dir_chg;
-            calcVel( PVector(), flag.pos(),
-                     un_quant_dist, quant_dist,
-                     dist_chg, dir_chg );
+            calcNoisyVel( PVector(), flag.pos(), actual_dist, noisy_dist, &dist_chg, &dir_chg );
+
             serializer().serializeVisualObject( transport(),
                                                 calcName( flag ),
-                                                quant_dist,
+                                                noisy_dist,
                                                 calcDegDir( ang ),
-                                                dist_chg,
-                                                dir_chg );
-        }
-    }
-    else if ( un_quant_dist <= self().VISIBLE_DISTANCE )
-    {
-        serializer().serializeVisualObject( transport(),
-                                            calcCloseName( flag ),
-                                            quant_dist,
-                                            calcDegDir( ang ) );
-    }
-}
-
-void
-VisualSenderPlayerV1::sendGaussianFlag( const PObject & flag )
-{
-    const double ang = calcRadDir( flag );
-    const double actual_dist = calcUnQuantDist( flag );
-    // Focus point is player position for version < 18
-    const double focus_dist = flag.pos().distance( cachedFocusPoint() );
-    const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().playerType()->landDistNoiseRate(),
-                                                self().playerType()->landFocusDistNoiseRate());
-    const int noisy_deg_dir = calcDegDir( ang );
-
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && actual_dist < self().playerType()->landMaxObservationLength() )
-    {
-        double prob = calcNoFlagVelProb( noisy_dist );
-
-        if ( decide( prob ) )
-        {
-            serializer().serializeVisualObject( transport(),
-                                                calcName( flag ),
-                                                noisy_dist,
-                                                noisy_deg_dir );
-        }
-        else
-        {
-            double dist_chg, dir_chg;
-            calcGaussianVel( PVector(), flag.pos(),
-                             actual_dist, noisy_dist,
-                             dist_chg, dir_chg );
-            serializer().serializeVisualObject( transport(),
-                                                calcName( flag ),
-                                                noisy_dist,
-                                                noisy_deg_dir,
                                                 dist_chg,
                                                 dir_chg );
         }
@@ -311,9 +529,10 @@ VisualSenderPlayerV1::sendGaussianFlag( const PObject & flag )
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( flag ),
                                             noisy_dist,
-                                            noisy_deg_dir );
+                                            calcDegDir( ang ) );
     }
 }
+
 
 void
 VisualSenderPlayerV1::sendLowBall( const MPObject & ball )
@@ -341,79 +560,28 @@ void
 VisualSenderPlayerV1::sendHighBall( const MPObject & ball )
 {
     const double ang = calcRadDir( ball );
-    const double un_quant_dist = calcUnQuantDist( ball );
-    // Focus point is player position for version < 18
-    const double quant_dist = calcQuantDistFocusPoint( ball,
-                                                       un_quant_dist,
-                                                       self().distQStep() );
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && un_quant_dist < self().playerType()->ballMaxObservationLength() )
-    {
-        double prob = calcNoBallVelProb( quant_dist );
+    const double actual_dist = calcUnQuantDist( ball );
+    const double noisy_dist = noisyObservation().calcDist( actual_dist, ball.pos().distance( cachedFocusPoint() ) );
 
-        if ( decide( prob ) )
+    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
+         && actual_dist < self().playerType()->ballMaxObservationLength() )
+    {
+        if ( decide( calcNoBallVelProb( noisy_dist ) ) )
         {
             serializer().serializeVisualObject( transport(),
                                                 calcName( ball ),
-                                                quant_dist,
+                                                noisy_dist,
                                                 calcDegDir( ang ) );
         }
         else
         {
             double dist_chg, dir_chg;
-            calcVel( ball.vel(), ball.pos(),
-                     un_quant_dist, quant_dist,
-                     dist_chg, dir_chg );
+            calcNoisyVel( ball.vel(), ball.pos(), actual_dist, noisy_dist, &dist_chg, &dir_chg );
+
             serializer().serializeVisualObject( transport(),
                                                 calcName( ball ),
-                                                quant_dist,
+                                                noisy_dist,
                                                 calcDegDir( ang ),
-                                                dist_chg,
-                                                dir_chg );
-        }
-    }
-    else if ( un_quant_dist <= self().VISIBLE_DISTANCE )
-    {
-        serializer().serializeVisualObject( transport(),
-                                            calcCloseName( ball ),
-                                            quant_dist,
-                                            calcDegDir( ang ) );
-    }
-}
-
-void
-VisualSenderPlayerV1::sendGaussianBall( const MPObject & ball )
-{
-    const double ang = calcRadDir( ball );
-    const double actual_dist = calcUnQuantDist( ball );
-    const double focus_dist = ball.pos().distance( cachedFocusPoint() );
-    const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().playerType()->distNoiseRate(),
-                                                self().playerType()->focusDistNoiseRate());
-    const int noisy_deg_dir = calcDegDir( ang );
-
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && actual_dist < self().playerType()->ballMaxObservationLength() )
-    {
-        double prob = calcNoBallVelProb( noisy_dist );
-
-        if ( decide( prob ) )
-        {
-            serializer().serializeVisualObject( transport(),
-                                                calcName( ball ),
-                                                noisy_dist,
-                                                noisy_deg_dir );
-        }
-        else
-        {
-            double dist_chg, dir_chg;
-            calcGaussianVel( ball.vel(), ball.pos(),
-                             actual_dist, noisy_dist,
-                             dist_chg, dir_chg );
-            serializer().serializeVisualObject( transport(),
-                                                calcName( ball ),
-                                                noisy_dist,
-                                                noisy_deg_dir,
                                                 dist_chg,
                                                 dir_chg );
         }
@@ -423,7 +591,7 @@ VisualSenderPlayerV1::sendGaussianBall( const MPObject & ball )
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( ball ),
                                             noisy_dist,
-                                            noisy_deg_dir );
+                                            calcDegDir( ang ) );
     }
 }
 
@@ -431,16 +599,14 @@ void
 VisualSenderPlayerV1::sendLowPlayer( const Player & player )
 {
     const double ang = calcRadDir( player );
-    const double un_quant_dist = calcUnQuantDist( player );
+    const double actual_dist = calcUnQuantDist( player );
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && un_quant_dist < self().playerType()->playerMaxObservationLength() )
+         && actual_dist < self().playerType()->playerMaxObservationLength() )
     {
-        const double quant_dist = calcQuantDist( un_quant_dist,
-                                                 self().distQStep() );
-        double prob = calcNoTeamProb( quant_dist );
+        const double noisy_dist = calcNoisyDist( player, actual_dist );
 
-        if ( decide( prob ) )
+        if ( decide( calcNoTeamProb( noisy_dist ) ) )
         {
             serializer().serializeVisualObject( transport(),
                                                 calcTFarName( player ),
@@ -448,9 +614,7 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
         }
         else
         {
-            prob = calcNoUnumProb( quant_dist );
-
-            if ( decide( prob ) )
+            if ( decide( calcNoUnumProb( noisy_dist ) ) )
             {
                 serializer().serializeVisualObject( transport(),
                                                     calcUFarName( player ),
@@ -464,7 +628,7 @@ VisualSenderPlayerV1::sendLowPlayer( const Player & player )
             }
         }
     }
-    else if ( un_quant_dist <= self().VISIBLE_DISTANCE )
+    else if ( actual_dist <= self().VISIBLE_DISTANCE )
     {
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( player ),
@@ -476,107 +640,39 @@ void
 VisualSenderPlayerV1::sendHighPlayer( const Player & player )
 {
     const double ang = calcRadDir( player );
-    const double un_quant_dist = self().pos().distance( player.pos() );
-    const double quant_dist = calcQuantDistFocusPoint( player,
-                                                       un_quant_dist,
-                                                       self().distQStep() );
-
-    if ( std::fabs( ang ) < self().visibleAngle() * 0.5
-         && un_quant_dist < self().playerType()->playerMaxObservationLength() )
-    {
-        double prob = calcNoTeamProb( quant_dist );
-
-        if ( decide( prob ) )
-        {
-            // no team information
-            serializer().serializeVisualObject( transport(),
-                                                calcTFarName( player ),
-                                                quant_dist,
-                                                calcDegDir( ang ) );
-        }
-        else
-        {
-            prob = calcNoUnumProb( quant_dist );
-
-            if ( decide( prob ) )
-            {
-                // no unum information
-                serializePlayer( player,
-                                 calcUFarName( player ),
-                                 quant_dist,
-                                 calcDegDir( ang ) );
-            }
-            else
-            {
-                double dist_chg, dir_chg;
-                calcVel( player.vel(), player.pos(),
-                         un_quant_dist, quant_dist,
-                         dist_chg, dir_chg );
-                serializePlayer( player,
-                                 calcPlayerName( player ),
-                                 quant_dist,
-                                 calcDegDir( ang ),
-                                 dist_chg,
-                                 dir_chg );
-            }
-        }
-    }
-    else if ( un_quant_dist <= player.VISIBLE_DISTANCE )
-    {
-        serializer().serializeVisualObject( transport(),
-                                            calcCloseName( player ),
-                                            quant_dist,
-                                            calcDegDir( ang ) );
-    }
-}
-
-void
-VisualSenderPlayerV1::sendGaussianPlayer( const Player & player )
-{
-    const double ang = calcRadDir( player );
     const double actual_dist = self().pos().distance( player.pos() );
-    const double focus_dist = player.pos().distance( cachedFocusPoint() );
-    const double noisy_dist = calcGaussianDist( actual_dist, focus_dist,
-                                                self().playerType()->distNoiseRate(),
-                                                self().playerType()->focusDistNoiseRate());
-
-    const int noisy_deg_dir = calcDegDir( ang );
+    const double noisy_dist = calcNoisyDist( player, actual_dist );
 
     if ( std::fabs( ang ) < self().visibleAngle() * 0.5
          && actual_dist < self().playerType()->playerMaxObservationLength() )
     {
-        double prob = calcNoTeamProb( noisy_dist );
-
-        if ( decide( prob ) )
+        if ( decide( calcNoTeamProb( noisy_dist ) ) )
         {
             // no team information
             serializer().serializeVisualObject( transport(),
                                                 calcTFarName( player ),
                                                 noisy_dist,
-                                                noisy_deg_dir );
+                                                calcDegDir( ang ) );
         }
         else
         {
-            prob = calcNoUnumProb( noisy_dist );
-
-            if ( decide( prob ) )
+            if ( decide( calcNoUnumProb( noisy_dist ) ) )
             {
                 // no unum information
                 serializePlayer( player,
                                  calcUFarName( player ),
                                  noisy_dist,
-                                 noisy_deg_dir );
+                                 calcDegDir( ang ) );
             }
             else
             {
                 double dist_chg, dir_chg;
-                calcGaussianVel( player.vel(), player.pos(),
-                                 actual_dist, noisy_dist,
-                                 dist_chg, dir_chg );
+                calcNoisyVel( player.vel(), player.pos(), actual_dist, noisy_dist, &dist_chg, &dir_chg );
+
                 serializePlayer( player,
                                  calcPlayerName( player ),
                                  noisy_dist,
-                                 noisy_deg_dir,
+                                 calcDegDir( ang ),
                                  dist_chg,
                                  dir_chg );
             }
@@ -587,7 +683,7 @@ VisualSenderPlayerV1::sendGaussianPlayer( const Player & player )
         serializer().serializeVisualObject( transport(),
                                             calcCloseName( player ),
                                             noisy_dist,
-                                            noisy_deg_dir );
+                                            calcDegDir( ang ) );
     }
 }
 
@@ -724,40 +820,66 @@ VisualSenderPlayerV1::serializeHighLine( const std::string & name,
     serializer().serializeVisualObject( transport(), name, dist, dir );
 }
 
-void
-VisualSenderPlayerV1::calcVel( const PVector & obj_vel,
-                               const PVector & obj_pos,
-                               const double & un_quant_dist,
-                               const double & quant_dist,
-                               double& dist_chg,
-                               double& dir_chg ) const
+
+double
+VisualSenderPlayerV1::calcNoisyDist( const PObject & obj,
+                                     const double dist ) const
 {
-    if ( un_quant_dist != 0.0 )
-    {
-        const PVector vtmp = obj_vel - self().vel();
-        PVector etmp = obj_pos - self().pos();
-        etmp /= un_quant_dist;
-
-        dist_chg = vtmp.x * etmp.x + vtmp.y * etmp.y;
-        //         dir_chg = RAD2DEG * ( vtmp.y * etmp.x
-        //                               - vtmp.x * etmp.y ) / un_quant_dist;
-        dir_chg = vtmp.y * etmp.x - vtmp.x * etmp.y;
-        dir_chg /= un_quant_dist;
-        dir_chg *= RAD2DEG;
-
-        dir_chg = ( dir_chg == 0.0
-                    ? 0.0
-                    : Quantize( dir_chg, self().dirQStep() ) );
-        dist_chg = ( quant_dist
-                     * Quantize( dist_chg
-                                 / un_quant_dist, 0.02 ) );
-    }
-    else
-    {
-        dir_chg = 0.0;
-        dist_chg = 0.0;
-    }
+    return noisyObservation().calcDist( dist, obj.pos().distance( cachedFocusPoint() ) );
 }
+
+double
+VisualSenderPlayerV1::calcNoisyDistLandmark( const PObject & obj,
+                                             const double dist ) const
+{
+    return noisyObservation().calcDistLandmark( dist, obj.pos().distance( cachedFocusPoint() ) );
+}
+
+void
+VisualSenderPlayerV1::calcNoisyVel( const PVector & obj_vel,
+                                    const PVector & obj_pos,
+                                    const double actual_dist,
+                                    const double noisy_dist,
+                                    double * dist_chg,
+                                    double * dir_chg ) const
+{
+    noisyObservation().calcVel( obj_vel, obj_pos, actual_dist, noisy_dist, dist_chg, dir_chg );
+}
+
+// void
+// VisualSenderPlayerV1::calcVel( const PVector & obj_vel,
+//                                const PVector & obj_pos,
+//                                const double & actual_dist,
+//                                const double & quant_dist,
+//                                double& dist_chg,
+//                                double& dir_chg ) const
+// {
+//     if ( actual_dist != 0.0 )
+//     {
+//         const PVector vtmp = obj_vel - self().vel();
+//         PVector etmp = obj_pos - self().pos();
+//         etmp /= actual_dist;
+
+//         dist_chg = vtmp.x * etmp.x + vtmp.y * etmp.y;
+//         //         dir_chg = RAD2DEG * ( vtmp.y * etmp.x
+//         //                               - vtmp.x * etmp.y ) / actual_dist;
+//         dir_chg = vtmp.y * etmp.x - vtmp.x * etmp.y;
+//         dir_chg /= actual_dist;
+//         dir_chg *= RAD2DEG;
+
+//         dir_chg = ( dir_chg == 0.0
+//                     ? 0.0
+//                     : Quantize( dir_chg, self().dirQStep() ) );
+//         dist_chg = ( quant_dist
+//                      * Quantize( dist_chg
+//                                  / actual_dist, 0.02 ) );
+//     }
+//     else
+//     {
+//         dir_chg = 0.0;
+//         dist_chg = 0.0;
+//     }
+// }
 
 void
 VisualSenderPlayerV1::serializePlayer( const Player &,
@@ -783,64 +905,6 @@ VisualSenderPlayerV1::serializePlayer( const Player &,
                                         name,
                                         dist,
                                         dir );
-}
-
-double
-VisualSenderPlayerV1::calcGaussianDist( const double actual_dist,
-                                        const double focus_dist,
-                                        const double noise_rate,
-                                        const double focus_noise_rate )
-{
-    const double std_dev = actual_dist * noise_rate + focus_dist * focus_noise_rate;
-
-    return std::max( 0.0, ndrand( actual_dist, std_dev ) );
-}
-
-double
-VisualSenderPlayerV1::calcGaussianChangeDist( const double actual_dist_change,
-                                              const double actual_dist,
-                                              const double noisy_dist) const
-{
-    return actual_dist_change + (noisy_dist - actual_dist);
-}
-
-double
-VisualSenderPlayerV1::calcGaussianChangeDir( const double actual_dir_change) const
-{
-    return Quantize( actual_dir_change, self().dirQStep() );
-}
-
-void
-VisualSenderPlayerV1::calcGaussianVel( const PVector & obj_vel,
-                                       const PVector & obj_pos,
-                                       const double & actual_dist,
-                                       const double & noisy_dist,
-                                       double& dist_chg,
-                                       double& dir_chg ) const
-{
-    if ( actual_dist != 0.0 )
-    {
-        const PVector vtmp = obj_vel - self().vel();
-        PVector etmp = obj_pos - self().pos();
-        etmp /= actual_dist;
-
-        dist_chg = vtmp.x * etmp.x + vtmp.y * etmp.y;
-        dir_chg = vtmp.y * etmp.x - vtmp.x * etmp.y;
-        dir_chg /= actual_dist;
-        dir_chg *= RAD2DEG;
-
-        dir_chg = ( dir_chg == 0.0
-                    ? 0.0
-                    : calcGaussianChangeDir( dir_chg) );
-        dist_chg = ( dist_chg == 0.0
-                     ? 0.0
-                     : calcGaussianChangeDist( dist_chg, actual_dist, noisy_dist ) );
-    }
-    else
-    {
-        dir_chg = 0.0;
-        dist_chg = 0.0;
-    }
 }
 
 // const

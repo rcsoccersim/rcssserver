@@ -37,6 +37,7 @@ class Stadium;
 namespace rcss {
 
 class SerializerPlayer;
+class NoisyObservation;
 
 /*!
 //===================================================================
@@ -83,6 +84,7 @@ private:
     int M_sendcnt;
 
 protected:
+    std::shared_ptr< const NoisyObservation > M_noisy_observation;
     PVector M_cached_focus_point;
 
 public:
@@ -105,6 +107,11 @@ protected:
     SerializerPlayer & serializer() const
       {
           return *M_serializer;
+      }
+
+    const NoisyObservation & noisyObservation() const
+      {
+          return *M_noisy_observation;
       }
 
     const
@@ -218,21 +225,21 @@ private:
     void sendFlag( const PObject & obj )
       {
           self().highQuality()
-              ? self().isGaussianSee() ? sendGaussianFlag( obj ) : sendHighFlag( obj )
+              ? sendHighFlag( obj )
               : sendLowFlag( obj );
       }
 
     void sendBall( const MPObject & obj )
       {
           self().highQuality()
-              ? self().isGaussianSee() ? sendGaussianBall( obj ) : sendHighBall( obj )
+              ? sendHighBall( obj )
               : sendLowBall( obj );
       }
 
     void sendPlayer( const Player & obj )
       {
           self().highQuality()
-              ? self().isGaussianSee() ? sendGaussianPlayer( obj ) : sendHighPlayer( obj )
+              ? sendHighPlayer( obj )
               : sendLowPlayer( obj );
       }
 
@@ -298,25 +305,16 @@ protected:
     void sendHighFlag( const PObject & flag );
 
     virtual
-    void sendGaussianFlag( const PObject & flag );
-
-    virtual
     void sendLowBall( const MPObject & ball );
 
     virtual
     void sendHighBall( const MPObject & ball );
 
     virtual
-    void sendGaussianBall( const MPObject & ball );
-
-    virtual
     void sendLowPlayer( const Player & player );
 
     virtual
     void sendHighPlayer( const Player & player );
-
-    virtual
-    void sendGaussianPlayer( const Player & player );
 
     bool sendLine( const PObject & line );
 
@@ -364,6 +362,17 @@ protected:
           return self().pos().distance( obj.pos() );
       }
 
+    double calcNoisyDist( const PObject & obj,
+                          const double dist ) const;
+    double calcNoisyDistLandmark( const PObject & obj,
+                                  const double dist ) const;
+    void calcNoisyVel( const PVector & obj_vel,
+                       const PVector & obj_pos,
+                       const double actual_dist,
+                       const double noisy_dist,
+                       double * dist_chg,
+                       double * dir_chg ) const;
+
     double calcQuantDist( const double & dist,
                           const double & qstep ) const
       {
@@ -380,26 +389,12 @@ protected:
                                                qstep ) ), 0.1 );
       }
 
-    double calcQuantDistFocusPoint( const PObject & obj,
-                                    const double unquant_dist,
-                                    const double qstep )
-      {
-          const double unquant_dist_focus_point = obj.pos().distance( cachedFocusPoint() );
-          const double quant_dist_focus_point = std::exp( Quantize( std::log( unquant_dist_focus_point + EPS ), qstep ) );
-          const double quant_dist = std::exp( Quantize( std::log( unquant_dist + EPS ), qstep ) );
-
-          const double observed_dist = std::max( 0.0,
-                                                unquant_dist - ( ( unquant_dist_focus_point - quant_dist_focus_point ) + ( unquant_dist - quant_dist ) ) / 2.0 );
-
-          return Quantize( observed_dist, 0.1 );
-      }
-
-    void calcVel( const PVector & obj_vel,
-                  const PVector & obj_pos,
-                  const double & un_quant_dist,
-                  const double & quant_dist,
-                  double & dist_chg,
-                  double & dir_chg ) const;
+    // void calcVel( const PVector & obj_vel,
+    //               const PVector & obj_pos,
+    //               const double & un_quant_dist,
+    //               const double & quant_dist,
+    //               double & dist_chg,
+    //               double & dir_chg ) const;
 
     bool decide( const double & prob )
       {
@@ -408,27 +403,6 @@ protected:
           return std::bernoulli_distribution( prob )( DefaultRNG::instance() );
       }
 
-    virtual
-    double calcGaussianDist( const double actual_dist,
-                             const double focus_dist,
-                             const double noise_rate,
-                             const double focus_noise_rate );
-
-    virtual
-    double calcGaussianChangeDist( const double actual_dist_change,
-                                   const double actual_dist,
-                                   const double noisy_dist) const;
-
-    virtual
-    double calcGaussianChangeDir( const double actual_dir_change) const;
-
-    virtual
-    void calcGaussianVel( const PVector & obj_vel,
-                          const PVector & obj_pos,
-                          const double & actual_dist,
-                          const double & noisy_dist,
-                          double & dist_chg,
-                          double & dir_chg ) const;
 protected:
     virtual
     void serializePlayer( const Player & player,
