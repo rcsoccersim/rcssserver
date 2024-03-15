@@ -377,17 +377,17 @@ namespace {
 // 17.0.0
 constexpr double MAX_CATCH_ANGLE = +90.0;
 constexpr double MIN_CATCH_ANGLE = -90.0;
+
+// 19.0.0
+constexpr double DIST_NOISE_RATE = 0.0125;
+constexpr double FOCUS_DIST_NOISE_RATE = 0.0125;
+constexpr double LAND_DIST_NOISE_RATE = 0.00125;
+constexpr double LAND_FOCUS_DIST_NOISE_RATE = 0.00125;
 }
 
 // XXX
 const double ServerParam::LONG_KICK_POWER_FACTOR = 2.0;
 const int ServerParam::LONG_KICK_DELAY = 2;
-
-// 19.0.0
-const double ServerParam::DIST_NOISE_RATE = 0.0125;
-const double ServerParam::FOCUS_DIST_NOISE_RATE = 0.0125;
-const double ServerParam::LAND_DIST_NOISE_RATE = 0.00125;
-const double ServerParam::LAND_FOCUS_DIST_NOISE_RATE = 0.00125;
 
 ServerParam &
 ServerParam::instance()
@@ -952,16 +952,16 @@ ServerParam::addParams()
     addParam( "max_catch_angle", M_max_catch_angle, "", 17 );
     addParam( "min_catch_angle", M_min_catch_angle, "", 17 );
 
-    // XXX
-    // addParam( "random_seed", M_random_seed, "", 999 );
-    // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
-    // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
-
     // v19
     addParam( "dist_noise_rate", M_dist_noise_rate, "", 19 );
     addParam( "focus_dist_noise_rate", M_focus_dist_noise_rate, "", 19 );
     addParam( "land_dist_noise_rate", M_land_dist_noise_rate, "", 19 );
     addParam( "land_focus_dist_noise_rate", M_land_focus_dist_noise_rate, "", 19 );
+
+    // XXX
+    // addParam( "random_seed", M_random_seed, "", 999 );
+    // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
+    // addParam( "long_kick_delay", M_long_kick_delay, "", 999 );
 }
 
 void
