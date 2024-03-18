@@ -482,11 +482,10 @@ team_to_json( std::ostream & os,
         return;
     }
 
-    os << '{'
-       << std::quoted( "side" ) << ':' << std::quoted( side );
+    os << std::quoted( side ) << ':'; // key
 
-    os << ','
-       << std::quoted( "name" ) << ':';
+    os << '{'; // begin value object
+    os << std::quoted( "name" ) << ':';
     if ( team.name().empty() ) os << "null"; else os << std::quoted( team.name() );
 
     os << ','
@@ -498,7 +497,7 @@ team_to_json( std::ostream & os,
            << std::quoted( "pen_miss" ) << ':' << team.penaltyTaken() - team.penaltyPoint();
     }
 
-    os << '}';
+    os << '}'; // end value object
 }
 
 void
@@ -507,14 +506,10 @@ teams_to_json( std::ostream & os,
                const Team & team_r )
 {
     os << std::quoted( "teams" ) << ':';
-
-    os << '[';
-    team_to_json( os, team_l );
-
-    os << ',';
+    os << '{';
+    team_to_json( os, team_l ); os << ',';
     team_to_json( os, team_r );
-
-    os << ']';
+    os << '}';
 }
 
 }
@@ -526,13 +521,13 @@ SerializerMonitorJSON::serializeTeam( std::ostream & os,
                                        const Team & team_r ) const
 {
     os << '{'; // begin team
-    os << std::quoted( "team" ) << ':';
+    os << std::quoted( "team" ) << ':'; // key
 
-    os << '{';
-    time_to_json( os, time, stime );
-    os << ',';
-    teams_to_json( os, team_l, team_r );
-    os << '}';
+    os << '{'; // start object
+    time_to_json( os, time, stime ); os << ',';
+    team_to_json( os, team_l ); os << ',';
+    team_to_json( os, team_r );
+    os << '}'; // end object
 
     os << '}'; // end team
 }
@@ -590,7 +585,15 @@ SerializerMonitorJSON::serializeScore( std::ostream & os,
                                         const Team & team_l,
                                         const Team & team_r ) const
 {
-    teams_to_json( os, team_l, team_r );
+    os << '{'; // begin team
+    os << std::quoted( "team" ) << ':';
+
+    os << '{'; // start object
+    team_to_json( os, team_l ); os << ',';
+    team_to_json( os, team_r );
+    os << '}'; // end object
+
+    os << '}'; // end team
 }
 
 
