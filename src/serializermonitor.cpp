@@ -500,17 +500,17 @@ team_to_json( std::ostream & os,
     os << '}'; // end value object
 }
 
-void
-teams_to_json( std::ostream & os,
-               const Team & team_l,
-               const Team & team_r )
-{
-    os << std::quoted( "teams" ) << ':';
-    os << '{';
-    team_to_json( os, team_l ); os << ',';
-    team_to_json( os, team_r );
-    os << '}';
-}
+// void
+// teams_to_json( std::ostream & os,
+//                const Team & team_l,
+//                const Team & team_r )
+// {
+//     os << std::quoted( "teams" ) << ':';
+//     os << '{';
+//     team_to_json( os, team_l ); os << ',';
+//     team_to_json( os, team_r );
+//     os << '}';
+// }
 
 }
 
@@ -585,15 +585,12 @@ SerializerMonitorJSON::serializeScore( std::ostream & os,
                                         const Team & team_l,
                                         const Team & team_r ) const
 {
-    os << '{'; // begin team
     os << std::quoted( "team" ) << ':';
 
     os << '{'; // start object
     team_to_json( os, team_l ); os << ',';
     team_to_json( os, team_r );
     os << '}'; // end object
-
-    os << '}'; // end team
 }
 
 
