@@ -744,8 +744,8 @@ SerializerMonitorJSON::serializePlayerCounts( std::ostream & os,
 
 {
     os << ','
-       << std::quoted( "count" ) << ':'
-       << '{' // begin object
+       // << std::quoted( "count" ) << ':'
+       // << '{' // begin object
        << std::quoted( "kick" ) << ':' << player.kickCount()
        << ','
        << std::quoted( "dash" ) << ':' << player.dashCount()
@@ -769,7 +769,8 @@ SerializerMonitorJSON::serializePlayerCounts( std::ostream & os,
        << std::quoted( "attentionto" ) << ':' << player.attentiontoCount()
        << ','
        << std::quoted( "change_focus" ) << ':' << player.changeFocusCount()
-       << '}'; // end object
+       // << '}'// end object
+        ;
 }
 
 
