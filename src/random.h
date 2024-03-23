@@ -95,4 +95,11 @@ drand( double low, double high )
     return rng( DefaultRNG::instance() );
 }
 
+inline
+double
+ndrand( double mean, double stddev )
+{
+    std::normal_distribution<> rng( mean, stddev );
+    return rng( DefaultRNG::instance() );
+}
 #endif

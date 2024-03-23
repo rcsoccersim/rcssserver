@@ -626,6 +626,12 @@ private:
     double M_long_kick_power_factor;
     int M_long_kick_delay;
 
+    // 19.0.0
+    double M_dist_noise_rate;
+    double M_focus_dist_noise_rate;
+    double M_land_dist_noise_rate;
+    double M_land_focus_dist_noise_rate;
+
 private:
 
     // setters & getters
@@ -984,6 +990,11 @@ public:
     double longKickPowerFactor() const { return M_long_kick_power_factor; }
     int longKickDelay() const { return M_long_kick_delay; }
 
+    // v19
+    double distNoiseRate() const { return M_dist_noise_rate; }
+    double focusDistNoiseRate() const { return M_focus_dist_noise_rate; }
+    double landDistNoiseRate() const { return M_land_dist_noise_rate; }
+    double landFocusDistNoiseRate() const { return M_land_focus_dist_noise_rate; }
 };
 
 #endif

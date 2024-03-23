@@ -119,6 +119,7 @@ private:
     bool M_synch_see;
     int M_visual_send_interval;
     bool M_high_quality;
+    bool M_gaussian_see;
 
     double M_visible_angle;
     rcss::pcom::VIEW_WIDTH M_view_width;
@@ -341,6 +342,7 @@ public:
     double wideViewAngleNoiseTerm() const { return M_wide_view_angle_noise_term; }
     double normalViewAngleNoiseTerm() const { return M_normal_view_angle_noise_term; }
     double narrowViewAngleNoiseTerm() const { return M_narrow_view_angle_noise_term; }
+    bool isGaussianSee() const { return M_gaussian_see; }
 
     //
     // audio sensor
@@ -512,6 +514,7 @@ private:
     void clang( int min, int max) override;
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode ) override;
     void synch_see() override;
+    void gaussian_see() override;
 };
 
 #endif

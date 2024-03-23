@@ -91,6 +91,7 @@ namespace
 %token RCSS_PCOM_CLANG "clang"
 %token RCSS_PCOM_EAR "ear"
 %token RCSS_PCOM_SYNCH_SEE "synch_see"
+%token RCSS_PCOM_GAUSSIAN_SEE "gaussian_see"
 
 %token < m_view_w > RCSS_PCOM_VIEW_WIDTH_NARROW "narrow"
 %token < m_view_w > RCSS_PCOM_VIEW_WIDTH_NORMAL "normal"
@@ -151,6 +152,7 @@ command : dash_com
           | clang_com
           | ear_com
           | synch_see_com
+          | gaussian_see_com
 ;
 
 dash_com : RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number RCSS_PCOM_RP
@@ -368,6 +370,12 @@ ear_com : RCSS_PCOM_LP RCSS_PCOM_EAR RCSS_PCOM_LP on_off team_side partial_compl
 synch_see_com : RCSS_PCOM_LP RCSS_PCOM_SYNCH_SEE RCSS_PCOM_RP
                 {
                    BUILDER.synch_see();
+                }
+;
+
+gaussian_see_com : RCSS_PCOM_LP RCSS_PCOM_GAUSSIAN_SEE RCSS_PCOM_RP
+                {
+                   BUILDER.gaussian_see();
                 }
 ;
 

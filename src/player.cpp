@@ -184,6 +184,7 @@ Player::Player( Stadium & stadium,
       M_synch_see( false ),
       M_visual_send_interval( 4 ),
       M_high_quality( true ),
+      M_gaussian_see( false ),
       M_visible_angle( Deg2Rad( ServerParam::instance().visibleAngleDegree() ) ),
       M_view_width( rcss::pcom::NORMAL ),
       //
@@ -2380,6 +2381,13 @@ Player::synch_see()
 
     // TODO: move to the Observer
     send( "(ok synch_see)" );
+}
+
+void
+Player::gaussian_see()
+{
+    M_gaussian_see = true;
+    send( "(ok gaussian_see)" );
 }
 
 void
