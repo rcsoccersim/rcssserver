@@ -161,6 +161,25 @@ dash_com : RCSS_PCOM_LP RCSS_PCOM_DASH floating_point_number RCSS_PCOM_RP
            {
 	           BUILDER.dash( $< m_double >3, $< m_double >4 );
            }
+		   | RCSS_PCOM_LP RCSS_PCOM_DASH dash_params RCSS_PCOM_RP
+;
+
+dash_params : dash_left
+              | dash_right
+              | dash_left dash_right
+              | dash_right dash_left
+;
+
+dash_left : RCSS_PCOM_LP RCSS_PCOM_LEFT floating_point_number floating_point_number RCSS_PCOM_RP
+            {
+              BUILDER.dashLeftLeg( $< m_double >3, $< m_double >4 );
+            }
+;
+
+dash_right : RCSS_PCOM_LP RCSS_PCOM_RIGHT floating_point_number floating_point_number RCSS_PCOM_RP
+             {
+               BUILDER.dashRightLeg( $< m_double >3, $< m_double >4 );
+             }
 ;
 
 turn_com : RCSS_PCOM_LP RCSS_PCOM_TURN floating_point_number RCSS_PCOM_RP

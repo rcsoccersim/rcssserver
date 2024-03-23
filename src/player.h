@@ -23,6 +23,7 @@
 #define RCSSSERVER_PLAYER_H
 
 #include "arm.h"
+#include "leg.h"
 #include "audio.h"
 #include "object.h"
 #include "pcombuilder.h"
@@ -178,6 +179,8 @@ private:
     int M_change_view_count;
     int M_say_count;
 
+    Leg M_left_leg;
+    Leg M_right_leg;
     Arm M_arm;
 
     int M_attentionto_count;
@@ -372,6 +375,15 @@ public:
     const double & staminaCapacity() const { return M_stamina_capacity; }
 
     //
+    // leg
+    //
+    void applyLegsEffect();
+private:
+    void applyDashEffect();
+    //void applyKickEffect();
+
+public:
+    //
     // arm
     //
     const Arm & arm() const { return M_arm; }
@@ -467,12 +479,15 @@ protected:
 
 private:
 
+
     bool parseCommand( const char * command );
     int parseEar( const char * command );
 
     /** PlayerCommands */
     void dash( double power ) override;
     void dash( double power, double dir ) override;
+    void dashLeftLeg( double power, double dir ) override;
+    void dashRightLeg( double power, double dir ) override;
     void turn( double moment ) override;
     void turn_neck( double moment ) override;
     void change_focus( double moment_dist, double moment_dir) override;
