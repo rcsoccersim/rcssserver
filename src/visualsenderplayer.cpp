@@ -284,6 +284,7 @@ public:
                            : Quantize( *dir_chg, observer().dirQStep() ) );
               //*dist_chg += ( noisy_dist - actual_dist );
               *dist_chg *= ( noisy_dist / actual_dist );
+              *dist_chg = Quantize( *dist_chg, 0.01 );
           }
           else
           {
