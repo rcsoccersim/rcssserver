@@ -283,6 +283,7 @@ RegHolder vp15 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV
 RegHolder vp16 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 16 );
 RegHolder vp17 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 17 );
 RegHolder vp18 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 18 );
+RegHolder vp19 = InitSenderPlayer::factory().autoReg( &create< InitSenderPlayerV8 >, 19 );
 }
 
 }

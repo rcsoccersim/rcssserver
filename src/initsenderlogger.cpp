@@ -611,7 +611,7 @@ RegHolder vl2 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV2
 RegHolder vl3 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV3 >, 3 );
 RegHolder vl4 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV4 >, 4 );
 RegHolder vl5 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV5 >, 5 );
-RegHolder vl7 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV6 >, 6 );
+RegHolder vl6 = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerV6 >, 6 );
 
 RegHolder vljson = InitSenderLogger::factory().autoReg( &create< InitSenderLoggerJSON >, -1 );
 

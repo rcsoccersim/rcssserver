@@ -223,6 +223,7 @@ RegHolder vc15 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderO
 RegHolder vc16 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 16 );
 RegHolder vc17 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 17 );
 RegHolder vc18 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 18 );
+RegHolder vc19 = InitSenderOfflineCoach::factory().autoReg( &create< InitSenderOfflineCoachV8 >, 19 );
 }
 
 }
