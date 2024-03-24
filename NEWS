@@ -1,13 +1,89 @@
+[19.0.0]
+  * New prameters:
+    - server::dist_noise_rate (default value: 0.0125)
+    - server::focus_dist_noise_rate (default value: 0.0125)
+    - server::land_dist_noise_rate (default value: 0.00125)
+    - server::land_focus_dist_noise_rate (default value: 0.00125)
+
+  * New command:
+    - "(dash (l POWER DIR) (r POWER DIR))"
+     This is an extension of the dash command. All version players
+     can use this format. If the command is accepted, players can
+     perform acceleration and direction change simultaneously based
+     on the bipedal dash model.
+
+    - "(gaussian_see)"
+     All version players can use this command. If the command is
+     accepted, rcssserver sent a reply message, "(ok gaussian_see)".
+     This command is used for a gaussian noise mode describing below.
+
+  * Introduce a bipedal dash model. Players can now independently
+    issue dash commands to the left and right legs. This means that
+    players can now apply different accelerations to each leg. With
+    the bipedal dash model, players can perform acceleration and
+    direction changes simultaneously, governed by differential drive
+    kinematics.
+
+    The rotation is calculated as:
+    
+    rotation = (left_leg_vel - right_leg_vel)/(player_size*2)
+    
+    The player's result velocity is calculated as:
+    
+    vel = (left_leg_vel + right_leg_vel)/2
+
+    Stamina is consumed independently on the left and right legs,
+    and the total consumption is the sum of half of each leg:
+    
+    stamina = stamina - (left_consumed/2 + right_consumed/2)
+
+  * Introduce a new gaussian observation noise model. This model is 
+    activated by "(gaussian_see)" command and replaces the previous
+    quantization model. In this model, In this model, the noised 
+    distance in the player's observation is determined by a
+    Gaussian distribution:
+    
+    stddev = actual_dist * noise_rate + focus_dist * focus_noise_rate
+    noised_dist = max(0.0, normal_distribution(actual_dist, stddev))
+
+    where normal_distribution is a random number generator based on
+    a Gaussian distribution with given mean and standard deviation.
+    actual_dist represents the actual distance between the observed
+    object and the player, while focus_dist is the distance between
+    the observed object and the player's focus point.
+    noise_rate and focus_noise_rate are determined by heterogeneous 
+    parameters, with default values defined as new server parameters,
+    uniformly set for all player types in the current version.
+    For ball and player observation, server::dist_noise_rate and
+    server::focus_dist_noise_rate are applied, while for flags
+    (landmark objects), server::land_dist_noise_rate and
+    server::focus_dist_noise_rate are applied.
+
+    The velocity noise formula is similar to the previous one.
+    dir_chg remains unchanged, while dist_chg is calculated as:
+    
+    dist_chg = actual_dist_chg * noised_dist / actual_dist
+
+    where actual_dist_chg represents a component of the velocity
+    vector, oriented along the axis from the player to the observed
+    object. Before sending the dist_chg, the value is rounded to two
+    decimal places.
+
+  * Improve the JSON game log format. The format of each data has
+    been reviewed to make it easier to parse and the JSON rcg is
+    now recorded as a pure JSON file. The parser library is bundled
+    in rcssmonitor.
+
 [18.1.3]
   * Fix an issue in the penalty shootouts referee. If both teams
-  	score the same when finishing all extended trials, the penalty
-	shootouts referee will not end the game and the simulator will
-	get stuck. Thanks go to Omid Amini for providing the patch.
+    score the same when finishing all extended trials, the penalty
+    shootouts referee will not end the game and the simulator will
+    get stuck. Thanks go to Omid Amini for providing the patch.
 
 [18.1.2]
   * Fix a problem of v18 observation noise model. Quantized distance
     values affected by the focus point are now rounded to one decimal
-	place.
+    place.
 
 [18.1.1]
   * Fix a problem in which the focus point is sometimes not updated.
