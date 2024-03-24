@@ -55,8 +55,7 @@ void
 SerializerCommonJSON::serializeServerParamBegin( std::ostream & strm ) const
 {
     strm << "{"
-         << std::quoted( "type" ) << ':' << std::quoted( "server_param" ) << ','
-         << std::quoted( "params" ) << ":{";
+         << std::quoted( "server_param" ) << ":{";
 }
 
 
@@ -71,8 +70,7 @@ void
 SerializerCommonJSON::serializePlayerParamBegin( std::ostream & strm ) const
 {
     strm << "{"
-         << std::quoted( "type" ) << ':' << std::quoted( "player_param" ) << ','
-         << std::quoted( "params" ) << ":{";
+         << std::quoted( "player_param" ) << ":{";
 }
 
 
@@ -88,11 +86,8 @@ SerializerCommonJSON::serializePlayerTypeBegin( std::ostream & strm,
                                                 const int id ) const
 {
      strm << '{'
-          << std::quoted( "type" ) << ':' << std::quoted( "player_type" )
-          << ','
-          << std::quoted( "id" ) << ':' << id
-          << ','
-          << std::quoted( "params" ) << ":{";
+          << std::quoted( "player_type" ) << ":{"
+          << std::quoted( "id" ) << ':' << id;
 }
 
 void

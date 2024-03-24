@@ -23,6 +23,7 @@
 #define RCSSSERVER_PLAYER_H
 
 #include "arm.h"
+#include "leg.h"
 #include "audio.h"
 #include "object.h"
 #include "pcombuilder.h"
@@ -118,6 +119,7 @@ private:
     bool M_synch_see;
     int M_visual_send_interval;
     bool M_high_quality;
+    bool M_gaussian_see;
 
     double M_visible_angle;
     rcss::pcom::VIEW_WIDTH M_view_width;
@@ -178,6 +180,8 @@ private:
     int M_change_view_count;
     int M_say_count;
 
+    Leg M_left_leg;
+    Leg M_right_leg;
     Arm M_arm;
 
     int M_attentionto_count;
@@ -338,6 +342,7 @@ public:
     double wideViewAngleNoiseTerm() const { return M_wide_view_angle_noise_term; }
     double normalViewAngleNoiseTerm() const { return M_normal_view_angle_noise_term; }
     double narrowViewAngleNoiseTerm() const { return M_narrow_view_angle_noise_term; }
+    bool isGaussianSee() const { return M_gaussian_see; }
 
     //
     // audio sensor
@@ -371,6 +376,15 @@ public:
     const double & effort() const { return M_effort; }
     const double & staminaCapacity() const { return M_stamina_capacity; }
 
+    //
+    // leg
+    //
+    void applyLegsEffect();
+private:
+    void applyDashEffect();
+    //void applyKickEffect();
+
+public:
     //
     // arm
     //
@@ -467,12 +481,15 @@ protected:
 
 private:
 
+
     bool parseCommand( const char * command );
     int parseEar( const char * command );
 
     /** PlayerCommands */
     void dash( double power ) override;
     void dash( double power, double dir ) override;
+    void dashLeftLeg( double power, double dir ) override;
+    void dashRightLeg( double power, double dir ) override;
     void turn( double moment ) override;
     void turn_neck( double moment ) override;
     void change_focus( double moment_dist, double moment_dir) override;
@@ -497,6 +514,7 @@ private:
     void clang( int min, int max) override;
     void ear( bool on, rcss::pcom::TEAM team_side, std::string team_name, rcss::pcom::EAR_MODE mode ) override;
     void synch_see() override;
+    void gaussian_see() override;
 };
 
 #endif
