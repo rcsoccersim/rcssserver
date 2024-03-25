@@ -1,3 +1,13 @@
+2024-03-25  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
+
+        * CMakeLists.txt:
+        * NEWS:
+        * configure.ac:
+        - update a major version number. Official release 19.0.0
+        - introduce a bipedal dash model.
+        - introduce a new gaussian observation noise model.
+        - reformat JSON monitor protocol and game log.
+
 2023-04-29  Hidehisa Akiyama  <hidehisaakiyama@users.noreply.github.com>
 
 	* CMakeLists.txt:
