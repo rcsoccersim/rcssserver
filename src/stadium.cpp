@@ -790,10 +790,12 @@ void
 Stadium::step()
 {
     //
+    // apply command effects
     // reset command flags
     //
     for ( PlayerCont::reference p : M_players )
     {
+        p->applyLegsEffect();
         p->resetCommandFlags();
         p->incArmAge();
     }

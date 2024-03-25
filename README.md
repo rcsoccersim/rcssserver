@@ -14,7 +14,7 @@ For further reading, please check [the user's manual](https://rcsoccersim.readth
 rcssserver is implemented by C++14 and depends some libraries.
 Make sure you have the required dependencies installed on your system:
 
-- g++ (which supports C++14)
+- g++ (which supports C++17)
 - autoconf
 - automake
 - libtool
@@ -22,7 +22,7 @@ Make sure you have the required dependencies installed on your system:
 - bison
 - boost >= 1.44
 
-In the case of Ubuntu 18.04 or 20.04, the following commands will resolve all dependencies:
+In the case of Ubuntu 20.04 or 22.04, the following commands will resolve all dependencies:
 
 ```
 sudo apt update

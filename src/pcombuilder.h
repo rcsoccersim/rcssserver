@@ -78,6 +78,8 @@ public:
 
     virtual void dash( double power ) = 0;
     virtual void dash( double power, double dir ) = 0;
+    virtual void dashLeftLeg( double power, double dir ) = 0;
+    virtual void dashRightLeg( double power, double dir ) = 0;
     virtual void turn( double moment ) = 0;
     virtual void turn_neck( double moment ) = 0;
     virtual void change_focus( double moment_dist, double moment_dir ) = 0;
@@ -100,6 +102,7 @@ public:
     virtual void clang( int min, int max) = 0;
     virtual void ear( bool on, TEAM team_side, std::string team_name, EAR_MODE mode ) = 0;
     virtual void synch_see() = 0;
+    virtual void gaussian_see() = 0;
 };
 
 

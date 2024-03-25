@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 LT_PREREQ([2.2])
-AC_INIT([RCSSServer],[18.1.3],[https://github.com/rcsoccersim/],[rcssserver])
+AC_INIT([RCSSServer],[19.0.0],[https://github.com/rcsoccersim/],[rcssserver])
 
 #AM_INIT_AUTOMAKE([gnu 1.7.2 check-news dist-bzip2 dist-zip])
 AM_INIT_AUTOMAKE([gnu 1.7.2 check-news foreign])
@@ -47,7 +47,7 @@ AX_CHECK_ZLIB([],
 ##################################################
 
 AC_FUNC_ALLOCA
-AC_HEADER_STDC
+#AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h])
 AC_CHECK_HEADERS([inttypes.h libintl.h libintl.h malloc.h netdb.h])
 AC_CHECK_HEADERS([netinet/in.h poll.h pwd.h stddef.h stdlib.h sys/param.h])
@@ -65,7 +65,7 @@ AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT8_T
 AC_TYPE_SIZE_T
-AC_HEADER_TIME
+#AC_HEADER_TIME
 AC_STRUCT_TM
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
@@ -98,12 +98,6 @@ AC_DEFINE_UNQUOTED([RETSIGTYPE],[$ac_cv_type_signal],[Define as the return type 
 		    (`int' or `void').])
 
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS([memset], [], [
-  echo "************** ERROR ****************"
-  echo "Could not find memset function."
-  echo "Please upgrade you system"
-  exit 1
-])
 AC_CHECK_FUNCS([floor gethostbyname gettimeofday inet_ntoa memset mkdir pow rint])
 AC_CHECK_FUNCS([select socket sqrt strdup strerror])
 
@@ -194,7 +188,7 @@ AX_CXX_COMPILE_STDCXX_17(noext)
 # check boost
 ##################################################
 
-AX_BOOST_BASE([1.32.0])
+AX_BOOST_BASE([1.44.0])
 AX_BOOST_SYSTEM
 CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"

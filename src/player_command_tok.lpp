@@ -72,6 +72,7 @@ tackle { return RCSS_PCOM_TACKLE; }
 clang { return RCSS_PCOM_CLANG; }
 ear { return RCSS_PCOM_EAR; }
 synch_see { return RCSS_PCOM_SYNCH_SEE; }
+gaussian_see { return RCSS_PCOM_GAUSSIAN_SEE; }
 
 narrow { return RCSS_PCOM_VIEW_WIDTH_NARROW; }
 normal { return RCSS_PCOM_VIEW_WIDTH_NORMAL; }

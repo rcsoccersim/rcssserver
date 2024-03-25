@@ -37,6 +37,7 @@ class Stadium;
 namespace rcss {
 
 class SerializerPlayer;
+class NoisyObservation;
 
 /*!
 //===================================================================
@@ -82,6 +83,10 @@ private:
 
     int M_sendcnt;
 
+protected:
+    std::shared_ptr< const NoisyObservation > M_noisy_observation;
+    PVector M_cached_focus_point;
+
 public:
     typedef std::shared_ptr< VisualSenderPlayer > Ptr;
     typedef Ptr (*Creator)( const VisualSenderPlayer::Params & );
@@ -102,6 +107,11 @@ protected:
     SerializerPlayer & serializer() const
       {
           return *M_serializer;
+      }
+
+    const NoisyObservation & noisyObservation() const
+      {
+          return *M_noisy_observation;
       }
 
     const
@@ -131,10 +141,15 @@ protected:
           M_sendcnt = 0;
       }
 
-    virtual
-    void updateCache()
-      { }
+    const PVector & cachedFocusPoint() const
+      {
+          return M_cached_focus_point;
+      }
 
+    void setCachedFocusPoint( const PVector & pos )
+      {
+          M_cached_focus_point = pos;
+      }
 };
 
 
@@ -247,6 +262,42 @@ private:
     void sendLines();
 
 protected:
+
+    virtual
+    void updateCache()
+      {
+          setCachedFocusPoint( self().pos() );
+      }
+
+    double calcNoVelProb( const double dist ) const
+      {
+          return ( ( dist - self().unumFarLength() ) / ( self().unumTooFarLength() - self().unumFarLength() ) );
+      }
+
+    virtual
+    double calcNoFlagVelProb( const double dist ) const
+      {
+          return calcNoVelProb( dist );
+      }
+
+    virtual
+    double calcNoBallVelProb( const double dist ) const
+      {
+          return calcNoVelProb( dist );
+      }
+
+    virtual
+    double calcNoTeamProb( const double dist ) const
+      {
+          return ( ( dist - self().teamFarLength() ) / ( self().teamTooFarLength() - self().teamFarLength() ) );
+      }
+
+    virtual
+    double calcNoUnumProb( const double dist ) const
+      {
+          return calcNoVelProb( dist );
+      }
+
     virtual
     void sendLowFlag( const PObject & flag );
 
@@ -311,6 +362,17 @@ protected:
           return self().pos().distance( obj.pos() );
       }
 
+    double calcNoisyDist( const PObject & obj,
+                          const double dist ) const;
+    double calcNoisyDistLandmark( const PObject & obj,
+                                  const double dist ) const;
+    void calcNoisyVel( const PVector & obj_vel,
+                       const PVector & obj_pos,
+                       const double actual_dist,
+                       const double noisy_dist,
+                       double * dist_chg,
+                       double * dir_chg ) const;
+
     double calcQuantDist( const double & dist,
                           const double & qstep ) const
       {
@@ -327,13 +389,12 @@ protected:
                                                qstep ) ), 0.1 );
       }
 
-
-    void calcVel( const PVector & obj_vel,
-                  const PVector & obj_pos,
-                  const double & un_quant_dist,
-                  const double & quant_dist,
-                  double & dist_chg,
-                  double & dir_chg ) const;
+    // void calcVel( const PVector & obj_vel,
+    //               const PVector & obj_pos,
+    //               const double & un_quant_dist,
+    //               const double & quant_dist,
+    //               double & dist_chg,
+    //               double & dir_chg ) const;
 
     bool decide( const double & prob )
       {
@@ -648,8 +709,6 @@ public:
 
 class VisualSenderPlayerV18
     : public VisualSenderPlayerV13 {
-private:
-    PVector M_focus_point;
 
 public:
     VisualSenderPlayerV18( const Params & params );
@@ -663,24 +722,32 @@ protected:
     void updateCache() override;
 
     virtual
-    void sendLowFlag( const PObject & flag ) override;
-    virtual
-    void sendHighFlag( const PObject & flag ) override;
+    double calcNoFlagVelProb( double dist ) const override
+      {
+          return ( ( dist - self().playerType()->landVelFarLength() )
+                   / ( self().playerType()->landVelTooFarLength() - self().playerType()->landVelFarLength() ) );
+      }
 
     virtual
-    void sendLowBall( const MPObject & ball ) override;
-    virtual
-    void sendHighBall( const MPObject & ball ) override;
+    double calcNoBallVelProb( double dist ) const override
+      {
+          return ( ( dist - self().playerType()->ballVelFarLength() )
+                   / ( self().playerType()->ballVelTooFarLength() - self().playerType()->ballVelFarLength() ) );
+      }
 
     virtual
-    void sendLowPlayer( const Player & player ) override;
-    virtual
-    void sendHighPlayer( const Player & player ) override;
+    double calcNoTeamProb( double dist ) const override
+      {
+          return ( ( dist - self().playerType()->teamFarLength() )
+                   / ( self().playerType()->teamTooFarLength() - self().playerType()->teamFarLength() ) );
+      }
 
     virtual
-    double calcQuantDistFocusPoint( const PObject & obj,
-                                    const double unquant_dist,
-                                    const double q_step );
+    double calcNoUnumProb( double dist ) const override
+      {
+          return ( ( dist - self().playerType()->unumFarLength() )
+                   / ( self().playerType()->unumTooFarLength() - self().playerType()->unumFarLength() ) );
+      }
 };
 
 }

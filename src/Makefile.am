@@ -20,6 +20,7 @@ rcssserver_SOURCES = \
 	initsenderonlinecoach.cpp \
 	initsenderplayer.cpp \
 	landmarkreader.cpp \
+	leg.cpp \
 	logger.cpp \
 	main.cpp \
 	monitor.cpp \
@@ -90,6 +91,7 @@ noinst_HEADERS = \
 	initsenderonlinecoach.h \
 	initsenderplayer.h \
 	landmarkreader.h \
+	leg.h \
 	logger.h \
 	monitor.h \
 	observer.h \
