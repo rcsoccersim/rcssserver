@@ -25,50 +25,54 @@
     kinematics.
 
     The rotation is calculated as:
-    
-    rotation = (left_leg_vel - right_leg_vel)/(player_size*2)
-    
+
+    rotation = (left_leg_vel.bx - right_leg_vel.bx)/(player_size*2)
+
+    where bx is the x-component of the vector with the player's
+    body direction as the x-axis.
+
     The player's result velocity is calculated as:
-    
+
     vel = (left_leg_vel + right_leg_vel)/2
 
     Stamina is consumed independently on the left and right legs,
     and the total consumption is the sum of half of each leg:
-    
+
     stamina = stamina - (left_consumed/2 + right_consumed/2)
 
-  * Introduce a new gaussian observation noise model. This model is 
+  * Introduce a new gaussian observation noise model. This model is
     activated by "(gaussian_see)" command and replaces the previous
-    quantization model. In this model, In this model, the noised 
+    quantization model. In this model, In this model, the noised
     distance in the player's observation is determined by a
     Gaussian distribution:
-    
-    stddev = actual_dist * noise_rate + focus_dist * focus_noise_rate
-    noised_dist = max(0.0, normal_distribution(actual_dist, stddev))
 
-    where normal_distribution is a random number generator based on
-    a Gaussian distribution with given mean and standard deviation.
-    actual_dist represents the actual distance between the observed
-    object and the player, while focus_dist is the distance between
-    the observed object and the player's focus point.
-    noise_rate and focus_noise_rate are determined by heterogeneous 
-    parameters, with default values defined as new server parameters,
-    uniformly set for all player types in the current version.
-    For ball and player observation, server::dist_noise_rate and
-    server::focus_dist_noise_rate are applied, while for flags
-    (landmark objects), server::land_dist_noise_rate and
-    server::focus_dist_noise_rate are applied.
+      stddev = actual_dist * noise_rate + focus_dist * focus_noise_rate
+      noised_dist = max(0.0, normal_distribution(actual_dist, stddev))
+
+    where normal_distribution(mean, stddev) is a random number
+    generator based on a Gaussian distribution with given mean and
+    standard deviation. actual_dist represents the actual distance
+    between the observed object and the player, while focus_dist is
+    the distance between the observed object and the player's focus
+    point. noise_rate and focus_noise_rate are determined by
+    heterogeneous parameters, with default values defined as new
+    server parameters, uniformly set for all player types in the
+    current version. For ball and player observation,
+    server::dist_noise_rate and server::focus_dist_noise_rate are
+    applied, while for flags (landmark objects), server::land_dist_noise_rate
+    and server::focus_dist_noise_rate are applied.
 
     The velocity noise formula is similar to the previous one.
-    dir_chg remains unchanged, while dist_chg is calculated as:
+    The formula of dir_chg remains unchanged, while dist_chg is
+    calculated as:
+
+      dist_chg = actual_dist_chg * noised_dist / actual_dist
+
+    where actual_dist_chg represents the x-component of the velocity
+    vector with the direction from the player to the observed object
+    as the x-axis. The resulting dist_chg value is rounded to two
+    decimal places before being sent.
     
-    dist_chg = actual_dist_chg * noised_dist / actual_dist
-
-    where actual_dist_chg represents a component of the velocity
-    vector, oriented along the axis from the player to the observed
-    object. Before sending the dist_chg, the value is rounded to two
-    decimal places.
-
   * Improve the JSON game log format. The format of each data has
     been reviewed to make it easier to parse and the JSON rcg is
     now recorded as a pure JSON file. The parser library is bundled
