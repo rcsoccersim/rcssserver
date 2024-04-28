@@ -1,0 +1,36 @@
+FROM ubuntu:18.04
+
+COPY . /rcssserver
+
+RUN apt-get clean && apt-get update --allow-insecure-repositories && \
+    DEBIAN_FRONTEND="noninteractive" apt-get -y install \
+    tzdata \
+    gcc \
+    g++ \
+    wget \
+    libfl-dev \
+    flex \
+    bison \
+    libboost-all-dev \
+    automake \
+    make \
+    cmake \
+    iputils-ping \
+    build-essential \
+    libtool \
+    fuse \
+    libfuse-dev \
+    zlib1g-dev
+
+RUN cd /rcssserver && \
+    find . -type f -name "*.cpp" -exec sed -i 's/#include <filesystem>/#include <experimental\/filesystem>/g' {} \; && \
+    find . -type f -name "*.h" -exec sed -i 's/#include <filesystem>/#include <experimental\/filesystem>/g' {} \; && \
+    find . -type f -name "*.hpp" -exec sed -i 's/#include <filesystem>/#include <experimental\/filesystem>/g' {} \; && \
+    find . -type f -name "*.cpp" -exec sed -i 's/std::filesystem/std::experimental::filesystem/g' {} \; && \
+    find . -type f -name "*.h" -exec sed -i 's/std::filesystem/std::experimental::filesystem/g' {} \; && \
+    find . -type f -name "*.hpp" -exec sed -i 's/std::filesystem/std::experimental::filesystem/g' {} \; && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    cd ..

@@ -5,6 +5,9 @@ project(RCSSServer VERSION 18.1.3)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lstdc++fs")
+
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
 endif()
@@ -33,6 +36,8 @@ check_include_file_cxx("netdb.h" HAVE_NETDB_H)
 check_include_file_cxx("unistd.h" HAVE_UNISTD_H)
 check_include_file_cxx("poll.h" HAVE_POLL_H)
 check_include_file_cxx("pwd.h" HAVE_PWD_H)
+
+
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake config.h)
 
