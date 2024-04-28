@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=rcssserver
+Comment=Robocup 2D Soccer Simulation Server
+TryExec=rcssserver
+Exec=rcssserver
+Icon=rcssserver
+MimeType=image/x-foo;
+Categories=Development;
+X-KDE-Library=librcssserver
+X-KDE-FactoryName=rcssserverfactory
+X-KDE-ServiceType=RcssserverService
+

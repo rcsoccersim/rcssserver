@@ -1,0 +1,30 @@
+FROM ubuntu:20.04
+
+COPY . /rcssserver
+
+RUN apt-get clean && apt-get update --allow-insecure-repositories && \
+    DEBIAN_FRONTEND="noninteractive" apt-get -y install \
+    tzdata \
+    gcc \
+    g++ \
+    wget \
+    libfl-dev \
+    flex \
+    bison \
+    libboost-all-dev \
+    automake \
+    make \
+    cmake \
+    iputils-ping \
+    build-essential \
+    libtool \
+    fuse \
+    libfuse-dev \
+    zlib1g-dev
+
+RUN cd /rcssserver && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    cd ..
