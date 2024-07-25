@@ -1,0 +1,13 @@
+version: '3'
+services:
+  rcssserver:
+    image: rcssserver
+    container_name: rcssserver
+
+  rcssmonitor:
+    image: rcssmonitor
+    container_name: rcssmonitor
+    depends_on:
+      - rcssserver
+    environment:
+      - DISPLAY=host.docker.internal:0  # Assuming X server is running on host

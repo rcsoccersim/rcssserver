@@ -1,0 +1,33 @@
+# Use the official Ubuntu image as a base
+FROM ubuntu:20.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install necessary packages including build tools and dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    automake \
+    autoconf \
+    libtool \
+    flex \
+    bison \
+    libboost-all-dev \
+    cmake \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /rcssserver
+
+# Copy the local repository files into the container
+COPY . /rcssserver
+
+# Build the application using CMake
+RUN mkdir -p build && cd build && \
+    cmake .. && \
+    make && \
+    ls -la /rcssserver/build
+
+# Set the entrypoint to run the application
+ENTRYPOINT ["/rcssserver/build/rcssserver"]
