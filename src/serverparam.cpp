@@ -383,6 +383,11 @@ constexpr double DIST_NOISE_RATE = 0.0125;
 constexpr double FOCUS_DIST_NOISE_RATE = 0.0125;
 constexpr double LAND_DIST_NOISE_RATE = 0.00125;
 constexpr double LAND_FOCUS_DIST_NOISE_RATE = 0.00125;
+
+// 20.0.0
+constexpr int MAX_SYNCH_MODE_CYCLE_DURATION_MSEC = 1250;
+constexpr int MAX_ALLOWED_MISSED_SYNCH_MODE_CYCLES = 20;
+
 }
 
 // XXX
@@ -958,6 +963,12 @@ ServerParam::addParams()
     addParam( "land_dist_noise_rate", M_land_dist_noise_rate, "", 19 );
     addParam( "land_focus_dist_noise_rate", M_land_focus_dist_noise_rate, "", 19 );
 
+    // v20
+    addParam( "max_synch_mode_cycle_duration_msec", M_max_synch_mode_cycle_duration_msec, 
+              "The maximum cycle duration in milliseconds when synch mode is enabled. If the value is -1, the server will not check the missed cycles.", 20 ); 
+    addParam( "max_allowed_missed_synch_mode_cycles", M_max_allowed_missed_synch_mode_cycles, 
+              "The maximum allowed number of missed cycles when synch mode is enabled. If the value is -1, the server will not check the number of missed cycles.", 20 );
+
     // XXX
     // addParam( "random_seed", M_random_seed, "", 999 );
     // addParam( "long_kick_power_factor", M_long_kick_power_factor, "", 999 );
@@ -1479,6 +1490,11 @@ ServerParam::setDefaults()
     M_focus_dist_noise_rate = FOCUS_DIST_NOISE_RATE;
     M_land_dist_noise_rate = LAND_DIST_NOISE_RATE;
     M_land_focus_dist_noise_rate = LAND_FOCUS_DIST_NOISE_RATE;
+
+    // 20.0.0
+    M_max_synch_mode_cycle_duration_msec = MAX_SYNCH_MODE_CYCLE_DURATION_MSEC;
+    M_max_allowed_missed_synch_mode_cycles = MAX_ALLOWED_MISSED_SYNCH_MODE_CYCLES;
+
 //     std::string module_dir = S_MODULE_DIR;
 //     for ( std::string::size_type pos = module_dir.find( "//" );
 //           pos != std::string::npos;

@@ -2393,8 +2393,8 @@ bool
 Stadium::doSendThink()
 {
     const char * think_command = "(think)";
-    const double max_msec_waited = 25 * 50;
-    const int max_cycles_missed = 20;
+    const double max_msec_waited = ServerParam::instance().maxSynchModeCycleDurationMsec();
+    const int max_cycles_missed = ServerParam::instance().maxAllowedMissedSynchModeCycles();
 
     static int cycles_missed = 0; //number of cycles where someone missed
 
@@ -2513,21 +2513,24 @@ Stadium::doSendThink()
 
         // get time differnce with start of loop, first get time difference in
         // seconds, then multiply with 1000 to get msec.
-        const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - start_time );
-        const double time_diff = nano_diff.count() * 0.001 * 0.001;
-
-        if ( time_diff > max_msec_waited )
+        if ( max_msec_waited != -1 )
         {
-            done = DS_TRUE_BUT_INCOMPLETE;
-            if ( time() > 0 )
+            const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - start_time );
+            const double time_diff = nano_diff.count() * 0.001 * 0.001;
+
+            if ( time_diff > max_msec_waited )
             {
-                ++cycles_missed;
-                std::cerr << "Someone missed a cycle at " << time() << std::endl;
-            }
-            if ( cycles_missed > max_cycles_missed )
-            {
-                std::cerr << "Waiting too long for clients! Exiting" << std::endl;
-                shutdown = true;
+                done = DS_TRUE_BUT_INCOMPLETE;
+                if ( time() > 0 )
+                {
+                    ++cycles_missed;
+                    std::cerr << "Someone missed a cycle at " << time() << std::endl;
+                }
+                if ( cycles_missed > max_cycles_missed && max_cycles_missed != -1 )
+                {
+                    std::cerr << "Waiting too long for clients! Exiting" << std::endl;
+                    shutdown = true;
+                }
             }
         }
     }

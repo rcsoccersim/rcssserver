@@ -632,6 +632,10 @@ private:
     double M_land_dist_noise_rate;
     double M_land_focus_dist_noise_rate;
 
+    // 20.0.0
+    int M_max_synch_mode_cycle_duration_msec;
+    int M_max_allowed_missed_synch_mode_cycles;
+
 private:
 
     // setters & getters
@@ -995,6 +999,10 @@ public:
     double focusDistNoiseRate() const { return M_focus_dist_noise_rate; }
     double landDistNoiseRate() const { return M_land_dist_noise_rate; }
     double landFocusDistNoiseRate() const { return M_land_focus_dist_noise_rate; }
+
+    // v20
+    int maxSynchModeCycleDurationMsec() const { return M_max_synch_mode_cycle_duration_msec; }
+    int maxAllowedMissedSynchModeCycles() const { return M_max_allowed_missed_synch_mode_cycles; }
 };
 
 #endif
