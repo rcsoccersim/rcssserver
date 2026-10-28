@@ -23,13 +23,12 @@
 #define RCSS_REMOTECLIENT_H
 
 #include "compress.h"
+#include "transport/connection.h"
 
-#include <rcss/net/udpsocket.hpp>
+#include <memory>
+#include <ostream>
 
 namespace rcss {
-namespace net {
-class SocketStreamBuf;
-}
 namespace gz {
 class gzstreambuf;
 }
@@ -39,10 +38,12 @@ class gzstreambuf;
 class RemoteClient {
 
 private:
-    rcss::net::UDPSocket M_socket;
-    rcss::net::SocketStreamBuf * M_socket_buf;
+    std::shared_ptr< rcss::Connection > M_connection;
     rcss::gz::gzstreambuf * M_gz_buf;
-    std::ostream * M_transport;
+
+    //! The senders keep a reference to this stream, so it lives as long as
+    //! the client. Its buffer is switched when a connection is attached.
+    std::ostream M_transport;
     int M_comp_level;
 
 #ifdef HAVE_LIBZ
@@ -95,16 +96,21 @@ protected:
 public:
     bool connected() const
       {
-          return M_socket.isConnected();
+          return M_connection
+              && M_connection->isOpen();
       }
 
-    bool connect( const rcss::net::Addr & dest );
+    /*!
+      \brief start talking to the client over the given connection.
+      \param connection the connection to the client
 
-    int open();
+      The previous connection, if any, is closed first.
+     */
+    void attach( std::shared_ptr< rcss::Connection > connection );
 
-    rcss::net::Addr getDest() const
+    const rcss::Connection * connection() const
       {
-          return M_socket.getDest();
+          return M_connection.get();
       }
 
 };

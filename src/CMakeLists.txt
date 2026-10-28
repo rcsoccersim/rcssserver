@@ -79,6 +79,7 @@ add_executable(RCSSServer
     stdtimer.cpp
     synctimer.cpp
     team.cpp
+    transport/udpconnection.cpp
     utility.cpp
     visualsendercoach.cpp
     visualsenderplayer.cpp
@@ -97,6 +98,11 @@ target_link_libraries(RCSSServer
     RCSS::GZ
     ZLIB::ZLIB
 	)
+
+target_include_directories(RCSSServer
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 target_compile_definitions(RCSSServer
   PUBLIC

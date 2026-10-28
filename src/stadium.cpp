@@ -41,6 +41,7 @@
 #include "playerparam.h"
 #include "team.h"
 #include "types.h"
+#include "transport/udpconnection.h"
 #include "utility.h"
 #include "xpmholder.h"
 
@@ -51,6 +52,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <memory>
 #include <chrono>
 #include <thread>
 
@@ -615,12 +617,15 @@ Stadium::initPlayer( const char * teamname,
         return static_cast< Player * >( 0 );
     }
 
-    if ( ! player->connect( addr ) )
+    std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
+    if ( ! conn->open()
+         || ! conn->connect( addr ) )
     {
         sendToPlayer( "(error connection_failed)", addr );
         player->disable();
         return static_cast< Player * >( 0 );
     }
+    player->attach( conn );
 
     addListener( player );
     M_remote_players.push_back( player );
@@ -654,16 +659,18 @@ Stadium::reconnectPlayer( const char * teamname,
                 return static_cast< Player * >( 0 );
             }
 
-            if ( M_players[r]->open() != 0 )
+            std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
+            if ( ! conn->open() )
             {
                 sendToPlayer( "(error socket_open_failed)", addr );
                 return static_cast< Player * >( 0 );
             }
-            if ( ! M_players[r]->connect( addr ) )
+            if ( ! conn->connect( addr ) )
             {
                 sendToPlayer( "(error connection_failed)", addr );
                 return static_cast< Player * >( 0 );
             }
+            M_players[r]->attach( conn );
             if ( ! M_players[r]->setSenders() )
             {
                 sendToPlayer( "(error illegal_client_version)", addr );
@@ -688,17 +695,19 @@ Coach *
 Stadium::initCoach( const double & version,
                     const rcss::net::Addr & addr )
 {
-    if ( M_coach->open() != 0 )
+    std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
+    if ( ! conn->open() )
     {
         sendToCoach( "(error socket_open_failed)", addr );
         return nullptr;
     }
 
-    if ( ! M_coach->connect( addr ) )
+    if ( ! conn->connect( addr ) )
     {
         sendToCoach( "(error connection_failed)", addr );
         return nullptr;
     }
+    M_coach->attach( conn );
 
     if ( ! M_coach->setSenders( version ) )
     {
@@ -748,11 +757,14 @@ Stadium::initOnlineCoach( const char * teamname,
         return static_cast< OnlineCoach * >( 0 );
     }
 
-    if ( ! olc->connect( addr ) )
+    std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
+    if ( ! conn->open()
+         || ! conn->connect( addr ) )
     {
         sendToOnlineCoach( "(error connection_failed)", addr );
         return static_cast< OnlineCoach * >( 0 );
     }
+    olc->attach( conn );
 
     if ( ! olc->setSenders( version ) )
     {
@@ -2556,6 +2568,25 @@ Stadium::doSendThink()
 
 
 namespace {
+/*!
+  \brief get the address of a client that is connected over UDP.
+  \param client the client
+  \return the address, or the default Addr if the client is not connected
+  over UDP
+
+  This is used to route the datagrams that arrive on the shared ports.
+  TODO: remove this when an acceptor class takes over that routing.
+ */
+rcss::net::Addr
+udp_dest( const RemoteClient & client )
+{
+    const rcss::UDPConnection * conn
+        = dynamic_cast< const rcss::UDPConnection * >( client.connection() );
+    return ( conn
+             ? conn->getDest()
+             : rcss::net::Addr() );
+}
+
 template < class T >
 void
 recv_from_clients( std::vector< T > & clients )
@@ -2599,7 +2630,7 @@ Stadium::udp_recv_message()
             bool found = false;
             for ( PlayerCont::reference p : M_remote_players )
             {
-                if ( p->getDest() == cli_addr )
+                if ( udp_dest( *p ) == cli_addr )
                 {
                     p->undedicatedRecv( message, len );
                     found = true;
@@ -2611,7 +2642,7 @@ Stadium::udp_recv_message()
             {
                 for ( MonitorCont::reference m : M_monitors )
                 {
-                    if ( m->getDest() == cli_addr )
+                    if ( udp_dest( *m ) == cli_addr )
                     {
                         m->undedicatedRecv( message, len );
                         found = true;
@@ -2789,12 +2820,15 @@ Stadium::parseMonitorInit( const char * message,
         // a new monitor connected
         Monitor * mon = new Monitor( *this, ver );
 
-        if( ! mon->connect( addr ) )
+        std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
+        if ( ! conn->open()
+             || ! conn->connect( addr ) )
         {
             sendToPlayer( "(error connection_failed)", addr );
             delete mon;
             return true;
         }
+        mon->attach( conn );
 
         if ( ! mon->setSenders() )
         {
@@ -2854,7 +2888,7 @@ Stadium::udp_recv_from_coach()
             bool found = false;
             for ( OfflineCoachCont::reference c : M_remote_offline_coaches )
             {
-                if ( c->getDest() == cli_addr )
+                if ( udp_dest( *c ) == cli_addr )
                 {
                     c->undedicatedRecv( message, len );
                     found = true;
@@ -2959,7 +2993,7 @@ Stadium::udp_recv_from_online_coach()
             bool found = false;
             for ( OnlineCoachCont::reference c : M_remote_online_coaches )
             {
-                if ( c->getDest() == cli_addr )
+                if ( udp_dest( *c ) == cli_addr )
                 {
                     c->undedicatedRecv( message, len );
                     found = true;

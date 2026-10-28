@@ -28,22 +28,22 @@
 #include "param.h"
 //#include "rcssexceptions.h"
 
-#include <rcss/net/socketstreambuf.hpp>
 #include <rcss/gzip/gzstream.hpp>
 
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
+#include <iostream>
 
 
 RemoteClient::RemoteClient()
-    : M_socket()
-    , M_socket_buf( nullptr )
+    : M_connection()
     , M_gz_buf( nullptr )
     , M_transport( nullptr )
     , M_comp_level( -1 )
     , M_enforce_dedicated_port( false )
 {
-    open();
+
 }
 
 
@@ -55,94 +55,54 @@ RemoteClient::~RemoteClient()
 std::ostream &
 RemoteClient::getTransport()
 {
-    if ( M_transport )
-    {
-        return *M_transport;
-    }
-    else
-    {
-        //throw rcss::util::NullErr( __FILE__, __LINE__, "Transport is NULL" );
-        throw std::logic_error( "Transport is NULL" );
-    }
+    return M_transport;
 }
 
 void
 RemoteClient::close()
 {
-    M_socket.close();
-
-    if ( M_transport )
+    if ( M_connection )
     {
-        delete M_transport;
-        M_transport = nullptr;
+        M_connection->close();
     }
 
+    M_transport.rdbuf( nullptr );
+
+    // The gzip buffer may flush into the connection's buffer when it is
+    // deleted, so delete it before releasing the connection.
     if ( M_gz_buf )
     {
         delete M_gz_buf;
         M_gz_buf = nullptr;
     }
 
-    if ( M_socket_buf )
-    {
-        delete M_socket_buf;
-        M_socket_buf = nullptr;
-    }
+    M_connection.reset();
 
     setEnforceDedicatedPort( false );
 }
 
-bool
-RemoteClient::connect( const rcss::net::Addr & dest )
+void
+RemoteClient::attach( std::shared_ptr< rcss::Connection > connection )
 {
-    if ( ! M_socket.connect( dest ) )
-    {
-        std::cerr << __FILE__ << ": " << __LINE__
-                  << ": Error connecting socket" << std::endl;
-        M_socket.close();
-        return false;
-    }
-    return true;
-}
+    close();
 
-int
-RemoteClient::open()
-{
-    if ( M_socket.open() )
+    M_connection = connection;
+    if ( M_connection )
     {
-        if ( M_socket.setNonBlocking() < 0 )
-        {
-            std::cerr << __FILE__ << ": " << __LINE__
-                      << ": Error setting socket non-blocking: "
-                      << strerror( errno ) << std::endl;
-            M_socket.close();
-            return -1;
-        }
+        // rdbuf() also clears the error state of the stream.
+        M_transport.rdbuf( &M_connection->outbuf() );
     }
-    else
-    {
-        std::cerr << __FILE__ << ": " << __LINE__
-                  << ": Error opening socket: "
-                  << strerror( errno ) << std::endl;
-        M_socket.close();
-        return -1;
-    }
-
-    M_socket_buf = new rcss::net::SocketStreamBuf( M_socket );
-    M_transport = new std::ostream( M_socket_buf );
-    //M_transport->setLevel( M_comp_level );
-    return 0;
 }
 
 int
 RemoteClient::send( const char * msg,
                     const size_t & len )
 {
-    if ( M_socket.isConnected() )
+    if ( connected() )
     {
-        M_transport->write( msg, len );
-        M_transport->flush();
-        if ( ! M_transport->good() )
+        M_transport.write( msg, len );
+        M_transport.flush();
+        if ( ! M_transport.good() )
         {
             if ( errno != ECONNREFUSED )
             {
@@ -162,31 +122,34 @@ RemoteClient::send( const char * msg,
 int
 RemoteClient::recv()
 {
-    if ( M_socket.isConnected() )
+    if ( ! connected() )
     {
-        char buffer[ MaxMesg ];
-        std::memset( &buffer, 0, sizeof( char ) * MaxMesg );
+        return -1;
+    }
 
-        size_t len = MaxMesg;
-        int ret = M_socket.recv( buffer, len );
-
-        if ( ret == -1 && errno != EWOULDBLOCK )
+    std::string msg;
+    if ( ! M_connection->popMessage( msg ) )
+    {
+        if ( ! M_connection->isOpen() )
         {
-            if ( errno != ECONNREFUSED )
-            {
-                std::cerr << __FILE__ << ": " << __LINE__
-                          << ": Error receiving from socket: "
-                          << strerror( errno ) << std::endl;
-            }
+            // the connection has been closed because of an error
             close();
         }
-        else if ( ret > 0 )
-        {
-            processMsg( buffer, ret );
-        }
-        return ret;
+        return -1;
     }
-    return -1;
+
+    const size_t len = std::min( msg.size(), static_cast< size_t >( MaxMesg ) );
+    if ( len > 0 )
+    {
+        // The parsers write a null character at msg[len], so the buffer needs
+        // one byte more than MaxMesg. The rest is zero-filled as before.
+        char buffer[ MaxMesg + 1 ];
+        std::memset( buffer, 0, sizeof( buffer ) );
+        std::memcpy( buffer, msg.data(), len );
+        processMsg( buffer, len );
+    }
+
+    return static_cast< int >( len );
 }
 
 void
@@ -233,18 +196,21 @@ RemoteClient::setCompressionLevel( const int level )
 #ifdef HAVE_LIBZ
     //M_transport->setLevel( level );
 
-    if ( level >= 0 )
+    if ( M_connection )
     {
-        if ( ! M_gz_buf )
+        if ( level >= 0 )
         {
-            M_gz_buf = new rcss::gz::gzstreambuf( *M_socket_buf );
+            if ( ! M_gz_buf )
+            {
+                M_gz_buf = new rcss::gz::gzstreambuf( M_connection->outbuf() );
+            }
+            M_gz_buf->setLevel( level );
+            M_transport.rdbuf( M_gz_buf );
         }
-        M_gz_buf->setLevel( level );
-        M_transport->rdbuf( M_gz_buf );
-    }
-    else
-    {
-        M_transport->rdbuf( M_socket_buf );
+        else
+        {
+            M_transport.rdbuf( &M_connection->outbuf() );
+        }
     }
 //     if ( level < 0 )
 //     {

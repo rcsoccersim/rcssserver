@@ -1,4 +1,7 @@
 
+# needed to build the sources under transport/
+AUTOMAKE_OPTIONS = subdir-objects
+
 bin_PROGRAMS = \
 	rcssserver @RCSSCLIENT@
 
@@ -62,6 +65,7 @@ rcssserver_SOURCES = \
 	stdtimer.cpp \
 	synctimer.cpp \
 	team.cpp \
+	transport/udpconnection.cpp \
 	utility.cpp \
 	visualsendercoach.cpp \
 	visualsenderplayer.cpp \
@@ -139,6 +143,8 @@ noinst_HEADERS = \
 	team.h \
 	timeable.h \
 	timer.h \
+	transport/connection.h \
+	transport/udpconnection.h \
 	types.h \
 	utility.h \
 	version.h \
