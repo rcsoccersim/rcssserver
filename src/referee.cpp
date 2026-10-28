@@ -3168,6 +3168,14 @@ PenaltyRef::startPenaltyShootout()
 
         penalty_init();
         first_time = false;
+
+        // no kicks configured at all -> nothing to take, decide right away.
+        // penalty_check_score() normally runs only after a kick, so without
+        // this both teams would still take one kick each before the decision.
+        if ( param.penNrKicks() + param.penMaxExtraKicks() <= 0 )
+        {
+            penalty_check_score();
+        }
     }
 }
 
@@ -3737,8 +3745,17 @@ PenaltyRef::penalty_check_score()
               << M_stadium.teamRight().penaltyPoint()
               << ((M_cur_pen_taker == RIGHT) ? "*" : " ") << " after "
               << M_pen_nr_taken << " penalties." << std::endl;
-    // if both players have taken nr_kicks and max_extra_kicks penalties -> quit
-    if (M_pen_nr_taken > 2 * (ServerParam::instance().penMaxExtraKicks() + ServerParam::instance().penNrKicks()))
+    // if both teams have taken nr_kicks + max_extra_kicks penalties each and
+    // are still level -> quit (coin toss / draw). Only evaluated after an even
+    // number of kicks, so the second team always answers the first team's
+    // kick: with '>' the shootout ended after 2 * (nr_kicks + max_extra_kicks)
+    // + 1 kicks, one team having taken one attempt more than the other.
+    // When the score differs after the last pair, the branches below name
+    // the winner as before.
+    if ( M_pen_nr_taken % 2 == 0
+         && M_pen_nr_taken >= 2 * ( ServerParam::instance().penMaxExtraKicks()
+                                    + ServerParam::instance().penNrKicks() )
+         && M_stadium.teamLeft().penaltyPoint() == M_stadium.teamRight().penaltyPoint() )
     {
         std::cerr << "Final score: "
                   << M_stadium.teamLeft().penaltyPoint() << "-"
