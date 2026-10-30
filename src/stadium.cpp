@@ -41,7 +41,7 @@
 #include "playerparam.h"
 #include "team.h"
 #include "types.h"
-#include "transport/udpconnection.h"
+#include "transport/udpacceptor.h"
 #include "utility.h"
 #include "xpmholder.h"
 
@@ -253,36 +253,25 @@ Stadium::init()
         //std::cout << *(M_player_types[i]) << std::endl;
     }
 
-    if ( ! M_player_socket.bind( rcss::net::Addr( ServerParam::instance().playerPort() )  ) )
-    {
-        std::cerr << "Error initializing sockets: port=" << ServerParam::instance().playerPort()
-                  << ". " << strerror( errno ) << std::endl;
-        disable();
-        return false;
-    }
+    const auto open_udp_acceptor
+        = []( AcceptorCont & acceptors,
+              const rcss::net::Addr::PortType port )
+          {
+              std::unique_ptr< rcss::UDPAcceptor > acceptor( new rcss::UDPAcceptor() );
+              if ( ! acceptor->open( rcss::net::Addr( port ) ) )
+              {
+                  std::cerr << "Error initializing sockets: port=" << port
+                            << ". " << strerror( errno ) << std::endl;
+                  return false;
+              }
+              acceptors.push_back( std::move( acceptor ) );
+              return true;
+          };
 
-    if ( ! M_offline_coach_socket.bind( rcss::net::Addr( ServerParam::instance().offlineCoachPort() ) ) )
+    if ( ! open_udp_acceptor( M_player_acceptors, ServerParam::instance().playerPort() )
+         || ! open_udp_acceptor( M_offline_coach_acceptors, ServerParam::instance().offlineCoachPort() )
+         || ! open_udp_acceptor( M_online_coach_acceptors, ServerParam::instance().onlineCoachPort() ) )
     {
-        std::cerr << "Error initializing sockets: port=" << ServerParam::instance().offlineCoachPort()
-                  << ". " << strerror( errno ) << std::endl;
-        disable();
-        return false;
-    }
-
-    if ( ! M_online_coach_socket.bind( rcss::net::Addr( ServerParam::instance().onlineCoachPort() ) ) )
-    {
-        std::cerr << "Error initializing sockets: port=" << ServerParam::instance().onlineCoachPort()
-                  << ". " << strerror( errno ) << std::endl;
-        disable();
-        return false;
-    }
-
-    if ( M_player_socket.setNonBlocking() == -1
-         || M_offline_coach_socket.setNonBlocking() == -1
-         || M_online_coach_socket.setNonBlocking() == -1 )
-    {
-        std::cerr << "Error setting sockets non-blocking: "
-                  << strerror( errno ) << std::endl;
         disable();
         return false;
     }
@@ -564,14 +553,15 @@ Player *
 Stadium::initPlayer( const char * teamname,
                      const double & version,
                      const bool goalie,
-                     const rcss::net::Addr & addr )
+                     rcss::Acceptor & acceptor,
+                     const rcss::Inbound & in )
 {
     Team * team = static_cast< Team * >( 0 );
 
     if ( ServerParam::instance().fixedTeamNameLeft() == teamname
          || ServerParam::instance().fixedTeamNameRight() == teamname )
     {
-        sendToPlayer( "(error conflict_with_fixed_teamname)", addr );
+        sendReply( "(error conflict_with_fixed_teamname)", in );
         return static_cast< Player * >( 0 );
     }
 
@@ -600,7 +590,7 @@ Stadium::initPlayer( const char * teamname,
             std::cerr << "Warning:Too many teams. [teamname = '"
                       << teamname << "']" << std::endl;
         }
-        sendToPlayer( "(error no_more_team)", addr );
+        sendReply( "(error no_more_team)", in );
         return static_cast< Player * >( 0 );
     }
 
@@ -613,15 +603,14 @@ Stadium::initPlayer( const char * teamname,
 
     if ( ! player )
     {
-        sendToPlayer( "(error no_more_player_or_goalie_or_illegal_client_version)", addr );
+        sendReply( "(error no_more_player_or_goalie_or_illegal_client_version)", in );
         return static_cast< Player * >( 0 );
     }
 
-    std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
-    if ( ! conn->open()
-         || ! conn->connect( addr ) )
+    std::shared_ptr< rcss::Connection > conn = acceptor.accept( in );
+    if ( ! conn )
     {
-        sendToPlayer( "(error connection_failed)", addr );
+        sendReply( "(error connection_failed)", in );
         player->disable();
         return static_cast< Player * >( 0 );
     }
@@ -642,7 +631,8 @@ Stadium::initPlayer( const char * teamname,
 Player *
 Stadium::reconnectPlayer( const char * teamname,
                           const int unum,
-                          const rcss::net::Addr & addr )
+                          rcss::Acceptor & acceptor,
+                          const rcss::Inbound & in )
 
 {
     int r = 0;
@@ -655,25 +645,20 @@ Stadium::reconnectPlayer( const char * teamname,
             /* It's same. */
             if ( M_players[r]->hasRedCard() )
             {
-                sendToPlayer( "(error red_carded_player)", addr );
+                sendReply( "(error red_carded_player)", in );
                 return static_cast< Player * >( 0 );
             }
 
-            std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
-            if ( ! conn->open() )
+            std::shared_ptr< rcss::Connection > conn = acceptor.accept( in );
+            if ( ! conn )
             {
-                sendToPlayer( "(error socket_open_failed)", addr );
-                return static_cast< Player * >( 0 );
-            }
-            if ( ! conn->connect( addr ) )
-            {
-                sendToPlayer( "(error connection_failed)", addr );
+                sendReply( "(error connection_failed)", in );
                 return static_cast< Player * >( 0 );
             }
             M_players[r]->attach( conn );
             if ( ! M_players[r]->setSenders() )
             {
-                sendToPlayer( "(error illegal_client_version)", addr );
+                sendReply( "(error illegal_client_version)", in );
                 return static_cast< Player * >( 0 );
             }
 
@@ -687,24 +672,19 @@ Stadium::reconnectPlayer( const char * teamname,
         }
     }
 
-    sendToPlayer( "(error no_such_team_or_player)", addr );
+    sendReply( "(error no_such_team_or_player)", in );
     return static_cast< Player * >( 0 );
 }
 
 Coach *
 Stadium::initCoach( const double & version,
-                    const rcss::net::Addr & addr )
+                    rcss::Acceptor & acceptor,
+                    const rcss::Inbound & in )
 {
-    std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
-    if ( ! conn->open() )
+    std::shared_ptr< rcss::Connection > conn = acceptor.accept( in );
+    if ( ! conn )
     {
-        sendToCoach( "(error socket_open_failed)", addr );
-        return nullptr;
-    }
-
-    if ( ! conn->connect( addr ) )
-    {
-        sendToCoach( "(error connection_failed)", addr );
+        sendReply( "(error connection_failed)", in );
         return nullptr;
     }
     M_coach->attach( conn );
@@ -713,7 +693,7 @@ Stadium::initCoach( const double & version,
     {
         std::cerr << "Error: Could not find serializer or sender for version"
                   << version << std::endl;
-        sendToCoach( "(error illegal_client_version)", addr );
+        sendReply( "(error illegal_client_version)", in );
         return nullptr;
     }
 
@@ -730,7 +710,8 @@ OnlineCoach *
 Stadium::initOnlineCoach( const char * teamname,
                           const char * coachname,
                           const double & version,
-                          const rcss::net::Addr & addr )
+                          rcss::Acceptor & acceptor,
+                          const rcss::Inbound & in )
 {
 
     OnlineCoach * olc = static_cast< OnlineCoach * >( 0 );
@@ -747,21 +728,20 @@ Stadium::initOnlineCoach( const char * teamname,
     }
     else
     {
-        sendToOnlineCoach( "(error no_such_team)", addr );
+        sendReply( "(error no_such_team)", in );
         return static_cast< OnlineCoach * >( 0 );
     }
 
     if ( olc->assigned() )
     {
-        sendToOnlineCoach( "(error already_have_coach)", addr );
+        sendReply( "(error already_have_coach)", in );
         return static_cast< OnlineCoach * >( 0 );
     }
 
-    std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
-    if ( ! conn->open()
-         || ! conn->connect( addr ) )
+    std::shared_ptr< rcss::Connection > conn = acceptor.accept( in );
+    if ( ! conn )
     {
-        sendToOnlineCoach( "(error connection_failed)", addr );
+        sendReply( "(error connection_failed)", in );
         return static_cast< OnlineCoach * >( 0 );
     }
     olc->attach( conn );
@@ -770,7 +750,7 @@ Stadium::initOnlineCoach( const char * teamname,
     {
         std::cerr << "Error: Could not find serializer or sender for version "
                   << (int)olc->version() << std::endl;
-        sendToOnlineCoach( "(error illegal_client_version)", addr );
+        sendReply( "(error illegal_client_version)", in );
         return static_cast< OnlineCoach * >( 0 );
     }
 
@@ -2569,22 +2549,44 @@ Stadium::doSendThink()
 
 namespace {
 /*!
-  \brief get the address of a client that is connected over UDP.
-  \param client the client
-  \return the address, or the default Addr if the client is not connected
-  over UDP
-
-  This is used to route the datagrams that arrive on the shared ports.
-  TODO: remove this when an acceptor class takes over that routing.
+  \brief find the client that owns the given connection.
+  \param clients the clients to search
+  \param conn the connection, or nullptr
+  \return the client, or nullptr if not found
  */
-rcss::net::Addr
-udp_dest( const RemoteClient & client )
+template < class T >
+RemoteClient *
+find_client( const std::vector< T * > & clients,
+             const rcss::Connection * conn )
 {
-    const rcss::UDPConnection * conn
-        = dynamic_cast< const rcss::UDPConnection * >( client.connection() );
-    return ( conn
-             ? conn->getDest()
-             : rcss::net::Addr() );
+    if ( ! conn )
+    {
+        return nullptr;
+    }
+
+    for ( T * c : clients )
+    {
+        if ( c->connection() == conn )
+        {
+            return c;
+        }
+    }
+
+    return nullptr;
+}
+
+/*!
+  \brief remove a trailing newline from the first message of a new client.
+  \param msg the message
+ */
+void
+chop_newline( std::string & msg )
+{
+    if ( ! msg.empty()
+         && msg.back() == '\n' )
+    {
+        msg.pop_back();
+    }
 }
 
 template < class T >
@@ -2612,72 +2614,30 @@ Stadium::udp_recv_message()
     recv_from_clients( M_remote_players );
     recv_from_clients( M_monitors );
 
-    while ( 1 )
+    for ( AcceptorCont::reference acceptor : M_player_acceptors )
     {
-        char message[MaxMesg];
-        std::memset( &message, 0, sizeof( char ) * MaxMesg );
-
-        rcss::net::Addr cli_addr;
-
-        int len = M_player_socket.recv( message, MaxMesg, cli_addr );
-
-        if ( len > 0 )
+        rcss::Inbound in;
+        while ( acceptor->popInbound( in ) )
         {
-            //              std::cerr << "Got: ";
-            //              std::cerr.write( message, iMsgLength );
-            //              std::cerr << std::endl;
-
-            bool found = false;
-            for ( PlayerCont::reference p : M_remote_players )
+            RemoteClient * client = find_client( M_remote_players, in.known );
+            if ( ! client )
             {
-                if ( udp_dest( *p ) == cli_addr )
-                {
-                    p->undedicatedRecv( message, len );
-                    found = true;
-                    break;
-                }
+                client = find_client( M_monitors, in.known );
             }
 
-            if ( ! found )
+            if ( client )
             {
-                for ( MonitorCont::reference m : M_monitors )
-                {
-                    if ( udp_dest( *m ) == cli_addr )
-                    {
-                        m->undedicatedRecv( message, len );
-                        found = true;
-                        break;
-                    }
-                }
+                client->undedicatedRecv( in.message );
+                continue;
             }
 
-            if ( ! found )
+            // a new monitor or a new player
+            chop_newline( in.message );
+
+            if ( ! parseMonitorInit( *acceptor, in ) )
             {
-                // a new monitor or a new player
-
-                /* chop newline */
-                if ( message[len - 1] == '\n' )
-                {
-                    --len;
-                }
-                message[len] = '\0';
-
-                if ( ! parseMonitorInit( message, cli_addr ) )
-                {
-                    parsePlayerInit( message, cli_addr );
-                }
+                parsePlayerInit( *acceptor, in );
             }
-        }
-        else if ( errno != EWOULDBLOCK )
-        {
-            std::cerr << __FILE__ << ": " << __LINE__
-                      << ": Error recv'ing from socket: "
-                      << std::strerror( errno ) << std::endl;
-        }
-
-        if ( len < 0 )
-        {
-            break;
         }
     }
 }
@@ -2685,9 +2645,11 @@ Stadium::udp_recv_message()
 
 
 void
-Stadium::parsePlayerInit( const char * message,
-                          const rcss::net::Addr & cli_addr )
+Stadium::parsePlayerInit( rcss::Acceptor & acceptor,
+                          const rcss::Inbound & in )
 {
+    const char * message = in.message.c_str();
+
     //
     // init : a new player connects to the server
     //
@@ -2706,14 +2668,14 @@ Stadium::parsePlayerInit( const char * message,
                           teamname, &n_read ) != 1
              || n_read == 0 )
         {
-            sendToPlayer( "(error illegal_teamname)", cli_addr );
+            sendReply( "(error illegal_teamname)", in );
             return;
         }
         msg += n_read;
 
         if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
         {
-            sendToPlayer( "(error illegal_teamname_or_too_long_teamname)", cli_addr );
+            sendReply( "(error illegal_teamname_or_too_long_teamname)", in );
             return;
         }
 
@@ -2728,7 +2690,7 @@ Stadium::parsePlayerInit( const char * message,
                                   &version, &n_read ) != 1
                      || n_read == 0 )
                 {
-                    sendToPlayer( "(error illegal_command_form)", cli_addr );
+                    sendReply( "(error illegal_command_form)", in );
                     return;
                 }
                 msg += n_read;
@@ -2740,20 +2702,20 @@ Stadium::parsePlayerInit( const char * message,
             }
             else
             {
-                sendToPlayer( "(error illegal_command_form)", cli_addr );
+                sendReply( "(error illegal_command_form)", in );
                 return;
             }
 
             if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
             {
-                sendToPlayer( "(error illegal_command_form)", cli_addr );
+                sendReply( "(error illegal_command_form)", in );
                 return;
             }
 
             while ( *msg != '\0' && std::isspace( *msg ) ) ++msg;
         }
 
-        Player * p = initPlayer( teamname, version, goalie, cli_addr );
+        Player * p = initPlayer( teamname, version, goalie, acceptor, in );
         if ( p )
         {
             std::cout << "A new (v" << static_cast< int >( version ) << ") "
@@ -2773,7 +2735,7 @@ Stadium::parsePlayerInit( const char * message,
     {
         if ( playmode() == PM_PlayOn )
         {
-            sendToPlayer( "(error cannot_reconnect_while_playon)", cli_addr );
+            sendReply( "(error cannot_reconnect_while_playon)", in );
             return;
         }
 
@@ -2784,10 +2746,10 @@ Stadium::parsePlayerInit( const char * message,
                           " ( reconnect %127s %d ) ",
                           teamname, &unum ) < 2 )
         {
-            sendToPlayer( "(error illegal_command_form)", cli_addr );
+            sendReply( "(error illegal_command_form)", in );
         }
 
-        Player * p = reconnectPlayer( teamname, unum, cli_addr );
+        Player * p = reconnectPlayer( teamname, unum, acceptor, in );
         if ( p )
         {
             std::cout << "A player (" << teamname << ' ' << p->unum() << ") reconnected."
@@ -2798,14 +2760,16 @@ Stadium::parsePlayerInit( const char * message,
         return;
     }
 
-    sendToPlayer( "(error unknown_command)", cli_addr );
+    sendReply( "(error unknown_command)", in );
 }
 
 
 bool
-Stadium::parseMonitorInit( const char * message,
-                           const rcss::net::Addr & addr )
+Stadium::parseMonitorInit( rcss::Acceptor & acceptor,
+                           const rcss::Inbound & in )
 {
+    const char * message = in.message.c_str();
+
     double ver = 1.0;
     if ( ! std::strncmp( message, "(dispinit)", 10 )
          || std::sscanf( message, " ( dispinit version %lf ) ", &ver ) == 1 )
@@ -2813,18 +2777,17 @@ Stadium::parseMonitorInit( const char * message,
         if ( ServerParam::instance().maxMonitors() > 0
              && static_cast< int >( M_monitors.size() ) >= ServerParam::instance().maxMonitors() )
         {
-            sendToPlayer( "(error no_more_monitor)", addr );
+            sendReply( "(error no_more_monitor)", in );
             return true;
         }
 
         // a new monitor connected
         Monitor * mon = new Monitor( *this, ver );
 
-        std::shared_ptr< rcss::UDPConnection > conn = std::make_shared< rcss::UDPConnection >();
-        if ( ! conn->open()
-             || ! conn->connect( addr ) )
+        std::shared_ptr< rcss::Connection > conn = acceptor.accept( in );
+        if ( ! conn )
         {
-            sendToPlayer( "(error connection_failed)", addr );
+            sendReply( "(error connection_failed)", in );
             delete mon;
             return true;
         }
@@ -2832,7 +2795,7 @@ Stadium::parseMonitorInit( const char * message,
 
         if ( ! mon->setSenders() )
         {
-            sendToPlayer( "(error illegal_client_version)", addr );
+            sendReply( "(error illegal_client_version)", in );
             delete mon;
             return true;
         }
@@ -2868,69 +2831,40 @@ Stadium::udp_recv_from_coach()
         recv_from_clients( M_remote_offline_coaches );
     }
 
-    while ( 1 )
+    for ( AcceptorCont::reference acceptor : M_offline_coach_acceptors )
     {
-        char message[MaxMesg];
-        std::memset( &message, 0, sizeof( char ) * MaxMesg );
-
-        rcss::net::Addr cli_addr;
-
-        int len = M_offline_coach_socket.recv( message, MaxMesg,  cli_addr );
-
-        if ( len > 0 )
+        rcss::Inbound in;
+        while ( acceptor->popInbound( in ) )
         {
             if ( ! allow_coach )
             {
-                sendToCoach( "(error connected_offline_coach_without_coach_mode)", cli_addr );
+                sendReply( "(error connected_offline_coach_without_coach_mode)", in );
                 continue;
             }
 
-            bool found = false;
-            for ( OfflineCoachCont::reference c : M_remote_offline_coaches )
+            RemoteClient * client = find_client( M_remote_offline_coaches, in.known );
+            if ( client )
             {
-                if ( udp_dest( *c ) == cli_addr )
-                {
-                    c->undedicatedRecv( message, len );
-                    found = true;
-                    break;
-                }
+                client->undedicatedRecv( in.message );
+                continue;
             }
 
-            if ( ! found )
-            {
-                // a new offline coach
-
-                // chop newline
-                if ( message[len - 1] == '\n' )
-                {
-                    --len;
-                }
-                message[len] = '\0';
-
-                parseCoachInit( message, cli_addr );
-            }
-        }
-        else if ( errno != EWOULDBLOCK )
-        {
-            std::cerr << __FILE__ << ": " << __LINE__
-                      << ": Error recv'ing from socket: "
-                      << strerror( errno ) << std::endl;
-        }
-
-        if ( len < 0 )
-        {
-            break;
+            // a new offline coach
+            chop_newline( in.message );
+            parseCoachInit( *acceptor, in );
         }
     }
 }
 
 bool
-Stadium::parseCoachInit( const char * message,
-                         const rcss::net::Addr & cli_addr )
+Stadium::parseCoachInit( rcss::Acceptor & acceptor,
+                         const rcss::Inbound & in )
 {
+    const char * message = in.message.c_str();
+
     if ( ! M_remote_offline_coaches.empty() )
     {
-        sendToCoach( "(error already_have_offline_coach)", cli_addr );
+        sendReply( "(error already_have_offline_coach)", in );
         return false;
     }
 
@@ -2938,7 +2872,7 @@ Stadium::parseCoachInit( const char * message,
     int n = std::sscanf( message, " ( %127[-0-9a-zA-Z.+*/?<>_] ", command );
     if( n < 1 )
     {
-        sendToCoach( "(error illegal_command_form)", cli_addr );
+        sendReply( "(error illegal_command_form)", in );
         return false;
     }
 
@@ -2951,11 +2885,11 @@ Stadium::parseCoachInit( const char * message,
         if ( ( n != 0 && n != 1 )
              || version < 1.0 )
         {
-            sendToCoach( "(error illegal_command_form)", cli_addr );
+            sendReply( "(error illegal_command_form)", in );
             return false;
         }
 
-        Coach * coach = initCoach( version, cli_addr );
+        Coach * coach = initCoach( version, acceptor, in );
         if ( coach )
         {
             std::cout << "A new (v" << coach->version() << ") "
@@ -2979,64 +2913,34 @@ Stadium::udp_recv_from_online_coach()
 {
     recv_from_clients( M_remote_online_coaches );
 
-    while ( 1 )
+    for ( AcceptorCont::reference acceptor : M_online_coach_acceptors )
     {
-        char message[MaxMesg];
-        std::memset( &message, 0, sizeof ( char ) * MaxMesg );
-
-        rcss::net::Addr cli_addr;
-
-        int len = M_online_coach_socket.recv( message, MaxMesg, cli_addr );
-
-        if ( len > 0 )
+        rcss::Inbound in;
+        while ( acceptor->popInbound( in ) )
         {
-            bool found = false;
-            for ( OnlineCoachCont::reference c : M_remote_online_coaches )
+            RemoteClient * client = find_client( M_remote_online_coaches, in.known );
+            if ( client )
             {
-                if ( udp_dest( *c ) == cli_addr )
-                {
-                    c->undedicatedRecv( message, len );
-                    found = true;
-                    break;
-                }
+                client->undedicatedRecv( in.message );
+                continue;
             }
 
-            if ( ! found )
-            {
-                // a new online coach
-
-                /* chop newline */
-                if ( message[len - 1] == '\n' )
-                {
-                    --len;
-                }
-                message[len] = '\0';
-
-                parseOnlineCoachInit( message, cli_addr );
-            }
-        }
-        else if ( errno != EWOULDBLOCK )
-        {
-            std::cerr << __FILE__ << ": " << __LINE__
-                      << ": Error recv'ing from socket: "
-                      << strerror( errno ) << std::endl;
-        }
-
-        if ( len < 0 )
-        {
-            break;
+            // a new online coach
+            chop_newline( in.message );
+            parseOnlineCoachInit( *acceptor, in );
         }
     }
 }
 
 void
-Stadium::parseOnlineCoachInit( const char * message,
-                               const rcss::net::Addr & addr )
+Stadium::parseOnlineCoachInit( rcss::Acceptor & acceptor,
+                               const rcss::Inbound & in )
 {
+    const char * message = in.message.c_str();
+
     if ( std::strncmp( message, "(init", std::strlen( "(init" ) ) != 0 )
     {
-        sendToOnlineCoach( "(error illegal_command_form)",
-                           addr );
+        sendReply( "(error illegal_command_form)", in );
         return;
     }
 
@@ -3060,7 +2964,7 @@ Stadium::parseOnlineCoachInit( const char * message,
                       teamname, &n_read ) != 1
          || n_read == 0 )
     {
-        sendToOnlineCoach( "(error illegal_command_form)", addr );
+        sendReply( "(error illegal_command_form)", in );
         return;
     }
     msg += n_read;
@@ -3073,14 +2977,14 @@ Stadium::parseOnlineCoachInit( const char * message,
         if ( std::sscanf( msg, " %127[+-_a-zA-Z0-9] %n ",
                           coachname, &n_read ) != 1 )
         {
-            sendToOnlineCoach( "(error illegal_command_form)", addr );
+            sendReply( "(error illegal_command_form)", in );
             return;
         }
         msg += n_read;
 
         if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
         {
-            sendToOnlineCoach( "(error illegal_coachname_or_too_long_coachname)", addr );
+            sendReply( "(error illegal_coachname_or_too_long_coachname)", in );
             return;
         }
     }
@@ -3094,20 +2998,20 @@ Stadium::parseOnlineCoachInit( const char * message,
                           &version, &n_read ) != 1
              || n_read == 0 )
         {
-            sendToOnlineCoach( "(error illegal_command_form)", addr );
+            sendReply( "(error illegal_command_form)", in );
             return;
         }
         msg += n_read;
 
         if ( *msg != '(' && *msg != ')' && ! std::isspace( *msg ) )
         {
-            sendToOnlineCoach( "(error illegal_client_version)", addr );
+            sendReply( "(error illegal_client_version)", in );
             return;
         }
 
         if ( version < default_olcoach_version )
         {
-            sendToOnlineCoach( "(error illegal_client_version)", addr );
+            sendReply( "(error illegal_client_version)", in );
             return;
         }
     }
@@ -3116,7 +3020,7 @@ Stadium::parseOnlineCoachInit( const char * message,
     // assign new online coach
     //
 
-    OnlineCoach * olc = initOnlineCoach( teamname, coachname, version, addr );
+    OnlineCoach * olc = initOnlineCoach( teamname, coachname, version, acceptor, in );
     if ( olc )
     {
         std::cout << "A new (v" << static_cast< int >( version ) << ") "
@@ -3128,34 +3032,18 @@ Stadium::parseOnlineCoachInit( const char * message,
 }
 
 void
-Stadium::sendToPlayer( const char * msg,
-                       const rcss::net::Addr & cli_addr )
+Stadium::sendReply( const char * msg,
+                    const rcss::Inbound & in )
 {
-    if ( M_player_socket.send( msg, std::strlen( msg ) + 1, cli_addr ) == -1 )
+    if ( ! in.reply )
     {
-        std::cerr << __FILE__ ": " << __LINE__
-                  << ": Error sending to socket: "
-                  << strerror( errno ) << std::endl;
+        return;
     }
-}
 
-void
-Stadium::sendToCoach( const char * msg,
-                      const rcss::net::Addr & cli_addr )
-{
-    if ( M_offline_coach_socket.send( msg, std::strlen( msg ) + 1, cli_addr ) == -1 )
-    {
-        std::cerr << __FILE__ ": " << __LINE__
-                  << ": Error sending to socket: "
-                  << strerror( errno ) << std::endl;
-    }
-}
-
-void
-Stadium::sendToOnlineCoach( const char * msg,
-                            const rcss::net::Addr & cli_addr )
-{
-    if ( M_online_coach_socket.send( msg, std::strlen( msg ) + 1, cli_addr ) == -1 )
+    std::ostream os( &in.reply->outbuf() );
+    os.write( msg, std::strlen( msg ) + 1 );
+    os.flush();
+    if ( ! os.good() )
     {
         std::cerr << __FILE__ ": " << __LINE__
                   << ": Error sending to socket: "

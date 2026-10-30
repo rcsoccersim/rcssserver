@@ -29,9 +29,9 @@
 #include "field.h"
 #include "weather.h"
 #include "resultsaver.hpp"
+#include "transport/acceptor.h"
 
 #include <rcss/gzip/gzfstream.hpp>
-#include <rcss/net/udpsocket.hpp>
 
 #include <cstdio>
 #include <string>
@@ -73,6 +73,9 @@ public:
     typedef std::vector< Monitor * > MonitorCont;
     typedef std::vector< rcss::Listener * > ListenerCont;
     typedef std::vector< MPObject * > MPObjectCont;
+    //! One acceptor per transport, processed in this order.
+    //! Only UDP for now. TCP and WebSocket will be added.
+    typedef std::vector< std::unique_ptr< rcss::Acceptor > > AcceptorCont;
 protected:
     // definitions of different timeable methods
     void doRecvFromClients( ) override;
@@ -87,9 +90,9 @@ protected:
 protected:
     bool M_alive;
 
-    rcss::net::UDPSocket M_player_socket;
-    rcss::net::UDPSocket M_offline_coach_socket;
-    rcss::net::UDPSocket M_online_coach_socket;
+    AcceptorCont M_player_acceptors; //!< entrances for players and monitors
+    AcceptorCont M_offline_coach_acceptors; //!< entrances for offline coaches
+    AcceptorCont M_online_coach_acceptors; //!< entrances for online coaches
 
     Field M_field;
     Weather M_weather;
@@ -286,27 +289,31 @@ private:
     void udp_recv_from_coach();
     void udp_recv_from_online_coach();
 
-    void parsePlayerInit( const char * message,
-                          const rcss::net::Addr & cli_addr );
-    bool parseMonitorInit( const char * message,
-                           const rcss::net::Addr & cli_addr );
-    bool parseCoachInit( const char * message,
-                         const rcss::net::Addr & cli_addr );
-    void parseOnlineCoachInit( const char * message,
-                               const rcss::net::Addr & cli_addr );
+    void parsePlayerInit( rcss::Acceptor & acceptor,
+                          const rcss::Inbound & in );
+    bool parseMonitorInit( rcss::Acceptor & acceptor,
+                           const rcss::Inbound & in );
+    bool parseCoachInit( rcss::Acceptor & acceptor,
+                         const rcss::Inbound & in );
+    void parseOnlineCoachInit( rcss::Acceptor & acceptor,
+                               const rcss::Inbound & in );
     Player * initPlayer( const char * teamname,
                          const double & version,
                          const bool goalie,
-                         const rcss::net::Addr & addr );
+                         rcss::Acceptor & acceptor,
+                         const rcss::Inbound & in );
     Player * reconnectPlayer( const char * teamname,
                               const int unum,
-                              const rcss::net::Addr & addr );
+                              rcss::Acceptor & acceptor,
+                              const rcss::Inbound & in );
     Coach * initCoach( const double & version,
-                       const rcss::net::Addr & );
+                       rcss::Acceptor & acceptor,
+                       const rcss::Inbound & in );
     OnlineCoach * initOnlineCoach( const char * teamname,
                                    const char * coachname,
                                    const double & version,
-                                   const rcss::net::Addr & addr );
+                                   rcss::Acceptor & acceptor,
+                                   const rcss::Inbound & in );
 
     void removeDisconnectedClients();
 
@@ -373,15 +380,9 @@ public:
     void recoveryPlayers();
 
 private:
-    //! diretcly send message to player client that has cli_addr
-    void sendToPlayer( const char *msg,
-                       const rcss::net::Addr & cli_addr );
-    //! diretcly send message to offline coach client that has cli_addr
-    void sendToCoach( const char *msg,
-                      const rcss::net::Addr & cli_addr );
-    //! diretcly send message to online coach client that has cli_addr
-    void sendToOnlineCoach( const char *msg,
-                            const rcss::net::Addr & cli_addr );
+    //! send a message back to the sender of an inbound message
+    void sendReply( const char * msg,
+                    const rcss::Inbound & in );
 public:
     void sendRefereeAudio( const char * msg );
     void sendPlayerAudio( const Player & player,

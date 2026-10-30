@@ -79,6 +79,7 @@ add_executable(RCSSServer
     stdtimer.cpp
     synctimer.cpp
     team.cpp
+    transport/udpacceptor.cpp
     transport/udpconnection.cpp
     utility.cpp
     visualsendercoach.cpp

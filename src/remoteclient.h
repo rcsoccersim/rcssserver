@@ -69,8 +69,14 @@ public:
 
     int recv();
 
-    void undedicatedRecv( char * msg,
-                          const size_t & len );
+    /*!
+      \brief process a message that the client sent to the shared port.
+      \param msg the message
+     */
+    void undedicatedRecv( const std::string & msg );
+
+private:
+    void processMsg( const std::string & msg );
 
 protected:
     void processMsg( char * msg,

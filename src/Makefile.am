@@ -65,6 +65,7 @@ rcssserver_SOURCES = \
 	stdtimer.cpp \
 	synctimer.cpp \
 	team.cpp \
+	transport/udpacceptor.cpp \
 	transport/udpconnection.cpp \
 	utility.cpp \
 	visualsendercoach.cpp \
@@ -143,7 +144,9 @@ noinst_HEADERS = \
 	team.h \
 	timeable.h \
 	timer.h \
+	transport/acceptor.h \
 	transport/connection.h \
+	transport/udpacceptor.h \
 	transport/udpconnection.h \
 	types.h \
 	utility.h \

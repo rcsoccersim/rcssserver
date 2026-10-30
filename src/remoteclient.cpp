@@ -138,23 +138,13 @@ RemoteClient::recv()
         return -1;
     }
 
-    const size_t len = std::min( msg.size(), static_cast< size_t >( MaxMesg ) );
-    if ( len > 0 )
-    {
-        // The parsers write a null character at msg[len], so the buffer needs
-        // one byte more than MaxMesg. The rest is zero-filled as before.
-        char buffer[ MaxMesg + 1 ];
-        std::memset( buffer, 0, sizeof( buffer ) );
-        std::memcpy( buffer, msg.data(), len );
-        processMsg( buffer, len );
-    }
+    processMsg( msg );
 
-    return static_cast< int >( len );
+    return static_cast< int >( std::min( msg.size(), static_cast< size_t >( MaxMesg ) ) );
 }
 
 void
-RemoteClient::undedicatedRecv( char * msg,
-                               const size_t & len )
+RemoteClient::undedicatedRecv( const std::string & msg )
 {
     if ( M_enforce_dedicated_port )
     {
@@ -163,8 +153,25 @@ RemoteClient::undedicatedRecv( char * msg,
     }
     else
     {
-        processMsg( msg, len );
+        processMsg( msg );
     }
+}
+
+void
+RemoteClient::processMsg( const std::string & msg )
+{
+    const size_t len = std::min( msg.size(), static_cast< size_t >( MaxMesg ) );
+    if ( len == 0 )
+    {
+        return;
+    }
+
+    // The parsers write a null character at msg[len], so the buffer needs
+    // one byte more than MaxMesg. The rest is zero-filled as before.
+    char buffer[ MaxMesg + 1 ];
+    std::memset( buffer, 0, sizeof( buffer ) );
+    std::memcpy( buffer, msg.data(), len );
+    processMsg( buffer, len );
 }
 
 void
