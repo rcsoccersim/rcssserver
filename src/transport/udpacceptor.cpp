@@ -106,6 +106,11 @@ public:
           // the shared socket must stay open for other clients
           M_closed = true;
       }
+
+    bool isBinarySafe() const override
+      {
+          return true;
+      }
 };
 
 }

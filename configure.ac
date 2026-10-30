@@ -188,12 +188,17 @@ AX_CXX_COMPILE_STDCXX_17(noext)
 # check boost
 ##################################################
 
-AX_BOOST_BASE([1.44.0])
+# 1.70 for boost::asio::io_context (1.66) and Boost.Beast's tcp_stream (1.70)
+AX_BOOST_BASE([1.70.0])
 AX_BOOST_SYSTEM
 CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 #OLDLIBS="$LIBS"
 #LIBS="$LIBS $BOOST_FILESYSTEM_LIB"
+
+# boost::asio uses pthread functions
+AC_SEARCH_LIBS([pthread_create], [pthread], [],
+               [AC_MSG_ERROR([pthread is required.])])
 
 ##################################################
 # enable/disable rcssclient

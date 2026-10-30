@@ -167,4 +167,12 @@ UDPConnection::close()
     M_connected = false;
 }
 
+/*-------------------------------------------------------------------*/
+bool
+UDPConnection::isBinarySafe() const
+{
+    // one datagram carries one message of any bytes
+    return true;
+}
+
 }

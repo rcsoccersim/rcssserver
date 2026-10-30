@@ -89,6 +89,15 @@ public:
      */
     virtual
     void close() = 0;
+
+    /*!
+      \brief check if a message may contain any byte.
+      \return false if the message framing reserves some bytes (e.g. the null
+      character as the delimiter). Then compressed messages and the binary
+      monitor protocols cannot be used.
+     */
+    virtual
+    bool isBinarySafe() const = 0;
 };
 
 }

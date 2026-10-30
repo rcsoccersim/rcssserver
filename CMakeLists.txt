@@ -19,7 +19,10 @@ endif()
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 #find_package(Boost COMPONENTS system filesystem REQUIRED)
-find_package(Boost 1.44.0 COMPONENTS system REQUIRED)
+# 1.70 for boost::asio::io_context (1.66) and Boost.Beast's tcp_stream (1.70)
+find_package(Boost 1.70.0 COMPONENTS system REQUIRED)
+# boost::asio uses pthread functions
+find_package(Threads REQUIRED)
 
 include(GNUInstallDirs)
 include(CheckIncludeFileCXX)

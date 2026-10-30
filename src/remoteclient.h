@@ -94,6 +94,17 @@ public:
 
     int setCompressionLevel( const int level );
 
+    /*!
+      \brief check if the connection can carry compressed messages.
+      \return false if no connection is attached or the transport reserves
+      some bytes for the message framing
+     */
+    bool compressionAvailable() const
+      {
+          return M_connection
+              && M_connection->isBinarySafe();
+      }
+
     std::ostream & getTransport();
 
 protected:

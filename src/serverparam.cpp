@@ -726,6 +726,13 @@ ServerParam::addParams()
     addParam( "port", M_port, "", 8 );
     addParam( "coach_port", M_coach_port, "", 8 );
     addParam( "olcoach_port", M_olcoach_port, "", 8 );
+    // The TCP ports are not sent to the clients.
+    addParam( "tcp_port", M_tcp_port,
+              "The TCP port number for players and monitors. 0 disables TCP.", 999 );
+    addParam( "tcp_coach_port", M_tcp_coach_port,
+              "The TCP port number for offline coaches. 0 disables TCP.", 999 );
+    addParam( "tcp_olcoach_port", M_tcp_olcoach_port,
+              "The TCP port number for online coaches. 0 disables TCP.", 999 );
     addParam( "say_coach_cnt_max", M_say_cnt_max, "", 7 );
     addParam( "say_coach_msg_size", M_say_coach_msg_size, "", 7 );
     addParam( "simulator_step",
@@ -1269,6 +1276,9 @@ ServerParam::setDefaults()
     M_port = DEFAULT_PORT_NUMBER;
     M_coach_port = COACH_PORT_NUMBER;
     M_olcoach_port = OLCOACH_PORT_NUMBER;
+    M_tcp_port = 0;
+    M_tcp_coach_port = 0;
+    M_tcp_olcoach_port = 0;
 
     M_say_cnt_max = DEF_SAY_COACH_CNT_MAX;
     M_say_coach_msg_size = DEF_SAY_COACH_MSG_SIZE;

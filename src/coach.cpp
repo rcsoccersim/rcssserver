@@ -601,6 +601,11 @@ Coach::compression( int level )
         return;
     }
 
+    if ( ! compressionAvailable() )
+    {
+        send( "(warning compression_unsupported)" );
+        return;
+    }
 
     std::ostringstream reply;
     reply << "(ok compression " << level << ")";

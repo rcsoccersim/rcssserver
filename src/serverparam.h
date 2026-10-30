@@ -422,6 +422,9 @@ private:
     int M_port; /* port number */
     int M_coach_port; /* coach port number */
     int M_olcoach_port; /* online coach port number */
+    int M_tcp_port; /* TCP port number for players and monitors. 0 disables it. */
+    int M_tcp_coach_port; /* TCP port number for offline coaches. 0 disables it. */
+    int M_tcp_olcoach_port; /* TCP port number for online coaches. 0 disables it. */
     int M_say_cnt_max; /* max count of coach SAY (freeform) */
     int M_say_coach_msg_size; /* max length of coach SAY (freeform) */
     int M_clang_win_size; /* coach language: time window size */
@@ -776,6 +779,9 @@ public:
     rcss::net::Addr::PortType playerPort() const { return M_port; }
     rcss::net::Addr::PortType offlineCoachPort() const { return M_coach_port; }
     rcss::net::Addr::PortType onlineCoachPort() const { return M_olcoach_port; }
+    rcss::net::Addr::PortType tcpPlayerPort() const { return M_tcp_port; }
+    rcss::net::Addr::PortType tcpOfflineCoachPort() const { return M_tcp_coach_port; }
+    rcss::net::Addr::PortType tcpOnlineCoachPort() const { return M_tcp_olcoach_port; }
 
     unsigned int freeformCountMax() const { return (unsigned int)M_say_cnt_max; }
     unsigned int freeformMsgSize() const { return (unsigned int)M_say_coach_msg_size; }

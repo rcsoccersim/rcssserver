@@ -533,6 +533,12 @@ Monitor::compression( const char * command )
         return false;
     }
 
+    if ( ! compressionAvailable() )
+    {
+        sendMsg( MSG_BOARD, "(warning compression_unsupported)" );
+        return false;
+    }
+
     std::ostringstream reply;
     reply << "(ok compression " << level << ")";
     sendMsg( MSG_BOARD, reply.str().c_str() );

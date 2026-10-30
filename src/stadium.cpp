@@ -41,6 +41,7 @@
 #include "playerparam.h"
 #include "team.h"
 #include "types.h"
+#include "transport/tcpacceptor.h"
 #include "transport/udpacceptor.h"
 #include "utility.h"
 #include "xpmholder.h"
@@ -268,9 +269,37 @@ Stadium::init()
               return true;
           };
 
+    M_io_context.reset( new boost::asio::io_context() );
+
+    const auto open_tcp_acceptor
+        = [this]( AcceptorCont & acceptors,
+                  const rcss::net::Addr::PortType port )
+          {
+              if ( port == 0 )
+              {
+                  // TCP is disabled
+                  return true;
+              }
+
+              std::unique_ptr< rcss::TCPAcceptor > acceptor( new rcss::TCPAcceptor( *M_io_context ) );
+              const boost::system::error_code error = acceptor->open( port );
+              if ( error )
+              {
+                  std::cerr << "Error initializing TCP sockets: port=" << port
+                            << ". " << error.message() << std::endl;
+                  return false;
+              }
+              acceptors.push_back( std::move( acceptor ) );
+              return true;
+          };
+
+    // The UDP acceptors come first, so that UDP clients are processed first.
     if ( ! open_udp_acceptor( M_player_acceptors, ServerParam::instance().playerPort() )
          || ! open_udp_acceptor( M_offline_coach_acceptors, ServerParam::instance().offlineCoachPort() )
-         || ! open_udp_acceptor( M_online_coach_acceptors, ServerParam::instance().onlineCoachPort() ) )
+         || ! open_udp_acceptor( M_online_coach_acceptors, ServerParam::instance().onlineCoachPort() )
+         || ! open_tcp_acceptor( M_player_acceptors, ServerParam::instance().tcpPlayerPort() )
+         || ! open_tcp_acceptor( M_offline_coach_acceptors, ServerParam::instance().tcpOfflineCoachPort() )
+         || ! open_tcp_acceptor( M_online_coach_acceptors, ServerParam::instance().tcpOnlineCoachPort() ) )
     {
         disable();
         return false;
@@ -2205,11 +2234,22 @@ Stadium::doRecvFromClients()
     }
 
     //
+    // run the ready I/O handlers. They only queue the received messages,
+    // which are processed below in the shuffled order.
+    //
+    if ( M_io_context->stopped() )
+    {
+        // poll() stops the io_context when it has no work (e.g. without TCP)
+        M_io_context->restart();
+    }
+    M_io_context->poll();
+
+    //
     // receive message and process commands
     //
-    udp_recv_message();
-    udp_recv_from_online_coach();
-    udp_recv_from_coach();
+    recvFromPlayerPort();
+    recvFromOnlineCoachPort();
+    recvFromOfflineCoachPort();
 
     removeDisconnectedClients();
 
@@ -2609,7 +2649,7 @@ recv_from_clients( std::vector< T > & clients )
 
 
 void
-Stadium::udp_recv_message()
+Stadium::recvFromPlayerPort()
 {
     recv_from_clients( M_remote_players );
     recv_from_clients( M_monitors );
@@ -2781,6 +2821,14 @@ Stadium::parseMonitorInit( rcss::Acceptor & acceptor,
             return true;
         }
 
+        if ( 0.0 <= ver && ver < 3.0
+             && ! in.reply->isBinarySafe() )
+        {
+            // v1 and v2 send binary structures, which this transport cannot carry
+            sendReply( "(error illegal_client_version)", in );
+            return true;
+        }
+
         // a new monitor connected
         Monitor * mon = new Monitor( *this, ver );
 
@@ -2821,7 +2869,7 @@ Stadium::parseMonitorInit( rcss::Acceptor & acceptor,
 }
 
 void
-Stadium::udp_recv_from_coach()
+Stadium::recvFromOfflineCoachPort()
 {
     const bool allow_coach = ( ServerParam::instance().coachMode()
                                || ServerParam::instance().coachWithRefereeMode() );
@@ -2909,7 +2957,7 @@ Stadium::parseCoachInit( rcss::Acceptor & acceptor,
 }
 
 void
-Stadium::udp_recv_from_online_coach()
+Stadium::recvFromOnlineCoachPort()
 {
     recv_from_clients( M_remote_online_coaches );
 

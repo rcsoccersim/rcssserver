@@ -88,6 +88,8 @@ public:
     bool isOpen() const override;
 
     void close() override;
+
+    bool isBinarySafe() const override;
 };
 
 }

@@ -65,6 +65,8 @@ rcssserver_SOURCES = \
 	stdtimer.cpp \
 	synctimer.cpp \
 	team.cpp \
+	transport/tcpacceptor.cpp \
+	transport/tcpconnection.cpp \
 	transport/udpacceptor.cpp \
 	transport/udpconnection.cpp \
 	utility.cpp \
@@ -146,6 +148,8 @@ noinst_HEADERS = \
 	timer.h \
 	transport/acceptor.h \
 	transport/connection.h \
+	transport/tcpacceptor.h \
+	transport/tcpconnection.h \
 	transport/udpacceptor.h \
 	transport/udpconnection.h \
 	types.h \

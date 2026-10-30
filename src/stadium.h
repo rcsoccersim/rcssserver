@@ -57,6 +57,12 @@ class Msg;
 }
 }
 
+namespace boost {
+namespace asio {
+class io_context;
+}
+}
+
 
 /*
  *===================================================================
@@ -89,6 +95,10 @@ protected:
 
 protected:
     bool M_alive;
+
+    //! runs the asynchronous I/O. Declared before the acceptors, so that it
+    //! is destroyed after them.
+    std::unique_ptr< boost::asio::io_context > M_io_context;
 
     AcceptorCont M_player_acceptors; //!< entrances for players and monitors
     AcceptorCont M_offline_coach_acceptors; //!< entrances for offline coaches
@@ -285,9 +295,9 @@ public:
 private:
     void createObjects();
 
-    void udp_recv_message();
-    void udp_recv_from_coach();
-    void udp_recv_from_online_coach();
+    void recvFromPlayerPort();
+    void recvFromOfflineCoachPort();
+    void recvFromOnlineCoachPort();
 
     void parsePlayerInit( rcss::Acceptor & acceptor,
                           const rcss::Inbound & in );

@@ -79,6 +79,8 @@ add_executable(RCSSServer
     stdtimer.cpp
     synctimer.cpp
     team.cpp
+    transport/tcpacceptor.cpp
+    transport/tcpconnection.cpp
     transport/udpacceptor.cpp
     transport/udpconnection.cpp
     utility.cpp
@@ -98,6 +100,8 @@ target_link_libraries(RCSSServer
     RCSS::Net
     RCSS::GZ
     ZLIB::ZLIB
+    Boost::boost
+    Threads::Threads
 	)
 
 target_include_directories(RCSSServer
