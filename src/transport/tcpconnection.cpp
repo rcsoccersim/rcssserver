@@ -65,54 +65,10 @@ is_disconnection( const boost::system::error_code & error )
 }
 
 /*-------------------------------------------------------------------*/
-TCPConnection::OutBuf::OutBuf( TCPConnection & owner )
-    : M_owner( owner ),
-      M_message()
-{
-
-}
-
-/*-------------------------------------------------------------------*/
-TCPConnection::OutBuf::int_type
-TCPConnection::OutBuf::overflow( int_type c )
-{
-    // There is no put area, so every character comes here or to xsputn().
-    if ( ! traits_type::eq_int_type( c, traits_type::eof() ) )
-    {
-        M_message.push_back( traits_type::to_char_type( c ) );
-    }
-    return traits_type::not_eof( c );
-}
-
-/*-------------------------------------------------------------------*/
-std::streamsize
-TCPConnection::OutBuf::xsputn( const char_type * s,
-                               std::streamsize n )
-{
-    M_message.append( s, n );
-    return n;
-}
-
-/*-------------------------------------------------------------------*/
-int
-TCPConnection::OutBuf::sync()
-{
-    if ( ! M_message.empty() )
-    {
-        M_owner.send( M_message );
-        M_message.clear();
-    }
-
-    // Errors are not reported to the stream. A failed connection is
-    // detected through isOpen() instead.
-    return 0;
-}
-
-/*-------------------------------------------------------------------*/
 TCPConnection::TCPConnection( boost::asio::ip::tcp::socket socket )
     : M_socket( std::move( socket ) ),
       M_peer(),
-      M_outbuf( *this ),
+      M_outbuf( [this]( std::string & msg ) { send( msg ); } ),
       M_read_buf(),
       M_partial(),
       M_inbox(),

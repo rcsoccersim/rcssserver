@@ -79,10 +79,16 @@ add_executable(RCSSServer
     stdtimer.cpp
     synctimer.cpp
     team.cpp
+    transport/messagebuf.cpp
+    transport/pendingconnections.cpp
     transport/tcpacceptor.cpp
     transport/tcpconnection.cpp
+    transport/tcplisten.cpp
     transport/udpacceptor.cpp
     transport/udpconnection.cpp
+    transport/wsacceptor.cpp
+    transport/wsconnection.cpp
+    transport/wsserver.cpp
     utility.cpp
     visualsendercoach.cpp
     visualsenderplayer.cpp

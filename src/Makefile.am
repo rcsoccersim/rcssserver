@@ -65,10 +65,16 @@ rcssserver_SOURCES = \
 	stdtimer.cpp \
 	synctimer.cpp \
 	team.cpp \
+	transport/messagebuf.cpp \
+	transport/pendingconnections.cpp \
 	transport/tcpacceptor.cpp \
 	transport/tcpconnection.cpp \
+	transport/tcplisten.cpp \
 	transport/udpacceptor.cpp \
 	transport/udpconnection.cpp \
+	transport/wsacceptor.cpp \
+	transport/wsconnection.cpp \
+	transport/wsserver.cpp \
 	utility.cpp \
 	visualsendercoach.cpp \
 	visualsenderplayer.cpp \
@@ -148,10 +154,16 @@ noinst_HEADERS = \
 	timer.h \
 	transport/acceptor.h \
 	transport/connection.h \
+	transport/messagebuf.h \
+	transport/pendingconnections.h \
 	transport/tcpacceptor.h \
 	transport/tcpconnection.h \
+	transport/tcplisten.h \
 	transport/udpacceptor.h \
 	transport/udpconnection.h \
+	transport/wsacceptor.h \
+	transport/wsconnection.h \
+	transport/wsserver.h \
 	types.h \
 	utility.h \
 	version.h \

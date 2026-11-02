@@ -34,6 +34,7 @@
 #define RCSS_TCPCONNECTION_H
 
 #include "connection.h"
+#include "messagebuf.h"
 
 #include <boost/asio/ip/tcp.hpp>
 
@@ -61,31 +62,9 @@ class TCPConnection
     : public Connection,
       public std::enable_shared_from_this< TCPConnection > {
 private:
-
-    /*!
-      \class OutBuf
-      \brief The stream buffer that collects one outgoing message.
-     */
-    class OutBuf
-        : public std::streambuf {
-    private:
-        TCPConnection & M_owner;
-        std::string M_message;
-
-    public:
-        explicit
-        OutBuf( TCPConnection & owner );
-
-    protected:
-        int_type overflow( int_type c ) override;
-        std::streamsize xsputn( const char_type * s,
-                                std::streamsize n ) override;
-        int sync() override;
-    };
-
     boost::asio::ip::tcp::socket M_socket;
     std::string M_peer; //!< the client's address for log messages
-    OutBuf M_outbuf;
+    MessageBuf M_outbuf;
 
     std::array< char, 4096 > M_read_buf;
     std::string M_partial; //!< the message being received

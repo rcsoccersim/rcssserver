@@ -34,26 +34,21 @@
 #define RCSS_TCPACCEPTOR_H
 
 #include "acceptor.h"
+#include "pendingconnections.h"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
-#include <chrono>
 #include <memory>
-#include <vector>
 
 namespace rcss {
-
-class TCPConnection;
 
 /*!
   \class TCPAcceptor
   \brief The acceptor over a TCP port.
 
-  Every TCP connection is dedicated to one client from the beginning. Until
-  Stadium accepts the client, the messages from the connection are taken as
-  inbound messages one by one. After that, they are left in the connection
-  for the client.
+  Every TCP connection is dedicated to one client from the beginning (see
+  PendingConnections).
 
   The acceptor must be destroyed before the io_context, because the pending
   accept operation refers to it.
@@ -61,15 +56,8 @@ class TCPConnection;
 class TCPAcceptor
     : public Acceptor {
 private:
-
-    //! a connection whose client has not been accepted
-    struct Pending {
-        std::shared_ptr< TCPConnection > connection;
-        std::chrono::steady_clock::time_point since;
-    };
-
     boost::asio::ip::tcp::acceptor M_acceptor;
-    std::vector< Pending > M_pending;
+    PendingConnections M_pending;
 
 public:
     explicit
@@ -90,8 +78,6 @@ public:
     std::shared_ptr< Connection > accept( const Inbound & in ) override;
 
 private:
-    boost::system::error_code listen( const boost::asio::ip::tcp::endpoint & endpoint,
-                                      const bool dual_stack );
     void startAccept();
     void handleAccept( const boost::system::error_code & error,
                        boost::asio::ip::tcp::socket socket );

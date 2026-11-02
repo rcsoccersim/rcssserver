@@ -79,8 +79,8 @@ public:
     typedef std::vector< Monitor * > MonitorCont;
     typedef std::vector< rcss::Listener * > ListenerCont;
     typedef std::vector< MPObject * > MPObjectCont;
-    //! One acceptor per transport, processed in this order.
-    //! Only UDP for now. TCP and WebSocket will be added.
+    //! One acceptor per transport, processed in this order: UDP, TCP and
+    //! WebSocket. The disabled transports have no acceptors.
     typedef std::vector< std::unique_ptr< rcss::Acceptor > > AcceptorCont;
 protected:
     // definitions of different timeable methods
@@ -101,6 +101,7 @@ protected:
     std::unique_ptr< boost::asio::io_context > M_io_context;
 
     AcceptorCont M_player_acceptors; //!< entrances for players and monitors
+    AcceptorCont M_monitor_acceptors; //!< entrances only for monitors. Only WebSocket has one.
     AcceptorCont M_offline_coach_acceptors; //!< entrances for offline coaches
     AcceptorCont M_online_coach_acceptors; //!< entrances for online coaches
 
@@ -296,6 +297,7 @@ private:
     void createObjects();
 
     void recvFromPlayerPort();
+    void recvFromMonitorPort();
     void recvFromOfflineCoachPort();
     void recvFromOnlineCoachPort();
 

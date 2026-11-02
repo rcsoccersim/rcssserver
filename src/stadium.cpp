@@ -43,6 +43,8 @@
 #include "types.h"
 #include "transport/tcpacceptor.h"
 #include "transport/udpacceptor.h"
+#include "transport/wsacceptor.h"
+#include "transport/wsserver.h"
 #include "utility.h"
 #include "xpmholder.h"
 
@@ -303,6 +305,43 @@ Stadium::init()
     {
         disable();
         return false;
+    }
+
+    if ( ServerParam::instance().wsPort() > 0 )
+    {
+        // the comma separated values of the Origin header to accept
+        std::vector< std::string > origins;
+        std::istringstream origin_list( ServerParam::instance().wsAllowedOrigins() );
+        std::string origin;
+        while ( std::getline( origin_list, origin, ',' ) )
+        {
+            origin.erase( 0, origin.find_first_not_of( " \t" ) );
+            origin.erase( origin.find_last_not_of( " \t" ) + 1 );
+            if ( ! origin.empty() )
+            {
+                origins.push_back( origin );
+            }
+        }
+
+        // One WebSocket port serves all services, which the request path
+        // selects. The monitors can use "/player" as they do over UDP, or
+        // "/monitor", which takes only the monitors.
+        const std::vector< std::string > paths = { "/player", "/monitor", "/coach", "/olcoach" };
+        std::shared_ptr< rcss::WSServer > server
+            = std::make_shared< rcss::WSServer >( *M_io_context, paths, origins );
+        const boost::system::error_code error = server->open( ServerParam::instance().wsPort() );
+        if ( error )
+        {
+            std::cerr << "Error initializing WebSocket sockets: port=" << ServerParam::instance().wsPort()
+                      << ". " << error.message() << std::endl;
+            disable();
+            return false;
+        }
+
+        M_player_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/player" ) ) );
+        M_monitor_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/monitor" ) ) );
+        M_offline_coach_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/coach" ) ) );
+        M_online_coach_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/olcoach" ) ) );
     }
 
     M_weather.init();
@@ -2248,6 +2287,7 @@ Stadium::doRecvFromClients()
     // receive message and process commands
     //
     recvFromPlayerPort();
+    recvFromMonitorPort();
     recvFromOnlineCoachPort();
     recvFromOfflineCoachPort();
 
@@ -2677,6 +2717,34 @@ Stadium::recvFromPlayerPort()
             if ( ! parseMonitorInit( *acceptor, in ) )
             {
                 parsePlayerInit( *acceptor, in );
+            }
+        }
+    }
+}
+
+void
+Stadium::recvFromMonitorPort()
+{
+    // The accepted monitors are received in recvFromPlayerPort().
+
+    for ( AcceptorCont::reference acceptor : M_monitor_acceptors )
+    {
+        rcss::Inbound in;
+        while ( acceptor->popInbound( in ) )
+        {
+            RemoteClient * client = find_client( M_monitors, in.known );
+            if ( client )
+            {
+                client->undedicatedRecv( in.message );
+                continue;
+            }
+
+            // a new monitor. The other clients are not accepted here.
+            chop_newline( in.message );
+
+            if ( ! parseMonitorInit( *acceptor, in ) )
+            {
+                sendReply( "(error unknown_command)", in );
             }
         }
     }

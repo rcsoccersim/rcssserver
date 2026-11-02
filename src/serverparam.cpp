@@ -733,6 +733,14 @@ ServerParam::addParams()
               "The TCP port number for offline coaches. 0 disables TCP.", 999 );
     addParam( "tcp_olcoach_port", M_tcp_olcoach_port,
               "The TCP port number for online coaches. 0 disables TCP.", 999 );
+    addParam( "ws_port", M_ws_port,
+              "The WebSocket port number. The request path selects the service: "
+              "/player (players and monitors), /monitor (monitors only), /coach or /olcoach. "
+              "0 disables WebSocket.", 999 );
+    addParam( "ws_allowed_origins", M_ws_allowed_origins,
+              "Comma separated values of the Origin header that WebSocket accepts, "
+              "e.g. \"http://localhost:8000,null\" (quoted, without spaces). Empty accepts all. "
+              "Clients without the Origin header are always accepted.", 999 );
     addParam( "say_coach_cnt_max", M_say_cnt_max, "", 7 );
     addParam( "say_coach_msg_size", M_say_coach_msg_size, "", 7 );
     addParam( "simulator_step",
@@ -1279,6 +1287,8 @@ ServerParam::setDefaults()
     M_tcp_port = 0;
     M_tcp_coach_port = 0;
     M_tcp_olcoach_port = 0;
+    M_ws_port = 0;
+    M_ws_allowed_origins = "";
 
     M_say_cnt_max = DEF_SAY_COACH_CNT_MAX;
     M_say_coach_msg_size = DEF_SAY_COACH_MSG_SIZE;

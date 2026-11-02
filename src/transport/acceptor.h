@@ -62,8 +62,9 @@ struct Inbound {
   \class Acceptor
   \brief The entrance through which new clients connect to the server.
 
-  There is one acceptor for each pair of a service (players, offline coaches
-  or online coaches) and a transport.
+  There is one acceptor for each pair of a service (players and monitors,
+  monitors only, offline coaches or online coaches) and a transport that
+  provides it.
  */
 class Acceptor {
 private:
