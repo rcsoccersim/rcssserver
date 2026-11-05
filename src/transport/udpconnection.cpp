@@ -36,17 +36,16 @@
 
 #include "udpconnection.h"
 
+#include "closeonexec.h"
 #include "param.h"
 
-#include <cerrno>
-#include <cstring>
 #include <iostream>
 
 namespace rcss {
 
 /*-------------------------------------------------------------------*/
-UDPConnection::UDPConnection()
-    : M_socket(),
+UDPConnection::UDPConnection( boost::asio::io_context & io_context )
+    : M_socket( io_context ),
       M_outbuf( M_socket ),
       M_dest(),
       M_connected( false )
@@ -64,20 +63,28 @@ UDPConnection::~UDPConnection()
 bool
 UDPConnection::open()
 {
-    if ( ! M_socket.open() )
+    boost::system::error_code error;
+
+    M_socket.open( boost::asio::ip::udp::v4(), error );
+    if ( ! error )
+    {
+        error = set_close_on_exec( M_socket.native_handle() );
+    }
+    if ( error )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": Error opening socket: "
-                  << std::strerror( errno ) << std::endl;
+                  << error.message() << std::endl;
         close();
         return false;
     }
 
-    if ( M_socket.setNonBlocking() < 0 )
+    M_socket.non_blocking( true, error );
+    if ( error )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": Error setting socket non-blocking: "
-                  << std::strerror( errno ) << std::endl;
+                  << error.message() << std::endl;
         close();
         return false;
     }
@@ -87,9 +94,11 @@ UDPConnection::open()
 
 /*-------------------------------------------------------------------*/
 bool
-UDPConnection::connect( const rcss::net::Addr & dest )
+UDPConnection::connect( const boost::asio::ip::udp::endpoint & dest )
 {
-    if ( ! M_socket.connect( dest ) )
+    boost::system::error_code error;
+    M_socket.connect( dest, error );
+    if ( error )
     {
         std::cerr << __FILE__ << ": " << __LINE__
                   << ": Error connecting socket" << std::endl;
@@ -103,12 +112,12 @@ UDPConnection::connect( const rcss::net::Addr & dest )
 }
 
 /*-------------------------------------------------------------------*/
-rcss::net::Addr
+boost::asio::ip::udp::endpoint
 UDPConnection::getDest() const
 {
     return ( isOpen()
              ? M_dest
-             : rcss::net::Addr() );
+             : boost::asio::ip::udp::endpoint() );
 }
 
 /*-------------------------------------------------------------------*/
@@ -128,19 +137,26 @@ UDPConnection::popMessage( std::string & msg )
     }
 
     char buffer[ MaxMesg ];
-    const int len = M_socket.recv( buffer, MaxMesg );
-
-    if ( len < 0 )
+    std::size_t len = 0;
+    boost::system::error_code error;
+    do
     {
-        if ( errno != EWOULDBLOCK )
+        len = M_socket.receive( boost::asio::buffer( buffer, MaxMesg ), 0, error );
+    }
+    while ( error == boost::asio::error::interrupted );
+
+    if ( error )
+    {
+        if ( error != boost::asio::error::would_block
+             && error != boost::asio::error::try_again )
         {
             // ECONNREFUSED means the client has gone away,
             // which is not worth reporting.
-            if ( errno != ECONNREFUSED )
+            if ( error != boost::asio::error::connection_refused )
             {
                 std::cerr << __FILE__ << ": " << __LINE__
                           << ": Error receiving from socket: "
-                          << std::strerror( errno ) << std::endl;
+                          << error.message() << std::endl;
             }
             close();
         }
@@ -156,14 +172,15 @@ bool
 UDPConnection::isOpen() const
 {
     return M_connected
-        && M_socket.isOpen();
+        && M_socket.is_open();
 }
 
 /*-------------------------------------------------------------------*/
 void
 UDPConnection::close()
 {
-    M_socket.close();
+    boost::system::error_code ignored;
+    M_socket.close( ignored );
     M_connected = false;
 }
 

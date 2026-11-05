@@ -36,6 +36,7 @@
 
 #include "wsserver.h"
 
+#include "closeonexec.h"
 #include "tcplisten.h"
 #include "wsconnection.h"
 
@@ -171,6 +172,8 @@ WSServer::handleAccept( const boost::system::error_code & error,
     }
     else
     {
+        // The flag cannot fail to be set on an accepted socket in practice.
+        set_close_on_exec( socket.native_handle() );
         Handshake h;
         h.connection = std::make_shared< WSConnection >( std::move( socket ) );
         h.since = std::chrono::steady_clock::now();

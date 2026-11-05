@@ -79,6 +79,8 @@ add_executable(RCSSServer
     stdtimer.cpp
     synctimer.cpp
     team.cpp
+    transport/closeonexec.cpp
+    transport/datagrambuf.cpp
     transport/messagebuf.cpp
     transport/pendingconnections.cpp
     transport/tcpacceptor.cpp

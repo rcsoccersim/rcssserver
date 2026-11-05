@@ -36,14 +36,12 @@
 
 #include "udpacceptor.h"
 
+#include "closeonexec.h"
+#include "datagrambuf.h"
 #include "udpconnection.h"
 #include "param.h"
 
-#include <rcss/net/socketstreambuf.hpp>
-
 #include <algorithm>
-#include <cerrno>
-#include <cstring>
 #include <iostream>
 
 namespace rcss {
@@ -59,27 +57,27 @@ namespace {
 class UDPReply
     : public Connection {
 private:
-    std::shared_ptr< rcss::net::UDPSocket > M_socket;
-    rcss::net::Addr M_dest;
-    rcss::net::SocketStreamBuf M_outbuf; //!< must be declared after M_socket
+    std::shared_ptr< boost::asio::ip::udp::socket > M_socket;
+    boost::asio::ip::udp::endpoint M_dest;
+    DatagramBuf M_outbuf; //!< must be declared after M_socket
     bool M_closed;
 
 public:
-    UDPReply( const std::shared_ptr< rcss::net::UDPSocket > & socket,
-              const rcss::net::Addr & dest )
+    UDPReply( const std::shared_ptr< boost::asio::ip::udp::socket > & socket,
+              const boost::asio::ip::udp::endpoint & dest )
         : M_socket( socket ),
           M_dest( dest ),
-          // NO_CONN: never connect the shared socket to one client
-          M_outbuf( *socket, dest, rcss::net::SocketStreamBuf::NO_CONN ),
+          // never connect the shared socket to one client
+          M_outbuf( *socket, dest ),
           M_closed( false )
       { }
 
-    const std::shared_ptr< rcss::net::UDPSocket > & socket() const
+    const std::shared_ptr< boost::asio::ip::udp::socket > & socket() const
       {
           return M_socket;
       }
 
-    const rcss::net::Addr & dest() const
+    const boost::asio::ip::udp::endpoint & dest() const
       {
           return M_dest;
       }
@@ -98,7 +96,7 @@ public:
     bool isOpen() const override
       {
           return ! M_closed
-              && M_socket->isOpen();
+              && M_socket->is_open();
       }
 
     void close() override
@@ -116,8 +114,9 @@ public:
 }
 
 /*-------------------------------------------------------------------*/
-UDPAcceptor::UDPAcceptor()
-    : M_socket(),
+UDPAcceptor::UDPAcceptor( boost::asio::io_context & io_context )
+    : M_io_context( io_context ),
+      M_socket(),
       M_connections()
 {
 
@@ -130,14 +129,33 @@ UDPAcceptor::~UDPAcceptor()
 }
 
 /*-------------------------------------------------------------------*/
-bool
-UDPAcceptor::open( const rcss::net::Addr & addr )
+boost::system::error_code
+UDPAcceptor::open( const unsigned short port )
 {
-    // the constructor of UDPSocket opens a socket
-    M_socket = std::make_shared< rcss::net::UDPSocket >();
+    namespace ip = boost::asio::ip;
 
-    return M_socket->bind( addr )
-        && M_socket->setNonBlocking() != -1;
+    boost::system::error_code error;
+
+    M_socket = std::make_shared< ip::udp::socket >( M_io_context );
+    M_socket->open( ip::udp::v4(), error );
+    if ( ! error )
+    {
+        error = set_close_on_exec( M_socket->native_handle() );
+    }
+    if ( ! error )
+    {
+        M_socket->bind( ip::udp::endpoint( ip::udp::v4(), port ), error );
+    }
+    if ( ! error )
+    {
+        M_socket->non_blocking( true, error );
+    }
+
+    if ( error )
+    {
+        M_socket.reset();
+    }
+    return error;
 }
 
 /*-------------------------------------------------------------------*/
@@ -150,22 +168,25 @@ UDPAcceptor::popInbound( Inbound & in )
     }
 
     char buffer[ MaxMesg ];
-    rcss::net::Addr from;
-    int len = 0;
+    boost::asio::ip::udp::endpoint from;
+    std::size_t len = 0;
+    boost::system::error_code error;
 
     do
     {
-        len = M_socket->recv( buffer, MaxMesg, from );
+        len = M_socket->receive_from( boost::asio::buffer( buffer, MaxMesg ), from, 0, error );
     }
-    while ( len == 0 ); // ignore empty datagrams
+    while ( error == boost::asio::error::interrupted
+            || ( ! error && len == 0 ) ); // ignore empty datagrams
 
-    if ( len < 0 )
+    if ( error )
     {
-        if ( errno != EWOULDBLOCK )
+        if ( error != boost::asio::error::would_block
+             && error != boost::asio::error::try_again )
         {
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": Error recv'ing from socket: "
-                      << std::strerror( errno ) << std::endl;
+                      << error.message() << std::endl;
         }
         return false;
     }
@@ -188,7 +209,7 @@ UDPAcceptor::accept( const Inbound & in )
         return std::shared_ptr< Connection >();
     }
 
-    std::shared_ptr< UDPConnection > conn = std::make_shared< UDPConnection >();
+    std::shared_ptr< UDPConnection > conn = std::make_shared< UDPConnection >( M_io_context );
     if ( ! conn->open()
          || ! conn->connect( reply->dest() ) )
     {
@@ -210,7 +231,7 @@ UDPAcceptor::accept( const Inbound & in )
 
 /*-------------------------------------------------------------------*/
 const UDPConnection *
-UDPAcceptor::findConnection( const rcss::net::Addr & addr ) const
+UDPAcceptor::findConnection( const boost::asio::ip::udp::endpoint & endpoint ) const
 {
     // Search from the newest one. If an old connection to the same address
     // is still open, the newer client is the one registered in Stadium.
@@ -221,7 +242,7 @@ UDPAcceptor::findConnection( const rcss::net::Addr & addr ) const
     {
         const std::shared_ptr< UDPConnection > conn = it->lock();
         if ( conn
-             && conn->getDest() == addr ) // getDest() is the default Addr if closed
+             && conn->getDest() == endpoint ) // getDest() is the default endpoint if closed
         {
             return conn.get();
         }

@@ -65,6 +65,8 @@ rcssserver_SOURCES = \
 	stdtimer.cpp \
 	synctimer.cpp \
 	team.cpp \
+	transport/closeonexec.cpp \
+	transport/datagrambuf.cpp \
 	transport/messagebuf.cpp \
 	transport/pendingconnections.cpp \
 	transport/tcpacceptor.cpp \
@@ -153,7 +155,9 @@ noinst_HEADERS = \
 	timeable.h \
 	timer.h \
 	transport/acceptor.h \
+	transport/closeonexec.h \
 	transport/connection.h \
+	transport/datagrambuf.h \
 	transport/messagebuf.h \
 	transport/pendingconnections.h \
 	transport/tcpacceptor.h \

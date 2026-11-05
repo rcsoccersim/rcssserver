@@ -34,9 +34,10 @@
 #define RCSS_UDPCONNECTION_H
 
 #include "connection.h"
+#include "datagrambuf.h"
 
-#include <rcss/net/udpsocket.hpp>
-#include <rcss/net/socketstreambuf.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/udp.hpp>
 
 namespace rcss {
 
@@ -48,22 +49,26 @@ namespace rcss {
   server's replies from this socket's port, and sends its following messages
   to that port (the "dedicated port" of the rcssserver protocol).
   One datagram carries one message.
+
+  The socket is non-blocking, and popMessage() reads it directly. No
+  asynchronous operation is used.
  */
 class UDPConnection
     : public Connection {
 private:
-    rcss::net::UDPSocket M_socket;
-    rcss::net::SocketStreamBuf M_outbuf; //!< must be declared after M_socket
-    rcss::net::Addr M_dest;
+    boost::asio::ip::udp::socket M_socket;
+    DatagramBuf M_outbuf; //!< must be declared after M_socket
+    boost::asio::ip::udp::endpoint M_dest;
     bool M_connected;
 
 public:
-    UDPConnection();
+    explicit
+    UDPConnection( boost::asio::io_context & io_context );
 
     ~UDPConnection() override;
 
     /*!
-      \brief open a new socket in non-blocking mode.
+      \brief open a new IPv4 socket in non-blocking mode.
       \return true if successful
      */
     bool open();
@@ -73,13 +78,13 @@ public:
       \param dest the client's address
       \return true if successful. The socket is closed on failure.
      */
-    bool connect( const rcss::net::Addr & dest );
+    bool connect( const boost::asio::ip::udp::endpoint & dest );
 
     /*!
       \brief get the client's address.
-      \return the address, or the default Addr if not connected
+      \return the address, or the default endpoint if not connected
      */
-    rcss::net::Addr getDest() const;
+    boost::asio::ip::udp::endpoint getDest() const;
 
     std::streambuf & outbuf() override;
 

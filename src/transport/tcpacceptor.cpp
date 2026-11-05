@@ -36,6 +36,7 @@
 
 #include "tcpacceptor.h"
 
+#include "closeonexec.h"
 #include "tcpconnection.h"
 #include "tcplisten.h"
 
@@ -105,6 +106,8 @@ TCPAcceptor::handleAccept( const boost::system::error_code & error,
     }
     else
     {
+        // The flag cannot fail to be set on an accepted socket in practice.
+        set_close_on_exec( socket.native_handle() );
         std::shared_ptr< TCPConnection > connection = std::make_shared< TCPConnection >( std::move( socket ) );
         connection->start();
         M_pending.add( connection, std::chrono::steady_clock::now() );

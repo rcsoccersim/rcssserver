@@ -35,7 +35,8 @@
 
 #include "acceptor.h"
 
-#include <rcss/net/udpsocket.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/udp.hpp>
 
 #include <memory>
 #include <vector>
@@ -52,35 +53,42 @@ class UDPConnection;
   is accepted, it gets a connection with its own socket (the dedicated port).
   Accepted clients may still send messages to the shared port. Those
   messages are taken as inbound messages with Inbound::known set.
+
+  The socket is non-blocking, and popInbound() reads it directly. No
+  asynchronous operation is used.
  */
 class UDPAcceptor
     : public Acceptor {
 private:
+    boost::asio::io_context & M_io_context;
+
     //! the socket bound to the shared port. Replies to inbound messages
     //! share it, so it is held by a shared pointer.
-    std::shared_ptr< rcss::net::UDPSocket > M_socket;
+    std::shared_ptr< boost::asio::ip::udp::socket > M_socket;
 
     //! the accepted connections, used to recognize their messages
     std::vector< std::weak_ptr< UDPConnection > > M_connections;
 
 public:
-    UDPAcceptor();
+    explicit
+    UDPAcceptor( boost::asio::io_context & io_context );
 
     ~UDPAcceptor() override;
 
     /*!
-      \brief open the shared socket in non-blocking mode and bind it.
-      \param addr the address to bind
-      \return true if successful
+      \brief open the shared IPv4 socket in non-blocking mode and bind it
+      to the given port on all interfaces.
+      \param port the port number
+      \return the error, or a value that evaluates to false on success
      */
-    bool open( const rcss::net::Addr & addr );
+    boost::system::error_code open( const unsigned short port );
 
     bool popInbound( Inbound & in ) override;
 
     std::shared_ptr< Connection > accept( const Inbound & in ) override;
 
 private:
-    const UDPConnection * findConnection( const rcss::net::Addr & addr ) const;
+    const UDPConnection * findConnection( const boost::asio::ip::udp::endpoint & endpoint ) const;
 };
 
 }

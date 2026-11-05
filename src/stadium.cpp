@@ -256,22 +256,23 @@ Stadium::init()
         //std::cout << *(M_player_types[i]) << std::endl;
     }
 
+    M_io_context.reset( new boost::asio::io_context() );
+
     const auto open_udp_acceptor
-        = []( AcceptorCont & acceptors,
-              const rcss::net::Addr::PortType port )
+        = [this]( AcceptorCont & acceptors,
+                  const rcss::net::Addr::PortType port )
           {
-              std::unique_ptr< rcss::UDPAcceptor > acceptor( new rcss::UDPAcceptor() );
-              if ( ! acceptor->open( rcss::net::Addr( port ) ) )
+              std::unique_ptr< rcss::UDPAcceptor > acceptor( new rcss::UDPAcceptor( *M_io_context ) );
+              const boost::system::error_code error = acceptor->open( port );
+              if ( error )
               {
                   std::cerr << "Error initializing sockets: port=" << port
-                            << ". " << strerror( errno ) << std::endl;
+                            << ". " << error.message() << std::endl;
                   return false;
               }
               acceptors.push_back( std::move( acceptor ) );
               return true;
           };
-
-    M_io_context.reset( new boost::asio::io_context() );
 
     const auto open_tcp_acceptor
         = [this]( AcceptorCont & acceptors,

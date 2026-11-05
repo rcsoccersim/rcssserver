@@ -36,6 +36,8 @@
 
 #include "tcplisten.h"
 
+#include "closeonexec.h"
+
 #include <boost/asio/ip/v6_only.hpp>
 
 namespace rcss {
@@ -53,6 +55,10 @@ listen_at( boost::asio::ip::tcp::acceptor & acceptor,
     acceptor.close( ignored );
 
     acceptor.open( endpoint.protocol(), error );
+    if ( ! error )
+    {
+        error = set_close_on_exec( acceptor.native_handle() );
+    }
     if ( ! error
          && dual_stack )
     {
