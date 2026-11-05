@@ -37,8 +37,38 @@
 #include "datagrambuf.h"
 
 #include <cerrno>
+#include <poll.h>
 
 namespace rcss {
+
+namespace {
+
+/*!
+  \brief wait until the socket can send.
+
+  basic_socket::wait() cannot be used for this, because it does not block
+  on a socket in non-blocking mode.
+  \param handle the native handle of the socket
+  \return the error, if failed
+ */
+boost::system::error_code
+wait_writable( const int handle )
+{
+    pollfd fds;
+    fds.fd = handle;
+    fds.events = POLLOUT;
+    fds.revents = 0;
+    while ( ::poll( &fds, 1, -1 ) == -1 )
+    {
+        if ( errno != EINTR )
+        {
+            return boost::system::error_code( errno, boost::system::system_category() );
+        }
+    }
+    return boost::system::error_code();
+}
+
+}
 
 /*-------------------------------------------------------------------*/
 DatagramBuf::DatagramBuf( boost::asio::ip::udp::socket & socket )
@@ -126,7 +156,7 @@ DatagramBuf::writeData()
         {
             // The socket is non-blocking. Wait until it can send, as
             // rcss::net::Socket retried until the datagram was sent.
-            M_socket.wait( boost::asio::socket_base::wait_write, error );
+            error = wait_writable( M_socket.native_handle() );
             if ( ! error )
             {
                 continue;
