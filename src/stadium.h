@@ -92,6 +92,7 @@ protected:
     void doSendCoachMessages() override;
     bool doSendThink() override;
     void doQuit() override;
+    void doWaitUntil( const std::chrono::steady_clock::time_point & time ) override;
 
 protected:
     bool M_alive;
@@ -162,6 +163,13 @@ public:
     bool init();
 
     void finalize( const std::string & msg );
+
+    //! the event loop of the server, which runs the I/O of the clients.
+    //! It is available after init().
+    boost::asio::io_context & ioContext()
+      {
+          return *M_io_context;
+      }
 
     virtual
     bool isAlive() override
@@ -295,6 +303,16 @@ public:
 
 private:
     void createObjects();
+
+    /*!
+      \brief run the I/O handlers until the given time. It returns earlier
+      if the stadium is disabled, e.g. by a signal.
+      \param time the time to return at the latest
+      \param any_event if true, return after the first handler, e.g. after
+      a message from a client has arrived
+     */
+    void runIO( const std::chrono::steady_clock::time_point & time,
+                const bool any_event );
 
     void recvFromPlayerPort();
     void recvFromMonitorPort();

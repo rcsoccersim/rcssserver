@@ -39,6 +39,8 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
 
+#include <memory>
+
 namespace rcss {
 
 /*!
@@ -50,16 +52,20 @@ namespace rcss {
   to that port (the "dedicated port" of the rcssserver protocol).
   One datagram carries one message.
 
-  The socket is non-blocking, and popMessage() reads it directly. No
-  asynchronous operation is used.
+  The socket is non-blocking, and popMessage() reads it directly. The only
+  asynchronous operation is a wait for the next datagram, which wakes up the
+  event loop, e.g. while the server waits for the clients in sync mode.
+  The wait does not read the datagram.
  */
 class UDPConnection
-    : public Connection {
+    : public Connection,
+      public std::enable_shared_from_this< UDPConnection > {
 private:
     boost::asio::ip::udp::socket M_socket;
     DatagramBuf M_outbuf; //!< must be declared after M_socket
     boost::asio::ip::udp::endpoint M_dest;
     bool M_connected;
+    bool M_waiting; //!< true while waiting for a datagram to arrive
 
 public:
     explicit
@@ -75,6 +81,9 @@ public:
 
     /*!
       \brief connect the socket to the client.
+
+      The connection must be owned by a shared pointer, so that the wait
+      for datagrams can refer to it.
       \param dest the client's address
       \return true if successful. The socket is closed on failure.
      */
@@ -95,6 +104,9 @@ public:
     void close() override;
 
     bool isBinarySafe() const override;
+
+private:
+    void waitRead();
 };
 
 }

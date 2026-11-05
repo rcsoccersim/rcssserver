@@ -48,7 +48,8 @@ UDPConnection::UDPConnection( boost::asio::io_context & io_context )
     : M_socket( io_context ),
       M_outbuf( M_socket ),
       M_dest(),
-      M_connected( false )
+      M_connected( false ),
+      M_waiting( false )
 {
 
 }
@@ -108,6 +109,7 @@ UDPConnection::connect( const boost::asio::ip::udp::endpoint & dest )
 
     M_dest = dest;
     M_connected = true;
+    waitRead();
     return true;
 }
 
@@ -160,6 +162,12 @@ UDPConnection::popMessage( std::string & msg )
             }
             close();
         }
+        else
+        {
+            // All the datagrams have been read. Wake up the event loop
+            // when the next one arrives.
+            waitRead();
+        }
         return false;
     }
 
@@ -190,6 +198,35 @@ UDPConnection::isBinarySafe() const
 {
     // one datagram carries one message of any bytes
     return true;
+}
+
+/*-------------------------------------------------------------------*/
+void
+UDPConnection::waitRead()
+{
+    // Call this only when no datagram is left unread. A wait started while
+    // a datagram is unread completes at once, so the event loop would wake
+    // up again and again until the datagram is read.
+    if ( M_waiting
+         || ! isOpen() )
+    {
+        return;
+    }
+
+    M_waiting = true;
+
+    // The wait does not keep the connection alive. When the connection is
+    // destroyed, closing the socket cancels the wait.
+    const std::weak_ptr< UDPConnection > self = weak_from_this();
+    M_socket.async_wait( boost::asio::ip::udp::socket::wait_read,
+                         [self]( const boost::system::error_code & )
+                         {
+                             if ( std::shared_ptr< UDPConnection > conn = self.lock() )
+                             {
+                                 // popMessage() reads the datagram
+                                 conn->M_waiting = false;
+                             }
+                         } );
 }
 
 }

@@ -50,6 +50,8 @@
 
 #include <rcss/clang/clangmsg.h>
 
+#include <boost/asio/steady_timer.hpp>
+
 #include <sstream>
 #include <vector>
 #include <string>
@@ -57,7 +59,6 @@
 #include <algorithm>
 #include <memory>
 #include <chrono>
-#include <thread>
 
 #include <cmath>
 #include <cstdio>
@@ -2279,7 +2280,7 @@ Stadium::doRecvFromClients()
     //
     if ( M_io_context->stopped() )
     {
-        // poll() stops the io_context when it has no work (e.g. without TCP)
+        // poll() and run_one() stop the io_context when it has no work
         M_io_context->restart();
     }
     M_io_context->poll();
@@ -2466,7 +2467,7 @@ bool
 Stadium::doSendThink()
 {
     const char * think_command = "(think)";
-    const double max_msec_waited = 25 * 50;
+    const std::chrono::milliseconds max_wait( 25 * 50 );
     const int max_cycles_missed = 20;
 
     static int cycles_missed = 0; //number of cycles where someone missed
@@ -2476,9 +2477,7 @@ Stadium::doSendThink()
     if ( time() <= 0 )
     {
         //still waiting for players to connect, so let's run a little more slowly
-        std::chrono::microseconds sleep_count( 50 * 1000 );
-        std::this_thread::sleep_for( sleep_count );
-        //usleep( 50 * 1000 );
+        runIO( std::chrono::steady_clock::now() + std::chrono::milliseconds( 50 ), false );
     }
     else if ( ! monitors().empty() )
     {
@@ -2486,9 +2485,7 @@ Stadium::doSendThink()
         if ( ++monitor_wait_count >= 32 )
         {
             monitor_wait_count = 0;
-            std::chrono::microseconds sleep_count( 20 * 1000 );
-            std::this_thread::sleep_for( sleep_count );
-            //usleep( 20 * 1000 );
+            runIO( std::chrono::steady_clock::now() + std::chrono::milliseconds( 20 ), false );
         }
     }
 
@@ -2540,17 +2537,26 @@ Stadium::doSendThink()
 
     int num_sleeps = 0;
 
-    const std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+    const std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+
+    // As when the server polled the clients, it receives the messages
+    // synch_micro_sleep after (think). After that, it receives them
+    // synch_micro_sleep after the previous receive or when a message
+    // arrives, whichever is later. A long synch_micro_sleep slows down the
+    // game, e.g. for people to watch it. With zero or less, the server
+    // receives the messages at once, without even a short wait.
+    const std::chrono::microseconds micro_sleep( std::max( 0, ServerParam::instance().synchMicroSleep() ) );
+    std::chrono::steady_clock::time_point next_recv = start_time + micro_sleep;
 
     do
     {
         done = DS_TRUE;
         ++num_sleeps;
 
-        std::chrono::microseconds sleep_count( ServerParam::instance().synchMicroSleep() );
-        std::this_thread::sleep_for( sleep_count );
-        //usleep( ServerParam::instance().synchMicroSleep() );
-
+        if ( micro_sleep > std::chrono::microseconds::zero() )
+        {
+            runIO( next_recv, false );
+        }
         doRecvFromClients();
 
         for ( int i = 0; i < MAX_PLAYER*2; ++i )
@@ -2584,12 +2590,7 @@ Stadium::doSendThink()
             done = DS_FALSE;
         }
 
-        // get time differnce with start of loop, first get time difference in
-        // seconds, then multiply with 1000 to get msec.
-        const std::chrono::nanoseconds nano_diff = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - start_time );
-        const double time_diff = nano_diff.count() * 0.001 * 0.001;
-
-        if ( time_diff > max_msec_waited )
+        if ( std::chrono::steady_clock::now() - start_time > max_wait )
         {
             done = DS_TRUE_BUT_INCOMPLETE;
             if ( time() > 0 )
@@ -2603,8 +2604,16 @@ Stadium::doSendThink()
                 shutdown = true;
             }
         }
+
+        if ( done == DS_FALSE )
+        {
+            // wait until a message arrives, instead of polling
+            next_recv = std::chrono::steady_clock::now() + micro_sleep;
+            runIO( start_time + max_wait, true );
+        }
     }
-    while ( done == DS_FALSE );
+    while ( done == DS_FALSE
+            && M_alive );
 
     if ( done != DS_TRUE_BUT_INCOMPLETE )
     {
@@ -3172,6 +3181,46 @@ void
 Stadium::doQuit()
 {
     finalize( "Quit Server. Exiting..." );
+}
+
+void
+Stadium::doWaitUntil( const std::chrono::steady_clock::time_point & time )
+{
+    runIO( time, false );
+}
+
+void
+Stadium::runIO( const std::chrono::steady_clock::time_point & time,
+                const bool any_event )
+{
+    if ( M_io_context->stopped() )
+    {
+        // poll() and run_one() stop the io_context when it has no work
+        M_io_context->restart();
+    }
+
+    // The timer's handler may run after this function has returned,
+    // e.g. when it returns after another handler.
+    const std::shared_ptr< bool > expired = std::make_shared< bool >( false );
+    boost::asio::steady_timer timer( *M_io_context, time );
+    timer.async_wait( [expired]( const boost::system::error_code & error )
+                      {
+                          if ( ! error )
+                          {
+                              *expired = true;
+                          }
+                      } );
+
+    // The handler of a signal disables the stadium.
+    while ( ! *expired
+            && M_alive )
+    {
+        M_io_context->run_one();
+        if ( any_event )
+        {
+            break;
+        }
+    }
 }
 
 void

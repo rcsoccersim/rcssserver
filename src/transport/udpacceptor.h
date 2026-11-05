@@ -54,8 +54,10 @@ class UDPConnection;
   Accepted clients may still send messages to the shared port. Those
   messages are taken as inbound messages with Inbound::known set.
 
-  The socket is non-blocking, and popInbound() reads it directly. No
-  asynchronous operation is used.
+  The socket is non-blocking, and popInbound() reads it directly. The only
+  asynchronous operation is a wait for the next datagram, which wakes up the
+  event loop, e.g. while the server waits for the clients in sync mode.
+  The wait does not read the datagram.
  */
 class UDPAcceptor
     : public Acceptor {
@@ -65,6 +67,7 @@ private:
     //! the socket bound to the shared port. Replies to inbound messages
     //! share it, so it is held by a shared pointer.
     std::shared_ptr< boost::asio::ip::udp::socket > M_socket;
+    bool M_waiting; //!< true while waiting for a datagram to arrive
 
     //! the accepted connections, used to recognize their messages
     std::vector< std::weak_ptr< UDPConnection > > M_connections;
@@ -88,6 +91,8 @@ public:
     std::shared_ptr< Connection > accept( const Inbound & in ) override;
 
 private:
+    void waitRead();
+
     const UDPConnection * findConnection( const boost::asio::ip::udp::endpoint & endpoint ) const;
 };
 

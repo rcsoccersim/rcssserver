@@ -117,6 +117,7 @@ public:
 UDPAcceptor::UDPAcceptor( boost::asio::io_context & io_context )
     : M_io_context( io_context ),
       M_socket(),
+      M_waiting( false ),
       M_connections()
 {
 
@@ -125,7 +126,12 @@ UDPAcceptor::UDPAcceptor( boost::asio::io_context & io_context )
 /*-------------------------------------------------------------------*/
 UDPAcceptor::~UDPAcceptor()
 {
-
+    if ( M_socket )
+    {
+        // cancel the wait, which refers to this acceptor
+        boost::system::error_code ignored;
+        M_socket->close( ignored );
+    }
 }
 
 /*-------------------------------------------------------------------*/
@@ -154,7 +160,10 @@ UDPAcceptor::open( const unsigned short port )
     if ( error )
     {
         M_socket.reset();
+        return error;
     }
+
+    waitRead();
     return error;
 }
 
@@ -187,6 +196,12 @@ UDPAcceptor::popInbound( Inbound & in )
             std::cerr << __FILE__ << ": " << __LINE__
                       << ": Error recv'ing from socket: "
                       << error.message() << std::endl;
+        }
+        else
+        {
+            // All the datagrams have been read. Wake up the event loop
+            // when the next one arrives.
+            waitRead();
         }
         return false;
     }
@@ -227,6 +242,33 @@ UDPAcceptor::accept( const Inbound & in )
     M_connections.push_back( conn );
 
     return conn;
+}
+
+/*-------------------------------------------------------------------*/
+void
+UDPAcceptor::waitRead()
+{
+    // Call this only when no datagram is left unread. A wait started while
+    // a datagram is unread completes at once, so the event loop would wake
+    // up again and again until the datagram is read.
+    if ( M_waiting
+         || ! M_socket )
+    {
+        return;
+    }
+
+    M_waiting = true;
+    M_socket->async_wait( boost::asio::ip::udp::socket::wait_read,
+                          [this]( const boost::system::error_code & error )
+                          {
+                              // The acceptor may have been destroyed if the
+                              // wait was canceled.
+                              if ( error != boost::asio::error::operation_aborted )
+                              {
+                                  // popInbound() reads the datagram
+                                  M_waiting = false;
+                              }
+                          } );
 }
 
 /*-------------------------------------------------------------------*/

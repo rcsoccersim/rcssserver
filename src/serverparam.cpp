@@ -1360,7 +1360,15 @@ ServerParam::setDefaults()
 
     M_synch_mode = false;
     M_synch_offset = 60;
-    M_synch_micro_sleep = 1;
+
+    // In synch mode, the server waits for synch_micro_sleep microseconds
+    // before each receive of the messages from the clients after (think).
+    // A large value slows down the game, e.g. for people to watch it. With
+    // 0, the server receives the messages as soon as they arrive.
+    // The default was 1 until 2026-11. Since the server now waits for the
+    // messages to arrive instead of polling the clients, the wait is needed
+    // only to slow down the game.
+    M_synch_micro_sleep = 0; 
 
     M_start_goal_l = 0;
     M_start_goal_r = 0;

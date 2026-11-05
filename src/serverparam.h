@@ -869,7 +869,7 @@ public:
 
     bool synchMode() const { return M_synch_mode; }
     int synchOffset() const { return M_synch_offset; }
-    unsigned int synchMicroSleep() const { return static_cast< unsigned int >( M_synch_micro_sleep ); }
+    int synchMicroSleep() const { return M_synch_micro_sleep; }
 
     int startGoalLeft() const { return M_start_goal_l; }
     int startGoalRight() const { return M_start_goal_r; }
