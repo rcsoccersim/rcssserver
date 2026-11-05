@@ -47,8 +47,8 @@ namespace rcss {
   sync() (i.e. std::flush on the stream) sends the buffered characters as
   one datagram. When the buffer is full, its contents are sent at that
   point, so a message longer than the buffer is split into several
-  datagrams. This is the behavior of rcss::net::SocketStreamBuf, which this
-  class replaces.
+  datagrams. This was the behavior of rcss::net::SocketStreamBuf, which this
+  class replaced.
 
   Sending waits while the socket's send buffer is full. If sending fails,
   the characters stay in the buffer, the stream gets the error state, and
@@ -78,8 +78,14 @@ public:
     DatagramBuf( boost::asio::ip::udp::socket & socket,
                  const boost::asio::ip::udp::endpoint & dest );
 
-    //! send the characters that are left, as rcss::net::SocketStreamBuf does
+    //! send the characters that are left, as rcss::net::SocketStreamBuf did
     ~DatagramBuf() override;
+
+    /*!
+      \brief send the following datagrams to the given address.
+      \param dest the address to send to
+     */
+    void setDest( const boost::asio::ip::udp::endpoint & dest );
 
 protected:
     int_type overflow( int_type c ) override;

@@ -44,7 +44,8 @@ namespace rcss {
 
   The programs that the server starts (e.g. server::team_l_start) must not
   inherit the sockets. Otherwise, they keep the server's ports in use after
-  the server exits. rcss::net::Socket sets this flag, but asio does not.
+  the server exits. rcss::net::Socket, which the server used before, set
+  this flag, but asio does not.
  */
 boost::system::error_code
 set_close_on_exec( const int handle );

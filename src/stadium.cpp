@@ -62,6 +62,7 @@
 
 #include <cmath>
 #include <cstdio>
+#include <cstdint>
 #include <cstdlib>
 #include <csignal>
 #include <cctype>
@@ -261,7 +262,7 @@ Stadium::init()
 
     const auto open_udp_acceptor
         = [this]( AcceptorCont & acceptors,
-                  const rcss::net::Addr::PortType port )
+                  const std::uint16_t port )
           {
               std::unique_ptr< rcss::UDPAcceptor > acceptor( new rcss::UDPAcceptor( *M_io_context ) );
               const boost::system::error_code error = acceptor->open( port );
@@ -277,7 +278,7 @@ Stadium::init()
 
     const auto open_tcp_acceptor
         = [this]( AcceptorCont & acceptors,
-                  const rcss::net::Addr::PortType port )
+                  const std::uint16_t port )
           {
               if ( port == 0 )
               {

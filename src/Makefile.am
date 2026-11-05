@@ -181,13 +181,11 @@ noinst_HEADERS = \
 rcssserver_LDFLAGS = \
 	-L$(top_builddir)/rcss/clang \
 	-L$(top_builddir)/rcss/conf \
-	-L$(top_builddir)/rcss/net \
 	-L$(top_builddir)/rcss/gzip
 
 rcssserver_LDADD = \
 	-lrcssclangparser \
 	-lrcssconfparser \
-	-lrcssnet \
 	-lrcssgz \
 	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
@@ -222,14 +220,13 @@ AM_FLEXFLEX=@AM_FLEXFLAGS@
 EXTRA_PROGRAMS = rcssclient
 
 rcssclient_SOURCES = \
-	client.cpp
+	client.cpp \
+	transport/datagrambuf.cpp
 
 rcssclient_LDFLAGS = \
-	-L$(top_builddir)/rcss/net \
 	-L$(top_builddir)/rcss/gzip
 
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
-	-lrcssnet \
 	-lrcssgz \
 	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 

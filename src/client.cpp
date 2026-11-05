@@ -24,13 +24,16 @@
 #endif
 
 #include "compress.h"
+#include "transport/datagrambuf.h"
 
-#include <rcss/net/socketstreambuf.hpp>
-#include <rcss/net/udpsocket.hpp>
 #include <rcss/gzip/gzstream.hpp>
+
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/udp.hpp>
 
 #include <sstream>
 #include <iostream>
+#include <string>
 #include <cerrno>
 #include <csignal>
 #include <cstdio>
@@ -60,9 +63,10 @@
 
 class Client {
 private:
-    rcss::net::Addr M_dest;
-    rcss::net::UDPSocket M_socket;
-    rcss::net::SocketStreamBuf * M_socket_buf;
+    boost::asio::io_context M_io_context;
+    boost::asio::ip::udp::endpoint M_dest;
+    boost::asio::ip::udp::socket M_socket;
+    rcss::DatagramBuf * M_socket_buf;
     rcss::gz::gzstreambuf * M_gz_buf;
     std::ostream * M_transport;
     int M_comp_level;
@@ -78,19 +82,20 @@ private:
 public:
     Client( const std::string & server,
             const int port )
-        : M_dest( port ),
-          M_socket(),
+        : M_io_context(),
+          M_dest(),
+          M_socket( M_io_context ),
           M_socket_buf( nullptr ),
           M_gz_buf( nullptr ),
           M_transport( nullptr ),
           M_comp_level( -1 ),
           M_clean_cycle( true )
       {
-          M_dest.setHost( server );
-          open();
-          bind();
-
-          M_socket_buf->setEndPoint( M_dest );
+          if ( resolve( server, port )
+               && open() == 0 )
+          {
+              bind();
+          }
       }
 
     virtual
@@ -106,16 +111,44 @@ public:
 
 private:
 
+    bool resolve( const std::string & server,
+                  const int port )
+      {
+          // IPv4 only, like the UDP ports of the server
+          boost::system::error_code error;
+          boost::asio::ip::udp::resolver resolver( M_io_context );
+          const boost::asio::ip::udp::resolver::results_type results
+              = resolver.resolve( boost::asio::ip::udp::v4(),
+                                  server,
+                                  std::to_string( port ),
+                                  boost::asio::ip::udp::resolver::numeric_service,
+                                  error );
+          if ( error
+               || results.empty() )
+          {
+              std::cerr << __FILE__ << ": " << __LINE__
+                        << ": Error resolving " << server << ": "
+                        << error.message() << std::endl;
+              return false;
+          }
+
+          M_dest = results.begin()->endpoint();
+          return true;
+      }
+
     int open()
       {
-          if ( M_socket.open() )
+          boost::system::error_code error;
+          M_socket.open( boost::asio::ip::udp::v4(), error );
+          if ( ! error )
           {
-              if ( M_socket.setNonBlocking() < 0 )
+              M_socket.non_blocking( true, error );
+              if ( error )
               {
                   std::cerr << __FILE__ << ": " << __LINE__
                       << ": Error setting socket non-blocking: "
-                            << strerror( errno ) << std::endl;
-                  M_socket.close();
+                            << error.message() << std::endl;
+                  M_socket.close( error );
                   return -1;
               }
           }
@@ -123,23 +156,28 @@ private:
           {
               std::cerr << __FILE__ << ": " << __LINE__
                         << ": Error opening socket: "
-                        << strerror( errno ) << std::endl;
-              M_socket.close();
+                        << error.message() << std::endl;
               return -1;
           }
 
-          M_socket_buf = new rcss::net::SocketStreamBuf( M_socket );
+          // The socket is not connected, because the server replies from
+          // another port (the dedicated port) than the one the client
+          // sends its first message to.
+          M_socket_buf = new rcss::DatagramBuf( M_socket, M_dest );
           M_transport = new std::ostream( M_socket_buf );
           return 0;
       }
 
     bool bind()
       {
-          if ( ! M_socket.bind( rcss::net::Addr() ) )
+          boost::system::error_code error;
+          M_socket.bind( boost::asio::ip::udp::endpoint( boost::asio::ip::udp::v4(), 0 ), error );
+          if ( error )
           {
               std::cerr << __FILE__ << ": " << __LINE__
-                        << ": Error connecting socket" << std::endl;
-              M_socket.close();
+                        << ": Error binding socket: "
+                        << error.message() << std::endl;
+              M_socket.close( error );
               return false;
           }
           return true;
@@ -147,7 +185,8 @@ private:
 
     void close()
       {
-          M_socket.close();
+          boost::system::error_code ignored;
+          M_socket.close( ignored );
 
           if ( M_transport )
           {
@@ -234,23 +273,30 @@ private:
 
     void messageLoop()
       {
+          if ( ! M_socket.is_open() )
+          {
+              return;
+          }
+
           fd_set read_fds;
           fd_set read_fds_back;
           char buf[8192];
           std::memset( &buf, 0, sizeof( char ) * 8192 );
 
           int in = fileno( stdin );
+          const int socket_fd = M_socket.native_handle();
           FD_ZERO( &read_fds );
           FD_SET( in, &read_fds );
-          FD_SET( M_socket.getFD(), &read_fds );
+          FD_SET( socket_fd, &read_fds );
           read_fds_back = read_fds;
 
 #ifdef RCSS_WIN
           int max_fd = 0;
 #else
-          int max_fd = M_socket.getFD() + 1;
+          int max_fd = socket_fd + 1;
 #endif
-          while ( 1 )
+          // The loop ends when the socket is closed because of an error.
+          while ( M_socket.is_open() )
           {
 
               read_fds = read_fds_back;
@@ -285,32 +331,45 @@ private:
                                             << strerror( errno ) << std::endl
                                             << "msg = [" << buf << "]\n";
                               }
-                              M_socket.close();
+                              boost::system::error_code ignored;
+                              M_socket.close( ignored );
                           }
                           std::cout << buf << std::endl;
                       }
                   }
 
                   // read from socket
-                  if ( FD_ISSET( M_socket.getFD(), &read_fds ) )
+                  if ( M_socket.is_open()
+                       && FD_ISSET( socket_fd, &read_fds ) )
                   {
-                      rcss::net::Addr from;
-                      int len = M_socket.recv( buf, sizeof( buf ) - 1, from );
-                      if ( len == -1
-                           && errno != EWOULDBLOCK )
+                      boost::asio::ip::udp::endpoint from;
+                      std::size_t len = 0;
+                      boost::system::error_code error;
+                      do
                       {
-                          if ( errno != ECONNREFUSED )
+                          len = M_socket.receive_from( boost::asio::buffer( buf, sizeof( buf ) - 1 ), from, 0, error );
+                      }
+                      while ( error == boost::asio::error::interrupted );
+
+                      if ( error )
+                      {
+                          if ( error != boost::asio::error::would_block
+                               && error != boost::asio::error::try_again )
                           {
-                              std::cerr << __FILE__ << ": " << __LINE__
-                                        << ": Error receiving from socket: "
-                                        << strerror( errno ) << std::endl;
+                              if ( error != boost::asio::error::connection_refused )
+                              {
+                                  std::cerr << __FILE__ << ": " << __LINE__
+                                            << ": Error receiving from socket: "
+                                            << error.message() << std::endl;
+                              }
+                              M_socket.close( error );
                           }
-                          M_socket.close();
                       }
                       else if ( len > 0 )
                       {
-                          M_dest.setPort( from.getPort() );
-                          M_socket_buf->setEndPoint( M_dest );
+                          // the server replies from the dedicated port
+                          M_dest.port( from.port() );
+                          M_socket_buf->setDest( M_dest );
                           processMsg( buf, len );
                       }
                   }

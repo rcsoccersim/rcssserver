@@ -35,12 +35,12 @@
 
 #include "types.h"
 
-#include <rcss/net/addr.hpp>
-
 #include <memory>
 #include <map>
+#include <string>
 
 #include <cmath>
+#include <cstdint>
 
 namespace rcss {
 namespace conf {
@@ -778,13 +778,13 @@ public:
     double cornerKickMargin() const { return M_corner_kick_margin; }
     double offsideActiveArea() const { return M_offside_active_area_size; }
 
-    rcss::net::Addr::PortType playerPort() const { return M_port; }
-    rcss::net::Addr::PortType offlineCoachPort() const { return M_coach_port; }
-    rcss::net::Addr::PortType onlineCoachPort() const { return M_olcoach_port; }
-    rcss::net::Addr::PortType tcpPlayerPort() const { return M_tcp_port; }
-    rcss::net::Addr::PortType tcpOfflineCoachPort() const { return M_tcp_coach_port; }
-    rcss::net::Addr::PortType tcpOnlineCoachPort() const { return M_tcp_olcoach_port; }
-    rcss::net::Addr::PortType wsPort() const { return M_ws_port; }
+    std::uint16_t playerPort() const { return M_port; }
+    std::uint16_t offlineCoachPort() const { return M_coach_port; }
+    std::uint16_t onlineCoachPort() const { return M_olcoach_port; }
+    std::uint16_t tcpPlayerPort() const { return M_tcp_port; }
+    std::uint16_t tcpOfflineCoachPort() const { return M_tcp_coach_port; }
+    std::uint16_t tcpOnlineCoachPort() const { return M_tcp_olcoach_port; }
+    std::uint16_t wsPort() const { return M_ws_port; }
     const std::string & wsAllowedOrigins() const { return M_ws_allowed_origins; }
 
     unsigned int freeformCountMax() const { return (unsigned int)M_say_cnt_max; }

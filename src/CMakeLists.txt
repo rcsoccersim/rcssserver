@@ -105,7 +105,6 @@ target_link_libraries(RCSSServer
   PRIVATE
     RCSS::CLangParser
     RCSS::ConfParser
-    RCSS::Net
     RCSS::GZ
     ZLIB::ZLIB
     Boost::boost
@@ -136,13 +135,15 @@ set_target_properties(RCSSServer
 
 add_executable(RCSSClient
     client.cpp
+    transport/datagrambuf.cpp
 )
 
 target_link_libraries(RCSSClient
   PRIVATE
-    RCSS::Net
     RCSS::GZ
     ZLIB::ZLIB
+    Boost::boost
+    Threads::Threads
 )
 
 set_target_properties(RCSSClient

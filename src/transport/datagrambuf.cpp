@@ -98,6 +98,14 @@ DatagramBuf::~DatagramBuf()
 }
 
 /*-------------------------------------------------------------------*/
+void
+DatagramBuf::setDest( const boost::asio::ip::udp::endpoint & dest )
+{
+    M_dest = dest;
+    M_use_dest = true;
+}
+
+/*-------------------------------------------------------------------*/
 DatagramBuf::int_type
 DatagramBuf::overflow( int_type c )
 {
