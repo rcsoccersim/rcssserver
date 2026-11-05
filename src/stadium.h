@@ -304,6 +304,11 @@ public:
 private:
     void createObjects();
 
+    //! open the acceptors of all transports. The io_context must exist.
+    bool openAcceptors();
+    //! open the WebSocket port, which serves all services
+    bool openWSServer();
+
     /*!
       \brief run the I/O handlers until the given time. It returns earlier
       if the stadium is disabled, e.g. by a signal.

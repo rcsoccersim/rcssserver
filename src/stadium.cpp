@@ -260,91 +260,10 @@ Stadium::init()
 
     M_io_context.reset( new boost::asio::io_context() );
 
-    const auto open_udp_acceptor
-        = [this]( AcceptorCont & acceptors,
-                  const std::uint16_t port )
-          {
-              std::unique_ptr< rcss::UDPAcceptor > acceptor( new rcss::UDPAcceptor( *M_io_context ) );
-              const boost::system::error_code error = acceptor->open( port );
-              if ( error )
-              {
-                  std::cerr << "Error initializing sockets: port=" << port
-                            << ". " << error.message() << std::endl;
-                  return false;
-              }
-              acceptors.push_back( std::move( acceptor ) );
-              return true;
-          };
-
-    const auto open_tcp_acceptor
-        = [this]( AcceptorCont & acceptors,
-                  const std::uint16_t port )
-          {
-              if ( port == 0 )
-              {
-                  // TCP is disabled
-                  return true;
-              }
-
-              std::unique_ptr< rcss::TCPAcceptor > acceptor( new rcss::TCPAcceptor( *M_io_context ) );
-              const boost::system::error_code error = acceptor->open( port );
-              if ( error )
-              {
-                  std::cerr << "Error initializing TCP sockets: port=" << port
-                            << ". " << error.message() << std::endl;
-                  return false;
-              }
-              acceptors.push_back( std::move( acceptor ) );
-              return true;
-          };
-
-    // The UDP acceptors come first, so that UDP clients are processed first.
-    if ( ! open_udp_acceptor( M_player_acceptors, ServerParam::instance().playerPort() )
-         || ! open_udp_acceptor( M_offline_coach_acceptors, ServerParam::instance().offlineCoachPort() )
-         || ! open_udp_acceptor( M_online_coach_acceptors, ServerParam::instance().onlineCoachPort() )
-         || ! open_tcp_acceptor( M_player_acceptors, ServerParam::instance().tcpPlayerPort() )
-         || ! open_tcp_acceptor( M_offline_coach_acceptors, ServerParam::instance().tcpOfflineCoachPort() )
-         || ! open_tcp_acceptor( M_online_coach_acceptors, ServerParam::instance().tcpOnlineCoachPort() ) )
+    if ( ! openAcceptors() )
     {
         disable();
         return false;
-    }
-
-    if ( ServerParam::instance().wsPort() > 0 )
-    {
-        // the comma separated values of the Origin header to accept
-        std::vector< std::string > origins;
-        std::istringstream origin_list( ServerParam::instance().wsAllowedOrigins() );
-        std::string origin;
-        while ( std::getline( origin_list, origin, ',' ) )
-        {
-            origin.erase( 0, origin.find_first_not_of( " \t" ) );
-            origin.erase( origin.find_last_not_of( " \t" ) + 1 );
-            if ( ! origin.empty() )
-            {
-                origins.push_back( origin );
-            }
-        }
-
-        // One WebSocket port serves all services, which the request path
-        // selects. The monitors can use "/player" as they do over UDP, or
-        // "/monitor", which takes only the monitors.
-        const std::vector< std::string > paths = { "/player", "/monitor", "/coach", "/olcoach" };
-        std::shared_ptr< rcss::WSServer > server
-            = std::make_shared< rcss::WSServer >( *M_io_context, paths, origins );
-        const boost::system::error_code error = server->open( ServerParam::instance().wsPort() );
-        if ( error )
-        {
-            std::cerr << "Error initializing WebSocket sockets: port=" << ServerParam::instance().wsPort()
-                      << ". " << error.message() << std::endl;
-            disable();
-            return false;
-        }
-
-        M_player_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/player" ) ) );
-        M_monitor_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/monitor" ) ) );
-        M_offline_coach_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/coach" ) ) );
-        M_online_coach_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/olcoach" ) ) );
     }
 
     M_weather.init();
@@ -363,6 +282,132 @@ Stadium::init()
         return false;
     }
 
+    return true;
+}
+
+namespace {
+
+/*!
+  \brief open an acceptor and add it to the container.
+  \param io_context the event loop
+  \param port the port number
+  \param name the name of the transport for the error message, e.g. "TCP "
+  \param acceptors the container to add to
+  \return true if successful
+ */
+template < class AcceptorType >
+bool
+open_acceptor( boost::asio::io_context & io_context,
+               const std::uint16_t port,
+               const char * name,
+               Stadium::AcceptorCont & acceptors )
+{
+    std::unique_ptr< AcceptorType > acceptor( new AcceptorType( io_context ) );
+    const boost::system::error_code error = acceptor->open( port );
+    if ( error )
+    {
+        std::cerr << "Error initializing " << name << "sockets: port=" << port
+                  << ". " << error.message() << std::endl;
+        return false;
+    }
+    acceptors.push_back( std::move( acceptor ) );
+    return true;
+}
+
+/*!
+  \brief split the comma separated values of server::ws_allowed_origins.
+  \param list the values
+  \return the values without the spaces around them
+ */
+std::vector< std::string >
+split_origins( const std::string & list )
+{
+    std::vector< std::string > origins;
+    std::istringstream origin_list( list );
+    std::string origin;
+    while ( std::getline( origin_list, origin, ',' ) )
+    {
+        origin.erase( 0, origin.find_first_not_of( " \t" ) );
+        origin.erase( origin.find_last_not_of( " \t" ) + 1 );
+        if ( ! origin.empty() )
+        {
+            origins.push_back( origin );
+        }
+    }
+    return origins;
+}
+
+}
+
+bool
+Stadium::openAcceptors()
+{
+    const ServerParam & param = ServerParam::instance();
+
+    struct Service {
+        AcceptorCont & acceptors;
+        std::uint16_t udp_port;
+        std::uint16_t tcp_port; //!< 0 if TCP is disabled
+    };
+    const Service services[] = {
+        { M_player_acceptors, param.playerPort(), param.tcpPlayerPort() },
+        { M_offline_coach_acceptors, param.offlineCoachPort(), param.tcpOfflineCoachPort() },
+        { M_online_coach_acceptors, param.onlineCoachPort(), param.tcpOnlineCoachPort() },
+    };
+
+    // The acceptors of a service are processed in the order they are added:
+    // UDP, TCP and WebSocket. So the UDP clients are processed first.
+    for ( const Service & service : services )
+    {
+        if ( ! open_acceptor< rcss::UDPAcceptor >( *M_io_context, service.udp_port, "",
+                                                   service.acceptors ) )
+        {
+            return false;
+        }
+    }
+
+    for ( const Service & service : services )
+    {
+        if ( service.tcp_port != 0
+             && ! open_acceptor< rcss::TCPAcceptor >( *M_io_context, service.tcp_port, "TCP ",
+                                                      service.acceptors ) )
+        {
+            return false;
+        }
+    }
+
+    if ( param.wsPort() != 0
+         && ! openWSServer() )
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool
+Stadium::openWSServer()
+{
+    // One WebSocket port serves all services, which the request path
+    // selects. The monitors can use "/player" as they do over UDP, or
+    // "/monitor", which takes only the monitors.
+    const std::vector< std::string > paths = { "/player", "/monitor", "/coach", "/olcoach" };
+    const std::uint16_t port = ServerParam::instance().wsPort();
+    std::shared_ptr< rcss::WSServer > server
+        = std::make_shared< rcss::WSServer >( *M_io_context, paths,
+                                              split_origins( ServerParam::instance().wsAllowedOrigins() ) );
+    const boost::system::error_code error = server->open( port );
+    if ( error )
+    {
+        std::cerr << "Error initializing WebSocket sockets: port=" << port
+                  << ". " << error.message() << std::endl;
+        return false;
+    }
+
+    M_player_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/player" ) ) );
+    M_monitor_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/monitor" ) ) );
+    M_offline_coach_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/coach" ) ) );
+    M_online_coach_acceptors.push_back( std::unique_ptr< rcss::Acceptor >( new rcss::WSAcceptor( server, "/olcoach" ) ) );
     return true;
 }
 
