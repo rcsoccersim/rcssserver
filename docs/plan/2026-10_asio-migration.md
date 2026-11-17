@@ -1,7 +1,7 @@
 # 通信層の boost::asio 移行と TCP / WebSocket 対応 設計メモ
 
-- 状態: Phase 1〜6 完了（2026-11-06）。残りは 8章の未決事項。
-- ブランチ: `feature/asio-migration`（master には未マージ）
+- 状態: Phase 1〜6 完了（2026-11-06）。8章の未決事項で残っているのは #16（マニュアルの更新）だけ。
+- ブランチ: `feature/asio-migration`。develop にマージ済み（PR #155、2026-11-18）。master には次のメジャーリリース（20.0.0）のときに入る。
 - 英語版: [2026-10_asio-migration.en.md](2026-10_asio-migration.en.md)。両方を同じ内容に保つ。
 
 ## 0. 進捗
