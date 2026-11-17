@@ -728,11 +728,14 @@ ServerParam::addParams()
     addParam( "olcoach_port", M_olcoach_port, "", 8 );
     // The TCP ports are not sent to the clients.
     addParam( "tcp_port", M_tcp_port,
-              "The TCP port number for players and monitors. 0 disables TCP.", 999 );
+              "The TCP port number for players and monitors. 0 disables TCP, "
+              "and -1 uses the same number as server::port.", 999 );
     addParam( "tcp_coach_port", M_tcp_coach_port,
-              "The TCP port number for offline coaches. 0 disables TCP.", 999 );
+              "The TCP port number for offline coaches. 0 disables TCP, "
+              "and -1 uses the same number as server::coach_port.", 999 );
     addParam( "tcp_olcoach_port", M_tcp_olcoach_port,
-              "The TCP port number for online coaches. 0 disables TCP.", 999 );
+              "The TCP port number for online coaches. 0 disables TCP, "
+              "and -1 uses the same number as server::olcoach_port.", 999 );
     addParam( "ws_port", M_ws_port,
               "The WebSocket port number. The request path selects the service: "
               "/player (players and monitors), /monitor (monitors only), /coach or /olcoach. "
