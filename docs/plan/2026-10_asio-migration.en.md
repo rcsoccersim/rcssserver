@@ -1,7 +1,7 @@
 # Moving the network layer to boost::asio, with TCP and WebSocket support
 
-- Status: Phases 1 to 6 are done (2026-11-06). The open issues in section 8 remain.
-- Branch: `feature/asio-migration` (not merged into master yet)
+- Status: Phases 1 to 6 are done (2026-11-06). Of the open issues in section 8, only #16 (updating the manual) remains.
+- Branch: `feature/asio-migration`, merged into develop (PR #155, 2026-11-18). It goes into master with the next major release (20.0.0).
 - Japanese version: [2026-10_asio-migration.md](2026-10_asio-migration.md). Keep both versions in step.
 
 ## 0. Progress
