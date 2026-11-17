@@ -526,22 +526,11 @@ Monitor::compression( const char * command )
         sendMsg( MSG_BOARD, "(error illegal_command_form)" );
         return false;
     }
-#ifdef HAVE_LIBZ
-    if ( level > 9 )
-    {
-        sendMsg( MSG_BOARD, "(error illegal_command_form)" );
-        return false;
-    }
 
-    std::ostringstream reply;
-    reply << "(ok compression " << level << ")";
-    sendMsg( MSG_BOARD, reply.str().c_str() );
-    setCompressionLevel( level );
-    return true;
-#else
+    // Compressed messages are not supported any more. The reply is the same
+    // as from a server built without zlib.
     sendMsg( MSG_BOARD, "(warning compression_unsupported)" );
     return false;
-#endif
 }
 
 bool

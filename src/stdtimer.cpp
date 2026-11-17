@@ -30,7 +30,6 @@
 #include "serverparam.h"    // needed for ServerParam
 
 #include <chrono>
-#include <thread>
 
 StandardTimer::StandardTimer( Timeable & timeable )
     : Timer( timeable )
@@ -40,9 +39,10 @@ StandardTimer::StandardTimer( Timeable & timeable )
 
 
 /** This method controls the standard timer.
-    In the mainloop, the sleep is called for each trial.
-    The sleep time is determined by subtracting the consumued time from the default delta.
-    After finishing the sleep, checking which messages should be sent / received by the clients and handles them appropriately. */
+    In the mainloop, the timer waits for the next tick, which comes every
+    default delta on a fixed schedule, so that the cycles keep up with the
+    real time. The I/O of the clients goes on while waiting.
+    After the wait, checking which messages should be sent / received by the clients and handles them appropriately. */
 void
 StandardTimer::run()
 {
@@ -70,20 +70,24 @@ StandardTimer::run()
     int c_synch_see = 1;
     bool sent_synch_see = false;
 
-    const std::chrono::milliseconds default_delta( TIMEDELTA );
-    std::chrono::nanoseconds elapsed( 0 );
-    std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+    const std::chrono::steady_clock::duration default_delta = std::chrono::milliseconds( TIMEDELTA );
+    std::chrono::steady_clock::time_point next_tick = std::chrono::steady_clock::now() + default_delta;
 
     while ( getTimeableRef().alive() )
     {
-        const std::chrono::nanoseconds elapsed = std::chrono::duration_cast< std::chrono::nanoseconds >( std::chrono::system_clock::now() - start_time );
-        const std::chrono::nanoseconds sleep_count = default_delta - elapsed;
-        std::this_thread::sleep_for( sleep_count );
+        getTimeableRef().waitUntil( next_tick );
+        if ( ! getTimeableRef().alive() )
+        {
+            break;
+        }
 
-        start_time = std::chrono::system_clock::now();
-        lcmt += ( sleep_count.count() < 0
-                  ? elapsed.count() * 0.001 * 0.001
-                  : ( sleep_count.count() + elapsed.count() ) * 0.001 * 0.001 );
+        // If the previous tick took longer than the default delta, the ticks
+        // that have already passed are skipped, not caught up with. lcmt
+        // still counts the time that has passed.
+        const std::chrono::steady_clock::duration late = std::chrono::steady_clock::now() - next_tick;
+        const int ticks = 1 + static_cast< int >( late / default_delta );
+        next_tick += ticks * default_delta;
+        lcmt += TIMEDELTA * ticks;
 
         if ( lcmt >= ServerParam::instance().simStep() * c_simt )
         {

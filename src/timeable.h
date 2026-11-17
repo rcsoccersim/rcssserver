@@ -22,6 +22,8 @@
 #ifndef TIMEABLE_H
 #define TIMEABLE_H
 
+#include <chrono>
+
 /** The timeable class is an abstract class which specifies the virtual methods
     that should be implemented by the subclass. */
 
@@ -41,6 +43,11 @@ public:
     void quit()              { doQuit();              }
     bool alive() { return isAlive(); }
 
+    /** wait until the given time, while the I/O of the clients goes on.
+        It returns earlier if the timeable is no longer alive, e.g. because
+        the server has received a signal. */
+    void waitUntil( const std::chrono::steady_clock::time_point & time ) { doWaitUntil( time ); }
+
 protected:
 
     // virtual methods that should be defined in subclass
@@ -53,6 +60,7 @@ protected:
     virtual bool doSendThink()         = 0;
     virtual void doQuit()              = 0;
     virtual bool isAlive() = 0;
+    virtual void doWaitUntil( const std::chrono::steady_clock::time_point & time ) = 0;
 };
 
 #endif

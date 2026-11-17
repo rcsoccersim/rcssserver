@@ -726,6 +726,24 @@ ServerParam::addParams()
     addParam( "port", M_port, "", 8 );
     addParam( "coach_port", M_coach_port, "", 8 );
     addParam( "olcoach_port", M_olcoach_port, "", 8 );
+    // The TCP ports are not sent to the clients.
+    addParam( "tcp_port", M_tcp_port,
+              "The TCP port number for players and monitors. 0 disables TCP, "
+              "and -1 uses the same number as server::port.", 999 );
+    addParam( "tcp_coach_port", M_tcp_coach_port,
+              "The TCP port number for offline coaches. 0 disables TCP, "
+              "and -1 uses the same number as server::coach_port.", 999 );
+    addParam( "tcp_olcoach_port", M_tcp_olcoach_port,
+              "The TCP port number for online coaches. 0 disables TCP, "
+              "and -1 uses the same number as server::olcoach_port.", 999 );
+    addParam( "ws_port", M_ws_port,
+              "The WebSocket port number. The request path selects the service: "
+              "/player (players and monitors), /monitor (monitors only), /coach or /olcoach. "
+              "0 disables WebSocket.", 999 );
+    addParam( "ws_allowed_origins", M_ws_allowed_origins,
+              "Comma separated values of the Origin header that WebSocket accepts, "
+              "e.g. \"http://localhost:8000,null\" (quoted, without spaces). Empty accepts all. "
+              "Clients without the Origin header are always accepted.", 999 );
     addParam( "say_coach_cnt_max", M_say_cnt_max, "", 7 );
     addParam( "say_coach_msg_size", M_say_coach_msg_size, "", 7 );
     addParam( "simulator_step",
@@ -1269,6 +1287,11 @@ ServerParam::setDefaults()
     M_port = DEFAULT_PORT_NUMBER;
     M_coach_port = COACH_PORT_NUMBER;
     M_olcoach_port = OLCOACH_PORT_NUMBER;
+    M_tcp_port = 0;
+    M_tcp_coach_port = 0;
+    M_tcp_olcoach_port = 0;
+    M_ws_port = 0;
+    M_ws_allowed_origins = "";
 
     M_say_cnt_max = DEF_SAY_COACH_CNT_MAX;
     M_say_coach_msg_size = DEF_SAY_COACH_MSG_SIZE;
@@ -1340,7 +1363,15 @@ ServerParam::setDefaults()
 
     M_synch_mode = false;
     M_synch_offset = 60;
-    M_synch_micro_sleep = 1;
+
+    // In synch mode, the server waits for synch_micro_sleep microseconds
+    // before each receive of the messages from the clients after (think).
+    // A large value slows down the game, e.g. for people to watch it. With
+    // 0, the server receives the messages as soon as they arrive.
+    // The default was 1 until 2026-11. Since the server now waits for the
+    // messages to arrive instead of polling the clients, the wait is needed
+    // only to slow down the game.
+    M_synch_micro_sleep = 0; 
 
     M_start_goal_l = 0;
     M_start_goal_r = 0;

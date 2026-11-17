@@ -29,9 +29,9 @@
 #include "field.h"
 #include "weather.h"
 #include "resultsaver.hpp"
+#include "transport/acceptor.h"
 
 #include <rcss/gzip/gzfstream.hpp>
-#include <rcss/net/udpsocket.hpp>
 
 #include <cstdio>
 #include <string>
@@ -57,6 +57,12 @@ class Msg;
 }
 }
 
+namespace boost {
+namespace asio {
+class io_context;
+}
+}
+
 
 /*
  *===================================================================
@@ -73,6 +79,9 @@ public:
     typedef std::vector< Monitor * > MonitorCont;
     typedef std::vector< rcss::Listener * > ListenerCont;
     typedef std::vector< MPObject * > MPObjectCont;
+    //! One acceptor per transport, processed in this order: UDP, TCP and
+    //! WebSocket. The disabled transports have no acceptors.
+    typedef std::vector< std::unique_ptr< rcss::Acceptor > > AcceptorCont;
 protected:
     // definitions of different timeable methods
     void doRecvFromClients( ) override;
@@ -83,13 +92,19 @@ protected:
     void doSendCoachMessages() override;
     bool doSendThink() override;
     void doQuit() override;
+    void doWaitUntil( const std::chrono::steady_clock::time_point & time ) override;
 
 protected:
     bool M_alive;
 
-    rcss::net::UDPSocket M_player_socket;
-    rcss::net::UDPSocket M_offline_coach_socket;
-    rcss::net::UDPSocket M_online_coach_socket;
+    //! runs the asynchronous I/O. Declared before the acceptors, so that it
+    //! is destroyed after them.
+    std::unique_ptr< boost::asio::io_context > M_io_context;
+
+    AcceptorCont M_player_acceptors; //!< entrances for players and monitors
+    AcceptorCont M_monitor_acceptors; //!< entrances only for monitors. Only WebSocket has one.
+    AcceptorCont M_offline_coach_acceptors; //!< entrances for offline coaches
+    AcceptorCont M_online_coach_acceptors; //!< entrances for online coaches
 
     Field M_field;
     Weather M_weather;
@@ -148,6 +163,13 @@ public:
     bool init();
 
     void finalize( const std::string & msg );
+
+    //! the event loop of the server, which runs the I/O of the clients.
+    //! It is available after init().
+    boost::asio::io_context & ioContext()
+      {
+          return *M_io_context;
+      }
 
     virtual
     bool isAlive() override
@@ -282,31 +304,51 @@ public:
 private:
     void createObjects();
 
-    void udp_recv_message();
-    void udp_recv_from_coach();
-    void udp_recv_from_online_coach();
+    //! open the acceptors of all transports. The io_context must exist.
+    bool openAcceptors();
+    //! open the WebSocket port, which serves all services
+    bool openWSServer();
 
-    void parsePlayerInit( const char * message,
-                          const rcss::net::Addr & cli_addr );
-    bool parseMonitorInit( const char * message,
-                           const rcss::net::Addr & cli_addr );
-    bool parseCoachInit( const char * message,
-                         const rcss::net::Addr & cli_addr );
-    void parseOnlineCoachInit( const char * message,
-                               const rcss::net::Addr & cli_addr );
+    /*!
+      \brief run the I/O handlers until the given time. It returns earlier
+      if the stadium is disabled, e.g. by a signal.
+      \param time the time to return at the latest
+      \param any_event if true, return after the first handler, e.g. after
+      a message from a client has arrived
+     */
+    void runIO( const std::chrono::steady_clock::time_point & time,
+                const bool any_event );
+
+    void recvFromPlayerPort();
+    void recvFromMonitorPort();
+    void recvFromOfflineCoachPort();
+    void recvFromOnlineCoachPort();
+
+    void parsePlayerInit( rcss::Acceptor & acceptor,
+                          const rcss::Inbound & in );
+    bool parseMonitorInit( rcss::Acceptor & acceptor,
+                           const rcss::Inbound & in );
+    bool parseCoachInit( rcss::Acceptor & acceptor,
+                         const rcss::Inbound & in );
+    void parseOnlineCoachInit( rcss::Acceptor & acceptor,
+                               const rcss::Inbound & in );
     Player * initPlayer( const char * teamname,
                          const double & version,
                          const bool goalie,
-                         const rcss::net::Addr & addr );
+                         rcss::Acceptor & acceptor,
+                         const rcss::Inbound & in );
     Player * reconnectPlayer( const char * teamname,
                               const int unum,
-                              const rcss::net::Addr & addr );
+                              rcss::Acceptor & acceptor,
+                              const rcss::Inbound & in );
     Coach * initCoach( const double & version,
-                       const rcss::net::Addr & );
+                       rcss::Acceptor & acceptor,
+                       const rcss::Inbound & in );
     OnlineCoach * initOnlineCoach( const char * teamname,
                                    const char * coachname,
                                    const double & version,
-                                   const rcss::net::Addr & addr );
+                                   rcss::Acceptor & acceptor,
+                                   const rcss::Inbound & in );
 
     void removeDisconnectedClients();
 
@@ -373,15 +415,9 @@ public:
     void recoveryPlayers();
 
 private:
-    //! diretcly send message to player client that has cli_addr
-    void sendToPlayer( const char *msg,
-                       const rcss::net::Addr & cli_addr );
-    //! diretcly send message to offline coach client that has cli_addr
-    void sendToCoach( const char *msg,
-                      const rcss::net::Addr & cli_addr );
-    //! diretcly send message to online coach client that has cli_addr
-    void sendToOnlineCoach( const char *msg,
-                            const rcss::net::Addr & cli_addr );
+    //! send a message back to the sender of an inbound message
+    void sendReply( const char * msg,
+                    const rcss::Inbound & in );
 public:
     void sendRefereeAudio( const char * msg );
     void sendPlayerAudio( const Player & player,

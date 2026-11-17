@@ -22,33 +22,20 @@
 #ifndef RCSS_REMOTECLIENT_H
 #define RCSS_REMOTECLIENT_H
 
-#include "compress.h"
+#include "transport/connection.h"
 
-#include <rcss/net/udpsocket.hpp>
-
-namespace rcss {
-namespace net {
-class SocketStreamBuf;
-}
-namespace gz {
-class gzstreambuf;
-}
-}
+#include <memory>
+#include <ostream>
 
 
 class RemoteClient {
 
 private:
-    rcss::net::UDPSocket M_socket;
-    rcss::net::SocketStreamBuf * M_socket_buf;
-    rcss::gz::gzstreambuf * M_gz_buf;
-    std::ostream * M_transport;
-    int M_comp_level;
+    std::shared_ptr< rcss::Connection > M_connection;
 
-#ifdef HAVE_LIBZ
-    //Compressor M_comp;
-    Decompressor M_decomp;
-#endif
+    //! The senders keep a reference to this stream, so it lives as long as
+    //! the client. Its buffer is switched when a connection is attached.
+    std::ostream M_transport;
 
     bool M_enforce_dedicated_port;
 
@@ -68,25 +55,21 @@ public:
 
     int recv();
 
-    void undedicatedRecv( char * msg,
-                          const size_t & len );
+    /*!
+      \brief process a message that the client sent to the shared port.
+      \param msg the message
+     */
+    void undedicatedRecv( const std::string & msg );
+
+private:
+    void processMsg( const std::string & msg );
 
 protected:
-    void processMsg( char * msg,
-                     const size_t & len );
-
     virtual
     void parseMsg( char * msg,
                    const size_t & len ) = 0;
 
 public:
-    int compressionLevel() const
-      {
-          return M_comp_level;
-      }
-
-    int setCompressionLevel( const int level );
-
     std::ostream & getTransport();
 
 protected:
@@ -95,16 +78,21 @@ protected:
 public:
     bool connected() const
       {
-          return M_socket.isConnected();
+          return M_connection
+              && M_connection->isOpen();
       }
 
-    bool connect( const rcss::net::Addr & dest );
+    /*!
+      \brief start talking to the client over the given connection.
+      \param connection the connection to the client
 
-    int open();
+      The previous connection, if any, is closed first.
+     */
+    void attach( std::shared_ptr< rcss::Connection > connection );
 
-    rcss::net::Addr getDest() const
+    const rcss::Connection * connection() const
       {
-          return M_socket.getDest();
+          return M_connection.get();
       }
 
 };

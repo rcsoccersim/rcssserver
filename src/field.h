@@ -46,7 +46,6 @@
 #include "weather.h"
 
 #include <rcss/gzip/gzfstream.hpp>
-#include <rcss/net/udpsocket.hpp>
 
 #include <string>
 #include <vector>

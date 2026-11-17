@@ -1,4 +1,7 @@
 
+# needed to build the sources under transport/
+AUTOMAKE_OPTIONS = subdir-objects
+
 bin_PROGRAMS = \
 	rcssserver @RCSSCLIENT@
 
@@ -62,6 +65,18 @@ rcssserver_SOURCES = \
 	stdtimer.cpp \
 	synctimer.cpp \
 	team.cpp \
+	transport/closeonexec.cpp \
+	transport/datagrambuf.cpp \
+	transport/messagebuf.cpp \
+	transport/pendingconnections.cpp \
+	transport/tcpacceptor.cpp \
+	transport/tcpconnection.cpp \
+	transport/tcplisten.cpp \
+	transport/udpacceptor.cpp \
+	transport/udpconnection.cpp \
+	transport/wsacceptor.cpp \
+	transport/wsconnection.cpp \
+	transport/wsserver.cpp \
 	utility.cpp \
 	visualsendercoach.cpp \
 	visualsenderplayer.cpp \
@@ -78,7 +93,6 @@ noinst_HEADERS = \
 	audio.h \
 	bodysender.h \
 	coach.h \
-	compress.h \
 	csvsaver.h \
 	dispsender.h \
 	field.h \
@@ -139,6 +153,20 @@ noinst_HEADERS = \
 	team.h \
 	timeable.h \
 	timer.h \
+	transport/acceptor.h \
+	transport/closeonexec.h \
+	transport/connection.h \
+	transport/datagrambuf.h \
+	transport/messagebuf.h \
+	transport/pendingconnections.h \
+	transport/tcpacceptor.h \
+	transport/tcpconnection.h \
+	transport/tcplisten.h \
+	transport/udpacceptor.h \
+	transport/udpconnection.h \
+	transport/wsacceptor.h \
+	transport/wsconnection.h \
+	transport/wsserver.h \
 	types.h \
 	utility.h \
 	version.h \
@@ -152,13 +180,11 @@ noinst_HEADERS = \
 rcssserver_LDFLAGS = \
 	-L$(top_builddir)/rcss/clang \
 	-L$(top_builddir)/rcss/conf \
-	-L$(top_builddir)/rcss/net \
 	-L$(top_builddir)/rcss/gzip
 
 rcssserver_LDADD = \
 	-lrcssclangparser \
 	-lrcssconfparser \
-	-lrcssnet \
 	-lrcssgz \
 	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
@@ -193,15 +219,10 @@ AM_FLEXFLEX=@AM_FLEXFLAGS@
 EXTRA_PROGRAMS = rcssclient
 
 rcssclient_SOURCES = \
-	client.cpp
-
-rcssclient_LDFLAGS = \
-	-L$(top_builddir)/rcss/net \
-	-L$(top_builddir)/rcss/gzip
+	client.cpp \
+	transport/datagrambuf.cpp
 
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
-	-lrcssnet \
-	-lrcssgz \
 	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
 

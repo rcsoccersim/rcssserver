@@ -32,23 +32,17 @@
 #include "stdtimer.h"
 #include "synctimer.h"
 
+#include <boost/asio/signal_set.hpp>
+
 #include <memory>
 #include <iostream>
 #include <locale>
 #include <cmath>
-#include <cstring>
 #include <csignal>
-#include <cerrno>
 
 namespace {
 
 Stadium Std;
-
-void
-sigHandle( int )
-{
-    Std.finalize( "Server Killed. Exiting..." );
-}
 
 }
 
@@ -65,25 +59,42 @@ main( int argc, char *argv[] )
         return 1;
     }
 
-    struct sigaction sig_action;
-    sig_action.sa_handler = &sigHandle;
-    sig_action.sa_flags = 0;
-    if ( sigaction( SIGINT, &sig_action, nullptr ) != 0
-         || sigaction( SIGTERM, &sig_action, nullptr ) != 0
-         || sigaction( SIGHUP, &sig_action, nullptr ) != 0 )
-    {
-        std::cerr << __FILE__ << ": " << __LINE__
-                  << ": could not set signal handler: "
-                  << strerror( errno ) << std::endl;
-        ServerParam::instance().clear();
-        return 1;
-    }
-
     if ( ! Std.init() )
     {
         ServerParam::instance().clear();
         return 1;
     }
+
+    // The signals are handled in the event loop of the server, because
+    // Stadium::finalize() cannot be called in a signal handler safely.
+    // The event loop exists after Std.init().
+    boost::asio::signal_set signals( Std.ioContext() );
+    boost::system::error_code error;
+    signals.add( SIGINT, error );
+    if ( ! error )
+    {
+        signals.add( SIGTERM, error );
+    }
+    if ( ! error )
+    {
+        signals.add( SIGHUP, error );
+    }
+    if ( error )
+    {
+        std::cerr << __FILE__ << ": " << __LINE__
+                  << ": could not set signal handler: "
+                  << error.message() << std::endl;
+        ServerParam::instance().clear();
+        return 1;
+    }
+    signals.async_wait( []( const boost::system::error_code & error,
+                            int )
+                        {
+                            if ( ! error )
+                            {
+                                Std.finalize( "Server Killed. Exiting..." );
+                            }
+                        } );
 
     std::shared_ptr< Timer > timer;
     if ( ServerParam::instance().synchMode() )

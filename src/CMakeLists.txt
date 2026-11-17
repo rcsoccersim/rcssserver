@@ -79,6 +79,18 @@ add_executable(RCSSServer
     stdtimer.cpp
     synctimer.cpp
     team.cpp
+    transport/closeonexec.cpp
+    transport/datagrambuf.cpp
+    transport/messagebuf.cpp
+    transport/pendingconnections.cpp
+    transport/tcpacceptor.cpp
+    transport/tcpconnection.cpp
+    transport/tcplisten.cpp
+    transport/udpacceptor.cpp
+    transport/udpconnection.cpp
+    transport/wsacceptor.cpp
+    transport/wsconnection.cpp
+    transport/wsserver.cpp
     utility.cpp
     visualsendercoach.cpp
     visualsenderplayer.cpp
@@ -93,10 +105,16 @@ target_link_libraries(RCSSServer
   PRIVATE
     RCSS::CLangParser
     RCSS::ConfParser
-    RCSS::Net
     RCSS::GZ
     ZLIB::ZLIB
+    Boost::boost
+    Threads::Threads
 	)
+
+target_include_directories(RCSSServer
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 target_compile_definitions(RCSSServer
   PUBLIC
@@ -117,13 +135,13 @@ set_target_properties(RCSSServer
 
 add_executable(RCSSClient
     client.cpp
+    transport/datagrambuf.cpp
 )
 
 target_link_libraries(RCSSClient
   PRIVATE
-    RCSS::Net
-    RCSS::GZ
-    ZLIB::ZLIB
+    Boost::boost
+    Threads::Threads
 )
 
 set_target_properties(RCSSClient

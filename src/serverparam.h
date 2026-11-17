@@ -35,12 +35,12 @@
 
 #include "types.h"
 
-#include <rcss/net/addr.hpp>
-
 #include <memory>
 #include <map>
+#include <string>
 
 #include <cmath>
+#include <cstdint>
 
 namespace rcss {
 namespace conf {
@@ -422,6 +422,11 @@ private:
     int M_port; /* port number */
     int M_coach_port; /* coach port number */
     int M_olcoach_port; /* online coach port number */
+    int M_tcp_port; /* TCP port number for players and monitors. 0 disables it, and -1 means M_port. */
+    int M_tcp_coach_port; /* TCP port number for offline coaches. 0 disables it, and -1 means M_coach_port. */
+    int M_tcp_olcoach_port; /* TCP port number for online coaches. 0 disables it, and -1 means M_olcoach_port. */
+    int M_ws_port; /* WebSocket port number for all services. 0 disables it. */
+    std::string M_ws_allowed_origins; /* comma separated Origin values allowed for WebSocket. Empty allows all. */
     int M_say_cnt_max; /* max count of coach SAY (freeform) */
     int M_say_coach_msg_size; /* max length of coach SAY (freeform) */
     int M_clang_win_size; /* coach language: time window size */
@@ -773,9 +778,15 @@ public:
     double cornerKickMargin() const { return M_corner_kick_margin; }
     double offsideActiveArea() const { return M_offside_active_area_size; }
 
-    rcss::net::Addr::PortType playerPort() const { return M_port; }
-    rcss::net::Addr::PortType offlineCoachPort() const { return M_coach_port; }
-    rcss::net::Addr::PortType onlineCoachPort() const { return M_olcoach_port; }
+    std::uint16_t playerPort() const { return M_port; }
+    std::uint16_t offlineCoachPort() const { return M_coach_port; }
+    std::uint16_t onlineCoachPort() const { return M_olcoach_port; }
+    // A negative TCP port number (-1) means the same number as the UDP port.
+    std::uint16_t tcpPlayerPort() const { return ( M_tcp_port < 0 ? playerPort() : M_tcp_port ); }
+    std::uint16_t tcpOfflineCoachPort() const { return ( M_tcp_coach_port < 0 ? offlineCoachPort() : M_tcp_coach_port ); }
+    std::uint16_t tcpOnlineCoachPort() const { return ( M_tcp_olcoach_port < 0 ? onlineCoachPort() : M_tcp_olcoach_port ); }
+    std::uint16_t wsPort() const { return M_ws_port; }
+    const std::string & wsAllowedOrigins() const { return M_ws_allowed_origins; }
 
     unsigned int freeformCountMax() const { return (unsigned int)M_say_cnt_max; }
     unsigned int freeformMsgSize() const { return (unsigned int)M_say_coach_msg_size; }
@@ -859,7 +870,7 @@ public:
 
     bool synchMode() const { return M_synch_mode; }
     int synchOffset() const { return M_synch_offset; }
-    unsigned int synchMicroSleep() const { return static_cast< unsigned int >( M_synch_micro_sleep ); }
+    int synchMicroSleep() const { return M_synch_micro_sleep; }
 
     int startGoalLeft() const { return M_start_goal_l; }
     int startGoalRight() const { return M_start_goal_r; }
