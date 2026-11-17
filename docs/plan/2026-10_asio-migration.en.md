@@ -22,7 +22,7 @@ Work after the plan:
 - 9996511: opening the acceptors moves out of `Stadium::init()` into `openAcceptors()` and other functions.
 - eaa4625: compressed messages `(compression N)` are no longer supported (section 8, #9).
 - 3f8041b: the TCP ports take -1, which means the same number as the matching UDP port (section 8, #14).
-- (not committed yet) rcss/net is removed (section 8, #15).
+- f1faefe: rcss/net is removed (section 8, #15).
 
 Status of the goals in section 1:
 
