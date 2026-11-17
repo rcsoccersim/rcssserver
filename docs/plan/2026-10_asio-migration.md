@@ -209,7 +209,7 @@ Stadium::doRecvFromClients()
 
 | | UDP | TCP | WebSocket |
 |---|---|---|---|
-| 待受 | 6000 / 6001 / 6002（`server::port` / `coach_port` / `olcoach_port`）。IPv4 のみ | `server::tcp_port` / `tcp_coach_port` / `tcp_olcoach_port`。既定は 0（無効）。IPv6 のデュアルスタックで待ち受け、使えなければ IPv4 のみ | `server::ws_port` の1ポート。既定は 0（無効）。URL のパス（`/player` `/monitor` `/coach` `/olcoach`）でサービスを振り分ける。未知のパスには 404、Upgrade でない要求には 400 を返す。待受アドレスは TCP と同じ |
+| 待受 | 6000 / 6001 / 6002（`server::port` / `coach_port` / `olcoach_port`）。IPv4 のみ | `server::tcp_port` / `tcp_coach_port` / `tcp_olcoach_port`。既定は 0（無効）。-1 なら対応する UDP のポートと同じ番号（8章 #14）。IPv6 のデュアルスタックで待ち受け、使えなければ IPv4 のみ | `server::ws_port` の1ポート。既定は 0（無効）。URL のパス（`/player` `/monitor` `/coach` `/olcoach`）でサービスを振り分ける。未知のパスには 404、Upgrade でない要求には 400 を返す。待受アドレスは TCP と同じ |
 | 接続確立 | 専用ポート方式 | accept した接続がそのまま専用になる | HTTP アップグレードした接続がそのまま専用になる |
 | サーバ → クライアント | データグラム1つが1メッセージ（末尾 `'\0'`） | メッセージを `'\0'` 区切りで連結 | テキストフレーム1つが1メッセージ。末尾の `'\0'` は除く |
 | クライアント → サーバ | データグラム1つが1メッセージ | `'\0'` または `'\n'` 区切り。末尾の `'\r'` は取り除く | フレーム1つが1メッセージ。末尾の `'\0'`、`'\n'`、`'\r'` は取り除く |
@@ -363,7 +363,7 @@ Phase 1〜2 はトランスポートを増やさない純粋なリファクタ�
 |---|---|---|
 | 1 | TCP の受信で `'\n'` も区切りとして受け付けるか | **決定**: 受け付ける。末尾の `'\r'` も取り除く。サーバからの送信は常に `'\0'` 区切り |
 | 2 | TCP / WS での圧縮 | **決定**: 不可とし、zlib なしでビルドしたサーバと同じ `(warning compression_unsupported)` を返す。その後、UDP でもサポートをやめた（#9） |
-| 3 | TCP のポート番号と設定パラメータ名 | **決定**: `server::tcp_port` / `tcp_coach_port` / `tcp_olcoach_port`。既定は 0（無効）。バージョン 999 で登録し、クライアントへ送る `(server_param ...)` には含めない |
+| 3 | TCP のポート番号と設定パラメータ名 | **決定**: `server::tcp_port` / `tcp_coach_port` / `tcp_olcoach_port`。既定は 0（無効）。-1 なら UDP と同じ番号（#14）。バージョン 999 で登録し、クライアントへ送る `(server_param ...)` には含めない |
 | 4 | WS のポート番号、Origin チェック、bind アドレス | **決定**: `server::ws_port`（既定 0 で無効）。Origin は `server::ws_allowed_origins` の許可リストで、空なら全許可。待受はすべてのインタフェース（TCP と同じデュアルスタック） |
 | 5 | TCP / WS の送信キューの上限 | **決定**: 1 MiB を超えたら切断し、ログに残す（TCP / WS とも） |
 | 6 | TCP / WS の未受理接続の扱い | **決定**: 10秒以内に受理されなければ閉じる。未受理の接続は同時に 64 本まで（WS はハンドシェイク中を含む） |
@@ -374,6 +374,6 @@ Phase 1〜2 はトランスポートを増やさない純粋なリファクタ�
 | 11 | SIGINT での終了時のクラッシュ | **対処済み**: Phase 4 の検証中に1回だけ、WS クライアントの接続中に SIGINT で SIGSEGV になった（再現せず、ASan でも検出なし）。最も疑わしかったのは、シグナルハンドラの中で `Stadium::finalize()` を呼ぶ設計。Phase 6 で `signal_set` に移り、`finalize()` はイベントループの中で呼ばれるようになった |
 | 12 | asio のソケットの close-on-exec | **解決**（Phase 5）: すべてのソケットに `set_close_on_exec()` で設定する |
 | 13 | UDP の送信バッファが詰まったときの待ち | **解決**（8537a9a）: Phase 5 の `DatagramBuf` は `basic_socket::wait()` で待とうとしたが、非ブロッキングのソケットでは待たずに失敗し、クライアントを切断していた。`poll()` で待つように直した。ループバックの UDP では送信バッファが詰まらないので、受信側が読まない AF_UNIX のデータグラムソケットで確かめた |
-| 14 | TCP のポート番号の既定値 | **検討中**: 今は 0（無効）。UDP と同じ番号（6000〜6002）を既定にする案もある。TCP のポートを開けないとサーバは起動に失敗するので、既定で有効にすると、1台で複数のサーバを動かすときは TCP のポートも指定するか無効にする必要があり、X11 が TCP で待ち受けている環境（6000〜6063 番）では起動しなくなる。トレーナ用のポートも既定で待ち受けることになる。「UDP と同じ番号」を意味する値（例: -1）を既定にすれば、複数サーバの問題は避けられる |
+| 14 | TCP のポート番号の既定値 | **決定**: 既定は 0（無効）のままにし、-1 を指定すると対応する UDP のポートと同じ番号で待ち受けるようにする（`tcp_port` → `server::port`、`tcp_coach_port` → `coach_port`、`tcp_olcoach_port` → `olcoach_port`）。<br>-1 を指定すれば、1台で複数のサーバを動かすときも、UDP のポートをずらすだけで TCP も一緒にずれる。<br>既定を -1 や 6000〜6002 にして TCP を既定で有効にする案は、見送った。TCP のポートを開けないとサーバは起動に失敗するので、X11 が TCP で待ち受けている環境（6000〜6063 番）などで、今まで起動できたサーバが起動しなくなる。トレーナ用のポートや IPv6 側でも、選ばないまま待ち受けることになる。古い `server.conf` には TCP のパラメータがないので、更新しただけで TCP が有効になる。TCP のクライアントが広まった段階で、既定値を改めて検討する |
 | 15 | rcss::net を取り除くか | **未決**: リポジトリの中に使うものはない。取り除くには、`rcss/net` を消し、`rcss/Makefile.am` の `SUBDIRS` から `net` を、`rcss/CMakeLists.txt` から `add_subdirectory(net)` を、`configure.ac` から `rcss/net/Makefile` を消す。そうした写しで、CMake と autotools（`make distcheck` も）のビルドが通ることを確かめた。ただし librcssnet は公開ヘッダ付きでインストールされるライブラリなので、外部のプログラムが使っている可能性はある |
 | 16 | マニュアル（別リポジトリ）の更新 | **未対応**: マニュアルは別リポジトリ（rcsoccersim/manual の `source/*.rst`）にある。リリースまでに次の点を直す（行番号は manual の 19e75d6 時点）。<br>(1) `soccermonitor.rst` の compression の節（426〜440行）: 圧縮はサポートせず、どのクライアントにも `(warning compression_unsupported)` を返す（#9）。<br>(2) UDP だけを前提にした記述（`overview.rst` 24〜26行、`introduction.rst` 159〜160行、`soccermonitor.rst` 61行）: TCP と WebSocket でも接続できることを書く（4.5）。<br>(3) 新しいサーバパラメータ（`tcp_port` / `tcp_coach_port` / `tcp_olcoach_port` / `ws_port` / `ws_allowed_origins`）の説明と、`synch_micro_sleep` の既定値の変更（1 → 0、0 以下なら待たない）。マニュアルにはサーバパラメータの一覧がない（`synch_micro_sleep` は `gettingstarted.rst` の出力例に出てくるだけ）ので、書く場所から決める |
