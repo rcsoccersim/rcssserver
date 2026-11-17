@@ -1,4 +1,4 @@
-[20.0.0]
+[20.0.0] (not released yet; the changes since 19.0.0)
   * Support TCP and WebSocket connections in addition to UDP. Players,
     coaches, online coaches and monitors can use them. Both are
     disabled by default. They listen on IPv6 and IPv4 (dual stack),
