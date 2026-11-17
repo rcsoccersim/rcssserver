@@ -28,8 +28,6 @@
 #include "param.h"
 //#include "rcssexceptions.h"
 
-#include <rcss/gzip/gzstream.hpp>
-
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
@@ -38,9 +36,7 @@
 
 RemoteClient::RemoteClient()
     : M_connection()
-    , M_gz_buf( nullptr )
     , M_transport( nullptr )
-    , M_comp_level( -1 )
     , M_enforce_dedicated_port( false )
 {
 
@@ -67,15 +63,6 @@ RemoteClient::close()
     }
 
     M_transport.rdbuf( nullptr );
-
-    // The gzip buffer may flush into the connection's buffer when it is
-    // deleted, so delete it before releasing the connection.
-    if ( M_gz_buf )
-    {
-        delete M_gz_buf;
-        M_gz_buf = nullptr;
-    }
-
     M_connection.reset();
 
     setEnforceDedicatedPort( false );
@@ -171,64 +158,5 @@ RemoteClient::processMsg( const std::string & msg )
     char buffer[ MaxMesg + 1 ];
     std::memset( buffer, 0, sizeof( buffer ) );
     std::memcpy( buffer, msg.data(), len );
-    processMsg( buffer, len );
-}
-
-void
-RemoteClient::processMsg( char * msg,
-                          const size_t & len )
-{
-#ifdef HAVE_LIBZ
-    if ( M_comp_level >= 0 )
-    {
-        M_decomp.decompress( msg, len, Z_SYNC_FLUSH );
-        char * out;
-        int size;
-        M_decomp.getOutput( out, size );
-        if ( size > 0 )
-        {
-            parseMsg( out, size );
-        }
-    }
-    else
-#endif
-    {
-        parseMsg( msg, len );
-    }
-}
-
-int
-RemoteClient::setCompressionLevel( const int level )
-{
-#ifdef HAVE_LIBZ
-    //M_transport->setLevel( level );
-
-    if ( M_connection )
-    {
-        if ( level >= 0 )
-        {
-            if ( ! M_gz_buf )
-            {
-                M_gz_buf = new rcss::gz::gzstreambuf( M_connection->outbuf() );
-            }
-            M_gz_buf->setLevel( level );
-            M_transport.rdbuf( M_gz_buf );
-        }
-        else
-        {
-            M_transport.rdbuf( &M_connection->outbuf() );
-        }
-    }
-//     if ( level < 0 )
-//     {
-//         M_comp.reset();
-//     }
-//     else
-//     {
-//         M_comp.setCompression( level );
-//     }
-
-    return M_comp_level = level;
-#endif
-    return M_comp_level = -1;
+    parseMsg( buffer, len );
 }

@@ -46,7 +46,6 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
-#include <sstream>
 
 namespace {
 
@@ -1927,28 +1926,11 @@ Player::change_view( rcss::pcom::VIEW_WIDTH viewWidth )
 }
 
 void
-Player::compression( int level )
+Player::compression( int )
 {
-#ifdef HAVE_LIBZ
-    if ( level > 9 )
-    {
-        return;
-    }
-
-    if ( ! compressionAvailable() )
-    {
-        send( "(warning compression_unsupported)" );
-        return;
-    }
-
-    std::ostringstream reply;
-    reply << "(ok compression " << level << ")";
-    send( reply.str().c_str() );
-
-    setCompressionLevel( level );
-#else
+    // Compressed messages are not supported any more. The reply is the same
+    // as from a server built without zlib.
     send( "(warning compression_unsupported)" );
-#endif
 }
 
 void

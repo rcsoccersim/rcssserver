@@ -23,10 +23,7 @@
 #include <config.h>
 #endif
 
-#include "compress.h"
 #include "transport/datagrambuf.h"
-
-#include <rcss/gzip/gzstream.hpp>
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
@@ -38,11 +35,9 @@
 #include <array>
 #include <iostream>
 #include <istream>
-#include <memory>
 #include <string>
 #include <cerrno>
 #include <csignal>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
@@ -106,13 +101,8 @@ private:
     std::array< char, MAX_DATAGRAM > M_recv_buf;
     rcss::DatagramBuf M_socket_buf; //!< must be declared after M_socket and M_dest
 
-    // the messages to the server, which may be compressed
-    std::unique_ptr< rcss::gz::gzstreambuf > M_gz_buf; //!< must be declared after M_socket_buf
+    // the messages to the server
     std::ostream M_transport;
-    int M_comp_level;
-#ifdef HAVE_LIBZ
-    Decompressor M_decomp;
-#endif
 
     // the standard input
     boost::asio::posix::stream_descriptor M_input;
@@ -131,9 +121,7 @@ public:
           // The socket is not connected, because the server replies from
           // another port than the one the client sends its first message to.
           M_socket_buf( M_socket, dest ),
-          M_gz_buf(),
           M_transport( &M_socket_buf ),
-          M_comp_level( -1 ),
           M_input( io_context ),
           M_input_buf(),
           M_failed( false )
@@ -298,58 +286,13 @@ private:
               // the server replies from the dedicated port
               M_dest.port( M_sender.port() );
               M_socket_buf.setDest( M_dest );
-              processMsg( M_recv_buf.data(), bytes );
+              printMsg( M_recv_buf.data(), bytes );
           }
 
           receive();
       }
 
-    void setCompression( const int level )
-      {
-#ifdef HAVE_LIBZ
-          if ( level >= 0 )
-          {
-              if ( ! M_gz_buf )
-              {
-                  M_gz_buf.reset( new rcss::gz::gzstreambuf( M_socket_buf ) );
-              }
-              M_gz_buf->setLevel( level );
-              M_transport.rdbuf( M_gz_buf.get() );
-          }
-          else
-          {
-              M_transport.rdbuf( &M_socket_buf );
-          }
-          M_comp_level = level;
-#else
-          (void)level;
-          M_comp_level = -1;
-#endif
-      }
-
-    void processMsg( const char * msg,
-                     const std::size_t len )
-      {
-#ifdef HAVE_LIBZ
-          if ( M_comp_level >= 0 )
-          {
-              M_decomp.decompress( msg, static_cast< int >( len ), Z_SYNC_FLUSH );
-              char * out;
-              int size;
-              M_decomp.getOutput( out, size );
-              if ( size > 0 )
-              {
-                  parseMsg( out, static_cast< std::size_t >( size ) );
-              }
-          }
-          else
-#endif
-          {
-              parseMsg( msg, len );
-          }
-      }
-
-    void parseMsg( const char * msg,
+    void printMsg( const char * msg,
                    const std::size_t len )
       {
           // a message ends with a null character
@@ -358,15 +301,6 @@ private:
                && message.back() == '\0' )
           {
               message.pop_back();
-          }
-
-          if ( ! message.compare( 0, 15, "(ok compression" ) )
-          {
-              int level;
-              if ( std::sscanf( message.c_str(), " ( ok compression %d )", &level ) == 1 )
-              {
-                  setCompression( level );
-              }
           }
 
           std::cout << message << std::endl;

@@ -592,29 +592,11 @@ Coach::eye( std::string mode )
 }
 
 void
-Coach::compression( int level )
+Coach::compression( int )
 {
-#ifdef HAVE_LIBZ
-    if( level > 9 )
-    {
-        send( "(error illegal_command_form)" );
-        return;
-    }
-
-    if ( ! compressionAvailable() )
-    {
-        send( "(warning compression_unsupported)" );
-        return;
-    }
-
-    std::ostringstream reply;
-    reply << "(ok compression " << level << ")";
-    send ( reply.str().c_str() );
-
-    setCompressionLevel ( level );
-#else
-    send ( "(warning compression_unsupported)" );
-#endif
+    // Compressed messages are not supported any more. The reply is the same
+    // as from a server built without zlib.
+    send( "(warning compression_unsupported)" );
 }
 
 void

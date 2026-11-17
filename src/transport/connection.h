@@ -93,8 +93,8 @@ public:
     /*!
       \brief check if a message may contain any byte.
       \return false if the message framing reserves some bytes (e.g. the null
-      character as the delimiter). Then compressed messages and the binary
-      monitor protocols cannot be used.
+      character as the delimiter). Then the binary monitor protocols (v1 and
+      v2) cannot be used.
      */
     virtual
     bool isBinarySafe() const = 0;

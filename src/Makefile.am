@@ -93,7 +93,6 @@ noinst_HEADERS = \
 	audio.h \
 	bodysender.h \
 	coach.h \
-	compress.h \
 	csvsaver.h \
 	dispsender.h \
 	field.h \
@@ -223,11 +222,7 @@ rcssclient_SOURCES = \
 	client.cpp \
 	transport/datagrambuf.cpp
 
-rcssclient_LDFLAGS = \
-	-L$(top_builddir)/rcss/gzip
-
 rcssclient_LDADD = @RCSSCLIENT_LIBS@ \
-	-lrcssgz \
 	$(BOOST_FILESYSTEM_LIB) $(BOOST_SYSTEM_LIB)
 
 

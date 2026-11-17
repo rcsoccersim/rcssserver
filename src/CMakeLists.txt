@@ -140,8 +140,6 @@ add_executable(RCSSClient
 
 target_link_libraries(RCSSClient
   PRIVATE
-    RCSS::GZ
-    ZLIB::ZLIB
     Boost::boost
     Threads::Threads
 )

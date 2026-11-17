@@ -22,34 +22,20 @@
 #ifndef RCSS_REMOTECLIENT_H
 #define RCSS_REMOTECLIENT_H
 
-#include "compress.h"
 #include "transport/connection.h"
 
 #include <memory>
 #include <ostream>
-
-namespace rcss {
-namespace gz {
-class gzstreambuf;
-}
-}
 
 
 class RemoteClient {
 
 private:
     std::shared_ptr< rcss::Connection > M_connection;
-    rcss::gz::gzstreambuf * M_gz_buf;
 
     //! The senders keep a reference to this stream, so it lives as long as
     //! the client. Its buffer is switched when a connection is attached.
     std::ostream M_transport;
-    int M_comp_level;
-
-#ifdef HAVE_LIBZ
-    //Compressor M_comp;
-    Decompressor M_decomp;
-#endif
 
     bool M_enforce_dedicated_port;
 
@@ -79,32 +65,11 @@ private:
     void processMsg( const std::string & msg );
 
 protected:
-    void processMsg( char * msg,
-                     const size_t & len );
-
     virtual
     void parseMsg( char * msg,
                    const size_t & len ) = 0;
 
 public:
-    int compressionLevel() const
-      {
-          return M_comp_level;
-      }
-
-    int setCompressionLevel( const int level );
-
-    /*!
-      \brief check if the connection can carry compressed messages.
-      \return false if no connection is attached or the transport reserves
-      some bytes for the message framing
-     */
-    bool compressionAvailable() const
-      {
-          return M_connection
-              && M_connection->isBinarySafe();
-      }
-
     std::ostream & getTransport();
 
 protected:
