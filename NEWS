@@ -1,3 +1,70 @@
+[20.0.0]
+  * Support TCP and WebSocket connections in addition to UDP. Players,
+    coaches, online coaches and monitors can use them. Both are
+    disabled by default. They listen on IPv6 and IPv4 (dual stack),
+    or on IPv4 only if IPv6 is not available. The network layer is now
+    built on boost::asio and Boost.Beast, and the minimum version of
+    Boost is raised to 1.70.
+
+  * New parameters:
+    - server::tcp_port (default value: 0)
+    - server::tcp_coach_port (default value: 0)
+    - server::tcp_olcoach_port (default value: 0)
+      The TCP ports for players and monitors, offline coaches and
+      online coaches. 0 disables TCP, and -1 uses the same number as
+      the matching UDP port (server::port, server::coach_port and
+      server::olcoach_port).
+    - server::ws_port (default value: 0)
+      The WebSocket port. One port serves all services, and the
+      request path selects the service: /player (players and
+      monitors), /monitor (monitors only), /coach (offline coaches) or
+      /olcoach (online coaches). 0 disables WebSocket.
+    - server::ws_allowed_origins (default value: "")
+      Comma separated values of the Origin header that WebSocket
+      accepts. If empty, all origins are accepted. A request without
+      the Origin header is always accepted.
+    These parameters are not sent to the clients in the server_param
+    message.
+
+  * Over TCP, messages are terminated by a null character. A newline
+    also terminates a received message. Over WebSocket, one text
+    message carries one message, without the trailing null character.
+    Compression and the binary monitor protocols (v1 and v2) are not
+    available over TCP and WebSocket.
+
+  * Compressed messages are no longer supported. The server replies
+    "(warning compression_unsupported)" to the compression command of
+    players, coaches and monitors, as a server built without zlib did.
+
+  * Change the default value of server::synch_micro_sleep from 1 to 0.
+    In sync mode, the server now waits for messages from the clients
+    instead of polling them, so server::synch_micro_sleep is needed
+    only to slow down the game on purpose. Zero or less means no wait.
+    A negative value used to make the server wait for about 71 minutes.
+    Note that a server.conf written by an older server still sets 1.
+
+  * In normal mode, a cycle now takes exactly 100 ms of real time. It
+    used to take about 100.6 ms, because the delay in waking up from
+    sleep was not taken into account.
+
+  * In sync mode, the server no longer runs a busy loop while it waits
+    for (done), and SIGINT, SIGTERM and SIGHUP end it at once.
+
+  * Fix a crash after sending to a client failed: the server could
+    write to a deleted stream in the same cycle. In 19.0.0, this
+    happened at kick off with a player that enabled compression.
+
+  * Fix a write out of bounds when the server received a datagram of
+    exactly 8192 bytes.
+
+  * rcssclient now uses boost::asio. At the end of the standard input,
+    it keeps receiving without using a whole CPU. It prints a datagram
+    of 8192 bytes whole, and it exits with an error if the server name
+    cannot be resolved.
+
+  * librcssnet and its headers (rcss/net) are no longer built or
+    installed.
+
 [19.0.0]
   * New prameters:
     - server::dist_noise_rate (default value: 0.0125)
