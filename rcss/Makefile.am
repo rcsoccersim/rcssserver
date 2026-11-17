@@ -1,5 +1,5 @@
 
-SUBDIRS = net conf gzip clang
+SUBDIRS = conf gzip clang
 
 rcssincludedir = $(includedir)/rcss
 

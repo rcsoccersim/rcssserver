@@ -241,7 +241,6 @@ fi
 
 AC_CONFIG_FILES([Makefile
                 rcss/Makefile
-                rcss/net/Makefile
                 rcss/conf/Makefile
                 rcss/gzip/Makefile
                 rcss/clang/Makefile

@@ -1,4 +1,3 @@
-add_subdirectory(net)
 add_subdirectory(conf)
 add_subdirectory(gzip)
 add_subdirectory(clang)
