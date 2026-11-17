@@ -21,10 +21,12 @@
 - bad983d: rcssclient の `select()` のループを asio のイベント処理に置き換えた。
 - 9996511: `Stadium::init()` から Acceptor を開く処理を `openAcceptors()` などに切り出した。
 - eaa4625: メッセージの圧縮 `(compression N)` のサポートをやめた（8章 #9）。
+- 3f8041b: TCP のポートに -1（対応する UDP のポートと同じ番号）を指定できるようにした（8章 #14）。
+- （未コミット）rcss/net を削除した（8章 #15）。
 
 1章の目的に対する状況:
 
-- rcss::net の置き換え: 完了。リポジトリの中に rcss::net を使うものはない。rcss/net 自体はまだビルドとインストールの対象（8章 #15）。
+- rcss::net の置き換え: 完了。rcss/net は削除した。コードは rcssserver-19.0.0 のタグに残っている（8章 #15）。
 - TCP と WebSocket での接続: 完了。プレイヤ、コーチ、オンラインコーチ、モニタのすべてが使える。
 - 既存の UDP クライアント: 各 Phase の回帰確認で、挙動の差がないことを確かめた（6章）。
 
@@ -290,7 +292,7 @@ TCP / WS の sync モードが速くなったのは、メッセージが届く�
 - 新しいコードは `src/transport/` に置き、名前空間は `rcss` とする。ファイル名はクラス名に合わせ、1ファイル1クラスとする（`connection.h`、`acceptor.h`、`udpconnection.{h,cpp}`、`udpacceptor.{h,cpp}`、`datagrambuf.{h,cpp}`、`tcpconnection.{h,cpp}`、`tcpacceptor.{h,cpp}`、`wsconnection.{h,cpp}`、`wsacceptor.{h,cpp}`、`wsserver.{h,cpp}`、`messagebuf.{h,cpp}`、`pendingconnections.{h,cpp}`、`tcplisten.{h,cpp}`、`closeonexec.{h,cpp}`）。
   - サーバ内部の部品なので、独立したライブラリの置き場である `rcss/` の下には置かない。rcssclient で TCP / WS が必要になったら、インタフェースが固まった時点で別ライブラリとして切り出す。
   - rcssclient は、送信に `DatagramBuf` を共有している（`setDest()` で専用ポートに宛先を切り替える）。
-- rcssserver と rcssclient は rcss::net を使わない（bf327da）。rcss/net はまだビルドとインストールの対象で、取り除くかどうかは 8章 #15。
+- rcssserver と rcssclient は rcss::net を使わなくなり（bf327da）、その後 rcss/net を削除した（8章 #15）。
 - asio は、ソケットに close-on-exec を設定しない。そのままでは、サーバが起動するプログラム（`server::team_l_start` など）がソケットを引き継ぎ、サーバの終了後もポートを使用中のままにする。rcss::net は設定していたので、Phase 5 で `set_close_on_exec()` を作り、UDP / TCP / WS のすべてのソケット（待受と受理した接続）に設定した。
 - Boost の最低バージョンを 1.44 から 1.70 に上げた。`io_context` は 1.66 から、Beast の `tcp_stream` は 1.70 から使える。1.70 なら Ubuntu 20.04 の 1.71 でもビルドできる。asio と Beast はヘッダオンリー。
 - asio はスレッド関連の関数を使うので、`Threads::Threads`（autotools では pthread）をリンクする。
@@ -375,5 +377,5 @@ Phase 1〜2 はトランスポートを増やさない純粋なリファクタ�
 | 12 | asio のソケットの close-on-exec | **解決**（Phase 5）: すべてのソケットに `set_close_on_exec()` で設定する |
 | 13 | UDP の送信バッファが詰まったときの待ち | **解決**（8537a9a）: Phase 5 の `DatagramBuf` は `basic_socket::wait()` で待とうとしたが、非ブロッキングのソケットでは待たずに失敗し、クライアントを切断していた。`poll()` で待つように直した。ループバックの UDP では送信バッファが詰まらないので、受信側が読まない AF_UNIX のデータグラムソケットで確かめた |
 | 14 | TCP のポート番号の既定値 | **決定**: 既定は 0（無効）のままにし、-1 を指定すると対応する UDP のポートと同じ番号で待ち受けるようにする（`tcp_port` → `server::port`、`tcp_coach_port` → `coach_port`、`tcp_olcoach_port` → `olcoach_port`）。<br>-1 を指定すれば、1台で複数のサーバを動かすときも、UDP のポートをずらすだけで TCP も一緒にずれる。<br>既定を -1 や 6000〜6002 にして TCP を既定で有効にする案は、見送った。TCP のポートを開けないとサーバは起動に失敗するので、X11 が TCP で待ち受けている環境（6000〜6063 番）などで、今まで起動できたサーバが起動しなくなる。トレーナ用のポートや IPv6 側でも、選ばないまま待ち受けることになる。古い `server.conf` には TCP のパラメータがないので、更新しただけで TCP が有効になる。TCP のクライアントが広まった段階で、既定値を改めて検討する |
-| 15 | rcss::net を取り除くか | **未決**: リポジトリの中に使うものはない。取り除くには、`rcss/net` を消し、`rcss/Makefile.am` の `SUBDIRS` から `net` を、`rcss/CMakeLists.txt` から `add_subdirectory(net)` を、`configure.ac` から `rcss/net/Makefile` を消す。そうした写しで、CMake と autotools（`make distcheck` も）のビルドが通ることを確かめた。ただし librcssnet は公開ヘッダ付きでインストールされるライブラリなので、外部のプログラムが使っている可能性はある |
+| 15 | rcss::net を取り除くか | **決定・完了**: リポジトリの中に使うものはなく、外部の利用者も知られていないので、取り除いた。`rcss/net` を削除し、`rcss/Makefile.am` の `SUBDIRS` から `net` を、`rcss/CMakeLists.txt` から `add_subdirectory(net)` を、`configure.ac` から `rcss/net/Makefile` を消した。CMake と autotools（`make distcheck` も）のビルドが通ることを確かめた。<br>コードを別の場所に退避することはしなかった。削除したコードは rcssserver-19.0.0 のタグの `rcss/net` と同じなので、そこから取り出せる（例: `git show rcssserver-19.0.0:rcss/net/udpsocket.hpp`、`git archive rcssserver-19.0.0 rcss/net`）。単独のリポジトリにするなら、`git subtree split --prefix=rcss/net rcssserver-19.0.0` で履歴ごと切り出せる。<br>librcssnet とそのヘッダ（`$(includedir)/rcss/net`）はインストールされなくなるので、リリースのときに NEWS に書く |
 | 16 | マニュアル（別リポジトリ）の更新 | **未対応**: マニュアルは別リポジトリ（rcsoccersim/manual の `source/*.rst`）にある。リリースまでに次の点を直す（行番号は manual の 19e75d6 時点）。<br>(1) `soccermonitor.rst` の compression の節（426〜440行）: 圧縮はサポートせず、どのクライアントにも `(warning compression_unsupported)` を返す（#9）。<br>(2) UDP だけを前提にした記述（`overview.rst` 24〜26行、`introduction.rst` 159〜160行、`soccermonitor.rst` 61行）: TCP と WebSocket でも接続できることを書く（4.5）。<br>(3) 新しいサーバパラメータ（`tcp_port` / `tcp_coach_port` / `tcp_olcoach_port` / `ws_port` / `ws_allowed_origins`）の説明と、`synch_micro_sleep` の既定値の変更（1 → 0、0 以下なら待たない）。マニュアルにはサーバパラメータの一覧がない（`synch_micro_sleep` は `gettingstarted.rst` の出力例に出てくるだけ）ので、書く場所から決める |
