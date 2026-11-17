@@ -20,6 +20,7 @@
 - bf327da: rcssserver と rcssclient が rcss::net をリンクしないようにした。rcssclient も asio の UDP ソケットに移した。
 - bad983d: rcssclient の `select()` のループを asio のイベント処理に置き換えた。
 - 9996511: `Stadium::init()` から Acceptor を開く処理を `openAcceptors()` などに切り出した。
+- eaa4625: メッセージの圧縮 `(compression N)` のサポートをやめた（8章 #9）。
 
 1章の目的に対する状況:
 
@@ -116,7 +117,7 @@ public:
     virtual ~Connection() = default;
 
     // 送信: ここに書き込み、pubsync()（std::flush）1回で1メッセージ。
-    // RemoteClient はこの上に ostream と gzstreambuf を重ねる。
+    // RemoteClient はこの上に ostream を重ねる。
     virtual std::streambuf & outbuf() = 0;
 
     // 受信: 受信済みのメッセージを1つ取り出す。なければ false を返す（ブロックしない）。
@@ -127,7 +128,7 @@ public:
     virtual void close() = 0;
 
     // メッセージがどのバイトも含めるか。TCP は '\0' を区切りに使うので false。
-    // false なら、圧縮とバイナリのモニタ（v1 / v2）は使えない。
+    // false なら、バイナリのモニタ（v1 / v2）は使えない。
     virtual bool isBinarySafe() const = 0;
 };
 
@@ -213,12 +214,12 @@ Stadium::doRecvFromClients()
 | サーバ → クライアント | データグラム1つが1メッセージ（末尾 `'\0'`） | メッセージを `'\0'` 区切りで連結 | テキストフレーム1つが1メッセージ。末尾の `'\0'` は除く |
 | クライアント → サーバ | データグラム1つが1メッセージ | `'\0'` または `'\n'` 区切り。末尾の `'\r'` は取り除く | フレーム1つが1メッセージ。末尾の `'\0'`、`'\n'`、`'\r'` は取り除く |
 | 受信の最大長 | MaxMesg | MaxMesg。超えたら切断 | MaxMesg（Beast の `read_message_max`）。超えたら切断 |
-| 圧縮 `(compression N)` | これまでどおり | 不可。`(warning compression_unsupported)` を返す | 不可。`(warning compression_unsupported)` を返す |
+| 圧縮 `(compression N)` | 不可（8章 #9）。`(warning compression_unsupported)` を返す | 不可。`(warning compression_unsupported)` を返す | 不可。`(warning compression_unsupported)` を返す |
 | モニタのバージョン | すべて | v3 以上と JSON | v3 以上と JSON |
 | 専用ポートの強制 | これまでどおり | 不要 | 不要 |
 | 未受理の接続 | - | 10秒以内に受理されなければ閉じる。同時に 64 本まで | ハンドシェイク中を含めて、TCP と同じ |
 
-- モニタ v1 / v2 は TCP / WS では受け付けない（`(error illegal_client_version)`）。表示データをバイナリの構造体（`dispinfo_t` / `dispinfo_t2`）のまま送るため、`'\0'` 区切りにも WS のテキストフレームにも載らない。圧縮を不可にするのも同じ理由である（`Connection::isBinarySafe()`）。
+- モニタ v1 / v2 は TCP / WS では受け付けない（`(error illegal_client_version)`）。表示データをバイナリの構造体（`dispinfo_t` / `dispinfo_t2`）のまま送るため、`'\0'` 区切りにも WS のテキストフレームにも載らない（`Connection::isBinarySafe()`）。圧縮も同じ理由で TCP / WS では不可にしていたが、その後、どのトランスポートでもサポートをやめた（8章 #9）。
 - モニタは UDP と同じく、プレイヤ用のサービス（TCP のプレイヤ用ポート、WS の `/player`）へ `dispinit` を送る。主な用途としては、JSON モニタ（dispinit の version が負）を WS で使うことを想定している。
 - WS では、ウェブモニタの作者に分かりやすいように、モニタ専用のパス `/monitor` も用意した。`/monitor` は `dispinit` だけを受け付け、それ以外（プレイヤの init や reconnect など）には `(error unknown_command)` を返す。接続は切らないので、続けて `dispinit` を送れば受理される。
   - Stadium にモニタ専用の Acceptor の列 `M_monitor_acceptors` と `recvFromMonitorPort()` を追加した。受理したモニタからの受信は、これまでどおり `recvFromPlayerPort()` で行う。
@@ -318,7 +319,7 @@ Phase 1〜2 はトランスポートを増やさない純粋なリファクタ�
 - 専用ポート: v8 以上のクライアントが 6000 番へ init 以外を送るとエラーになる。v7 以下なら処理される
 - オンラインコーチの init。オフラインコーチの init と、init なしのコマンド。coach mode が無効なときのエラー
 - モニタ: dispinit（v1、v3 以上、JSON）、`max_monitors` を超えたときのエラー、モニタからのコマンド（`dispstart` など）
-- 圧縮 `(compression N)` を使った送受信
+- 圧縮 `(compression N)` に、プレイヤ、コーチ、オンラインコーチ、モニタのどれにも `(warning compression_unsupported)` を返し、その後も圧縮せずに送受信する（#9 の後）
 - 通常モードで1試合: 1サイクルが実時間の 100ms からずれない
 - sync モードで1試合: 「Someone missed a cycle」が出ずに完走する
 - クライアントのプロセスを kill すると、切断として扱われる
@@ -361,17 +362,18 @@ Phase 1〜2 はトランスポートを増やさない純粋なリファクタ�
 | # | 論点 | 状況 |
 |---|---|---|
 | 1 | TCP の受信で `'\n'` も区切りとして受け付けるか | **決定**: 受け付ける。末尾の `'\r'` も取り除く。サーバからの送信は常に `'\0'` 区切り |
-| 2 | TCP / WS での圧縮 | **決定**: 当面は不可とし、zlib なしでビルドしたサーバと同じ `(warning compression_unsupported)` を返す。必要になったら、長さプレフィクス方式か WS の permessage-deflate を検討する |
+| 2 | TCP / WS での圧縮 | **決定**: 不可とし、zlib なしでビルドしたサーバと同じ `(warning compression_unsupported)` を返す。その後、UDP でもサポートをやめた（#9） |
 | 3 | TCP のポート番号と設定パラメータ名 | **決定**: `server::tcp_port` / `tcp_coach_port` / `tcp_olcoach_port`。既定は 0（無効）。バージョン 999 で登録し、クライアントへ送る `(server_param ...)` には含めない |
 | 4 | WS のポート番号、Origin チェック、bind アドレス | **決定**: `server::ws_port`（既定 0 で無効）。Origin は `server::ws_allowed_origins` の許可リストで、空なら全許可。待受はすべてのインタフェース（TCP と同じデュアルスタック） |
 | 5 | TCP / WS の送信キューの上限 | **決定**: 1 MiB を超えたら切断し、ログに残す（TCP / WS とも） |
 | 6 | TCP / WS の未受理接続の扱い | **決定**: 10秒以内に受理されなければ閉じる。未受理の接続は同時に 64 本まで（WS はハンドシェイク中を含む） |
 | 7 | IPv6 | **決定**: TCP / WS は IPv6 のデュアルスタックで待ち受け、使えなければ IPv4 のみ。UDP は当面 IPv4 のまま |
 | 8 | `rcssclient` の移行 | **完了**: 当初は範囲外としたが、rcss::net を取り除けるようにするため移した。UDP のまま、ソケットを asio に、送信をサーバの `DatagramBuf` に置き換え（bf327da）、`select()` のループも asio のイベント処理にした（bad983d）。標準入力は `posix::stream_descriptor` で読む。asio は読む記述子に `O_NONBLOCK` を付けて戻さないので、端末は `ttyname()` で開き直す（端末は標準出力やシェルと「開いたファイル」を共有している）。標準入力が EOF になっても受信を続ける（これまでは CPU を使い切っていた）。8192 バイトのデータグラムの最後の1バイトを落とさなくなった。名前解決に失敗したときは、これまで 0.0.0.0（ローカル）に送っていたが、エラーを表示して終わる |
-| 9 | 圧縮 `(compression N)` を有効にしたクライアントへの送信 | **未解決**: 19.0.0 でも、圧縮を有効にしたプレイヤへのキックオフ時の送信が失敗し（stream が失敗状態になる）、そのクライアントが切断される。移行とは別に原因を調べる |
+| 9 | 圧縮 `(compression N)` を有効にしたクライアントへの送信 | **決定**: 19.0.0 でも、圧縮を有効にしたプレイヤへのキックオフ時の送信が失敗し（stream が失敗状態になる）、そのクライアントが切断される。原因を調べる代わりに、次のメジャーバージョンで圧縮のサポートをやめる。<br>理由: 実際に使われた形跡がない（この不具合や、Phase 1 で直した圧縮時のクラッシュの報告がない。librcsc は圧縮に対応しているが既定で無効。rcssmonitor-web は非対応として扱う）。今の LAN では帯域を節約する意味がほとんどない。<br>互換性: `(compression N)` には、プレイヤ、コーチ、オンラインコーチ、モニタのどれにも、zlib なしでビルドしたサーバと同じ `(warning compression_unsupported)` を返す。この応答はマニュアルに書かれた既存のもので、librcsc は `(ok compression N)` を受け取ったときだけ圧縮に切り替えるので、圧縮を設定したチームもそのまま動く。<br>サーバの `RemoteClient` から圧縮の送受信を削り、`compress.h` も削除した。rcssclient も圧縮を扱わなくなり、zlib と librcssgz をリンクしない。zlib と `rcss/gzip` はログファイルの圧縮（`game_log_compression` / `text_log_compression`）のために残す。<br>リリースのときに NEWS に書く。マニュアル（別リポジトリ）の更新は #16 |
 | 10 | sync モードのハーフタイム | **解決とみられる**: 19.0.0 でも、モニタが接続されていないと、前半終了時（3000 サイクル）に「Someone missed a cycle」が1回出ていた。Phase 6 の計測では、前半終了後も (done) を送り続けると出なかった。出ていた1回は、テストが (done) を送るのをやめて SIGINT を送ったあと、サーバが (done) を 1250ms 待つ間に出ていた（「Server Killed」の後に出る）。Phase 6 では待ちをすぐ抜けるので出ない |
 | 11 | SIGINT での終了時のクラッシュ | **対処済み**: Phase 4 の検証中に1回だけ、WS クライアントの接続中に SIGINT で SIGSEGV になった（再現せず、ASan でも検出なし）。最も疑わしかったのは、シグナルハンドラの中で `Stadium::finalize()` を呼ぶ設計。Phase 6 で `signal_set` に移り、`finalize()` はイベントループの中で呼ばれるようになった |
 | 12 | asio のソケットの close-on-exec | **解決**（Phase 5）: すべてのソケットに `set_close_on_exec()` で設定する |
 | 13 | UDP の送信バッファが詰まったときの待ち | **解決**（8537a9a）: Phase 5 の `DatagramBuf` は `basic_socket::wait()` で待とうとしたが、非ブロッキングのソケットでは待たずに失敗し、クライアントを切断していた。`poll()` で待つように直した。ループバックの UDP では送信バッファが詰まらないので、受信側が読まない AF_UNIX のデータグラムソケットで確かめた |
 | 14 | TCP のポート番号の既定値 | **検討中**: 今は 0（無効）。UDP と同じ番号（6000〜6002）を既定にする案もある。TCP のポートを開けないとサーバは起動に失敗するので、既定で有効にすると、1台で複数のサーバを動かすときは TCP のポートも指定するか無効にする必要があり、X11 が TCP で待ち受けている環境（6000〜6063 番）では起動しなくなる。トレーナ用のポートも既定で待ち受けることになる。「UDP と同じ番号」を意味する値（例: -1）を既定にすれば、複数サーバの問題は避けられる |
 | 15 | rcss::net を取り除くか | **未決**: リポジトリの中に使うものはない。取り除くには、`rcss/net` を消し、`rcss/Makefile.am` の `SUBDIRS` から `net` を、`rcss/CMakeLists.txt` から `add_subdirectory(net)` を、`configure.ac` から `rcss/net/Makefile` を消す。そうした写しで、CMake と autotools（`make distcheck` も）のビルドが通ることを確かめた。ただし librcssnet は公開ヘッダ付きでインストールされるライブラリなので、外部のプログラムが使っている可能性はある |
+| 16 | マニュアル（別リポジトリ）の更新 | **未対応**: マニュアルは別リポジトリ（rcsoccersim/manual の `source/*.rst`）にある。リリースまでに次の点を直す（行番号は manual の 19e75d6 時点）。<br>(1) `soccermonitor.rst` の compression の節（426〜440行）: 圧縮はサポートせず、どのクライアントにも `(warning compression_unsupported)` を返す（#9）。<br>(2) UDP だけを前提にした記述（`overview.rst` 24〜26行、`introduction.rst` 159〜160行、`soccermonitor.rst` 61行）: TCP と WebSocket でも接続できることを書く（4.5）。<br>(3) 新しいサーバパラメータ（`tcp_port` / `tcp_coach_port` / `tcp_olcoach_port` / `ws_port` / `ws_allowed_origins`）の説明と、`synch_micro_sleep` の既定値の変更（1 → 0、0 以下なら待たない）。マニュアルにはサーバパラメータの一覧がない（`synch_micro_sleep` は `gettingstarted.rst` の出力例に出てくるだけ）ので、書く場所から決める |

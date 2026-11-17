@@ -20,6 +20,7 @@ Work after the plan:
 - bf327da: rcssserver and rcssclient no longer link with rcss::net. rcssclient also moved to an asio UDP socket.
 - bad983d: the `select()` loop of rcssclient is replaced with asio event handling.
 - 9996511: opening the acceptors moves out of `Stadium::init()` into `openAcceptors()` and other functions.
+- eaa4625: compressed messages `(compression N)` are no longer supported (section 8, #9).
 
 Status of the goals in section 1:
 
@@ -116,7 +117,7 @@ public:
     virtual ~Connection() = default;
 
     // Sending: write here. One pubsync() (std::flush) completes one message.
-    // RemoteClient puts an ostream and a gzstreambuf on top of it.
+    // RemoteClient puts an ostream on top of it.
     virtual std::streambuf & outbuf() = 0;
 
     // Receiving: take one received message. false if there is none (never blocks).
@@ -127,8 +128,8 @@ public:
     virtual void close() = 0;
 
     // true if a message may contain any byte. false for TCP, which uses '\0'
-    // as the delimiter. If false, compression and the binary monitors
-    // (v1 / v2) cannot be used.
+    // as the delimiter. If false, the binary monitors (v1 / v2) cannot be
+    // used.
     virtual bool isBinarySafe() const = 0;
 };
 
@@ -214,12 +215,12 @@ The acceptors of each service are in the order UDP, TCP and WS (`Stadium::openAc
 | Server → client | One datagram is one message (ends with `'\0'`) | Messages joined with `'\0'` as the delimiter | One text frame is one message, without the trailing `'\0'` |
 | Client → server | One datagram is one message | Delimited by `'\0'` or `'\n'`. A trailing `'\r'` is removed | One frame is one message. Trailing `'\0'`, `'\n'` and `'\r'` are removed |
 | Longest message received | MaxMesg | MaxMesg. Disconnected if longer | MaxMesg (Beast's `read_message_max`). Disconnected if longer |
-| Compression `(compression N)` | As before | Not supported. Replies `(warning compression_unsupported)` | Not supported. Replies `(warning compression_unsupported)` |
+| Compression `(compression N)` | Not supported (section 8, #9). Replies `(warning compression_unsupported)` | Not supported. Replies `(warning compression_unsupported)` | Not supported. Replies `(warning compression_unsupported)` |
 | Monitor versions | All | v3 or later, and JSON | v3 or later, and JSON |
 | Dedicated port enforced | As before | Not needed | Not needed |
 | Connections not accepted yet | - | Closed if not accepted within 10 seconds. At most 64 at a time | The same as TCP, including the ones in the opening handshake |
 
-- Monitors v1 / v2 are not accepted on TCP or WS (`(error illegal_client_version)`). They send the display data as binary structures (`dispinfo_t` / `dispinfo_t2`), which can be carried neither with `'\0'` as the delimiter nor in WS text frames. Compression is not supported for the same reason (`Connection::isBinarySafe()`).
+- Monitors v1 / v2 are not accepted on TCP or WS (`(error illegal_client_version)`). They send the display data as binary structures (`dispinfo_t` / `dispinfo_t2`), which can be carried neither with `'\0'` as the delimiter nor in WS text frames (`Connection::isBinarySafe()`). For the same reason, compression was not supported on TCP and WS at first. Later, it was dropped for all transports (section 8, #9).
 - As over UDP, a monitor sends `dispinit` to the service for players (the TCP port for players, or `/player` on WS). The main use is expected to be a JSON monitor (dispinit with a negative version) on WS.
 - On WS, the path `/monitor` is only for monitors, which is easier for the authors of web monitors. `/monitor` accepts only `dispinit`, and other messages (e.g. init and reconnect of players) get `(error unknown_command)`. The connection is kept, so the client can send `dispinit` next. `/player` also accepts monitors, as before.
   - Stadium has a list of acceptors only for monitors, `M_monitor_acceptors`, and `recvFromMonitorPort()`. Messages from an accepted monitor are received in `recvFromPlayerPort()`, as before.
@@ -319,7 +320,7 @@ What to check:
 - Dedicated ports: a client of v8 or later that sends anything but init to port 6000 gets an error. For v7 or earlier, the message is processed
 - init of online coaches. init of offline coaches, and commands without init. The error when coach mode is disabled
 - Monitors: dispinit (v1, v3 or later, JSON), the error when there are more than `max_monitors`, commands from monitors (`dispstart` and others)
-- Sending and receiving with compression `(compression N)`
+- `(compression N)` gets `(warning compression_unsupported)` for players, coaches, online coaches and monitors, and the messages after it are not compressed (after #9)
 - A game in normal mode: a cycle stays at 100 ms of real time
 - A game in sync mode: it runs to the end without "Someone missed a cycle"
 - When a client process is killed, it is treated as disconnected
@@ -362,17 +363,18 @@ Neither draft was used, and both were deleted (neither was tracked by git).
 | # | Issue | Status |
 |---|---|---|
 | 1 | Whether TCP also takes `'\n'` as a delimiter | **Decided**: yes. A trailing `'\r'` is also removed. The server always sends with `'\0'` as the delimiter |
-| 2 | Compression on TCP / WS | **Decided**: not supported for now. The server replies `(warning compression_unsupported)`, as a server built without zlib does. If needed, a length prefix or permessage-deflate of WS can be considered |
+| 2 | Compression on TCP / WS | **Decided**: not supported. The server replies `(warning compression_unsupported)`, as a server built without zlib does. Later, UDP also dropped it (#9) |
 | 3 | TCP port numbers and parameter names | **Decided**: `server::tcp_port` / `tcp_coach_port` / `tcp_olcoach_port`. 0 (disabled) by default. Registered with version 999, so they are not in the `(server_param ...)` message sent to clients |
 | 4 | WS port number, Origin check, bind address | **Decided**: `server::ws_port` (disabled with 0 by default). The Origin is checked against the list in `server::ws_allowed_origins`; an empty list accepts all. Listens on all interfaces (the same dual stack as TCP) |
 | 5 | Limit of the send queue of TCP / WS | **Decided**: disconnect and log when it holds more than 1 MiB (both TCP and WS) |
 | 6 | Connections of TCP / WS not accepted yet | **Decided**: closed if not accepted within 10 seconds. At most 64 at a time (on WS, including the ones in the opening handshake) |
 | 7 | IPv6 | **Decided**: TCP and WS listen on the dual stack IPv6, or IPv4 only if IPv6 is not available. UDP stays IPv4 only for now |
 | 8 | Moving `rcssclient` | **Done**: out of scope at first, but moved so that rcss::net can be removed. It still uses UDP. Its socket is an asio socket and it sends with `DatagramBuf` of the server (bf327da), and its `select()` loop is replaced with asio event handling (bad983d). The standard input is read with `posix::stream_descriptor`. asio sets O_NONBLOCK on the descriptor it reads and never clears it, so a terminal is opened again with `ttyname()` (a terminal shares its open file with the standard output and the shell). At the end of the standard input, the client keeps receiving (it used to use a whole CPU). A datagram of 8192 bytes no longer loses its last byte. An unknown server name used to send to 0.0.0.0 (the local host); now the client reports the error and exits |
-| 9 | Sending to clients that enabled compression `(compression N)` | **Open**: also in 19.0.0, sending to a player with compression fails at kick off (the stream gets the error state), and the client is disconnected. To be investigated apart from the migration |
+| 9 | Sending to clients that enabled compression `(compression N)` | **Decided**: also in 19.0.0, sending to a player with compression fails at kick off (the stream gets the error state), and the client is disconnected. Instead of investigating the cause, compression is no longer supported from the next major version.<br>Why: nothing shows that it has been used (no reports of this bug or of the crash with compression fixed in phase 1; librcsc supports compression but disables it by default; rcssmonitor-web treats it as unsupported). On today's LANs, saving bandwidth means almost nothing.<br>Compatibility: `(compression N)` gets `(warning compression_unsupported)` for players, coaches, online coaches and monitors, as a server built without zlib replies. The manual already describes this reply, and librcsc switches to compression only when it receives `(ok compression N)`, so teams that set compression keep working.<br>The server's `RemoteClient` no longer compresses or decompresses messages, and `compress.h` is deleted. rcssclient no longer handles compression and does not link with zlib or librcssgz. zlib and `rcss/gzip` stay for compressing log files (`game_log_compression` / `text_log_compression`).<br>NEWS must mention it at the release. The update of the manual (another repository) is #16 |
 | 10 | Half time in sync mode | **Probably resolved**: also in 19.0.0, without a monitor, "Someone missed a cycle" appeared once at the end of the first half (cycle 3000). In the measurements of phase 6, it did not appear when the players kept sending (done) after the first half. The one seen before came after the test stopped sending (done) and sent SIGINT, while the server waited 1250 ms for (done) (it comes after "Server Killed"). Since phase 6, the server stops waiting at once, so it does not appear |
 | 11 | Crash at exit on SIGINT | **Addressed**: once during the checks of phase 4, SIGINT with a WS client connected ended in SIGSEGV (it did not happen again, and ASan found nothing). The most likely cause was calling `Stadium::finalize()` in the signal handler. Since phase 6, signals go through `signal_set`, and `finalize()` is called in the event loop |
 | 12 | close-on-exec of asio sockets | **Resolved** (phase 5): `set_close_on_exec()` sets it on all sockets |
 | 13 | Waiting while the send buffer of a UDP socket is full | **Resolved** (8537a9a): `DatagramBuf` of phase 5 tried to wait with `basic_socket::wait()`, which fails at once on a non-blocking socket, so the client was disconnected. It now waits with `poll()`. UDP over loopback never fills the send buffer, so this was checked with an AF_UNIX datagram socket whose other end did not read |
 | 14 | Default TCP port numbers | **Under discussion**: 0 (disabled) now. Another option is the same numbers as UDP (6000 to 6002) by default. The server fails to start if it cannot open a TCP port. So with TCP enabled by default, running several servers on one host needs the TCP ports to be set or disabled too, and the server does not start where X11 listens on TCP (6000 to 6063). The port for offline coaches would also be open by default. A default value meaning "the same as the UDP port" (e.g. -1) would avoid the problem with several servers |
 | 15 | Whether to remove rcss::net | **Open**: nothing in the repository uses it. To remove it, delete `rcss/net`, and remove `net` from `SUBDIRS` in `rcss/Makefile.am`, `add_subdirectory(net)` from `rcss/CMakeLists.txt`, and `rcss/net/Makefile` from `configure.ac`. A copy with these changes builds with both CMake and autotools (also `make distcheck`). librcssnet is installed with public headers, though, so programs outside the repository may use it |
+| 16 | Updating the manual (another repository) | **To do**: the manual is in another repository (`source/*.rst` of rcsoccersim/manual). Fix the following before the release (line numbers as of 19e75d6 of the manual).<br>(1) The compression section of `soccermonitor.rst` (lines 426 to 440): compression is not supported, and every client gets `(warning compression_unsupported)` (#9).<br>(2) The text that assumes UDP only (`overview.rst` lines 24 to 26, `introduction.rst` lines 159 to 160, `soccermonitor.rst` line 61): clients can also connect over TCP and WebSocket (4.5).<br>(3) The new server parameters (`tcp_port` / `tcp_coach_port` / `tcp_olcoach_port` / `ws_port` / `ws_allowed_origins`), and the new default of `synch_micro_sleep` (1 → 0; zero or less means no wait). The manual has no list of the server parameters (`synch_micro_sleep` appears only in an output example in `gettingstarted.rst`), so first decide where to describe them |
